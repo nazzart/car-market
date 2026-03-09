@@ -1,6 +1,6 @@
 export default function CarCard() {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl overflow-hidden">
       <div className="aspect-[4/3] bg-gray-100"></div>
 
       <div className="p-3">

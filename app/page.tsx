@@ -1,4 +1,3 @@
-import CategoryList from "@/components/layout/CategoryList";
 import Container from "@/components/layout/Container";
 import Header from "@/components/layout/Header";
 import BrandGrid from "@/features/brands/components/BrandGrid";
@@ -9,8 +8,6 @@ export default function Home() {
   return (
     <Container>
       <Header />
-
-      <CategoryList />
 
       <BrandGrid />
 

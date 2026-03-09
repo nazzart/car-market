@@ -16,7 +16,7 @@ export default function BrandGrid() {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-12">
+    <section className="max-w-7xl mx-auto py-8">
       <h2 className="text-2xl font-semibold mb-8">Популярные марки</h2>
 
       <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">

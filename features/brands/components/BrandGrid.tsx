@@ -3,16 +3,16 @@ import Tooltip from "@mui/material/Tooltip";
 
 export default function BrandGrid() {
   const brands = [
-    { name: "BMW", logo: "/brands/bmw.svg" },
-    { name: "Toyota", logo: "/brands/toyota.svg" },
-    { name: "Mercedes", logo: "/brands/mercedes.svg" },
-    { name: "Audi", logo: "/brands/audi.svg" },
-    { name: "Volkswagen", logo: "/brands/volkswagen.svg" },
-    { name: "Hyundai", logo: "/brands/hyundai.svg" },
-    { name: "Kia", logo: "/brands/kia.svg" },
-    { name: "Ford", logo: "/brands/ford.svg" },
-    { name: "Nissan", logo: "/brands/nissan.svg" },
-    { name: "Honda", logo: "/brands/honda.svg" },
+    { name: "BMW", logo: "/brands/bmw.svg", url: "bmw" },
+    { name: "Toyota", logo: "/brands/toyota.svg", url: "toyota" },
+    { name: "Mercedes", logo: "/brands/mercedes.svg", url: "mercedes" },
+    { name: "Audi", logo: "/brands/audi.svg", url: "audi" },
+    { name: "Volkswagen", logo: "/brands/volkswagen.svg", url: "volkswagen" },
+    { name: "Hyundai", logo: "/brands/hyundai.svg", url: "hyundai" },
+    { name: "Kia", logo: "/brands/kia.svg", url: "kia" },
+    { name: "Ford", logo: "/brands/ford.svg", url: "ford" },
+    { name: "Nissan", logo: "/brands/nissan.svg", url: "nissan" },
+    { name: "Honda", logo: "/brands/honda.svg", url: "honda" },
   ];
 
   return (
@@ -22,7 +22,8 @@ export default function BrandGrid() {
       <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">
         {brands.map((brand) => (
           <Tooltip key={brand.name} title={brand.name} arrow>
-            <div
+            <a
+              href={`cars/${brand.url}`}
               className="
                 h-20
                 flex items-center justify-center
@@ -42,7 +43,7 @@ export default function BrandGrid() {
                 height={40}
                 className="object-contain opacity-70 hover:opacity-100 transition"
               />
-            </div>
+            </a>
           </Tooltip>
         ))}
       </div>

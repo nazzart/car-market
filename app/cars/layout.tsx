@@ -5,5 +5,5 @@ export default function CarsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Container>{children}</Container>;
+  return <>{children}</>;
 }

@@ -48,3 +48,7 @@ body {
     transform: scale(1);
   }
 }
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

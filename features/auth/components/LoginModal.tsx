@@ -10,22 +10,27 @@ import {
   Paper,
   IconButton,
   InputAdornment,
+  Divider,
 } from "@mui/material";
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  onCreateAccount: () => void;
 };
 
-export default function LoginModal({ open, onClose }: Props) {
+export default function LoginModal({ open, onClose, onCreateAccount }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
 
-  // ESC close
   useEffect(() => {
     const esc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -38,102 +43,140 @@ export default function LoginModal({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <section className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* overlay */}
-      <button
-        aria-label="Close modal"
-        onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm cursor-default"
-      />
+    <>
+      <section className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* overlay */}
+        <button
+          aria-label="Close modal"
+          onClick={onClose}
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+        />
 
-      {/* modal */}
-      <Paper
-        elevation={8}
-        className="relative w-full max-w-md rounded-2xl p-8 shadow-xl animate-[modalIn_.18s_ease-out]"
-      >
-        <header className="text-center mb-6">
-          <Typography variant="h4" fontWeight={600}>
-            Welcome back
-          </Typography>
+        {/* modal */}
+        <Paper
+          elevation={10}
+          className="relative w-full max-w-[440px] rounded-3xl p-10 shadow-xl animate-[modalIn_.18s_ease-out]"
+        >
+          {/* header */}
+          <header className="text-center mb-8">
+            <Typography variant="h5" fontWeight={600}>
+              Welcome back
+            </Typography>
 
-          <Typography color="text.secondary">Sign in to continue</Typography>
-        </header>
+            <Typography color="text.secondary">
+              Sign in to your account
+            </Typography>
+          </header>
 
-        <form className="flex flex-col gap-5">
-          {/* email */}
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root.Mui-focused fieldset": {
-                borderColor: "#ef4444",
-              },
-            }}
-          />
-
-          {/* password */}
-          <TextField
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root.Mui-focused fieldset": {
-                borderColor: "#ef4444",
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          {/* remember + forgot */}
-          <section className="flex items-center justify-between">
-            <FormControlLabel
-              control={<Checkbox size="small" />}
-              label="Remember me"
+          {/* form */}
+          <form className="flex flex-col gap-5">
+            {/* email */}
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailOutlineIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "10px",
+                },
+                "& .MuiOutlinedInput-root.Mui-focused fieldset": {
+                  borderColor: "#ef4444",
+                },
+              }}
             />
 
-            <button
-              type="button"
-              className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+            {/* password */}
+            <TextField
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockOutlinedIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              
+            />
+
+            {/* remember + forgot */}
+            <div className="flex items-center justify-between">
+              <FormControlLabel
+                control={<Checkbox size="small" />}
+                label="Remember me"
+              />
+
+              <button
+                type="button"
+                onClick={() => setForgotOpen(true)}
+                className="text-sm text-gray-500 hover:text-black hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            {/* login */}
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              disabled={!email || !password}
             >
-              Forgot password?
-            </button>
-          </section>
+              Sign in
+            </Button>
+          </form>
 
-          {/* login button */}
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            disabled={!email || !password}
-            className="!rounded-xl !py-3 !bg-red-500 hover:!bg-red-600 transition"
-          >
-            Sign in
-          </Button>
-        </form>
+          {/* divider */}
+          <Divider sx={{ my: 4 }} />
 
-        <footer className="text-center mt-6 text-sm text-gray-500">
-          Don’t have an account?{" "}
-          <button className="text-blue-600 font-medium hover:underline">
-            Sign up
-          </button>
-        </footer>
-      </Paper>
-    </section>
+          {/* register */}
+          <footer className="flex flex-col gap-3 text-center">
+            <Typography variant="body2" color="text.secondary">
+              Don’t have an account?
+            </Typography>
+
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              onClick={onCreateAccount}
+              sx={{
+                borderRadius: "10px",
+                textTransform: "none",
+                fontWeight: 600,
+              }}
+            >
+              Create account
+            </Button>
+          </footer>
+        </Paper>
+      </section>
+      <ForgotPasswordModal
+        open={forgotOpen}
+        onClose={() => setForgotOpen(false)}
+      />
+    </>
   );
 }

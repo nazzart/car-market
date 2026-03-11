@@ -16,9 +16,9 @@ export default function FilterChip({ label, onDelete }: FilterChipProps) {
       deleteIcon={<CloseIcon />}
       variant="outlined"
       className="
-        !bg-white 
+      !bg-gray-100
         !border-gray-300 
-        hover:!bg-gray-50
+        hover:!bg-gray-200
         !rounded-lg
       "
     />

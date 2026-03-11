@@ -4,11 +4,18 @@ import { colors } from "../lib/colors";
 
 export const theme = createTheme({
   palette: {
+    success: {
+      main: "#10B981", // modern emerald
+
+      contrastText: "#ffffff",
+    },
     primary: {
-      main: colors.primary,
+      main: "#2563EB",
+
+      contrastText: "#fff",
     },
     secondary: {
-      main: "#374151",
+      main: "#FF5A5F",
     },
   },
 

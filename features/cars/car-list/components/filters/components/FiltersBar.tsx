@@ -49,12 +49,7 @@ export default function FiltersBar() {
             <Button
               variant="contained"
               size="large"
-              className="
-                !bg-black
-                !rounded-lg
-                hover:!bg-gray-900
-                !px-6
-              "
+              
             >
               Показать 643 942 предложения
             </Button>

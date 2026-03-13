@@ -1,6 +1,6 @@
 import Container from "@/components/layout/Container";
 import FiltersBar from "@/features/cars/car-list/components/filters/components/FiltersBar";
-import CarCard from "@/features/cars/car-list/components/card/CarCard";
+import CarCard from "@/features/cars/car-list/components/car-card/CarCard";
 
 export default function CarsPage() {
   return (
@@ -40,7 +40,6 @@ export default function CarsPage() {
           engineType="Бензин"
           price="45200 €"
           sellerType="private"
-          rating={4.8}
           location="Москва"
           totalImages={1}
           images={["/cars/bmw.jpg"]}
@@ -55,7 +54,6 @@ export default function CarsPage() {
           drive="Полный"
           price="15500 €"
           sellerType="private"
-          rating={4.8}
           location="Москва"
           totalImages={8}
           images={[

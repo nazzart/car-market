@@ -1,3 +1,4 @@
+import Container from "@/components/layout/Container";
 import CarCharacteristics from "@/features/cars/car-view/components/CarCharacteristics";
 import CarDescription from "@/features/cars/car-view/components/CarDescription";
 import CarGallery from "@/features/cars/car-view/components/CarGallery";
@@ -9,7 +10,7 @@ import SellerCard from "@/features/cars/car-view/components/SellerCard";
 
 export default function CarPage() {
   return (
-    <div className="py-6">
+    <Container className="py-6">
       {/* breadcrumbs */}
       <div className="text-sm text-gray-500 mb-4">Главная / Audi / Q2</div>
 
@@ -35,6 +36,6 @@ export default function CarPage() {
           <SellerCard />
         </div>
       </div>
-    </div>
+    </Container>
   );
 }

@@ -1,13 +1,10 @@
 import Container from "@/components/layout/Container";
-import { SellCarLayout } from "@/features/sell-car/components/SellCarLayout";
-import { SellCarProvider } from "@/features/sell-car/context/SellCarContext";
+import { SellVehicleLayout } from "@/features/sell-vehicle/components/SellVehicleLayout";
 
-export default function SellCarPage() {
+export default function SellVehiclePage() {
   return (
-    <SellCarProvider>
-      <Container>
-      <SellCarLayout />
-      </Container>
-    </SellCarProvider>
+    <Container>
+      <SellVehicleLayout />
+    </Container>
   );
 }

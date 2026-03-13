@@ -38,7 +38,7 @@ export default function HeaderActions() {
             href="/sell"
             startIcon={<AddIcon fontSize="small" />}
           >
-            Разместить авто
+            Разместить
           </Button>
         </div>
 

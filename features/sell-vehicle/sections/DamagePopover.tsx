@@ -15,7 +15,7 @@ type DamageType = "paint" | "scratch" | "dent" | "rust";
 
 const options = [
   { value: "paint", label: "Окрас" },
-  { value: "scratch", label: "Царапина" },
+  { value: "scratch", label: "Скол/Царапина" },
   { value: "dent", label: "Вмятина" },
   { value: "rust", label: "Ржавчина" },
 ];
@@ -68,20 +68,13 @@ export function DamagePopover({
       <Box p={2}>
         {/* title */}
 
-        <Typography
-          variant="subtitle2"
-          sx={{ mb: 1.5, fontWeight: 600 }}
-        >
+        <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>
           Тип повреждения
         </Typography>
 
         {/* options */}
 
-        <Stack
-          direction="row"
-          flexWrap="wrap"
-          gap={1}
-        >
+        <Stack direction="row" flexWrap="wrap" gap={1}>
           {options.map((o) => (
             <Chip
               key={o.value}
@@ -106,11 +99,7 @@ export function DamagePopover({
         alignItems="center"
         p={1.5}
       >
-        <Button
-          size="small"
-          color="error"
-          onClick={onDelete}
-        >
+        <Button size="small" color="error" onClick={onDelete}>
           Удалить
         </Button>
 

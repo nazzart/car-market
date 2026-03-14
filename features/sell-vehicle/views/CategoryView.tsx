@@ -3,8 +3,8 @@
 import CategoryCard from "../components/CategoryCard";
 
 type Props = {
-    onSelect: (category: string) => void;
-  };
+  onSelect: (category: string) => void;
+};
 
 export default function CategoryView({ onSelect }: Props) {
   const items = [
@@ -12,17 +12,17 @@ export default function CategoryView({ onSelect }: Props) {
       title: "Cars",
       description: "Passenger vehicles",
       sub: "Sedans, SUVs, hatchbacks",
-      image: "/cars/truck.png",
+      image: "/cars/category-car.png",
     },
     {
       title: "Commercial transport",
       description: "Trucks, vans, спецтехника",
-      image: "/cars/truck.png",
+      image: "/cars/category-truck.png",
     },
     {
       title: "Motorcycles",
       description: "Bikes, scooters",
-      image: "/cars/truck.png",
+      image: "/cars/category-moto.png",
     },
   ];
 

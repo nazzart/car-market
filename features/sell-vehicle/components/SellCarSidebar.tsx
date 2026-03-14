@@ -12,7 +12,7 @@ export function SellCarSidebar({ sectionsValid }: Props) {
     { id: "technical", label: "Технические характеристики", required: true },
     { id: "history", label: "История автомобиля", required: true },
     { id: "condition", label: "Состояние автомобиля", required: false },
-    { id: "service", label: "Обслуживание", required: false },
+    { id: "equipment", label: "Комплектация", required: false },
     { id: "description", label: "Описание", required: false },
     { id: "contact", label: "Контактная информация", required: true },
     { id: "photos", label: "Фотографии", required: false },

@@ -10,14 +10,13 @@ import {
   Divider,
   Tooltip,
 } from "@mui/material";
-
 import AddIcon from "@mui/icons-material/Add";
 
 type Damage = "paint" | "scratch" | "dent" | "rust";
 
 const options: { value: Damage; label: string }[] = [
   { value: "paint", label: "Окрас" },
-  { value: "scratch", label: "Царапина" },
+  { value: "scratch", label: "Скол / Царапина" },
   { value: "dent", label: "Вмятина" },
   { value: "rust", label: "Ржавчина" },
 ];
@@ -82,36 +81,44 @@ const points = [
 ];
 
 function DamagePoint({
-  damage,
+  damageCount,
   onClick,
 }: {
-  damage?: Damage;
+  damageCount?: number;
   onClick: (e: any) => void;
 }) {
+  const hasDamage = !!damageCount;
+
   return (
     <button
       onClick={onClick}
-      className="
-          w-9 h-9
-          rounded-full
-          cursor-pointer
-          flex items-center justify-center
-          transition-all duration-200
-          hover:scale-110
-          bg-black
-          shadow-md
-        "
+      className={`
+        rounded-full
+        flex items-center justify-center
+        cursor-pointer
+        transition-all duration-200
+        hover:scale-110
+        shadow-md
+
+        ${
+          hasDamage
+            ? "w-8 h-8 bg-red-600 text-white ring-2 ring-red-300 shadow-lg"
+            : "w-7 h-7 bg-black text-white hover:bg-gray-800"
+        }
+      `}
     >
-      {!damage && (
+      {!hasDamage && (
         <AddIcon
           sx={{
-            fontSize: 18,
+            fontSize: 16,
             color: "#fff",
           }}
         />
       )}
 
-      {damage && <span className="w-3 h-3 rounded-full bg-red-500" />}
+      {hasDamage && (
+        <span className="text-xs font-bold leading-none">{damageCount}</span>
+      )}
     </button>
   );
 }
@@ -119,22 +126,30 @@ function DamagePoint({
 export function CarDamageSelector() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [activePoint, setActivePoint] = useState<string | null>(null);
-  const [selected, setSelected] = useState<Damage | null>(null);
 
-  const [damages, setDamages] = useState<Record<string, Damage>>({});
+  const [selected, setSelected] = useState<Damage[]>([]);
+  const [damages, setDamages] = useState<Record<string, Damage[]>>({});
 
   const openPopover = (e: any, id: string) => {
     setAnchorEl(e.currentTarget);
     setActivePoint(id);
-    setSelected(damages[id] ?? null);
+    setSelected(damages[id] ?? []);
   };
 
   const closePopover = () => {
     setAnchorEl(null);
   };
 
+  const toggleDamage = (damage: Damage) => {
+    setSelected((prev) =>
+      prev.includes(damage)
+        ? prev.filter((d) => d !== damage)
+        : [...prev, damage]
+    );
+  };
+
   const saveDamage = () => {
-    if (!activePoint || !selected) return;
+    if (!activePoint) return;
 
     setDamages((prev) => ({
       ...prev,
@@ -156,21 +171,27 @@ export function CarDamageSelector() {
     closePopover();
   };
 
-  const getDamageLabel = (damage?: Damage) => {
-    if (!damage) return null;
+  const getDamageLabel = (damages?: Damage[]) => {
+    if (!damages || damages.length === 0) return null;
 
-    const option = options.find((o) => o.value === damage);
-    return option?.label;
+    return damages
+      .map((d) => options.find((o) => o.value === d)?.label)
+      .join(", ");
   };
 
-  return (
-    <div className="relative ">
+  const activePart = points.find((p) => p.id === activePoint);
 
-      <img src="/cars/car-top.png" alt="car" className="w-full" />
+  return (
+    <div className="relative">
+      {/* изображение машины */}
+
+      <img src="/cars/car-top.png" alt="car" className="w-full opacity-50" />
+
+      {/* точки */}
 
       {points.map((p) => {
-        const damage = damages[p.id];
-        const damageLabel = getDamageLabel(damage);
+        const damageList = damages[p.id];
+        const damageLabel = getDamageLabel(damageList);
 
         return (
           <div
@@ -187,17 +208,17 @@ export function CarDamageSelector() {
               placement="top"
               title={
                 <div className="text-center">
-                  <div className="font-medium">{p.label}</div>
+                  <div className="font-semibold text-white">{p.label}</div>
 
                   {damageLabel && (
-                    <div className="text-xs opacity-70">{damageLabel}</div>
+                    <div className="text-sm text-white">{damageLabel}</div>
                   )}
                 </div>
               }
             >
               <div>
                 <DamagePoint
-                  damage={damage}
+                  damageCount={damageList?.length}
                   onClick={(e) => openPopover(e, p.id)}
                 />
               </div>
@@ -224,22 +245,33 @@ export function CarDamageSelector() {
         }}
       >
         <Box p={2}>
-          <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>
-            Тип повреждения
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
+            {activePart?.label ?? "Деталь кузова"}
+          </Typography>
+
+          <Typography
+            variant="caption"
+            sx={{ color: "text.secondary", mb: 1.5, display: "block" }}
+          >
+            Выберите повреждения
           </Typography>
 
           <Stack gap={1}>
-            {options.map((o) => (
-              <Button
-                key={o.value}
-                variant={selected === o.value ? "contained" : "outlined"}
-                size="small"
-                onClick={() => setSelected(o.value)}
-                sx={{ textTransform: "none" }}
-              >
-                {o.label}
-              </Button>
-            ))}
+            {options.map((o) => {
+              const active = selected.includes(o.value);
+
+              return (
+                <Button
+                  key={o.value}
+                  variant={active ? "contained" : "outlined"}
+                  size="small"
+                  onClick={() => toggleDamage(o.value)}
+                  sx={{ textTransform: "none" }}
+                >
+                  {o.label}
+                </Button>
+              );
+            })}
           </Stack>
         </Box>
 
@@ -250,12 +282,7 @@ export function CarDamageSelector() {
             Удалить
           </Button>
 
-          <Button
-            size="small"
-            variant="contained"
-            disabled={!selected}
-            onClick={saveDamage}
-          >
+          <Button size="small" variant="contained" onClick={saveDamage}>
             Сохранить
           </Button>
         </Stack>

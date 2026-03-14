@@ -97,35 +97,52 @@ export function ChipSelect({
           }
         `}
       >
-        <div className="flex flex-wrap items-center gap-2 overflow-hidden">
+        <div className="flex flex-nowrap items-center gap-2 overflow-hidden">
           {!hasValue ? (
             <span className="text-gray-400 text-sm">{placeholder}</span>
           ) : multiple ? (
-            currentValue.map((v: string) => {
-              const option = options.find((o) => o.value === v);
+            (() => {
+              const visible = currentValue.slice(0, 3);
+              const hidden = currentValue.length - visible.length;
 
               return (
-                <Chip
-                  key={v}
-                  label={option?.label}
-                  size="small"
-                  sx={{ height: 24 }}
-                  icon={
-                    option?.color ? (
-                      <span
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: "50%",
-                          background: option.color,
-                          border: "1px solid rgba(0,0,0,0.2)",
-                        }}
+                <>
+                  {visible.map((v: string) => {
+                    const option = options.find((o) => o.value === v);
+
+                    return (
+                      <Chip
+                        key={v}
+                        label={option?.label}
+                        size="small"
+                        sx={{ height: 24 }}
+                        icon={
+                          option?.color ? (
+                            <span
+                              style={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: "50%",
+                                background: option.color,
+                                border: "1px solid rgba(0,0,0,0.2)",
+                              }}
+                            />
+                          ) : undefined
+                        }
                       />
-                    ) : undefined
-                  }
-                />
+                    );
+                  })}
+
+                  {hidden > 0 && (
+                    <Chip
+                      label={`+${hidden}`}
+                      size="small"
+                      sx={{ height: 24 }}
+                    />
+                  )}
+                </>
               );
-            })
+            })()
           ) : (
             (() => {
               const option = options.find((o) => o.value === currentValue);

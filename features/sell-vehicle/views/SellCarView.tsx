@@ -6,6 +6,11 @@ import { SellCarSidebar } from "../components/SellCarSidebar";
 import { useProgressiveSections } from "../hooks/useProgressiveSections";
 import { CarHistorySection } from "../sections/CarHistorySection";
 import { CarConditionSection } from "../sections/CarConditionSection";
+import { CarDescriptionSection } from "../sections/CarDescriptionSection";
+import { ContactInfoSection } from "../sections/ContactSection";
+import { PhotosSection } from "../sections/PhotosSection";
+import { CarEquipmentSection } from "../sections/CarEquipmentSection";
+import { PublishSection } from "../sections/PublishSection";
 
 export function SellCarView() {
   const sections = [
@@ -13,6 +18,10 @@ export function SellCarView() {
     { id: "technical", component: TechnicalSection },
     { id: "history", component: CarHistorySection },
     { id: "condition", component: CarConditionSection },
+    { id: "equipment", component: CarEquipmentSection },
+    { id: "description", component: CarDescriptionSection },
+    { id: "contact", component: ContactInfoSection },
+    { id: "photos", component: PhotosSection },
   ];
 
   const { visibleSections, sectionsValid, revealSection, setSectionValid } =
@@ -41,6 +50,7 @@ export function SellCarView() {
               />
             );
           })}
+          <PublishSection />
           <div className="h-[50vh]" />
         </div>
       </div>

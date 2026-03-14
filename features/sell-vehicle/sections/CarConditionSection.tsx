@@ -26,14 +26,7 @@ export function CarConditionSection({ onNext, onValidChange }: Props) {
   const [damageDescription, setDamageDescription] = useState("");
 
   const isValid = condition !== "" && accident !== "";
-  const isDirty =
-    condition !== "" ||
-    accident !== "" ||
-    serviceDone !== "" ||
-    serviceBook !== "" ||
-    damages !== "" ||
-    damageDescription !== "";
-
+  
   useEffect(() => {
     onValidChange?.(isValid);
   }, [isValid, onValidChange]);
@@ -45,7 +38,6 @@ export function CarConditionSection({ onNext, onValidChange }: Props) {
       description="Информация о текущем состоянии автомобиля"
       required={false}
       isValid={isValid}
-      isDirty={isDirty}
       onNext={onNext}
     >
       <div className="grid md:grid-cols-2 gap-4">
@@ -113,33 +105,7 @@ export function CarConditionSection({ onNext, onValidChange }: Props) {
           </Select>
         </FormControl>
 
-        {/* Damages */}
-
-        <FormControl fullWidth>
-          <InputLabel>Есть повреждения</InputLabel>
-
-          <Select
-            value={damages}
-            label="Есть повреждения"
-            onChange={(e) => setDamages(e.target.value)}
-          >
-            <MenuItem value="no">Нет</MenuItem>
-            <MenuItem value="yes">Есть</MenuItem>
-          </Select>
-        </FormControl>
-
-        {/* Damage description */}
-
-        {damages === "yes" && (
-          <TextField
-            label="Описание повреждений"
-            value={damageDescription}
-            onChange={(e) => setDamageDescription(e.target.value)}
-            fullWidth
-            multiline
-            rows={3}
-          />
-        )}
+       
       </div>
       <div className="space-y-6">
         <CarDamageSelector />

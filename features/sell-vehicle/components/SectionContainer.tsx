@@ -12,7 +12,6 @@ type Props = {
 
   required?: boolean;
   isValid?: boolean;
-  isDirty?: boolean;
 
   onNext?: () => void;
   onSkip?: () => void;
@@ -24,8 +23,6 @@ export function SectionContainer({
   description,
   children,
   required = true,
-  isValid = false,
-  isDirty = false,
   onNext,
   onSkip,
 }: Props) {
@@ -37,7 +34,6 @@ export function SectionContainer({
   };
 
   const showSkip = !required;
-  const nextDisabled = required ? !isValid : !isDirty;
 
   return (
     <section
@@ -98,7 +94,6 @@ export function SectionContainer({
               size="large"
               endIcon={<ArrowForwardIcon />}
               onClick={handleNext}
-              disabled={nextDisabled}
             >
               Далее
             </Button>

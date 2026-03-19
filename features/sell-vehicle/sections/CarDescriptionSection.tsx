@@ -4,42 +4,49 @@ import { useState, useEffect } from "react";
 import { TextField } from "@mui/material";
 
 import { SectionContainer } from "../components/SectionContainer";
+import { useSectionNext } from "../hooks/useSectionNext";
+import { FormStepProps } from "../types";
 
-type Props = {
-  onNext?: () => void;
-  onValidChange?: (valid: boolean) => void;
-};
+export function CarDescriptionSection({
+  id,
+  title,
+  data,
+  required,
+  fields,
+  onNext,
+  updateField,
+}: FormStepProps) {
+  const isValid = fields.every((f) => {
+    const v = data[f];
+    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
+  });
 
-export function CarDescriptionSection({ onNext, onValidChange }: Props) {
-  const [description, setDescription] = useState("");
-
-  useEffect(() => {
-    const valid = description.length >= 20;
-
-    onValidChange?.(valid);
-  }, [description, onValidChange]);
+  const { attemptedNext, handleNext } = useSectionNext(
+    isValid,
+    required,
+    onNext
+  );
 
   return (
     <SectionContainer
-      id="description"
-      title="Описание автомобиля"
-      description="Расскажите подробнее о состоянии автомобиля и обслуживании"
-      required
-      isValid={description.length >= 20}
-      onNext={onNext}
+      id={id}
+      title={title}
+      required={required}
+      isValid={isValid}
+      onNext={handleNext}
     >
       <div className="grid gap-4">
-
         <TextField
           label="Описание"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={data.description ?? ""}
+          onChange={(e) => updateField("description", e.target.value)}
+          error={attemptedNext && !data.description}
           multiline
+          required
           rows={5}
           fullWidth
           placeholder="Например: автомобиль в хорошем состоянии, обслуживался вовремя, недавно заменены тормоза и масло..."
         />
-
       </div>
     </SectionContainer>
   );

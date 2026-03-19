@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   TextField,
   MenuItem,
@@ -10,25 +9,31 @@ import {
 } from "@mui/material";
 
 import { SectionContainer } from "../components/SectionContainer";
+import { useSectionNext } from "../hooks/useSectionNext";
+import { FormStepProps } from "../types";
 
-type Props = {
-  onNext?: () => void;
-  onValidChange?: (valid: boolean) => void;
-};
+export function CarHistorySection({
+  id,
+  title,
+  data,
+  required,
+  fields,
+  onNext,
+  updateField,
+}: FormStepProps) {
 
-export function CarHistorySection({ onNext, onValidChange }: Props) {
-  const [vin, setVin] = useState("");
-  const [owners, setOwners] = useState("");
-  const [mileageLatvia, setMileageLatvia] = useState("");
-  const [inspectionUntil, setInspectionUntil] = useState("");
-  
-  useEffect(() => {
-    const valid = inspectionUntil
+  const isValid = fields.every((f) => {
+    const v = data[f];
+    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
+  });
 
-    onValidChange?.(Boolean(valid));
-  }, [inspectionUntil]);
+  const { attemptedNext, handleNext } = useSectionNext(
+    isValid,
+    required,
+    onNext
+  );
 
-  // генерация техосмотра на 36 месяцев вперед
+  // генерация техосмотра
   const now = new Date();
   const inspectionOptions = [];
 
@@ -46,21 +51,20 @@ export function CarHistorySection({ onNext, onValidChange }: Props) {
 
   return (
     <SectionContainer
-      id="history"
-      title="История автомобиля"
+      id={id}
+      title={title}
       description="Основная информация о происхождении автомобиля"
-      required
-      isValid={Boolean(inspectionUntil)}
-
-      onNext={onNext}
+      required={required}
+      isValid={isValid}
+      onNext={handleNext}
     >
       <div className="grid md:grid-cols-2 gap-4">
         {/* VIN */}
 
         <TextField
           label="VIN номер"
-          value={vin}
-          onChange={(e) => setVin(e.target.value.toUpperCase())}
+          value={data.vin ?? ""}
+          onChange={(e) => updateField("vin", e.target.value.toUpperCase())}
           fullWidth
         />
 
@@ -70,9 +74,9 @@ export function CarHistorySection({ onNext, onValidChange }: Props) {
           <InputLabel>Количество владельцев</InputLabel>
 
           <Select
-            value={owners}
+            value={data.owners ?? ""}
             label="Количество владельцев"
-            onChange={(e) => setOwners(e.target.value)}
+            onChange={(e) => updateField("owners", e.target.value)}
           >
             <MenuItem value="1">1</MenuItem>
             <MenuItem value="2">2</MenuItem>
@@ -87,9 +91,9 @@ export function CarHistorySection({ onNext, onValidChange }: Props) {
           <InputLabel>Пробег по Латвии</InputLabel>
 
           <Select
-            value={mileageLatvia}
+            value={data.mileageLatvia ?? ""}
             label="Пробег по Латвии"
-            onChange={(e) => setMileageLatvia(e.target.value)}
+            onChange={(e) => updateField("mileageLatvia", e.target.value)}
           >
             <MenuItem value="0">Без пробега по Латвии</MenuItem>
             <MenuItem value="10000">До 10 000 км</MenuItem>
@@ -102,13 +106,13 @@ export function CarHistorySection({ onNext, onValidChange }: Props) {
 
         {/* Inspection */}
 
-        <FormControl fullWidth>
+        <FormControl fullWidth error={attemptedNext && !data.inspectionUntil}>
           <InputLabel>Техосмотр до</InputLabel>
 
           <Select
-            value={inspectionUntil}
+            value={data.inspectionUntil ?? ""}
             label="Техосмотр до"
-            onChange={(e) => setInspectionUntil(e.target.value)}
+            onChange={(e) => updateField("inspectionUntil", e.target.value)}
           >
             <MenuItem value="none">Нет</MenuItem>
 

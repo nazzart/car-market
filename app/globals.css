@@ -4,6 +4,7 @@
 :root {
   --background: #fff;
   --foreground: #171717;
+  --mui-error: #d32f2f;
 }
 
 @theme inline {
@@ -12,6 +13,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-error: var(--mui-error);
 }
 
 @media (prefers-color-scheme: dark) {

@@ -22,15 +22,17 @@ export function SectionContainer({
   title,
   description,
   children,
-  required = true,
+  required,
+  isValid,
   onNext,
   onSkip,
 }: Props) {
   const [completed, setCompleted] = useState(false);
 
   const handleNext = () => {
-    setCompleted(true);
     onNext?.();
+    if (isValid === false && required === true) return;
+    setCompleted(true);
   };
 
   const showSkip = !required;
@@ -42,8 +44,8 @@ export function SectionContainer({
         bg-white
         rounded-xl
         p-6
-        border border-gray-200
-        shadow-[0_4px_16px_rgba(0,0,0,0.08)]
+        border border-gray-200 shadow-[0_4px_16px_rgba(0,0,0,0.05)]
+
       "
     >
       {/* Header */}

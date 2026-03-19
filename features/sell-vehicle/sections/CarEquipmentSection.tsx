@@ -1,13 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { SectionContainer } from "../components/SectionContainer";
 import { ChipSelect } from "@/components/ui/chip-select/ChipSelect";
-
-type Props = {
-  onNext?: () => void;
-  onValidChange?: (valid: boolean) => void;
-};
+import { FormStepProps } from "../types";
+import { useSectionNext } from "../hooks/useSectionNext";
 
 const equipmentCategories = {
   comfort: {
@@ -127,20 +123,26 @@ const equipmentCategories = {
   },
 };
 
-export function CarEquipmentSection({ onNext, onValidChange }: Props) {
-  const [equipment, setEquipment] = useState<Record<string, string[]>>({});
+export function CarEquipmentSection({
+  id,
+  title,
+  data,
+  required,
+  onNext,
+  updateField,
+}: FormStepProps) {
 
-  useEffect(() => {
-    onValidChange?.(true);
-  }, [equipment, onValidChange]);
+  const isValid = !required;
+
+  const { handleNext } = useSectionNext(isValid, required, onNext);
 
   return (
     <SectionContainer
-      id="equipment"
-      title="Комплектация"
-      description="Выберите доступные опции автомобиля"
-      isValid
-      onNext={onNext}
+      id={id}
+      title={title}
+      required={required}
+      isValid={isValid}
+      onNext={handleNext}
     >
       <div className="flex flex-col gap-6">
         {Object.entries(equipmentCategories).map(([key, category]) => (
@@ -148,14 +150,9 @@ export function CarEquipmentSection({ onNext, onValidChange }: Props) {
             key={key}
             label={category.label}
             options={category.options}
-            value={equipment[key] ?? []}
+            value={data[key]}
+            onChange={(value) => updateField(key, value)}
             multiple
-            onChange={(val) =>
-              setEquipment((prev) => ({
-                ...prev,
-                [key]: val,
-              }))
-            }
           />
         ))}
       </div>

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Chip, IconButton } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseIcon from "@mui/icons-material/Close";
 import { ChipSelectProps } from "./types";
 
@@ -12,29 +12,33 @@ export function ChipSelect({
   value,
   onChange,
   multiple = false,
-  placeholder = "Выберите",
+  placeholder,
   variant = "chip",
   clearable = true,
   disableUnselect = false,
+  error,
+  required,
 }: ChipSelectProps) {
   const [open, setOpen] = useState(false);
+  const [touched, setTouched] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const currentValue = multiple
     ? Array.isArray(value)
       ? value
       : []
-    : value ?? null;
+    : value || null;
 
   const hasValue = multiple ? currentValue.length > 0 : currentValue !== null;
 
+  const isError = error || (touched && required && !hasValue);
   const handleSelect = (optionValue: string) => {
+    setTouched(true);
     if (multiple) {
       const selected = currentValue.includes(optionValue);
 
       if (selected) {
         if (disableUnselect) return;
-
         onChange(currentValue.filter((v) => v !== optionValue));
       } else {
         onChange([...currentValue, optionValue]);
@@ -42,21 +46,17 @@ export function ChipSelect({
     } else {
       if (currentValue === optionValue) {
         if (disableUnselect) return;
-
         onChange(null);
       } else {
         onChange(optionValue);
       }
-
       setOpen(false);
     }
   };
 
   const clearSelection = (e: React.MouseEvent) => {
     e.stopPropagation();
-
     if (disableUnselect) return;
-
     onChange(multiple ? [] : null);
   };
 
@@ -68,38 +68,58 @@ export function ChipSelect({
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
-    <div ref={ref} className="space-y-2">
-      {/* label */}
+    <div ref={ref} className="relative space-y-2">
+      {/* Floating label */}
+      <label
+        className={`
+          absolute left-3 px-1 pointer-events-none transition-all duration-200
+          bg-white font-normal leading-none
+          ${
+            open || hasValue
+              ? "top-[-8px] text-[12px]"
+              : "top-[20px] text-[16px]"
+          }
+          ${isError ? "text-error" : open ? "text-blue-600" : "text-gray-600"}
+        `}
+      >
+        {label}
+        {required && <span className="ml-0.5">*</span>}
+      </label>
 
-      <label className="text-sm text-gray-600">{label}</label>
-
-      {/* select field */}
-
+      {/* Select field */}
       <div
         onClick={() => setOpen((v) => !v)}
         className={`
           flex items-center justify-between
           rounded-md border
-          px-3 h-[56px]
+          pl-3 pr-2 h-[56px]
           cursor-pointer
-          transition-all
+         
           ${
-            open
+            isError
+              ? open
+                ? "border border-error ring-1 ring-error shadow-[0_0_0_2px_rgba(211,47,47,0.12)]"
+                : "border border-error"
+              : open
               ? "border-blue-500 ring-1 ring-blue-500"
-              : "border-gray-300 hover:border-gray-700"
+              : "border border-gray-300 hover:border-gray-700"
           }
         `}
       >
-        <div className="flex flex-nowrap items-center gap-2 overflow-hidden">
+        {/* Left side */}
+        <div className="flex items-center gap-2 overflow-hidden">
           {!hasValue ? (
-            <span className="text-gray-400 text-sm">{placeholder}</span>
+            <span
+              className={`text-sm ${isError ? "text-error" : "text-gray-400"}`}
+            >
+              {placeholder}
+            </span>
           ) : multiple ? (
             (() => {
               const visible = currentValue.slice(0, 3);
@@ -171,6 +191,7 @@ export function ChipSelect({
           )}
         </div>
 
+        {/* Right side */}
         <div className="flex items-center">
           {clearable && hasValue && !disableUnselect && (
             <IconButton size="small" onClick={clearSelection}>
@@ -178,23 +199,20 @@ export function ChipSelect({
             </IconButton>
           )}
 
-          <ExpandMoreIcon
+          <ArrowDropDownIcon
             sx={{
-              fontSize: 20,
-              transform: open ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform .25s",
+              fontSize: 24,
+              color: "rgba(0, 0, 0, 0.54)",
+              transform: open ? "rotate(180deg)" : "none",
             }}
           />
         </div>
       </div>
 
-      {/* dropdown */}
-
+      {/* Dropdown */}
       <div
         className={`
-          overflow-hidden
-          transition-all
-          duration-200
+          overflow-hidden transition-all duration-200
           ${
             open
               ? "max-h-[300px] opacity-100 translate-y-0"
@@ -216,8 +234,7 @@ export function ChipSelect({
                   title={option.label}
                   onClick={() => handleSelect(option.value)}
                   className={`
-                    w-9 h-9 rounded-full border-2 cursor-pointer
-                    transition-all duration-150
+                    w-9 h-9 rounded-full border-2 transition-all
                     ${
                       selected
                         ? "border-blue-500 scale-110"
@@ -244,10 +261,7 @@ export function ChipSelect({
                   color={selected ? "primary" : "default"}
                   variant={selected ? "filled" : "outlined"}
                   onClick={() => handleSelect(option.value)}
-                  sx={{
-                    height: 36,
-                    width: "100%",
-                  }}
+                  sx={{ height: 36, width: "100%" }}
                 />
               );
             })}

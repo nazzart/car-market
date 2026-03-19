@@ -1,44 +1,65 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { TextField } from "@mui/material";
 
 import { SectionContainer } from "../components/SectionContainer";
+import { useSectionNext } from "../hooks/useSectionNext";
+import { FormStepProps } from "../types";
 
-type Props = {
-  onNext?: () => void;
-  onValidChange?: (valid: boolean) => void;
-};
+export function ContactInfoSection({
+  id,
+  title,
+  data,
+  required,
+  fields,
+  onNext,
+  updateField,
+}: FormStepProps) {
+  const validFields = fields.every((f) => {
+    const v = data[f];
+    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
+  });
 
-export function ContactInfoSection({ onNext, onValidChange }: Props) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [city, setCity] = useState("");
+  const isValidEmail = (email?: string) => {
+    if (!email) return false;
 
-  useEffect(() => {
-    const valid = phone.trim().length >= 8;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.sellerEmail);
+  };
 
-    onValidChange?.(valid);
-  }, [phone, onValidChange]);
+  const isValidPhone = (phone?: string) => {
+    if (!phone) return false;
+
+    return /^\+?[0-9]+$/.test(data.sellerPhone);
+  };
+
+  const isValid =
+    validFields &&
+    isValidEmail(data.sellerEmail) &&
+    isValidPhone(data.sellerPhone);
+
+  const { attemptedNext, handleNext } = useSectionNext(
+    isValid,
+    required,
+    onNext
+  );
 
   return (
     <SectionContainer
-      id="contact"
-      title="Контактная информация"
-      description="Укажите данные для связи с вами"
-      required
-      isValid={phone.trim().length >= 8}
-      onNext={onNext}
+      id={id}
+      title={title}
+      required={required}
+      isValid={isValid}
+      onNext={handleNext}
     >
       <div className="grid md:grid-cols-2 gap-4">
-
         {/* Name */}
 
         <TextField
           label="Имя"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          required
+          value={data.sellerName ?? ""}
+          onChange={(e) => updateField("sellerName", e.target.value)}
+          error={attemptedNext && !data.sellerName}
           fullWidth
         />
 
@@ -46,8 +67,12 @@ export function ContactInfoSection({ onNext, onValidChange }: Props) {
 
         <TextField
           label="Телефон"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          value={data.sellerPhone ?? ""}
+          onChange={(e) => updateField("sellerPhone", e.target.value)}
+          error={
+            attemptedNext &&
+            (!data.sellerPhone || !isValidPhone(data.sellerPhone))
+          }
           fullWidth
           required
           placeholder="+371..."
@@ -57,8 +82,13 @@ export function ContactInfoSection({ onNext, onValidChange }: Props) {
 
         <TextField
           label="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          required
+          value={data.sellerEmail ?? ""}
+          onChange={(e) => updateField("sellerEmail", e.target.value)}
+          error={
+            attemptedNext &&
+            (!data.sellerEmail || !isValidEmail(data.sellerEmail))
+          }
           type="email"
           fullWidth
         />
@@ -67,11 +97,12 @@ export function ContactInfoSection({ onNext, onValidChange }: Props) {
 
         <TextField
           label="Город"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
+          required
+          value={data.sellerCity ?? ""}
+          onChange={(e) => updateField("sellerCity", e.target.value)}
+          error={attemptedNext && !data.sellerCity}
           fullWidth
         />
-
       </div>
     </SectionContainer>
   );

@@ -1,15 +1,15 @@
-export interface SellCarForm {
-    brand: string
-    model: string
-    year: string
-    mileage: string
-    engine: string
-  
-    condition: string
-    accidentFree: boolean
-    serviceHistory: boolean
-    firstOwner: boolean
-  
-    name: string
-    phone: string
-  }
+export type FormStepProps = {
+  id: string;
+  title: string;
+  data: any;
+  required: boolean;
+  fields: string[];
+  onNext?: () => void;
+  updateField: (field: string, value: any) => void;
+};
+
+export type SectionConfig = {
+  id: string;
+  required?: boolean;
+  fields: string[];
+};

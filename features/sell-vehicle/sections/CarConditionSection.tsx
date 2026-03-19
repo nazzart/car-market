@@ -1,44 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 import { SectionContainer } from "../components/SectionContainer";
 import { CarDamageSelector } from "./CarDamageSelector";
+import { useSectionNext } from "../hooks/useSectionNext";
+import { FormStepProps } from "../types";
 
-type Props = {
-  onNext?: () => void;
-  onValidChange?: (valid: boolean) => void;
-};
+export function CarConditionSection({
+  id,
+  title,
+  data,
+  required,
+  fields,
+  onNext,
+  updateField,
+}: FormStepProps) {
+  const isValid = fields.every((f) => {
+    const v = data[f];
+    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
+  });
 
-export function CarConditionSection({ onNext, onValidChange }: Props) {
-  const [condition, setCondition] = useState("");
-  const [accident, setAccident] = useState("");
-  const [serviceDone, setServiceDone] = useState("");
-  const [serviceBook, setServiceBook] = useState("");
-  const [damages, setDamages] = useState("");
-  const [damageDescription, setDamageDescription] = useState("");
-
-  const isValid = condition !== "" && accident !== "";
-  
-  useEffect(() => {
-    onValidChange?.(isValid);
-  }, [isValid, onValidChange]);
+  const { handleNext } = useSectionNext(isValid, required, onNext);
 
   return (
     <SectionContainer
-      id="condition"
-      title="Состояние автомобиля"
+      id={id}
+      title={title}
       description="Информация о текущем состоянии автомобиля"
-      required={false}
+      required={required}
       isValid={isValid}
-      onNext={onNext}
+      onNext={handleNext}
     >
       <div className="grid md:grid-cols-2 gap-4">
         {/* General condition */}
@@ -47,9 +39,9 @@ export function CarConditionSection({ onNext, onValidChange }: Props) {
           <InputLabel>Общее состояние</InputLabel>
 
           <Select
-            value={condition}
+            value={data.condition ?? ""}
             label="Общее состояние"
-            onChange={(e) => setCondition(e.target.value)}
+            onChange={(e) => updateField("condition", e.target.value)}
           >
             <MenuItem value="excellent">Отличное</MenuItem>
             <MenuItem value="good">Хорошее</MenuItem>
@@ -64,9 +56,9 @@ export function CarConditionSection({ onNext, onValidChange }: Props) {
           <InputLabel>Была в ДТП</InputLabel>
 
           <Select
-            value={accident}
+            value={data.hadAccident}
             label="Была в ДТП"
-            onChange={(e) => setAccident(e.target.value)}
+            onChange={(e) => updateField("hadAccident", e.target.value)}
           >
             <MenuItem value="no">Нет</MenuItem>
             <MenuItem value="yes">Да</MenuItem>
@@ -80,9 +72,9 @@ export function CarConditionSection({ onNext, onValidChange }: Props) {
           <InputLabel>Сделано обслуживание</InputLabel>
 
           <Select
-            value={serviceDone}
+            value={data.hasServiceDone}
             label="Сделано обслуживание"
-            onChange={(e) => setServiceDone(e.target.value)}
+            onChange={(e) => updateField("hasServiceDone", e.target.value)}
           >
             <MenuItem value="recent">Недавно обслуживалась</MenuItem>
             <MenuItem value="partial">Частично обслужена</MenuItem>
@@ -96,16 +88,14 @@ export function CarConditionSection({ onNext, onValidChange }: Props) {
           <InputLabel>Сервисная книжка</InputLabel>
 
           <Select
-            value={serviceBook}
+            value={data.hasServiceBook}
             label="Сервисная книжка"
-            onChange={(e) => setServiceBook(e.target.value)}
+            onChange={(e) => updateField("hasServiceBook", e.target.value)}
           >
             <MenuItem value="yes">Есть</MenuItem>
             <MenuItem value="no">Нет</MenuItem>
           </Select>
         </FormControl>
-
-       
       </div>
       <div className="space-y-6">
         <CarDamageSelector />

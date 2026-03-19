@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import { SectionContainer } from "../components/SectionContainer";
 import { ChipSelect } from "../../../components/ui/chip-select/ChipSelect";
+import { useSectionNext } from "../hooks/useSectionNext";
+import { FormStepProps } from "../types";
 
 const FUEL_TYPES = [
   { label: "Бензин", value: "petrol" },
@@ -26,29 +27,37 @@ const DRIVES = [
   { label: "Полный", value: "awd" },
 ];
 
-type Props = {
-  onNext: () => void;
-  onValidChange?: (valid: boolean) => void;
-};
+export function TechnicalSection({
+  id,
+  title,
+  data,
+  required,
+  fields,
+  onNext,
+  updateField,
+}: FormStepProps) {
+  const validFields = fields.every((f) => {
+    const v = data[f];
+    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
+  });
 
-export function TechnicalSection({ onNext, onValidChange }: Props) {
-  const [fuel, setFuel] = useState<string | null>(null);
-  const [transmission, setTransmission] = useState<string | null>(null);
-  const [drive, setDrive] = useState<string | null>(null);
+  const isValidEngine = /^[0-9]+(\.[0-9]{1,2})?$/.test(data.engineCapacity);
 
-  useEffect(() => {
-    const valid = fuel;
+  const isValid = isValidEngine && validFields;
 
-    onValidChange?.(Boolean(valid));
-  }, [fuel]);
+  const { attemptedNext, handleNext } = useSectionNext(
+    isValid,
+    required,
+    onNext
+  );
 
   return (
     <SectionContainer
-      id="technical"
-      title="Технические характеристики"
-      isValid={Boolean(fuel)}
-      required
-      onNext={onNext}
+      id={id}
+      title={title}
+      required={required}
+      isValid={isValid && isValidEngine}
+      onNext={handleNext}
     >
       <div className="space-y-7">
         {/* ENGINE */}
@@ -57,14 +66,21 @@ export function TechnicalSection({ onNext, onValidChange }: Props) {
           <ChipSelect
             label="Тип топлива"
             options={FUEL_TYPES}
-            value={fuel}
-            onChange={setFuel}
+            value={data.fuel}
+            onChange={(value) => updateField("fuel", value)}
+            error={attemptedNext && !data.fuel}
+            disableUnselect
           />
 
           <div className="grid md:grid-cols-2 gap-4">
             <TextField
               label="Объём двигателя"
-              type="number"
+              value={data.engineCapacity ?? ""}
+              onChange={(e) => {
+                const value = e.target.value.replace(",", ".");
+                updateField("engineCapacity", value);
+              }}
+              error={attemptedNext && (!data.engineCapacity || !isValidEngine)}
               fullWidth
               InputProps={{
                 endAdornment: <InputAdornment position="end">L</InputAdornment>,
@@ -74,6 +90,9 @@ export function TechnicalSection({ onNext, onValidChange }: Props) {
             <TextField
               label="Мощность"
               type="number"
+              value={data.power ?? ""}
+              onChange={(e) => updateField("power", e.target.value)}
+              error={attemptedNext && !data.power}
               fullWidth
               InputProps={{
                 endAdornment: (
@@ -91,15 +110,19 @@ export function TechnicalSection({ onNext, onValidChange }: Props) {
             <ChipSelect
               label="Коробка передач"
               options={TRANSMISSIONS}
-              value={transmission}
-              onChange={setTransmission}
+              value={data.transmission}
+              onChange={(value) => updateField("transmission", value)}
+              error={attemptedNext && !data.transmission}
+              disableUnselect
             />
 
             <ChipSelect
               label="Привод"
               options={DRIVES}
-              value={drive}
-              onChange={setDrive}
+              value={data.drive}
+              onChange={(value) => updateField("drive", value)}
+              error={attemptedNext && !data.drive}
+              disableUnselect
             />
           </div>
         </div>

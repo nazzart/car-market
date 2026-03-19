@@ -14,4 +14,6 @@ export type ChipSelectProps = {
   variant?: "chip" | "color";
   clearable?: boolean;
   disableUnselect?: boolean;
+  required?: boolean;
+  error?: boolean;
 };

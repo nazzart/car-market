@@ -2,8 +2,18 @@
 
 import { Button } from "@mui/material";
 import { SectionContainer } from "../components/SectionContainer";
+import { useSectionNext } from "../hooks/useSectionNext";
+import { FormStepProps } from "../types";
 
-export function PhotosSection() {
+export function PhotosSection({
+  id,
+  title,
+  data,
+  required,
+  fields,
+  onNext,
+  updateField,
+}: FormStepProps) {
   return (
     <SectionContainer
       id="photos"

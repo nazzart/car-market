@@ -13,7 +13,7 @@ import AuthModal from "@/features/auth/components/AuthModal";
 export default function HeaderActions() {
   const [authOpen, setAuthOpen] = useState(false);
 
-  const isLoggedIn = true; // replace with real auth
+  const isLoggedIn = false; // replace with real auth
 
   return (
     <>

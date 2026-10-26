@@ -6,6 +6,7 @@ import { SectionContainer } from "../components/SectionContainer";
 import { CarDamageSelector } from "./CarDamageSelector";
 import { useSectionNext } from "../hooks/useSectionNext";
 import { FormStepProps } from "../types";
+import { useSectionValidation } from "../hooks/useSectionValidation";
 
 export function CarConditionSection({
   id,
@@ -16,10 +17,7 @@ export function CarConditionSection({
   onNext,
   updateField,
 }: FormStepProps) {
-  const isValid = fields.every((f) => {
-    const v = data[f];
-    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
-  });
+  const { isValid } = useSectionValidation(fields, data);
 
   const { handleNext } = useSectionNext(isValid, required, onNext);
 

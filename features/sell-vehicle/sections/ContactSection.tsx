@@ -5,6 +5,8 @@ import { TextField } from "@mui/material";
 import { SectionContainer } from "../components/SectionContainer";
 import { useSectionNext } from "../hooks/useSectionNext";
 import { FormStepProps } from "../types";
+import { useSectionValidation } from "../hooks/useSectionValidation";
+import { validateField } from "../utils/validationRules";
 
 export function ContactInfoSection({
   id,
@@ -15,33 +17,15 @@ export function ContactInfoSection({
   onNext,
   updateField,
 }: FormStepProps) {
-  const validFields = fields.every((f) => {
-    const v = data[f];
-    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
-  });
-
-  const isValidEmail = (email?: string) => {
-    if (!email) return false;
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.sellerEmail);
-  };
-
-  const isValidPhone = (phone?: string) => {
-    if (!phone) return false;
-
-    return /^\+?[0-9]+$/.test(data.sellerPhone);
-  };
-
-  const isValid =
-    validFields &&
-    isValidEmail(data.sellerEmail) &&
-    isValidPhone(data.sellerPhone);
+  const { isValid } = useSectionValidation(fields, data);
 
   const { attemptedNext, handleNext } = useSectionNext(
     isValid,
     required,
     onNext
   );
+
+  const getRules = (name: string) => fields.find((f) => f.name === name)?.rules;
 
   return (
     <SectionContainer
@@ -59,7 +43,10 @@ export function ContactInfoSection({
           required
           value={data.sellerName ?? ""}
           onChange={(e) => updateField("sellerName", e.target.value)}
-          error={attemptedNext && !data.sellerName}
+          error={
+            attemptedNext &&
+            !validateField(data.sellerName, getRules("sellerName"))
+          }
           fullWidth
         />
 
@@ -71,7 +58,7 @@ export function ContactInfoSection({
           onChange={(e) => updateField("sellerPhone", e.target.value)}
           error={
             attemptedNext &&
-            (!data.sellerPhone || !isValidPhone(data.sellerPhone))
+            !validateField(data.sellerPhone, getRules("sellerPhone"))
           }
           fullWidth
           required
@@ -87,7 +74,7 @@ export function ContactInfoSection({
           onChange={(e) => updateField("sellerEmail", e.target.value)}
           error={
             attemptedNext &&
-            (!data.sellerEmail || !isValidEmail(data.sellerEmail))
+            !validateField(data.sellerEmail, getRules("sellerEmail"))
           }
           type="email"
           fullWidth
@@ -100,7 +87,10 @@ export function ContactInfoSection({
           required
           value={data.sellerCity ?? ""}
           onChange={(e) => updateField("sellerCity", e.target.value)}
-          error={attemptedNext && !data.sellerCity}
+          error={
+            attemptedNext &&
+            !validateField(data.sellerCity, getRules("sellerCity"))
+          }
           fullWidth
         />
       </div>

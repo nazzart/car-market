@@ -1,22 +1,4 @@
-import { isValid } from "../utils/sectionUtils";
-
-type Section = {
-  id: string;
-  required?: boolean;
-  fields: string[];
-};
-
-export const findFirstInvalidSection = (
-  sections: Section[],
-  formData: Record<string, any>
-) => {
-  return sections.find((section) => {
-    if (!section.required) return false;
-
-    const values = section.fields.map((f) => formData[f]);
-    return !isValid(values);
-  });
-};
+import { SectionConfig, findFirstInvalidSection } from "../utils/sectionUtils";
 
 export const scrollToSection = (id: string) => {
   document.getElementById(id)?.scrollIntoView({
@@ -26,7 +8,7 @@ export const scrollToSection = (id: string) => {
 };
 
 export const validateAndScroll = (
-  sections: Section[],
+  sections: SectionConfig[],
   formData: Record<string, any>
 ) => {
   const invalidSection = findFirstInvalidSection(sections, formData);

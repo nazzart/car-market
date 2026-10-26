@@ -52,9 +52,9 @@ export function SellCarView() {
   const sectionsState = getSectionsState(sections, formData);
 
   const handleSubmit = () => {
-    const isOk = validateAndScroll(sections, formData);
+    // const isOk = validateAndScroll(sections, formData);
 
-    if (!isOk) return;
+    // if (!isOk) return;
 
     console.log("SUBMIT", formData);
   };

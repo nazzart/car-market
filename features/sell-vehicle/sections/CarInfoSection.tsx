@@ -7,6 +7,7 @@ import { ChipSelect } from "../../../components/ui/chip-select/ChipSelect";
 import { useSectionNext } from "../hooks/useSectionNext";
 import { FormStepProps } from "../types";
 import { useSectionValidation } from "../hooks/useSectionValidation";
+import { validateField } from "../utils/validationRules";
 
 export function CarInfoSection({
   id,
@@ -55,6 +56,8 @@ export function CarInfoSection({
     onNext
   );
 
+  const getRules = (name: string) => fields.find((f) => f.name === name)?.rules;
+
   return (
     <SectionContainer
       id={id}
@@ -74,7 +77,9 @@ export function CarInfoSection({
             fullWidth
             value={data.brand ?? ""}
             onChange={(e) => updateField("brand", e.target.value)}
-            error={attemptedNext && !data.brand}
+            error={
+              attemptedNext && !validateField(data.brand, getRules("brand"))
+            }
           >
             {brands.map((b) => (
               <MenuItem key={b} value={b}>
@@ -90,7 +95,9 @@ export function CarInfoSection({
             fullWidth
             value={data.model ?? ""}
             onChange={(e) => updateField("model", e.target.value)}
-            error={attemptedNext && !data.model}
+            error={
+              attemptedNext && !validateField(data.model, getRules("model"))
+            }
           />
         </div>
 
@@ -104,7 +111,7 @@ export function CarInfoSection({
             fullWidth
             value={data.year ?? ""}
             onChange={(e) => updateField("year", e.target.value)}
-            error={attemptedNext && !data.year}
+            error={attemptedNext && !validateField(data.year, getRules("year"))}
             inputProps={{ min: 0 }}
           />
 
@@ -115,7 +122,9 @@ export function CarInfoSection({
             fullWidth
             value={data.mileage ?? ""}
             onChange={(e) => updateField("mileage", e.target.value)}
-            error={attemptedNext && !data.mileage}
+            error={
+              attemptedNext && !validateField(data.mileage, getRules("mileage"))
+            }
             InputProps={{
               endAdornment: <InputAdornment position="end">km</InputAdornment>,
             }}
@@ -133,7 +142,9 @@ export function CarInfoSection({
             fullWidth
             value={data.price ?? ""}
             onChange={(e) => updateField("price", e.target.value)}
-            error={attemptedNext && !data.price}
+            error={
+              attemptedNext && !validateField(data.price, getRules("price"))
+            }
             InputProps={{
               endAdornment: <InputAdornment position="end">€</InputAdornment>,
             }}
@@ -162,7 +173,9 @@ export function CarInfoSection({
           clearable
           disableUnselect
           required
-          error={attemptedNext && !data.bodyType}
+          error={
+            attemptedNext && !validateField(data.bodyType, getRules("bodyType"))
+          }
         />
 
         {/* Color */}
@@ -175,7 +188,7 @@ export function CarInfoSection({
           variant="color"
           disableUnselect
           required
-          error={attemptedNext && !data.color}
+          error={attemptedNext && !validateField(data.color, getRules("color"))}
         />
       </div>
     </SectionContainer>

@@ -5,6 +5,8 @@ import { SectionContainer } from "../components/SectionContainer";
 import { ChipSelect } from "../../../components/ui/chip-select/ChipSelect";
 import { useSectionNext } from "../hooks/useSectionNext";
 import { FormStepProps } from "../types";
+import { useSectionValidation } from "../hooks/useSectionValidation";
+import { validateField } from "../utils/validationRules";
 
 const FUEL_TYPES = [
   { label: "Бензин", value: "petrol" },
@@ -36,14 +38,7 @@ export function TechnicalSection({
   onNext,
   updateField,
 }: FormStepProps) {
-  const validFields = fields.every((f) => {
-    const v = data[f];
-    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
-  });
-
-  const isValidEngine = /^[0-9]+(\.[0-9]{1,2})?$/.test(data.engineCapacity);
-
-  const isValid = isValidEngine && validFields;
+  const { isValid } = useSectionValidation(fields, data);
 
   const { attemptedNext, handleNext } = useSectionNext(
     isValid,
@@ -51,12 +46,14 @@ export function TechnicalSection({
     onNext
   );
 
+  const getRules = (name: string) => fields.find((f) => f.name === name)?.rules;
+
   return (
     <SectionContainer
       id={id}
       title={title}
       required={required}
-      isValid={isValid && isValidEngine}
+      isValid={isValid}
       onNext={handleNext}
     >
       <div className="space-y-7">
@@ -68,8 +65,9 @@ export function TechnicalSection({
             options={FUEL_TYPES}
             value={data.fuel}
             onChange={(value) => updateField("fuel", value)}
-            error={attemptedNext && !data.fuel}
+            error={attemptedNext && !validateField(data.fuel, getRules("fuel"))}
             disableUnselect
+            required
           />
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -80,7 +78,22 @@ export function TechnicalSection({
                 const value = e.target.value.replace(",", ".");
                 updateField("engineCapacity", value);
               }}
-              error={attemptedNext && (!data.engineCapacity || !isValidEngine)}
+              onBlur={() => {
+                if (!data.engineCapacity) return;
+
+                let value = data.engineCapacity.replace(",", ".");
+
+                // если ввели "2" → "2.0"
+                if (/^\d+$/.test(value)) {
+                  value = value + ".0";
+                }
+
+                updateField("engineCapacity", value);
+              }}
+              error={
+                attemptedNext &&
+                !validateField(data.engineCapacity, getRules("engineCapacity"))
+              }
               fullWidth
               InputProps={{
                 endAdornment: <InputAdornment position="end">L</InputAdornment>,
@@ -92,13 +105,16 @@ export function TechnicalSection({
               type="number"
               value={data.power ?? ""}
               onChange={(e) => updateField("power", e.target.value)}
-              error={attemptedNext && !data.power}
+              error={
+                attemptedNext && !validateField(data.power, getRules("power"))
+              }
               fullWidth
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">HP</InputAdornment>
                 ),
               }}
+              inputProps={{ min: 0 }}
             />
           </div>
         </div>
@@ -112,7 +128,11 @@ export function TechnicalSection({
               options={TRANSMISSIONS}
               value={data.transmission}
               onChange={(value) => updateField("transmission", value)}
-              error={attemptedNext && !data.transmission}
+              required
+              error={
+                attemptedNext &&
+                !validateField(data.transmission, getRules("transmission"))
+              }
               disableUnselect
             />
 
@@ -120,8 +140,11 @@ export function TechnicalSection({
               label="Привод"
               options={DRIVES}
               value={data.drive}
+              required
               onChange={(value) => updateField("drive", value)}
-              error={attemptedNext && !data.drive}
+              error={
+                attemptedNext && !validateField(data.drive, getRules("drive"))
+              }
               disableUnselect
             />
           </div>

@@ -1,15 +1,11 @@
+import { FieldConfig } from "./utils/sectionUtils";
+
 export type FormStepProps = {
   id: string;
   title: string;
   data: any;
   required: boolean;
-  fields: string[];
+  fields: FieldConfig[];
   onNext?: () => void;
   updateField: (field: string, value: any) => void;
-};
-
-export type SectionConfig = {
-  id: string;
-  required?: boolean;
-  fields: string[];
 };

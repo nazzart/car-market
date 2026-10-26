@@ -11,6 +11,8 @@ import {
 import { SectionContainer } from "../components/SectionContainer";
 import { useSectionNext } from "../hooks/useSectionNext";
 import { FormStepProps } from "../types";
+import { useSectionValidation } from "../hooks/useSectionValidation";
+import { validateField } from "../utils/validationRules";
 
 export function CarHistorySection({
   id,
@@ -21,17 +23,15 @@ export function CarHistorySection({
   onNext,
   updateField,
 }: FormStepProps) {
-
-  const isValid = fields.every((f) => {
-    const v = data[f];
-    return typeof v === "string" ? v.trim() !== "" : Boolean(v);
-  });
+  const { isValid } = useSectionValidation(fields, data);
 
   const { attemptedNext, handleNext } = useSectionNext(
     isValid,
     required,
     onNext
   );
+
+  const getRules = (name: string) => fields.find((f) => f.name === name)?.rules;
 
   // генерация техосмотра
   const now = new Date();
@@ -106,7 +106,13 @@ export function CarHistorySection({
 
         {/* Inspection */}
 
-        <FormControl fullWidth error={attemptedNext && !data.inspectionUntil}>
+        <FormControl
+          fullWidth
+          error={
+            attemptedNext &&
+            !validateField(data.inspectionUntil, getRules("inspectionUntil"))
+          }
+        >
           <InputLabel>Техосмотр до</InputLabel>
 
           <Select

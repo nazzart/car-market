@@ -1,26 +1,42 @@
-import { SectionConfig } from "../types";
+import { validateField } from "./validationRules";
 
-const isValueFilled = (v: any) => {
-  if (Array.isArray(v)) return v.length > 0;
-  return typeof v === "string" ? v.trim() !== "" : Boolean(v);
+export type FieldConfig = {
+  name: string;
+  rules?: string[];
 };
 
-export const isFilled = (values: any[]) => {
-  return values.some(isValueFilled);
+export type SectionConfig = {
+  id: string;
+  required?: boolean;
+  fields: FieldConfig[];
 };
 
-export const isValid = (values: any[]) => {
-  return values.every(isValueFilled);
-};
-
-export const isSectionValid = (
-  fields: string[],
+// 🧠 проверка одной секции
+export const validateSection = (
+  fields: FieldConfig[],
   data: Record<string, any>
 ) => {
-  const values = fields.map((f) => data[f]);
-  return isValid(values);
+  const results = fields.map((field) => {
+    const value = data[field.name];
+
+    const isFilled = Array.isArray(value)
+      ? value.length > 0
+      : typeof value === "string"
+      ? value.trim() !== ""
+      : Boolean(value);
+
+    const isValid = validateField(value, field.rules);
+
+    return { isFilled, isValid };
+  });
+
+  return {
+    isValid: results.every((f) => f.isValid),
+    isFilled: results.some((f) => f.isFilled),
+  };
 };
 
+// 🧠 состояние всех секций (для sidebar)
 export const getSectionsState = (
   sections: SectionConfig[],
   formData: Record<string, any>
@@ -33,13 +49,24 @@ export const getSectionsState = (
       continue;
     }
 
-    const values = section.fields.map((f) => formData[f]);
+    const { isValid, isFilled } = validateSection(section.fields, formData);
 
-    const filled = isFilled(values);
-    const valid = isValid(values);
-
-    state[section.id] = section.required ? valid : filled;
+    state[section.id] = section.required ? isValid : isFilled;
   }
 
   return state;
+};
+
+// 🔥 найти первую невалидную обязательную секцию (для submit)
+export const findFirstInvalidSection = (
+  sections: SectionConfig[],
+  formData: Record<string, any>
+) => {
+  return sections.find((section) => {
+    if (!section.required) return false;
+
+    const { isValid } = validateSection(section.fields, formData);
+
+    return !isValid;
+  });
 };

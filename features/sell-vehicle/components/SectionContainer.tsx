@@ -35,6 +35,11 @@ export function SectionContainer({
     setCompleted(true);
   };
 
+  const handleSkip = () => {
+    (onSkip ?? onNext)?.();
+    setCompleted(true);
+  };
+
   const showSkip = !required;
 
   return (
@@ -82,7 +87,7 @@ export function SectionContainer({
               <Button
                 variant="text"
                 size="large"
-                onClick={onSkip}
+                onClick={handleSkip}
                 sx={{ textTransform: "none" }}
               >
                 Пропустить

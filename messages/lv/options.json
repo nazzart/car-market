@@ -74,16 +74,35 @@
     "ventspils": "Ventspils"
   },
   "days": {
-    "monFri": "P–Pk",
-    "monSat": "P–S",
-    "sat": "S"
+    "mon": "P",
+    "tue": "O",
+    "wed": "T",
+    "thu": "C",
+    "fri": "Pk",
+    "sat": "S",
+    "sun": "Sv"
   },
   "collections": {
-    "retro": { "label": "Retro", "description": "Automašīnas no 1995. gada un vecākas" },
-    "sport": { "label": "Sporta", "description": "Kupejas un kabrioleti no 300 ZS" },
-    "tuning": { "label": "Tūnings", "description": "Pārbūvētas automašīnas" },
-    "exotic": { "label": "Ekskluzīvi", "description": "Retas markas un auto no 100 000 €" },
-    "electric": { "label": "Elektroauto", "description": "Pilnībā elektriskie" }
+    "retro": {
+      "label": "Retro",
+      "description": "Automašīnas no 1995. gada un vecākas"
+    },
+    "sport": {
+      "label": "Sporta",
+      "description": "Kupejas un kabrioleti no 300 ZS"
+    },
+    "tuning": {
+      "label": "Tūnings",
+      "description": "Pārbūvētas automašīnas"
+    },
+    "exotic": {
+      "label": "Ekskluzīvi",
+      "description": "Retas markas un auto no 100 000 €"
+    },
+    "electric": {
+      "label": "Elektroauto",
+      "description": "Pilnībā elektriskie"
+    }
   },
   "damageTypes": {
     "paint": "Krāsots",
@@ -200,5 +219,14 @@
     "tire_pressure": "Riepu spiediena sensori",
     "runflat": "RunFlat riepas",
     "spare_wheel": "Rezerves ritenis"
+  },
+  "daysFull": {
+    "mon": "Pirmdiena",
+    "tue": "Otrdiena",
+    "wed": "Trešdiena",
+    "thu": "Ceturtdiena",
+    "fri": "Piektdiena",
+    "sat": "Sestdiena",
+    "sun": "Svētdiena"
   }
 }

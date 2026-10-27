@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import TuneIcon from "@mui/icons-material/Tune";
 import ViewAgendaOutlinedIcon from "@mui/icons-material/ViewAgendaOutlined";
@@ -22,7 +22,46 @@ import EmptyResults from "./EmptyResults";
 import FiltersPanel from "./FiltersPanel";
 import ListingRow from "./ListingRow";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
+import ScrollArea from "./ScrollArea";
 import { inputClass } from "./ui";
+
+// Сайдбар всегда целиком в окне: пока он не прилип, высота — до нижнего края экрана.
+// Так низ панели и подсказка «Ещё фильтры» видны сразу, без прокрутки страницы
+function useFitToViewport<T extends HTMLElement>(gap = 16) {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const update = () => {
+      const top = Math.max(el.getBoundingClientRect().top, gap);
+      el.style.maxHeight = `${window.innerHeight - top - gap}px`;
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [gap]);
+
+  return ref;
+}
+
+function CountBadge({ count, inverted }: { count: number; inverted?: boolean }) {
+  return (
+    <span
+      className={`min-w-5 h-5 px-1.5 rounded-full text-xs font-semibold flex items-center justify-center ${
+        inverted ? "bg-white text-gray-900" : "bg-primary text-white"
+      }`}
+    >
+      {count}
+    </span>
+  );
+}
 
 const views = [
   { value: "list", label: "viewList", icon: ViewAgendaOutlinedIcon },
@@ -35,6 +74,7 @@ export default function CarsSearchView() {
   const tOptions = useTranslations("options");
   const { params, updateFilter, resetFilters, activeCount } = useCarFilters();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const sidebarRef = useFitToViewport<HTMLElement>();
 
   const results = filterListings(listings, params);
   const view = params.get("view") === "grid" ? "grid" : "list";
@@ -71,9 +111,15 @@ export default function CarsSearchView() {
       <div className="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-8 items-start">
         {/* Sidebar (desktop) */}
 
-        <aside className="hidden lg:block sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-none">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">{t("filters")}</h2>
+        <aside
+          ref={sidebarRef}
+          className="hidden lg:flex flex-col sticky top-4 max-h-[calc(100vh-2rem)] rounded-3xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="shrink-0 flex items-center justify-between gap-3 px-5 h-14 border-b border-gray-100">
+            <h2 className="flex items-center gap-2 text-base font-semibold">
+              <TuneIcon fontSize="small" />
+              {t("filters")}
+              {activeCount > 0 && <CountBadge count={activeCount} />}
+            </h2>
 
             {activeCount > 0 && (
               <button
@@ -86,27 +132,29 @@ export default function CarsSearchView() {
             )}
           </div>
 
-          <FiltersPanel />
+          <ScrollArea moreLabel={t("moreFilters")} className="px-5">
+            <FiltersPanel />
+          </ScrollArea>
         </aside>
 
         {/* Results */}
 
         <div className="min-w-0">
-          {/* Toolbar */}
+          {/* Toolbar — на мобильных прилипает под шапкой, чтобы фильтры были под рукой */}
 
-          <div className="flex items-center justify-between gap-3">
+          <div className="sticky top-0 z-30 -mx-4 px-4 py-2 bg-white/90 backdrop-blur-lg border-b border-gray-100 lg:static lg:z-auto lg:mx-0 lg:p-0 lg:bg-transparent lg:backdrop-blur-none lg:border-0 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
-              className="lg:hidden inline-flex items-center gap-2 h-11 px-4 rounded-xl border border-gray-200 text-sm font-medium hover:border-gray-900 transition cursor-pointer"
+              className={`lg:hidden shrink-0 inline-flex items-center gap-2 h-11 px-4 rounded-xl text-sm font-semibold transition cursor-pointer ${
+                activeCount > 0
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+              }`}
             >
               <TuneIcon fontSize="small" />
               {t("filters")}
-              {activeCount > 0 && (
-                <span className="min-w-5 h-5 px-1.5 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center">
-                  {activeCount}
-                </span>
-              )}
+              {activeCount > 0 && <CountBadge count={activeCount} inverted />}
             </button>
 
             <div className="hidden lg:block text-sm text-gray-500">

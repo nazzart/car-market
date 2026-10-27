@@ -81,6 +81,8 @@ export default function FiltersPanel() {
   const set = (key: string) => (value: string | null) =>
     updateFilter(key, value || null);
 
+  const isActive = (keys: string[]) => keys.some((key) => params.get(key));
+
   const brand = get("brand");
   const models = (modelsByBrand[brand] ?? []).map((m) => ({
     label: m,
@@ -89,7 +91,7 @@ export default function FiltersPanel() {
 
   return (
     <div>
-      <FilterSection title={t("condition")}>
+      <FilterSection title={t("condition")} active={isActive(["condition"])}>
         <Segmented
           anyLabel={t("all")}
           options={opts("condition", conditions)}
@@ -98,7 +100,7 @@ export default function FiltersPanel() {
         />
       </FilterSection>
 
-      <FilterSection title={t("brandModel")}>
+      <FilterSection title={t("brandModel")} active={isActive(["brand", "model"])}>
         <div className="space-y-2">
           <Select
             label={t("brand")}
@@ -119,19 +121,19 @@ export default function FiltersPanel() {
         </div>
       </FilterSection>
 
-      <FilterSection title={t("price")}>
+      <FilterSection title={t("price")} active={isActive(["priceFrom", "priceTo"])}>
         <RangeInputs fromKey="priceFrom" toKey="priceTo" unit={t("unitEur")} />
       </FilterSection>
 
-      <FilterSection title={t("year")}>
+      <FilterSection title={t("year")} active={isActive(["yearFrom", "yearTo"])}>
         <RangeInputs fromKey="yearFrom" toKey="yearTo" unit={t("unitYear")} />
       </FilterSection>
 
-      <FilterSection title={t("mileage")}>
+      <FilterSection title={t("mileage")} active={isActive(["mileageTo"])}>
         <RangeInputs toKey="mileageTo" unit={t("unitKm")} />
       </FilterSection>
 
-      <FilterSection title={t("body")}>
+      <FilterSection title={t("body")} active={isActive(["bodyType"])}>
         <ChipGroup
           options={opts("bodyType", bodyTypes)}
           value={get("bodyType")}
@@ -139,7 +141,7 @@ export default function FiltersPanel() {
         />
       </FilterSection>
 
-      <FilterSection title={t("engine")}>
+      <FilterSection title={t("engine")} active={isActive(["fuel"])}>
         <ChipGroup
           options={opts("fuel", fuels)}
           value={get("fuel")}
@@ -147,7 +149,7 @@ export default function FiltersPanel() {
         />
       </FilterSection>
 
-      <FilterSection title={t("gearbox")}>
+      <FilterSection title={t("gearbox")} active={isActive(["transmission"])}>
         <Segmented
           anyLabel={t("any")}
           options={opts("transmission", transmissions)}
@@ -156,7 +158,7 @@ export default function FiltersPanel() {
         />
       </FilterSection>
 
-      <FilterSection title={t("drive")}>
+      <FilterSection title={t("drive")} active={isActive(["drive"])}>
         <ChipGroup
           options={opts("drive", drives)}
           value={get("drive")}
@@ -164,7 +166,7 @@ export default function FiltersPanel() {
         />
       </FilterSection>
 
-      <FilterSection title={t("seller")}>
+      <FilterSection title={t("seller")} active={isActive(["sellerType"])}>
         <Segmented
           anyLabel={t("all")}
           options={opts("sellerType", sellerTypes)}

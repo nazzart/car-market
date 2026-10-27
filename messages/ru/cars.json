@@ -51,5 +51,6 @@
     "dealer": "Дилер · {name}",
     "private": "Частное лицо",
     "morePhotos": "Ещё {count} фото"
-  }
+  },
+  "moreFilters": "Ещё фильтры"
 }

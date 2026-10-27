@@ -1,4 +1,12 @@
+import type { Dealer } from "@/features/dealers/data/dealers";
+
 // Демо-аккаунты, пока нет настоящей авторизации. Пароль у обоих — DEMO_PASSWORD
+
+// Изменения, которые дилер сделал в настройках (поверх данных из dealers.ts)
+export type DealerProfile = Partial<
+  Pick<Dealer, "type" | "brands" | "regNumber" | "description" | "address" | "city" | "lat" | "lng" | "hours">
+>;
+
 export type User = {
   id: string;
   type: "individual" | "dealer";
@@ -9,6 +17,7 @@ export type User = {
   since: number;
   dealerSlug?: string; // для дилера — его страница /dealers/[slug]
   listingIds?: string[]; // объявления частного лица
+  dealerProfile?: DealerProfile;
 };
 
 export const DEMO_PASSWORD = "demo1234";

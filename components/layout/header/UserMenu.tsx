@@ -35,10 +35,11 @@ export default function UserMenu({ user, onLoginClick }: Props) {
       <button
         type="button"
         onClick={onLoginClick}
+        aria-label={t("login")}
         className="flex items-center gap-1 text-sm text-gray-700 hover:text-black cursor-pointer"
       >
         <PersonOutlineIcon fontSize="small" />
-        {t("login")}
+        <span className="hidden sm:inline">{t("login")}</span>
       </button>
     );
   }

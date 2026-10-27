@@ -1,11 +1,38 @@
 // Временные данные — позже заменим на запрос к БД. Компании вымышленные
 
-// Часы работы: дни — ключ (переводится), время — как есть
-export type OpeningHours = { days: "monFri" | "monSat" | "sat"; time: string }[];
+// Часы работы по дням; нет дня — выходной. Время в формате «HH:MM»
+export const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+export type Day = (typeof DAYS)[number];
+export type DayHours = { open: string; close: string };
+export type OpeningHours = Partial<Record<Day, DayHours>>;
 
-// «P–Pk 9:00–19:00, S 10:00–16:00»; dayLabel — перевод options.days.*
-export const formatHours = (hours: OpeningHours, dayLabel: (days: string) => string) =>
-  hours.map((h) => `${dayLabel(h.days)} ${h.time}`).join(", ");
+const trimHour = (time: string) => time.replace(/^0(\d)/, "$1");
+
+// Соседние дни с одинаковым временем объединяются: «P–Pk 9:00–19:00, S 10:00–16:00».
+// dayLabel — перевод options.days.{day}
+export const formatHours = (hours: OpeningHours, dayLabel: (day: string) => string) => {
+  const groups: { from: Day; to: Day; time: string }[] = [];
+
+  for (const day of DAYS) {
+    const h = hours[day];
+    if (!h) continue;
+
+    const time = `${trimHour(h.open)}–${trimHour(h.close)}`;
+    const last = groups.at(-1);
+    const prevDay = DAYS[DAYS.indexOf(day) - 1];
+
+    if (last && last.time === time && last.to === prevDay) last.to = day;
+    else groups.push({ from: day, to: day, time });
+  }
+
+  return groups
+    .map((g) =>
+      g.from === g.to
+        ? `${dayLabel(g.from)} ${g.time}`
+        : `${dayLabel(g.from)}–${dayLabel(g.to)} ${g.time}`
+    )
+    .join(", ");
+};
 
 export type Dealer = {
   slug: string;
@@ -17,6 +44,7 @@ export type Dealer = {
   lat: number;
   lng: number;
   phone: string;
+  regNumber?: string; // регистрационный номер (11 цифр)
   hours: OpeningHours;
   // Рейтинга пока нет — появится вместе с отзывами
   rating?: number;
@@ -29,6 +57,7 @@ export type Dealer = {
 export const dealers: Dealer[] = [
   {
     slug: "baltic-auto",
+    regNumber: "40003512345",
     name: "Baltic Auto",
     type: "official",
     brands: ["bmw", "mini"],
@@ -37,7 +66,14 @@ export const dealers: Dealer[] = [
     lat: 56.9345,
     lng: 24.0475,
     phone: "+371 2000 2001",
-    hours: [{ days: "monFri", time: "9:00–19:00" }, { days: "sat", time: "10:00–16:00" }],
+    hours: {
+      mon: { open: "09:00", close: "19:00" },
+      tue: { open: "09:00", close: "19:00" },
+      wed: { open: "09:00", close: "19:00" },
+      thu: { open: "09:00", close: "19:00" },
+      fri: { open: "09:00", close: "19:00" },
+      sat: { open: "10:00", close: "16:00" },
+    },
     carsInStock: 126,
     since: 2016,
     description:
@@ -53,7 +89,14 @@ export const dealers: Dealer[] = [
     lat: 56.9852,
     lng: 24.1918,
     phone: "+371 2000 2002",
-    hours: [{ days: "monFri", time: "9:00–19:00" }, { days: "sat", time: "10:00–15:00" }],
+    hours: {
+      mon: { open: "09:00", close: "19:00" },
+      tue: { open: "09:00", close: "19:00" },
+      wed: { open: "09:00", close: "19:00" },
+      thu: { open: "09:00", close: "19:00" },
+      fri: { open: "09:00", close: "19:00" },
+      sat: { open: "10:00", close: "15:00" },
+    },
     carsInStock: 84,
     since: 2018,
     description:
@@ -69,7 +112,14 @@ export const dealers: Dealer[] = [
     lat: 56.9786,
     lng: 24.1122,
     phone: "+371 2000 2003",
-    hours: [{ days: "monFri", time: "8:30–19:00" }, { days: "sat", time: "10:00–16:00" }],
+    hours: {
+      mon: { open: "08:30", close: "19:00" },
+      tue: { open: "08:30", close: "19:00" },
+      wed: { open: "08:30", close: "19:00" },
+      thu: { open: "08:30", close: "19:00" },
+      fri: { open: "08:30", close: "19:00" },
+      sat: { open: "10:00", close: "16:00" },
+    },
     carsInStock: 172,
     since: 2015,
   },
@@ -83,7 +133,14 @@ export const dealers: Dealer[] = [
     lat: 56.9412,
     lng: 24.1821,
     phone: "+371 2000 2004",
-    hours: [{ days: "monFri", time: "9:00–19:00" }, { days: "sat", time: "10:00–16:00" }],
+    hours: {
+      mon: { open: "09:00", close: "19:00" },
+      tue: { open: "09:00", close: "19:00" },
+      wed: { open: "09:00", close: "19:00" },
+      thu: { open: "09:00", close: "19:00" },
+      fri: { open: "09:00", close: "19:00" },
+      sat: { open: "10:00", close: "16:00" },
+    },
     carsInStock: 203,
     since: 2015,
   },
@@ -97,7 +154,13 @@ export const dealers: Dealer[] = [
     lat: 56.9305,
     lng: 24.1062,
     phone: "+371 2000 2005",
-    hours: [{ days: "monFri", time: "9:00–18:00" }],
+    hours: {
+      mon: { open: "09:00", close: "18:00" },
+      tue: { open: "09:00", close: "18:00" },
+      wed: { open: "09:00", close: "18:00" },
+      thu: { open: "09:00", close: "18:00" },
+      fri: { open: "09:00", close: "18:00" },
+    },
     carsInStock: 58,
     since: 2019,
   },
@@ -111,7 +174,14 @@ export const dealers: Dealer[] = [
     lat: 56.9334,
     lng: 24.1372,
     phone: "+371 2000 1001",
-    hours: [{ days: "monSat", time: "10:00–19:00" }],
+    hours: {
+      mon: { open: "10:00", close: "19:00" },
+      tue: { open: "10:00", close: "19:00" },
+      wed: { open: "10:00", close: "19:00" },
+      thu: { open: "10:00", close: "19:00" },
+      fri: { open: "10:00", close: "19:00" },
+      sat: { open: "10:00", close: "19:00" },
+    },
     carsInStock: 47,
     since: 2019,
     description:
@@ -127,7 +197,13 @@ export const dealers: Dealer[] = [
     lat: 56.9561,
     lng: 24.1263,
     phone: "+371 2000 2007",
-    hours: [{ days: "monFri", time: "10:00–18:00" }],
+    hours: {
+      mon: { open: "10:00", close: "18:00" },
+      tue: { open: "10:00", close: "18:00" },
+      wed: { open: "10:00", close: "18:00" },
+      thu: { open: "10:00", close: "18:00" },
+      fri: { open: "10:00", close: "18:00" },
+    },
     carsInStock: 32,
     since: 2021,
   },
@@ -141,7 +217,14 @@ export const dealers: Dealer[] = [
     lat: 56.9681,
     lng: 23.7702,
     phone: "+371 2000 2008",
-    hours: [{ days: "monSat", time: "10:00–18:00" }],
+    hours: {
+      mon: { open: "10:00", close: "18:00" },
+      tue: { open: "10:00", close: "18:00" },
+      wed: { open: "10:00", close: "18:00" },
+      thu: { open: "10:00", close: "18:00" },
+      fri: { open: "10:00", close: "18:00" },
+      sat: { open: "10:00", close: "18:00" },
+    },
     carsInStock: 29,
     since: 2020,
   },
@@ -155,7 +238,13 @@ export const dealers: Dealer[] = [
     lat: 56.8162,
     lng: 24.6051,
     phone: "+371 2000 2009",
-    hours: [{ days: "monFri", time: "9:00–18:00" }],
+    hours: {
+      mon: { open: "09:00", close: "18:00" },
+      tue: { open: "09:00", close: "18:00" },
+      wed: { open: "09:00", close: "18:00" },
+      thu: { open: "09:00", close: "18:00" },
+      fri: { open: "09:00", close: "18:00" },
+    },
     carsInStock: 18,
     since: 2022,
   },
@@ -169,7 +258,14 @@ export const dealers: Dealer[] = [
     lat: 56.6511,
     lng: 23.7214,
     phone: "+371 2000 2010",
-    hours: [{ days: "monFri", time: "9:00–18:00" }, { days: "sat", time: "10:00–14:00" }],
+    hours: {
+      mon: { open: "09:00", close: "18:00" },
+      tue: { open: "09:00", close: "18:00" },
+      wed: { open: "09:00", close: "18:00" },
+      thu: { open: "09:00", close: "18:00" },
+      fri: { open: "09:00", close: "18:00" },
+      sat: { open: "10:00", close: "14:00" },
+    },
     carsInStock: 64,
     since: 2017,
   },
@@ -183,7 +279,13 @@ export const dealers: Dealer[] = [
     lat: 55.8741,
     lng: 26.5362,
     phone: "+371 2000 2011",
-    hours: [{ days: "monFri", time: "9:00–18:00" }],
+    hours: {
+      mon: { open: "09:00", close: "18:00" },
+      tue: { open: "09:00", close: "18:00" },
+      wed: { open: "09:00", close: "18:00" },
+      thu: { open: "09:00", close: "18:00" },
+      fri: { open: "09:00", close: "18:00" },
+    },
     carsInStock: 41,
     since: 2018,
   },
@@ -197,7 +299,14 @@ export const dealers: Dealer[] = [
     lat: 56.5047,
     lng: 21.0108,
     phone: "+371 2000 2012",
-    hours: [{ days: "monSat", time: "9:00–18:00" }],
+    hours: {
+      mon: { open: "09:00", close: "18:00" },
+      tue: { open: "09:00", close: "18:00" },
+      wed: { open: "09:00", close: "18:00" },
+      thu: { open: "09:00", close: "18:00" },
+      fri: { open: "09:00", close: "18:00" },
+      sat: { open: "09:00", close: "18:00" },
+    },
     carsInStock: 36,
     since: 2019,
   },
@@ -211,7 +320,13 @@ export const dealers: Dealer[] = [
     lat: 57.3937,
     lng: 21.5647,
     phone: "+371 2000 2013",
-    hours: [{ days: "monFri", time: "9:00–18:00" }],
+    hours: {
+      mon: { open: "09:00", close: "18:00" },
+      tue: { open: "09:00", close: "18:00" },
+      wed: { open: "09:00", close: "18:00" },
+      thu: { open: "09:00", close: "18:00" },
+      fri: { open: "09:00", close: "18:00" },
+    },
     carsInStock: 22,
     since: 2021,
   },
@@ -225,7 +340,14 @@ export const dealers: Dealer[] = [
     lat: 57.5413,
     lng: 25.4271,
     phone: "+371 2000 2014",
-    hours: [{ days: "monFri", time: "9:00–18:00" }, { days: "sat", time: "10:00–14:00" }],
+    hours: {
+      mon: { open: "09:00", close: "18:00" },
+      tue: { open: "09:00", close: "18:00" },
+      wed: { open: "09:00", close: "18:00" },
+      thu: { open: "09:00", close: "18:00" },
+      fri: { open: "09:00", close: "18:00" },
+      sat: { open: "10:00", close: "14:00" },
+    },
     carsInStock: 27,
     since: 2017,
   },

@@ -16,6 +16,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { useLocale, useTranslations } from "next-intl";
 
 import { brands } from "@/features/brands/data/brands";
+import { cityLabel } from "@/lib/cities";
 import { User } from "@/features/auth/data/demoUsers";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import { Listing, listings } from "@/features/cars/data/listings";
@@ -44,7 +45,7 @@ const primaryButton =
 const secondaryButton =
   "inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium text-gray-900 transition";
 
-function LoggedOut() {
+export function LoggedOut() {
   const t = useTranslations("account.loggedOut");
 
   return (
@@ -130,7 +131,9 @@ export default function AccountView() {
   if (!user) return <LoggedOut />;
 
   const isDealer = user.type === "dealer";
-  const dealer = dealers.find((d) => d.slug === user.dealerSlug);
+  // каталог дилеров + изменения из настроек
+  const baseDealer = dealers.find((d) => d.slug === user.dealerSlug);
+  const dealer = baseDealer && { ...baseDealer, ...user.dealerProfile };
   const own = userListings(user);
   const shown = tab === "active" ? own : [];
 
@@ -264,7 +267,7 @@ export default function AccountView() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-gray-500">{t("profile.city")}</dt>
-                <dd className="text-gray-900 text-right">{tOptions(`cities.${user.city}`)}</dd>
+                <dd className="text-gray-900 text-right">{cityLabel(tOptions, user.city)}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-gray-500">{t("profile.since")}</dt>
@@ -284,7 +287,7 @@ export default function AccountView() {
               <div className="space-y-2 text-sm text-gray-800">
                 <div className="flex items-start gap-2">
                   <PlaceOutlinedIcon sx={{ fontSize: 18 }} className="text-gray-500" />
-                  {dealer.address}, {tOptions(`cities.${dealer.city}`)}
+                  {dealer.address}, {cityLabel(tOptions, dealer.city)}
                 </div>
                 <div className="flex items-start gap-2">
                   <ScheduleOutlinedIcon sx={{ fontSize: 18 }} className="text-gray-500" />

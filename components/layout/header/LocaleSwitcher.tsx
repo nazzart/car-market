@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 // LV / RU — остаёмся на той же странице и с теми же фильтрами
 export default function LocaleSwitcher({ className }: { className?: string }) {
@@ -23,7 +24,7 @@ export default function LocaleSwitcher({ className }: { className?: string }) {
     <div
       role="group"
       aria-label={t("language")}
-      className={`inline-flex p-0.5 rounded-full bg-gray-100 text-xs font-semibold ${className ?? ""}`}
+      className={cn("inline-flex p-0.5 rounded-full bg-gray-100 text-xs font-semibold", className)}
     >
       {routing.locales.map((l) => (
         <button

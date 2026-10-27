@@ -51,5 +51,6 @@
     "dealer": "Dīleris · {name}",
     "private": "Privātpersona",
     "morePhotos": "Vēl {count} foto"
-  }
+  },
+  "moreFilters": "Vairāk filtru"
 }

@@ -1,5 +1,24 @@
-import IndividualProfilePage from "@/features/profile/pages/IndividualProfilePage";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export default function Page() {
-  return <IndividualProfilePage mode="edit" />;
+import Container from "@/components/layout/Container";
+import SettingsView from "@/features/account/settings/SettingsView";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "account.settings" });
+
+  return { title: t("metaTitle") };
+}
+
+export default function AccountSettingsPage() {
+  return (
+    <Container>
+      <SettingsView />
+    </Container>
+  );
 }

@@ -47,30 +47,87 @@
     "dealerCenter": "Dīlera centrs",
     "tip": "Pircēji sazinās ar jums pa tālruni no sludinājuma. Numurs tiek parādīts tikai pēc pogas «Rādīt tālruni» nospiešanas."
   },
-  "profilePage": {
-    "editTitle": "Profila iestatījumi",
-    "createTitle": "Profila izveide",
-    "subtitle": "Personas dati un kontakti pircējiem.",
-    "basic": "Pamatinformācija",
-    "firstName": "Vārds",
-    "lastName": "Uzvārds",
-    "contact": "Kontakti",
-    "contactDescription": "Kā pircēji varēs ar jums sazināties.",
-    "email": "E-pasts",
-    "phone": "Tālrunis",
-    "location": "Atrašanās vieta",
-    "locationDescription": "Kur jūs atrodaties.",
-    "country": "Valsts",
-    "city": "Pilsēta",
-    "cancel": "Atcelt",
-    "save": "Saglabāt izmaiņas",
-    "create": "Izveidot profilu",
-    "success": {
-      "title": "Profils izveidots",
-      "text": "Konts ir gatavs. Tagad varat ievietot pirmo sludinājumu vai doties uz savu kontu.",
-      "post": "Ievietot sludinājumu",
-      "account": "Doties uz kontu",
-      "browse": "Skatīt automašīnas"
+  "settings": {
+    "metaTitle": "Profila iestatījumi | bestauto.lv",
+    "title": "Profila iestatījumi",
+    "titleDealer": "Uzņēmuma iestatījumi",
+    "subtitle": "Šos datus pircēji redz jūsu sludinājumos",
+    "subtitleDealer": "Tā uzņēmums izskatās dīlera lapā un sludinājumos",
+    "back": "Mans konts",
+    "personal": {
+      "title": "Personas dati",
+      "firstName": "Vārds",
+      "lastName": "Uzvārds",
+      "required": "Obligāts lauks"
+    },
+    "company": {
+      "title": "Uzņēmums",
+      "name": "Uzņēmuma nosaukums",
+      "regNumber": "Reģistrācijas numurs",
+      "regNumberHint": "11 cipari, kā Uzņēmumu reģistrā",
+      "regNumberError": "Numurs sastāv no 11 cipariem",
+      "type": "Veids",
+      "official": "Oficiālais dīleris",
+      "used": "Lietotu auto salons",
+      "brands": "Oficiālās markas",
+      "brandsHint": "Markas, kuru oficiālais dīleris esat",
+      "description": "Par uzņēmumu",
+      "descriptionHint": "Īsi par uzņēmumu: pakalpojumi, garantija, līzings"
+    },
+    "contacts": {
+      "title": "Kontakti",
+      "description": "Pircēji redzēs tālruni pēc pogas «Rādīt tālruni» nospiešanas",
+      "email": "E-pasts",
+      "emailError": "Ievadiet derīgu e-pastu",
+      "phone": "Tālrunis",
+      "phoneError": "Formāts: +371 2000 0000"
+    },
+    "location": {
+      "title": "Atrašanās vieta",
+      "city": "Pilsēta",
+      "country": "Valsts: Latvija"
+    },
+    "address": {
+      "title": "Adrese un karte",
+      "description": "Adresi vienmēr norāda latviešu valodā — tā tiek rādīta abās vietnes valodu versijās un sakrīt ar kartēm",
+      "street": "Adrese un pilsēta (latviešu valodā)",
+      "streetPlaceholder": "Piemēram: Brīvības iela 100, Rīga",
+      "streetError": "Norādiet adresi latviešu valodā, ar latīņu burtiem",
+      "required": "Norādiet adresi",
+      "mapHint": "Izvēlieties adresi no ieteikumiem vai pārvelciet atzīmi / noklikšķiniet kartē",
+      "searchHint": "Sāciet rakstīt — piedāvāsim adreses",
+      "pinAddress": "Adrese pēc atzīmes:",
+      "useAddress": "Izmantot šo adresi",
+      "format": "Norādiet ielu un pilsētu, atdalot ar komatu: Brīvības iela 100, Rīga"
+    },
+    "hours": {
+      "title": "Darba laiks",
+      "description": "Tiek rādīts dīlera lapā un kartītē kartē",
+      "closed": "Slēgts",
+      "copy": "Kopēt uz darbdienām",
+      "preview": "Tā redzēs pircēji:",
+      "allClosed": "Visas dienas atzīmētas kā slēgtas",
+      "invalid": "Slēgšanas laikam jābūt vēlākam par atvēršanas laiku",
+      "openLabel": "Atvēršana",
+      "closeLabel": "Slēgšana"
+    },
+    "password": {
+      "title": "Parole",
+      "description": "Vismaz 8 rakstzīmes, vismaz viens burts un cipars",
+      "current": "Pašreizējā parole",
+      "next": "Jaunā parole",
+      "change": "Mainīt paroli",
+      "changed": "Parole nomainīta (demo režīms)",
+      "weak": "Parole neatbilst prasībām",
+      "currentRequired": "Ievadiet pašreizējo paroli"
+    },
+    "saveBar": {
+      "unsaved": "Ir nesaglabātas izmaiņas",
+      "discard": "Atcelt",
+      "save": "Saglabāt",
+      "saved": "Izmaiņas saglabātas",
+      "fixErrors": "Izlabojiet kļūdas formā",
+      "demoNote": "Demo režīms: izmaiņas tiek saglabātas tikai šajā pārlūkā"
     }
   }
 }

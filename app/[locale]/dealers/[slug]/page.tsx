@@ -12,6 +12,7 @@ import { getTranslations } from "next-intl/server";
 
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
+import { cityLabel } from "@/lib/cities";
 import ContactPhoneButton from "@/features/cars/car-view/components/ContactPhoneButton";
 import { listings } from "@/features/cars/data/listings";
 import DealerMiniMap from "@/features/dealers/components/DealerMiniMap";
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: "dealers.page" });
   const tOptions = await getTranslations({ locale, namespace: "options" });
 
-  return { title: t("metaTitle", { name: dealer.name, city: tOptions(`cities.${dealer.city}`) }) };
+  return { title: t("metaTitle", { name: dealer.name, city: cityLabel(tOptions, dealer.city) }) };
 }
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
@@ -50,7 +51,7 @@ export default async function DealerPage({ params }: Props) {
   const tCommon = await getTranslations("common");
   const tOptions = await getTranslations("options");
 
-  const cityName = tOptions(`cities.${dealer.city}`);
+  const cityName = cityLabel(tOptions, dealer.city);
 
   const official = dealer.type === "official";
   const cars = listings.filter((l) => l.dealer === dealer.slug);

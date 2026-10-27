@@ -8,10 +8,11 @@ import SearchIcon from "@mui/icons-material/Search";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import { brands } from "@/features/brands/data/brands";
+import { cityLabel } from "@/lib/cities";
 import { Segmented, Select, inputClass } from "@/features/cars/car-list/components/ui";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
-import { dealers } from "../data/dealers";
+import { useDealers } from "../useDealers";
 import DealerCard from "./DealerCard";
 import type { MapBounds } from "./DealersMap";
 
@@ -22,12 +23,6 @@ const DealersMap = dynamic(() => import("./DealersMap"), {
 });
 
 const dealerTypes = ["official", "used"];
-const cityKeys = [...new Set(dealers.map((d) => d.city))];
-
-// В фильтре — только марки, у которых есть официальные дилеры
-const brandOptions = [...new Set(dealers.flatMap((d) => d.brands))]
-  .map((slug) => ({ label: brands.find((b) => b.slug === slug)?.name ?? slug, value: slug }))
-  .sort((a, b) => a.label.localeCompare(b.label));
 
 const inBounds = (lat: number, lng: number, b: MapBounds) =>
   lat <= b.north && lat >= b.south && lng <= b.east && lng >= b.west;
@@ -41,10 +36,18 @@ export default function DealersView() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const dealers = useDealers();
+
   const typeOptions = dealerTypes.map((value) => ({ value, label: t(`types.${value}`) }));
-  const cityOptions = cityKeys
-    .map((value) => ({ value, label: tOptions(`cities.${value}`) }))
+  const cityOptions = [...new Set(dealers.map((d) => d.city))]
+    .map((value) => ({ value, label: cityLabel(tOptions, value) }))
     .sort((a, b) => a.label.localeCompare(b.label));
+
+  // В фильтре — только марки, у которых есть официальные дилеры
+  const brandOptions = [...new Set(dealers.flatMap((d) => d.brands))]
+    .map((slug) => ({ label: brands.find((b) => b.slug === slug)?.name ?? slug, value: slug }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
   const params = useSearchParams();
 
   const query = params.get("q") ?? "";
@@ -83,7 +86,7 @@ export default function DealersView() {
         (!city || d.city === city) &&
         (!brand || d.brands.includes(brand))
     );
-  }, [query, type, city, brand]);
+  }, [dealers, query, type, city, brand]);
 
   // «Искать при перемещении карты» — список показывает только то, что видно на карте
   const visible =

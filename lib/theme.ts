@@ -3,6 +3,10 @@ import { createTheme } from "@mui/material/styles";
 import { colors } from "../lib/colors";
 
 export const theme = createTheme({
+  typography: {
+    fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+  },
+
   palette: {
     success: {
       main: "#10B981", // modern emerald
@@ -10,12 +14,9 @@ export const theme = createTheme({
       contrastText: "#ffffff",
     },
     primary: {
-      main: "#2563EB",
-
+      main: colors.primary,
+      dark: colors.primaryHover,
       contrastText: "#fff",
-    },
-    secondary: {
-      main: "#FF5A5F",
     },
   },
 

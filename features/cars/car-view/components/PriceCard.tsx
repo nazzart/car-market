@@ -6,7 +6,7 @@ export default function PriceCard() {
     <div className="bg-white rounded-xl p-6 space-y-4">
       <div className="text-3xl font-bold tracking-tight">2 090 000 ₽</div>
 
-      <Button variant="contained" color="secondary" fullWidth size="large">
+      <Button variant="contained" fullWidth size="large">
         Показать телефон
       </Button>
 

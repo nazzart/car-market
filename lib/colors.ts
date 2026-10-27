@@ -1,4 +1,5 @@
+// Единственный акцентный цвет сайта (Tailwind `primary` + MUI `primary`)
 export const colors = {
-  //primary: "#6366F1",
-  primary: "#FF5A5F",
+  primary: "#E5484D",
+  primaryHover: "#D13438",
 };

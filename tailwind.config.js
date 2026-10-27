@@ -6,11 +6,8 @@ module.exports = {
     "./features/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      colors: {
-        primary: "#ef4444",
-      },
-    },
+    // Цвета задаются в lib/colors.ts (Tailwind v4 не читает этот файл без @config)
+    extend: {},
   },
   plugins: [],
 };

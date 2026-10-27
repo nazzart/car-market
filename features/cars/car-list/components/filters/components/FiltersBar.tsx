@@ -5,12 +5,19 @@ import { Checkbox, Button, FormControlLabel } from "@mui/material";
 import BrandModelSection from "./BrandModelSection";
 import FiltersGrid from "./FiltersGrid";
 import ActiveFilters from "./ActiveFilters";
+import CollectionPills from "@/features/collections/components/CollectionPills";
 
 export default function FiltersBar() {
   return (
     <div className="w-full flex">
       <div className="w-full py-8">
-        <h1 className="text-2xl font-semibold mb-8">Купить автомобиль</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-5">
+          Купить автомобиль
+        </h1>
+
+        <div className="mb-6">
+          <CollectionPills />
+        </div>
 
         <div
           className="

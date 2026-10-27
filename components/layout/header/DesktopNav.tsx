@@ -1,10 +1,14 @@
+import Link from "next/link";
+
+import CollectionsMenu from "@/features/collections/components/CollectionsMenu";
+
 export default function DesktopNav() {
     return (
       <nav className="flex items-center gap-8 text-sm text-gray-700">
   
-        <a className="text-primary font-medium cursor-pointer">
+        <Link href="/cars" className="text-primary font-medium cursor-pointer">
           Легковые
-        </a>
+        </Link>
   
         <a className="hover:text-black cursor-pointer">
           Дилеры
@@ -13,6 +17,8 @@ export default function DesktopNav() {
         <a className="hover:text-black cursor-pointer">
           Коммерческие
         </a>
+
+        <CollectionsMenu />
   
       </nav>
     );

@@ -17,22 +17,26 @@ export default function BrandGrid() {
 
   return (
     <section className="max-w-7xl mx-auto py-8">
-      <h2 className="text-2xl font-semibold mb-8">Популярные марки</h2>
+      <h2 className="text-2xl font-semibold tracking-tight mb-6">Популярные марки</h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">
+      <div className="flex md:grid md:grid-cols-5 lg:grid-cols-10 gap-3 overflow-x-auto md:overflow-visible -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x scroll-px-4 scrollbar-none">
         {brands.map((brand) => (
           <Tooltip key={brand.name} title={brand.name} arrow>
             <a
-              href={`cars/${brand.url}`}
+              href={`/cars/${brand.url}`}
               className="
+                group
+                shrink-0 w-24 md:w-auto
                 h-20
                 flex items-center justify-center
-                bg-gray-50
-                rounded-xl
-                shadow-sm
-                hover:shadow-md
-                hover:bg-white
-                transition
+                bg-white
+                border border-gray-200
+                rounded-2xl
+                snap-start
+                hover:border-gray-300
+                hover:shadow-lg hover:shadow-black/5
+                hover:-translate-y-0.5
+                transition duration-200
                 cursor-pointer
               "
             >
@@ -41,7 +45,7 @@ export default function BrandGrid() {
                 alt={brand.name}
                 width={60}
                 height={40}
-                className="object-contain opacity-70 hover:opacity-100 transition"
+                className="object-contain opacity-60 group-hover:opacity-100 transition"
               />
             </a>
           </Tooltip>

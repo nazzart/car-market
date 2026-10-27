@@ -366,8 +366,8 @@ export default function QuickSearch() {
 
           {/* Collections */}
 
-          <div className="flex flex-wrap items-center gap-2 mt-5">
-            <span className="text-sm text-white/60 mr-1">{t("collections")}</span>
+          <div className="flex sm:flex-wrap items-center gap-2 mt-5 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+            <span className="hidden sm:inline text-sm text-white/60 mr-1">{t("collections")}</span>
 
             {visibleCollections.map((c) => {
               const Icon = c.icon;
@@ -377,6 +377,7 @@ export default function QuickSearch() {
                   key={c.slug}
                   href={collectionHref(c.slug)}
                   className="
+                    shrink-0
                     inline-flex items-center gap-1.5
                     pl-2.5 pr-3 py-1
                     rounded-full

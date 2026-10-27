@@ -17,13 +17,13 @@ export default function CarGrid() {
   const t = useTranslations("home.latest");
 
   return (
-    <section className="py-8">
+    <section className="py-8 sm:py-10">
       <div className="flex items-end justify-between gap-4 mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">{t("title")}</h2>
 
         <Link
           href="/cars"
-          className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-black transition"
+          className="shrink-0 inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-black whitespace-nowrap transition"
         >
           {t("viewAll")}
           <ArrowForwardIcon sx={{ fontSize: 16 }} />

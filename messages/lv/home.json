@@ -23,8 +23,33 @@
     "benefits": {
       "free": "Bezmaksas ievietošana",
       "fast": "Sludinājums 5 minūtēs",
-      "buyers": "Tūkstošiem pircēju katru dienu"
+      "buyers": "Sludinājums latviešu un krievu valodā"
     },
     "cta": "Ievietot sludinājumu"
+  },
+  "dealers": {
+    "title": "Dīleri un autosaloni",
+    "subtitle": "{count, plural, zero {# uzņēmumi} one {# uzņēmums} other {# uzņēmumi}} — darba laiks, adreses un pieejamie auto",
+    "map": "Atvērt karti"
+  },
+  "why": {
+    "title": "Pērciet drošāk",
+    "subtitle": "Tas, kā nav parastos sludinājumu portālos",
+    "damages": {
+      "title": "Bojājumi shēmā",
+      "text": "Pārdevējs atzīmē krāsojumu, skrāpējumus un iespiedumus tieši virsbūves shēmā — redzams pirms zvana."
+    },
+    "compare": {
+      "title": "Salīdzināšana līdz 4 auto",
+      "text": "Cena, nobraukums, vēsture un komplektācija blakus — labākais izcelts."
+    },
+    "priceDrop": {
+      "title": "Sekojiet cenai",
+      "text": "Pievienojiet auto izlasei — parādīsim, ja cena samazināsies."
+    },
+    "dealers": {
+      "title": "Dīleri kartē",
+      "text": "Adreses, darba laiks un «atvērts tagad» katram salonam."
+    }
   }
 }

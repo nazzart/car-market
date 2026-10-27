@@ -77,12 +77,12 @@ export default function BrandList() {
   };
 
   return (
-    <section ref={sectionRef} className="max-w-7xl mx-auto py-8 scroll-mt-24">
+    <section ref={sectionRef} className="max-w-7xl mx-auto py-8 sm:py-10 scroll-mt-24">
       {/* Header */}
 
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">{t("all")}</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">{t("all")}</h2>
 
           <p className="text-sm text-gray-500 mt-1">
             {t("inCatalog", { count: sortedBrands.length })}

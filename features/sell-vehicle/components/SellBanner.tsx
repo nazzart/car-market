@@ -11,7 +11,7 @@ export default function SellBanner() {
   const t = useTranslations("home.sellBanner");
 
   return (
-    <section className="py-8">
+    <section className="py-8 sm:py-10">
       <div className="relative overflow-hidden rounded-3xl bg-gray-900">
         <Image
           src="/cars/bmw5.jpg"

@@ -1,11 +1,12 @@
 import Image from "next/image";
-import Tooltip from "@mui/material/Tooltip";
 import { useTranslations } from "next-intl";
 
+import { brandListingCount } from "@/features/cars/data/counts";
 import { Link } from "@/i18n/navigation";
 
 export default function BrandGrid() {
   const t = useTranslations("home.brands");
+  const tCommon = useTranslations("common");
   const brands = [
     { name: "BMW", logo: "/brands/bmw.svg", url: "bmw" },
     { name: "Toyota", logo: "/brands/toyota.svg", url: "toyota" },
@@ -20,19 +21,19 @@ export default function BrandGrid() {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto py-8">
-      <h2 className="text-2xl font-semibold tracking-tight mb-6">{t("popular")}</h2>
+    <section className="max-w-7xl mx-auto py-8 sm:py-10">
+      <h2 className="text-xl sm:text-2xl font-semibold tracking-tight mb-5 sm:mb-6">{t("popular")}</h2>
 
       <div className="flex md:grid md:grid-cols-5 lg:grid-cols-10 gap-3 overflow-x-auto md:overflow-visible -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x scroll-px-4 scrollbar-none">
         {brands.map((brand) => (
-          <Tooltip key={brand.name} title={brand.name} arrow>
-            <Link
+          <Link
+              key={brand.name}
               href={`/cars?brand=${brand.url}`}
               className="
                 group
                 shrink-0 w-24 md:w-auto
-                h-20
-                flex items-center justify-center
+                h-28
+                flex flex-col items-center justify-center gap-2
                 bg-white
                 border border-gray-200
                 rounded-2xl
@@ -49,10 +50,17 @@ export default function BrandGrid() {
                 alt={brand.name}
                 width={60}
                 height={40}
-                className="object-contain opacity-60 group-hover:opacity-100 transition"
+                className="object-contain h-9 w-auto opacity-60 group-hover:opacity-100 transition"
               />
+              <span className="text-center leading-tight">
+                <span className="block text-xs font-medium text-gray-900">{brand.name}</span>
+                {brandListingCount(brand.url) > 0 && (
+                  <span className="block text-[11px] text-gray-500 tabular-nums">
+                    {tCommon("listings", { count: brandListingCount(brand.url) })}
+                  </span>
+                )}
+              </span>
             </Link>
-          </Tooltip>
         ))}
       </div>
     </section>

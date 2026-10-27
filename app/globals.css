@@ -17,11 +17,10 @@
   --color-error: var(--mui-error);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Тёмной темы пока нет — фиксируем светлую, иначе при тёмной теме ОС фон
+   вокруг белых блоков становился чёрным */
+:root {
+  color-scheme: light;
 }
 
 body {

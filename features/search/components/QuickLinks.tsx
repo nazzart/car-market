@@ -26,9 +26,9 @@ export default function QuickLinks() {
   const tOptions = useTranslations("options");
 
   return (
-    <section className="py-8 grid md:grid-cols-2 gap-8">
+    <section className="py-8 sm:py-10 grid md:grid-cols-2 gap-8">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight mb-4">{t("byBody")}</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight mb-4">{t("byBody")}</h2>
 
         <div className="flex flex-wrap gap-2">
           {bodyTypes.map((type) => (
@@ -44,7 +44,7 @@ export default function QuickLinks() {
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold tracking-tight mb-4">{t("byPrice")}</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight mb-4">{t("byPrice")}</h2>
 
         <div className="flex flex-wrap gap-2">
           {priceRanges.map((price) => (

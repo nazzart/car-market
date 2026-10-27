@@ -1,6 +1,8 @@
 import Container from "@/components/layout/Container";
 import BrandGrid from "@/features/brands/components/BrandGrid";
 import BrandList from "@/features/brands/components/BrandList";
+import DealersTeaser from "@/features/home/components/DealersTeaser";
+import WhyUs from "@/features/home/components/WhyUs";
 import CarGrid from "@/features/latest-cars/components/CarGrid";
 import QuickSearch from "@/features/search/components/QuickSearch";
 import QuickLinks from "@/features/search/components/QuickLinks";
@@ -26,6 +28,10 @@ export default function Home() {
 
       <Container>
         <QuickLinks />
+
+        <DealersTeaser />
+
+        <WhyUs />
 
         <SellBanner />
       </Container>

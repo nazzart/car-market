@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+
+// /cars/bmw/m4 → /cars?brand=bmw&model=m4
 export default async function ModelPage({
   params,
 }: {
@@ -5,9 +8,7 @@ export default async function ModelPage({
 }) {
   const { brand, model } = await params;
 
-  return (
-    <div>
-      {brand} {model}
-    </div>
+  redirect(
+    `/cars?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`
   );
 }

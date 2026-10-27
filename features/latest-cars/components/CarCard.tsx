@@ -21,7 +21,6 @@ export default function CarCard({ listing }: { listing: Listing }) {
 
   return (
     <article className="group relative">
-      {/* TODO: страница объявления /listing/[id] ещё не создана */}
       <Link href={`/listing/${id}`} className="block">
         <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
           {image ? (

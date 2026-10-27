@@ -17,7 +17,7 @@ import PhoneButton from "./PhoneButton";
 const badgeClass = "px-2 py-0.5 rounded-md text-xs font-medium";
 
 export default function ListingRow({ listing }: { listing: Listing }) {
-  const href = `/listing/${listing.id}`; // TODO: страница объявления ещё не создана
+  const href = `/listing/${listing.id}`;
 
   const specs = [
     String(listing.year),

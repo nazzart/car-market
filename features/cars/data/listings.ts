@@ -25,6 +25,18 @@ export type Listing = {
   phone: string;
   images: string[];
   tuned?: boolean;
+
+  // Детали для страницы объявления (необязательные)
+  color?: string;
+  owners?: number;
+  vin?: string; // хранится уже замаскированным
+  inspectionUntil?: string; // техосмотр, «MM.YYYY»
+  noAccidents?: boolean;
+  negotiable?: boolean;
+  description?: string;
+  equipment?: string[];
+  sellerSince?: number;
+  views?: number;
 };
 
 const bmwGallery = [
@@ -61,6 +73,28 @@ export const listings: Listing[] = [
     city: "Рига",
     postedAt: "15 минут назад",
     phone: "+371 2000 1001",
+    color: "Синий металлик",
+    owners: 2,
+    vin: "WUAZZZ4G*******21",
+    inspectionUntil: "06.2027",
+    noAccidents: true,
+    negotiable: true,
+    description:
+      "Audi RS7 Sportback в отличном состоянии, полностью обслужена у официального дилера. Керамические тормоза, выхлоп RS Sport, панорамная крыша. Два комплекта колёс на дисках (лето/зима). Без ДТП, пробег подтверждён сервисной историей. Возможен обмен на более дешёвый автомобиль с доплатой. Автомобиль можно посмотреть в нашем салоне в Риге, оформление документов на месте.",
+    equipment: [
+      "Адаптивный круиз-контроль",
+      "Панорамная крыша",
+      "Матричные LED-фары",
+      "Аудиосистема Bang & Olufsen",
+      "Подогрев и вентиляция сидений",
+      "4-зонный климат-контроль",
+      "Камера 360°",
+      "Пневмоподвеска",
+      "Бесключевой доступ",
+      "Head-up дисплей",
+    ],
+    sellerSince: 2019,
+    views: 412,
     images: ["/cars/bmw.jpg"],
   },
   {
@@ -81,6 +115,26 @@ export const listings: Listing[] = [
     city: "Юрмала",
     postedAt: "1 час назад",
     phone: "+371 2000 1002",
+    color: "Белый",
+    owners: 1,
+    vin: "WBS4Y910*******48",
+    inspectionUntil: "03.2027",
+    noAccidents: true,
+    negotiable: false,
+    description:
+      "BMW M4 Competition в идеальном состоянии, один владелец. Установлен выхлоп Akrapovič, кованые диски 20″ и карбоновый спойлер — все доработки сделаны в официальном сервисе и вписаны в документы. Обслуживание строго по регламенту, последнее ТО полгода назад. Зимой не эксплуатировалась, хранилась в тёплом гараже.",
+    equipment: [
+      "Карбон-керамические тормоза",
+      "Адаптивная подвеска M",
+      "Спортивные сиденья M",
+      "Harman Kardon",
+      "Head-up дисплей",
+      "Камера заднего вида",
+      "Подогрев сидений",
+      "Бесключевой доступ",
+    ],
+    sellerSince: 2021,
+    views: 238,
     images: bmwGallery,
     tuned: true,
   },
@@ -123,6 +177,24 @@ export const listings: Listing[] = [
     city: "Рига",
     postedAt: "3 часа назад",
     phone: "+371 2000 1004",
+    color: "Белый",
+    owners: 1,
+    vin: "WBA4J710*******03",
+    inspectionUntil: "11.2027",
+    noAccidents: true,
+    negotiable: true,
+    description:
+      "Официальный автомобиль, куплен новым в Латвии. Полный привод xDrive, пакет M Sport. Гарантия дилера 12 месяцев, возможен лизинг и трейд-ин.",
+    equipment: [
+      "Пакет M Sport",
+      "LED-фары",
+      "Навигация Professional",
+      "Подогрев сидений",
+      "Парктроники спереди и сзади",
+      "Электропривод багажника",
+    ],
+    sellerSince: 2016,
+    views: 157,
     images: rotate(bmwGallery, 2),
   },
   {
@@ -143,6 +215,16 @@ export const listings: Listing[] = [
     city: "Рига",
     postedAt: "3 часа назад",
     phone: "+371 2000 1009",
+    color: "Белый",
+    owners: 2,
+    inspectionUntil: "08.2026",
+    noAccidents: true,
+    negotiable: true,
+    description:
+      "Продаю свою BMW 430i в пакете M Sport. Машина ухожена, без вложений. Новая резина, свежее масло. Торг у капота.",
+    equipment: ["Пакет M Sport", "LED-фары", "Подогрев сидений", "Круиз-контроль"],
+    sellerSince: 2020,
+    views: 96,
     images: rotate(bmwGallery, 1),
   },
   {
@@ -225,6 +307,14 @@ export const listings: Listing[] = [
     city: "Огре",
     postedAt: "Сегодня",
     phone: "+371 2000 1010",
+    color: "Белый",
+    owners: 2,
+    inspectionUntil: "02.2027",
+    noAccidents: true,
+    description:
+      "Экономичный дизель с полным приводом. Проверен на нашем техническом центре, отчёт по диагностике предоставим. Возможен лизинг.",
+    sellerSince: 2016,
+    views: 71,
     images: rotate(bmwGallery, 4),
   },
   {
@@ -285,6 +375,13 @@ export const listings: Listing[] = [
     city: "Вентспилс",
     postedAt: "Вчера",
     phone: "+371 2000 1011",
+    color: "Белый",
+    owners: 3,
+    inspectionUntil: "05.2026",
+    negotiable: true,
+    description: "BMW 435i на механике — редкая комплектация. Машина живая, едет отлично.",
+    sellerSince: 2023,
+    views: 58,
     images: rotate(bmwGallery, 3),
   },
 ];

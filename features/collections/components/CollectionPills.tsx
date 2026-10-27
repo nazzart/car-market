@@ -1,6 +1,6 @@
 "use client";
 
-import { useCarFilters } from "@/features/cars/car-list/components/filters/hooks/useCarFilters";
+import { useCarFilters } from "@/features/cars/car-list/hooks/useCarFilters";
 
 import { collections, visibleCollections } from "../data/collections";
 

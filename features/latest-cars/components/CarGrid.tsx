@@ -1,14 +1,15 @@
 import Link from "next/link";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-import { latestListings } from "../data/latestListings";
+import { listings } from "@/features/cars/data/listings";
+
 import CarCard from "./CarCard";
 
 // На главной — только объявления с фото: это «витрина» сайта
 const HOMEPAGE_LIMIT = 6;
 
-const homepageListings = latestListings
-  .filter((listing) => listing.image)
+const homepageListings = listings
+  .filter((listing) => listing.images.length > 0)
   .slice(0, HOMEPAGE_LIMIT);
 
 export default function CarGrid() {

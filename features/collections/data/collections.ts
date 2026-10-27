@@ -5,6 +5,8 @@ import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";
 
+import type { Listing } from "@/features/cars/data/listings";
+
 // Временные данные — count позже будет считаться в БД
 export type Collection = {
   slug: string;
@@ -12,14 +14,19 @@ export type Collection = {
   description: string;
   icon: SvgIconComponent;
   count: number;
+  // правило попадания объявления в подборку (позже — условие запроса к БД)
+  matches: (listing: Listing) => boolean;
 };
 
-// Правила попадания в подборку (для будущего запроса к БД):
-// retro    — год выпуска ≤ 1995
-// sport    — купе/кабриолет с мощностью от 300 л.с. или модель из списка (M4, RS7, 911…)
-// tuning   — продавец отметил «Автомобиль с тюнингом» (с модерацией)
-// exotic   — марка из списка (Ferrari, Lamborghini, Rolls-Royce…) или цена от 100 000 €
-// electric — тип топлива: электро
+const EXOTIC_BRANDS = [
+  "ferrari",
+  "lamborghini",
+  "rolls-royce",
+  "bentley",
+  "aston-martin",
+  "maserati",
+];
+
 export const collections: Collection[] = [
   {
     slug: "retro",
@@ -27,6 +34,7 @@ export const collections: Collection[] = [
     description: "Автомобили 1995 года и старше",
     icon: HistoryOutlinedIcon,
     count: 1204,
+    matches: (l) => l.year <= 1995,
   },
   {
     slug: "sport",
@@ -34,6 +42,8 @@ export const collections: Collection[] = [
     description: "Купе и кабриолеты от 300 л.с.",
     icon: SportsScoreOutlinedIcon,
     count: 876,
+    matches: (l) =>
+      ["coupe", "convertible"].includes(l.bodyType) && l.power >= 300,
   },
   {
     slug: "tuning",
@@ -41,6 +51,8 @@ export const collections: Collection[] = [
     description: "Доработанные автомобили",
     icon: BuildOutlinedIcon,
     count: 432,
+    // продавец отмечает «Автомобиль с тюнингом» (с модерацией)
+    matches: (l) => Boolean(l.tuned),
   },
   {
     slug: "exotic",
@@ -48,6 +60,7 @@ export const collections: Collection[] = [
     description: "Редкие марки и авто от 100 000 €",
     icon: DiamondOutlinedIcon,
     count: 118,
+    matches: (l) => EXOTIC_BRANDS.includes(l.brand) || l.price >= 100000,
   },
   {
     slug: "electric",
@@ -55,6 +68,7 @@ export const collections: Collection[] = [
     description: "Полностью электрические",
     icon: ElectricBoltOutlinedIcon,
     count: 2310,
+    matches: (l) => l.fuel === "electric",
   },
 ];
 

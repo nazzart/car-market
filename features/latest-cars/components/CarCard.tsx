@@ -4,12 +4,20 @@ import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined
 
 import { formatNumber } from "@/lib/utils";
 
-import { ListingPreview } from "../data/latestListings";
+import { Listing } from "@/features/cars/data/listings";
+import {
+  fuelOptions,
+  labelOf,
+  transmissionOptions,
+} from "@/features/cars/config/filterOptions";
+
 import FavoriteButton from "./FavoriteButton";
 
-export default function CarCard({ listing }: { listing: ListingPreview }) {
-  const { id, title, year, price, mileage, fuel, transmission, city, postedAt, image } =
-    listing;
+export default function CarCard({ listing }: { listing: Listing }) {
+  const { id, title, year, price, mileage, city, postedAt } = listing;
+  const image = listing.images[0];
+  const fuel = labelOf(fuelOptions, listing.fuel);
+  const transmission = labelOf(transmissionOptions, listing.transmission);
 
   return (
     <article className="group relative">
@@ -27,7 +35,7 @@ export default function CarCard({ listing }: { listing: ListingPreview }) {
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-gray-300">
               <DirectionsCarOutlinedIcon sx={{ fontSize: 48 }} />
-              <span className="text-xs text-gray-400">Нет фото</span>
+              <span className="text-xs text-gray-500">Нет фото</span>
             </div>
           )}
         </div>

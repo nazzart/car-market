@@ -61,6 +61,7 @@ export function TechnicalSection({
 
         <div className="space-y-4">
           <ChipSelect
+            inline
             label="Тип топлива"
             options={FUEL_TYPES}
             value={data.fuel}
@@ -96,7 +97,7 @@ export function TechnicalSection({
               }
               fullWidth
               InputProps={{
-                endAdornment: <InputAdornment position="end">L</InputAdornment>,
+                endAdornment: <InputAdornment position="end">л</InputAdornment>,
               }}
             />
 
@@ -111,7 +112,7 @@ export function TechnicalSection({
               fullWidth
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">HP</InputAdornment>
+                  <InputAdornment position="end">л.с.</InputAdornment>
                 ),
               }}
               inputProps={{ min: 0 }}
@@ -124,6 +125,7 @@ export function TechnicalSection({
         <div className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
             <ChipSelect
+              inline
               label="Коробка передач"
               options={TRANSMISSIONS}
               value={data.transmission}
@@ -137,6 +139,7 @@ export function TechnicalSection({
             />
 
             <ChipSelect
+              inline
               label="Привод"
               options={DRIVES}
               value={data.drive}

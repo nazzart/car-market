@@ -21,6 +21,13 @@ export const theme = createTheme({
   },
 
   components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {

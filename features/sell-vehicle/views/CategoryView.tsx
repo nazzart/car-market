@@ -1,52 +1,73 @@
 "use client";
 
+import CheckIcon from "@mui/icons-material/Check";
+
 import CategoryCard from "../components/CategoryCard";
 
 type Props = {
   onSelect: (category: string) => void;
 };
 
+const items = [
+  {
+    value: "car",
+    title: "Легковой автомобиль",
+    description: "Седаны, внедорожники, хэтчбеки",
+    image: "/cars/category-car.png",
+  },
+  {
+    value: "commercial",
+    title: "Коммерческий транспорт",
+    description: "Грузовики, фургоны, спецтехника",
+    image: "/cars/category-truck.png",
+    soon: true,
+  },
+  {
+    value: "moto",
+    title: "Мотоцикл",
+    description: "Мотоциклы, скутеры, квадроциклы",
+    image: "/cars/category-moto.png",
+    soon: true,
+  },
+];
+
+const benefits = ["Бесплатно", "5–10 минут", "Покупатели со всей Латвии"];
+
 export default function CategoryView({ onSelect }: Props) {
-  const items = [
-    {
-      title: "Cars",
-      description: "Passenger vehicles",
-      sub: "Sedans, SUVs, hatchbacks",
-      image: "/cars/category-car.png",
-    },
-    {
-      title: "Commercial transport",
-      description: "Trucks, vans, спецтехника",
-      image: "/cars/category-truck.png",
-    },
-    {
-      title: "Motorcycles",
-      description: "Bikes, scooters",
-      image: "/cars/category-moto.png",
-    },
-  ];
-
   return (
-    <div className="max-w-6xl mx-auto px-10 py-20">
+    <div className="max-w-5xl mx-auto py-12 sm:py-20">
       {/* Header */}
-      <div className="text-center mb-16">
-        <p className="text-gray-500 text-lg">Create listing</p>
 
-        <h1 className="text-4xl font-semibold mt-2">
-          What do you want to sell?
+      <div className="text-center mb-10 sm:mb-14">
+        <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+          Новое объявление
+        </p>
+
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">
+          Что вы продаёте?
         </h1>
+
+        <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-5 text-sm text-gray-600">
+          {benefits.map((b) => (
+            <li key={b} className="inline-flex items-center gap-1.5">
+              <CheckIcon sx={{ fontSize: 16 }} className="text-emerald-600" />
+              {b}
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Cards */}
-      <div className="grid md:grid-cols-3 gap-8">
-        {items.map((item, i) => (
+
+      <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
+        {items.map((item) => (
           <CategoryCard
-            key={i}
+            key={item.value}
             title={item.title}
             description={item.description}
-            sub={item.sub}
             image={item.image}
-            onClick={() => onSelect(item.title)}
+            soon={item.soon}
+            onClick={() => onSelect(item.value)}
           />
         ))}
       </div>

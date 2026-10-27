@@ -100,6 +100,6 @@ export const sections = [
     component: PhotosSection,
     required: false,
     title: "Фото",
-    fields: [],
+    fields: [{ name: "photos", defaultValue: [] }],
   },
 ];

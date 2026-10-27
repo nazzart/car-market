@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { SellCarSidebar } from "../components/SellCarSidebar";
 import { useProgressiveSections } from "../hooks/useProgressiveSections";
@@ -39,12 +41,41 @@ export function SellCarView() {
     ? visibleSections.includes(lastSection.id)
     : false;
 
-  return (
-    <div className="max-w-[980px] mt-10">
-      <div className="grid lg:grid-cols-[280px_1fr] gap-10 items-start">
-        <SellCarSidebar sections={sections} sectionsValid={sectionsState} />
+  const required = sections.filter((s) => s.required);
+  const requiredDone = required.filter((s) => sectionsState[s.id]).length;
 
-        <div className="space-y-10 pb-10">
+  return (
+    <div className="max-w-6xl mx-auto pt-6 pb-16">
+      {/* Header */}
+
+      <div className="mb-8">
+        <Link
+          href="/sell"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-black transition"
+        >
+          <ArrowBackIcon sx={{ fontSize: 16 }} />
+          Выбрать другую категорию
+        </Link>
+
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mt-3">
+          Продать легковой автомобиль
+        </h1>
+
+        <p className="text-gray-500 mt-1">
+          Заполните обязательные разделы — остальное можно добавить позже
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8 xl:gap-12 items-start">
+        <SellCarSidebar
+          sections={sections}
+          sectionsValid={sectionsState}
+          visibleSections={visibleSections}
+          requiredDone={requiredDone}
+          requiredTotal={required.length}
+        />
+
+        <div className="space-y-6 min-w-0 max-w-3xl">
           {sections.map((section, index) => {
             if (!visibleSections.includes(section.id)) return null;
 
@@ -65,9 +96,16 @@ export function SellCarView() {
             );
           })}
 
-          {isLastVisible && <PublishSection onSubmit={handleSubmit} />}
+          {isLastVisible && (
+            <PublishSection
+              data={formData}
+              requiredDone={requiredDone}
+              requiredTotal={required.length}
+              onSubmit={handleSubmit}
+            />
+          )}
 
-          {!isLastVisible && <div className="h-[50vh]" />}
+          {!isLastVisible && <div className="h-[40vh]" />}
         </div>
       </div>
     </div>

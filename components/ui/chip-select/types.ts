@@ -16,4 +16,6 @@ export type ChipSelectProps = {
   disableUnselect?: boolean;
   required?: boolean;
   error?: boolean;
+  // показать варианты сразу (для коротких списков), без выпадающего поля
+  inline?: boolean;
 };

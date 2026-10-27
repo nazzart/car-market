@@ -8,6 +8,7 @@ import { useSectionNext } from "../hooks/useSectionNext";
 import { FormStepProps } from "../types";
 import { useSectionValidation } from "../hooks/useSectionValidation";
 import { validateField } from "../utils/validationRules";
+import { bodyTypeOptions } from "@/features/cars/config/filterOptions";
 
 export function CarInfoSection({
   id,
@@ -19,17 +20,6 @@ export function CarInfoSection({
   updateField,
 }: FormStepProps) {
   const brands = ["Audi", "BMW", "Mercedes"];
-
-  const bodyTypes = [
-    { label: "Sedan", value: "sedan" },
-    { label: "Wagon", value: "wagon" },
-    { label: "Hatchback", value: "hatchback" },
-    { label: "Coupe", value: "coupe" },
-    { label: "Convertible", value: "convertible" },
-    { label: "SUV", value: "suv" },
-    { label: "Minivan", value: "minivan" },
-    { label: "Pickup", value: "pickup" },
-  ];
 
   const colors = [
     { label: "Чёрный", value: "black", color: "#111111" },
@@ -126,7 +116,7 @@ export function CarInfoSection({
               attemptedNext && !validateField(data.mileage, getRules("mileage"))
             }
             InputProps={{
-              endAdornment: <InputAdornment position="end">km</InputAdornment>,
+              endAdornment: <InputAdornment position="end">км</InputAdornment>,
             }}
             inputProps={{ min: 0 }}
           />
@@ -166,8 +156,9 @@ export function CarInfoSection({
         {/* Body type */}
 
         <ChipSelect
+          inline
           label="Тип кузова"
-          options={bodyTypes}
+          options={bodyTypeOptions}
           value={data.bodyType}
           onChange={(value) => updateField("bodyType", value)}
           clearable
@@ -181,6 +172,7 @@ export function CarInfoSection({
         {/* Color */}
 
         <ChipSelect
+          inline
           label="Цвет"
           options={colors}
           value={data.color}

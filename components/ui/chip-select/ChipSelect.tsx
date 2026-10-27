@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Chip, IconButton } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
 import { ChipSelectProps } from "./types";
 
 export function ChipSelect({
@@ -18,6 +19,7 @@ export function ChipSelect({
   disableUnselect = false,
   error,
   required,
+  inline = false,
 }: ChipSelectProps) {
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -73,6 +75,98 @@ export function ChipSelect({
     };
   }, []);
 
+  if (inline) {
+    const selectedLabel =
+      !multiple && hasValue
+        ? options.find((o) => o.value === currentValue)?.label
+        : null;
+
+    return (
+      <div>
+        <div className={`text-sm font-medium mb-2.5 ${isError ? "text-error" : "text-gray-900"}`}>
+          {label}
+          {required && <span className="ml-0.5">*</span>}
+          {variant === "color" && selectedLabel && (
+            <span className="font-normal text-gray-500"> · {selectedLabel}</span>
+          )}
+        </div>
+
+        {variant === "color" ? (
+          <div className="flex flex-wrap gap-2.5">
+            {options.map((option) => {
+              const selected = currentValue === option.value;
+              const light = ["white", "beige", "silver", "yellow"].includes(option.value);
+
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  title={option.label}
+                  aria-label={option.label}
+                  aria-pressed={selected}
+                  onClick={() => handleSelect(option.value)}
+                  className={`
+                    w-9 h-9
+                    flex items-center justify-center
+                    rounded-full
+                    border border-black/10
+                    transition
+                    cursor-pointer
+                    ${selected ? "ring-2 ring-gray-900 ring-offset-2" : "hover:scale-110"}
+                  `}
+                  style={{ background: option.color }}
+                >
+                  {selected && (
+                    <CheckIcon
+                      sx={{ fontSize: 18 }}
+                      className={light ? "text-gray-900" : "text-white"}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {options.map((option) => {
+              const selected = multiple
+                ? currentValue.includes(option.value)
+                : currentValue === option.value;
+
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => handleSelect(option.value)}
+                  className={`
+                    px-4 py-2
+                    rounded-full
+                    border
+                    text-sm
+                    transition
+                    cursor-pointer
+                    ${
+                      selected
+                        ? "bg-gray-900 border-gray-900 text-white"
+                        : isError
+                        ? "border-error/50 text-gray-700 hover:border-gray-900"
+                        : "border-gray-200 text-gray-700 hover:border-gray-900"
+                    }
+                  `}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {isError && <p className="text-xs text-error mt-2">Выберите вариант</p>}
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} className="relative space-y-2">
       {/* Floating label */}
@@ -85,7 +179,7 @@ export function ChipSelect({
               ? "top-[-8px] text-[12px]"
               : "top-[20px] text-[16px]"
           }
-          ${isError ? "text-error" : open ? "text-blue-600" : "text-gray-600"}
+          ${isError ? "text-error" : open ? "text-gray-900" : "text-gray-600"}
         `}
       >
         {label}
@@ -97,7 +191,7 @@ export function ChipSelect({
         onClick={() => setOpen((v) => !v)}
         className={`
           flex items-center justify-between
-          rounded-md border
+          rounded-xl border
           pl-3 pr-2 h-[56px]
           cursor-pointer
          
@@ -107,7 +201,7 @@ export function ChipSelect({
                 ? "border border-error ring-1 ring-error shadow-[0_0_0_2px_rgba(211,47,47,0.12)]"
                 : "border border-error"
               : open
-              ? "border-blue-500 ring-1 ring-blue-500"
+              ? "border-gray-900 ring-1 ring-gray-900"
               : "border border-gray-300 hover:border-gray-700"
           }
         `}
@@ -237,7 +331,7 @@ export function ChipSelect({
                     w-9 h-9 rounded-full border-2 transition-all
                     ${
                       selected
-                        ? "border-blue-500 scale-110"
+                        ? "border-gray-900 scale-110"
                         : "border-gray-300 hover:scale-105 hover:border-gray-400"
                     }
                   `}
@@ -258,10 +352,17 @@ export function ChipSelect({
                   key={option.value}
                   label={option.label}
                   clickable
-                  color={selected ? "primary" : "default"}
                   variant={selected ? "filled" : "outlined"}
                   onClick={() => handleSelect(option.value)}
-                  sx={{ height: 36, width: "100%" }}
+                  sx={{
+                    height: 36,
+                    width: "100%",
+                    ...(selected && {
+                      bgcolor: "#111827",
+                      color: "#fff",
+                      "&:hover": { bgcolor: "#000" },
+                    }),
+                  }}
                 />
               );
             })}

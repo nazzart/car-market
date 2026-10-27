@@ -1,68 +1,77 @@
 "use client";
 
 import Image from "next/image";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 type CategoryCardProps = {
   title: string;
   description: string;
-  sub?: string;
   image: string;
-  selected?: boolean;
+  soon?: boolean;
   onClick?: () => void;
 };
 
 export default function CategoryCard({
   title,
   description,
-  sub,
   image,
+  soon,
   onClick,
 }: CategoryCardProps) {
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className={`
-        border-gray-200 shadow-[0_4px_16px_rgba(0,0,0,0.05)]
-        cursor-pointer
-        rounded-2xl
-        border
+      disabled={soon}
+      className="
+        group relative
+        text-left
+        rounded-3xl
+        border border-gray-200
         bg-white
         overflow-hidden
-        transition-all
-        duration-200
-        hover:border-blue-400 shadow-[0_6px_18px_rgba(0,0,0,0.06)]
-       
-      `}
+        transition duration-200
+        enabled:hover:border-gray-300
+        enabled:hover:shadow-xl enabled:hover:shadow-black/5
+        enabled:hover:-translate-y-1
+        enabled:cursor-pointer
+        disabled:cursor-not-allowed
+      "
     >
-      {/* IMAGE */}
-      <div className="flex justify-center pt-10 pb-6 px-2">
-        <Image src={image} width={280} height={180} alt={title} />
+      {soon && (
+        <span className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-full bg-gray-900 text-white text-xs font-medium">
+          Скоро
+        </span>
+      )}
+
+      {/* Image */}
+
+      <div className={`bg-gray-50 px-6 pt-8 pb-4 ${soon ? "opacity-50" : ""}`}>
+        <Image
+          src={image}
+          width={300}
+          height={200}
+          alt=""
+          className="w-full h-auto mix-blend-multiply transition duration-300 group-enabled:group-hover:scale-105"
+        />
       </div>
 
-      {/* CONTENT */}
-      <div className="px-8 pb-8">
-        <div className="flex items-start justify-between gap-4">
-          <h3 className="text-xl font-semibold leading-snug">{title}</h3>
+      {/* Content */}
 
-          <svg
-            className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
+      <div className="flex items-end justify-between gap-4 p-6">
+        <div>
+          <h3 className={`text-lg font-semibold ${soon ? "text-gray-400" : "text-gray-900"}`}>
+            {title}
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">{description}</p>
         </div>
 
-        <p className="text-gray-500 mt-2">{description}</p>
-
-        {sub && <p className="text-gray-400 text-sm">{sub}</p>}
+        {!soon && (
+          <span className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 transition group-hover:bg-primary group-hover:text-white">
+            <ArrowForwardIcon fontSize="small" />
+          </span>
+        )}
       </div>
-    </div>
+    </button>
   );
 }

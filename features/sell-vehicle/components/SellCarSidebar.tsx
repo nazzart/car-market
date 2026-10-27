@@ -1,6 +1,6 @@
 "use client";
 
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CheckIcon from "@mui/icons-material/Check";
 
 type Props = {
   sections: {
@@ -9,59 +9,110 @@ type Props = {
     required?: boolean;
   }[];
   sectionsValid: Record<string, boolean>;
+  visibleSections: string[];
+  requiredDone: number;
+  requiredTotal: number;
 };
 
-export function SellCarSidebar({ sections, sectionsValid }: Props) {
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
+const scrollToSection = (id: string) => {
+  const el = document.getElementById(id);
+  if (!el) return;
 
+  // отступ под «липкую» шапку сайта
+  window.scrollTo({
+    top: el.getBoundingClientRect().top + window.scrollY - 96,
+    behavior: "smooth",
+  });
+};
+
+function Progress({ done, total }: { done: number; total: number }) {
   return (
-    <aside className="sticky top-12">
-      <div className="space-y-3">
-        {sections.map((item) => {
-          const valid = sectionsValid?.[item.id];
-
-          return (
-            <button
-              key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              className="flex items-center gap-2 w-full text-left"
-            >
-              {/* Check */}
-
-              {valid && (
-                <CheckCircleIcon
-                  sx={{
-                    fontSize: 18,
-                    color: "#16a34a",
-                  }}
-                />
-              )}
-
-              {!valid && (
-                <CheckCircleIcon
-                  sx={{
-                    fontSize: 18,
-                    color: "#ccc",
-                  }}
-                />
-              )}
-
-              {/* Label */}
-
-              <span className="text-sm text-gray-700">
-                {item.title}
-
-                {item.required && <span className="text-red-500 ml-1">*</span>}
-              </span>
-            </button>
-          );
-        })}
+    <div>
+      <div className="flex items-baseline justify-between text-sm">
+        <span className="font-medium text-gray-900">Обязательные разделы</span>
+        <span className="text-gray-500 tabular-nums">
+          {done} из {total}
+        </span>
       </div>
-    </aside>
+
+      <div className="h-1.5 mt-2 rounded-full bg-gray-100 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+          style={{ width: `${(done / total) * 100}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function SellCarSidebar({
+  sections,
+  sectionsValid,
+  visibleSections,
+  requiredDone,
+  requiredTotal,
+}: Props) {
+  return (
+    <>
+      {/* Mobile: только прогресс */}
+
+      <div className="lg:hidden p-4 rounded-2xl border border-gray-200">
+        <Progress done={requiredDone} total={requiredTotal} />
+      </div>
+
+      {/* Desktop */}
+
+      <aside className="hidden lg:block sticky top-24">
+        <div className="p-5 rounded-2xl border border-gray-200">
+          <Progress done={requiredDone} total={requiredTotal} />
+
+          <ol className="mt-5 space-y-1 -mx-2">
+            {sections.map((item, index) => {
+              const valid = sectionsValid[item.id];
+              const reached = visibleSections.includes(item.id);
+
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    disabled={!reached}
+                    onClick={() => scrollToSection(item.id)}
+                    className="flex items-center gap-3 w-full px-2 py-1.5 rounded-lg text-left transition enabled:hover:bg-gray-50 enabled:cursor-pointer disabled:cursor-default"
+                  >
+                    <span
+                      className={`
+                        w-6 h-6 shrink-0
+                        flex items-center justify-center
+                        rounded-full
+                        text-xs font-semibold
+                        transition
+                        ${
+                          valid
+                            ? "bg-emerald-500 text-white"
+                            : reached
+                            ? "bg-gray-900 text-white"
+                            : "bg-gray-100 text-gray-400"
+                        }
+                      `}
+                    >
+                      {valid ? <CheckIcon sx={{ fontSize: 14 }} /> : index + 1}
+                    </span>
+
+                    <span
+                      className={`text-sm ${reached ? "text-gray-900" : "text-gray-400"}`}
+                    >
+                      {item.title}
+                      {!item.required && (
+                        <span className="text-gray-400"> · необяз.</span>
+                      )}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </aside>
+    </>
   );
 }

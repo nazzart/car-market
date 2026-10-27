@@ -1,8 +1,7 @@
 "use client";
 
-import Button from "@mui/material/Button";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 type Props = {
   id: string;
@@ -45,22 +44,22 @@ export function SectionContainer({
   return (
     <section
       id={id}
-      className="
-        bg-white
-        rounded-xl
-        p-6
-        border border-gray-200 shadow-[0_4px_16px_rgba(0,0,0,0.05)]
-
-      "
+      className="scroll-mt-24 bg-white rounded-3xl border border-gray-200 p-5 sm:p-8 animate-[fadeIn_.3s_ease-out]"
     >
       {/* Header */}
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
 
-        {description && (
-          <p className="text-gray-500 text-sm mt-1">{description}</p>
-        )}
+          {!required && (
+            <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
+              Необязательно
+            </span>
+          )}
+        </div>
+
+        {description && <p className="text-gray-500 text-sm mt-1">{description}</p>}
       </div>
 
       {/* Content */}
@@ -74,36 +73,29 @@ export function SectionContainer({
           overflow-hidden
           transition-all
           duration-300
-          ${
-            completed
-              ? "max-h-0 opacity-0 mt-0"
-              : "max-h-[120px] opacity-100 mt-6"
-          }
+          ${completed ? "max-h-0 opacity-0" : "max-h-[120px] opacity-100 mt-8"}
         `}
       >
         {onNext && (
-          <div className="flex items-center justify-between pt-6 border-t border-gray-100">
-            {showSkip ? (
-              <Button
-                variant="text"
-                size="large"
+          <div className="flex items-center justify-end gap-2 pt-6 border-t border-gray-100">
+            {showSkip && (
+              <button
+                type="button"
                 onClick={handleSkip}
-                sx={{ textTransform: "none" }}
+                className="h-11 px-5 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition cursor-pointer"
               >
                 Пропустить
-              </Button>
-            ) : (
-              <div />
+              </button>
             )}
 
-            <Button
-              variant="contained"
-              size="large"
-              endIcon={<ArrowForwardIcon />}
+            <button
+              type="button"
               onClick={handleNext}
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-semibold transition cursor-pointer"
             >
               Далее
-            </Button>
+              <ArrowForwardIcon sx={{ fontSize: 18 }} />
+            </button>
           </div>
         )}
       </div>

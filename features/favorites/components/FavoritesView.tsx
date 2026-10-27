@@ -317,7 +317,8 @@ function EmptyState() {
           {t("empty.cta")}
         </Link>
 
-        <div className="mt-8 flex justify-center">
+        {/* min-w-0: строка подборок листается вбок, а не растягивает страницу */}
+        <div className="mt-8 min-w-0 text-left sm:[&>div]:justify-center">
           <CollectionPills />
         </div>
       </div>

@@ -20,16 +20,15 @@ const columns = [
     links: [
       { label: "postListing", href: "/sell" },
       { label: "footer.account", href: "/account" },
-      { label: "footer.profile", href: "/account/profile" },
     ],
   },
   {
     title: "footer.about",
     links: [
-      { label: "footer.aboutUs", href: "#" },
-      { label: "footer.rules", href: "#" },
-      { label: "footer.privacy", href: "#" },
-      { label: "footer.contacts", href: "#" },
+      { label: "footer.aboutUs", href: "/about" },
+      { label: "footer.rules", href: "/rules" },
+      { label: "footer.privacy", href: "/privacy" },
+      { label: "footer.contacts", href: "/contacts" },
     ],
   },
 ];

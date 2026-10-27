@@ -54,7 +54,12 @@ export default function PhotoGallery({ images, title }: Props) {
     <>
       {/* Desktop mosaic */}
 
-      <div className="hidden md:grid relative grid-cols-4 grid-rows-2 gap-2 h-[440px] lg:h-[500px] rounded-2xl overflow-hidden">
+      {/* одно фото — ниже, чтобы цена и характеристики были на первом экране */}
+      <div
+        className={`hidden md:grid relative grid-cols-4 grid-rows-2 gap-2 rounded-2xl overflow-hidden ${
+          small.length ? "h-[440px] lg:h-[500px]" : "h-[360px] lg:h-[420px]"
+        }`}
+      >
         {tile(
           images[0],
           0,
@@ -63,7 +68,8 @@ export default function PhotoGallery({ images, title }: Props) {
         )}
 
         {small.map((src, i) =>
-          tile(src, i + 1, small.length === 2 ? "col-span-2" : "", "25vw")
+          // 2 фото — второе на всю правую половину; 3 фото — друг под другом; 5+ — сетка 2×2
+          tile(src, i + 1, small.length === 1 ? "col-span-2 row-span-2" : small.length === 2 ? "col-span-2" : "", "25vw")
         )}
 
         {images.length > 1 && (

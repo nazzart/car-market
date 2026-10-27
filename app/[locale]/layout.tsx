@@ -6,10 +6,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import AppThemeProvider from "@/components/providers/ThemeProvider";
 import "../globals.css";
-import Container from "@/components/layout/Container";
 import { colors } from "@/lib/colors";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
+import NavigationProgress from "@/components/layout/NavigationProgress";
 import CompareBar from "@/features/compare/components/CompareBar";
 import { routing } from "@/i18n/routing";
 
@@ -57,13 +57,13 @@ export default async function LocaleLayout({ children, params }: Props) {
         ["--color-primary-hover" as any]: colors.primaryHover,
       }}
     >
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <NextIntlClientProvider>
           <AppThemeProvider>
-            <Container>
-              <Header />
-            </Container>
-            {children}
+            <Header />
+            <NavigationProgress />
+            {/* flex-1 — подвал прижат к низу экрана даже на коротких страницах */}
+            <main className="flex-1">{children}</main>
             <Footer />
             <CompareBar />
           </AppThemeProvider>

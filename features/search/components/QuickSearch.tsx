@@ -15,11 +15,13 @@ import {
 } from "@/features/collections/data/collections";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
+import { brandListingCount, totalListingCount } from "@/features/cars/data/counts";
+import { listings } from "@/features/cars/data/listings";
+import { filterListings } from "@/features/cars/lib/filterListings";
 
 type Panel = "brand" | "model" | "price" | "year";
 
 const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
-const totalCount = brands.reduce((sum, b) => sum + b.count, 0);
 
 const conditions = ["", "used", "new"];
 
@@ -181,10 +183,9 @@ export default function QuickSearch() {
   const models = modelsByBrand[brand] ?? [];
   const brandName = brands.find((b) => b.slug === brand)?.name ?? "";
 
-  // Пока считаем только по марке — позже счётчик будет приходить из API
-  const count = brand
-    ? brands.find((b) => b.slug === brand)?.count ?? 0
-    : totalCount;
+  // Те же правила, что и на /cars — число на кнопке совпадает с результатом поиска
+  const query: Record<string, string> = { condition, brand, model, priceFrom, priceTo, yearFrom };
+  const count = filterListings(listings, { get: (key) => query[key] || null }).length;
 
   const filteredBrands = sortedBrands.filter((b) =>
     b.name.toLowerCase().includes(brandQuery.trim().toLowerCase())
@@ -252,7 +253,7 @@ export default function QuickSearch() {
           </h1>
 
           <p className="text-white/75 mt-3 sm:text-lg">
-            {t("heroSubtitle", { count: totalCount })}
+            {t("heroSubtitle", { count: totalListingCount })}
           </p>
 
           {/* Condition */}
@@ -438,7 +439,7 @@ export default function QuickSearch() {
                       brand === b.slug ? "text-white/70" : "text-gray-500"
                     }`}
                   >
-                    {formatNumber(b.count)}
+                    {brandListingCount(b.slug) > 0 && formatNumber(brandListingCount(b.slug))}
                   </span>
                 </OptionButton>
               ))}

@@ -38,7 +38,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
       className={`
-        scroll-mt-4
+        scroll-mt-20
         p-4
         rounded-2xl
         border

@@ -59,7 +59,8 @@ export default function CarCard({ listing }: { listing: Listing }) {
       </Link>
 
       <FavoriteButton listing={listing} className="absolute top-2 right-2" />
-      <CompareButton id={listing.id} className="absolute top-12 right-2" />
+      {/* на телефоне карточки узкие — «сравнить» есть на странице объявления и в списке */}
+      <CompareButton id={listing.id} className="absolute top-14 right-2 hidden sm:flex" />
     </article>
   );
 }

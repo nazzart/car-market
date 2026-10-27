@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AddIcon from "@mui/icons-material/Add";
 
 import { Badge, IconButton, Button } from "@mui/material";
@@ -41,9 +40,7 @@ export default function HeaderActions() {
           </Badge>
         </IconButton>
 
-        <IconButton aria-label={t("notifications")}>
-          <NotificationsNoneIcon className="text-gray-600" />
-        </IconButton>
+        {/* Колокольчик вернётся вместе с уведомлениями (снижение цены, новые по сохранённому поиску) */}
 
         <UserMenu user={user} onLoginClick={() => setAuthOpen(true)} />
 

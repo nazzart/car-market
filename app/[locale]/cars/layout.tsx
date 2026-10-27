@@ -1,5 +1,3 @@
-import Container from "@/components/layout/Container";
-
 export default function CarsLayout({
   children,
 }: {

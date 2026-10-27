@@ -236,8 +236,8 @@ export default function DealersView() {
           className={`
             ${mobileView === "list" ? "hidden lg:block" : ""}
             relative isolate
-            h-[calc(100svh-8rem)] lg:h-[calc(100vh-2rem)]
-            lg:sticky lg:top-4
+            h-[calc(100svh-8rem)] lg:h-[calc(100vh-6rem)]
+            lg:sticky lg:top-20
             rounded-3xl overflow-hidden
             border border-gray-200
           `}

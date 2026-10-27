@@ -88,3 +88,28 @@ body {
 .leaflet-popup-content {
   margin: 14px 16px;
 }
+
+/* Полоска загрузки при переходе между страницами (NavigationProgress) */
+.nav-progress {
+  position: fixed;
+  top: 4rem; /* под шапкой h-16 */
+  left: 0;
+  z-index: 60;
+  height: 2px;
+  width: 0;
+  background: var(--color-primary);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-progress[data-state="loading"] {
+  opacity: 1;
+  width: 85%;
+  transition: width 8s cubic-bezier(0.1, 0.7, 0.2, 1);
+}
+
+.nav-progress[data-state="done"] {
+  opacity: 0;
+  width: 100%;
+  transition: width 0.2s ease-out, opacity 0.3s ease 0.2s;
+}

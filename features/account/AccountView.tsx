@@ -45,7 +45,8 @@ const primaryButton =
 const secondaryButton =
   "inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium text-gray-900 transition";
 
-export function LoggedOut() {
+// title — заголовок страницы, на которую пытались попасть (например, «Настройки профиля»)
+export function LoggedOut({ title }: { title?: string }) {
   const t = useTranslations("account.loggedOut");
 
   return (
@@ -54,7 +55,7 @@ export function LoggedOut() {
         <LockOutlinedIcon sx={{ fontSize: 30 }} />
       </span>
 
-      <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{title ?? t("title")}</h1>
       <p className="text-gray-500 mt-2">
         {t("text")}
       </p>

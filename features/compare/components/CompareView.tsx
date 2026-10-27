@@ -258,7 +258,7 @@ export default function CompareView() {
 
       {/* Машины — прилипают к верху при прокрутке */}
 
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-200 -mx-4 px-4">
+      <div className="sticky top-16 z-30 bg-white/95 backdrop-blur border-b border-gray-200 -mx-4 px-4">
         <div ref={header} className={cn("overflow-hidden", sizes)}>
           <div className={gridClass} style={{ ...grid, ...minWidth }}>
             <div className="py-3 pr-3 text-xs text-gray-500 self-end">

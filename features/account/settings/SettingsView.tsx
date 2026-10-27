@@ -626,9 +626,10 @@ function DealerSettings({ user }: { user: User }) {
 }
 
 export default function SettingsView() {
+  const t = useTranslations("account.settings");
   const { user } = useAuth();
 
-  if (!user) return <LoggedOut />;
+  if (!user) return <LoggedOut title={t("title")} />;
 
   return (
     <div className="max-w-3xl mx-auto pt-8 pb-28">

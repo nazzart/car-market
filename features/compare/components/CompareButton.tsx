@@ -51,7 +51,7 @@ export default function CompareButton({ id, variant = "icon", className }: Props
       aria-label={active ? t("remove") : t("add")}
       title={active ? t("remove") : t("add")}
       className={cn(
-        "w-9 h-9 flex items-center justify-center rounded-full shadow-sm backdrop-blur hover:scale-105 transition cursor-pointer",
+        "w-10 h-10 flex items-center justify-center rounded-full shadow-sm backdrop-blur hover:scale-105 transition cursor-pointer",
         active ? "bg-gray-900 text-white" : "bg-white/90 text-gray-700 hover:bg-white",
         className
       )}

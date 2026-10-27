@@ -27,7 +27,8 @@ import { inputClass } from "./ui";
 
 // Сайдбар всегда целиком в окне: пока он не прилип, высота — до нижнего края экрана.
 // Так низ панели и подсказка «Ещё фильтры» видны сразу, без прокрутки страницы
-function useFitToViewport<T extends HTMLElement>(gap = 16) {
+// top — отступ прилипания под шапкой (top-20 = 80px)
+function useFitToViewport<T extends HTMLElement>(top = 80, gap = 16) {
   const ref = useRef<T>(null);
 
   useEffect(() => {
@@ -35,8 +36,8 @@ function useFitToViewport<T extends HTMLElement>(gap = 16) {
     if (!el) return;
 
     const update = () => {
-      const top = Math.max(el.getBoundingClientRect().top, gap);
-      el.style.maxHeight = `${window.innerHeight - top - gap}px`;
+      const offset = Math.max(el.getBoundingClientRect().top, top);
+      el.style.maxHeight = `${window.innerHeight - offset - gap}px`;
     };
 
     update();
@@ -46,7 +47,7 @@ function useFitToViewport<T extends HTMLElement>(gap = 16) {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [gap]);
+  }, [top, gap]);
 
   return ref;
 }
@@ -113,7 +114,7 @@ export default function CarsSearchView() {
 
         <aside
           ref={sidebarRef}
-          className="hidden lg:flex flex-col sticky top-4 max-h-[calc(100vh-2rem)] rounded-3xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          className="hidden lg:flex flex-col sticky top-20 max-h-[calc(100vh-6rem)] rounded-3xl border border-gray-200 bg-white shadow-sm overflow-hidden">
           <div className="shrink-0 flex items-center justify-between gap-3 px-5 h-14 border-b border-gray-100">
             <h2 className="flex items-center gap-2 text-base font-semibold">
               <TuneIcon fontSize="small" />
@@ -142,7 +143,7 @@ export default function CarsSearchView() {
         <div className="min-w-0">
           {/* Toolbar — на мобильных прилипает под шапкой, чтобы фильтры были под рукой */}
 
-          <div className="sticky top-0 z-30 -mx-4 px-4 py-2 bg-white/90 backdrop-blur-lg border-b border-gray-100 lg:static lg:z-auto lg:mx-0 lg:p-0 lg:bg-transparent lg:backdrop-blur-none lg:border-0 flex items-center justify-between gap-3">
+          <div className="sticky top-16 z-30 -mx-4 px-4 py-2 bg-white/90 backdrop-blur-lg border-b border-gray-100 lg:static lg:z-auto lg:mx-0 lg:p-0 lg:bg-transparent lg:backdrop-blur-none lg:border-0 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}

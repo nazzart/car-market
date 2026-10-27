@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+
+import { Link } from "@/i18n/navigation";
 import {
   Button,
   Checkbox,
@@ -183,14 +185,14 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
               <span className="text-sm text-gray-700">
                 {t.rich("register.terms", {
                   rules: (chunks) => (
-                    <a href="#" className="underline underline-offset-4 hover:text-black">
+                    <Link href="/rules" target="_blank" className="underline underline-offset-4 hover:text-black">
                       {chunks}
-                    </a>
+                    </Link>
                   ),
                   privacy: (chunks) => (
-                    <a href="#" className="underline underline-offset-4 hover:text-black">
+                    <Link href="/privacy" target="_blank" className="underline underline-offset-4 hover:text-black">
                       {chunks}
-                    </a>
+                    </Link>
                   ),
                 })}
               </span>

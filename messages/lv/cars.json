@@ -52,5 +52,7 @@
     "private": "Privātpersona",
     "morePhotos": "Vēl {count} foto"
   },
-  "moreFilters": "Vairāk filtru"
+  "moreFilters": "Vairāk filtru",
+  "metaTitle": "{title} — {results} | bestauto.lv",
+  "metaDescription": "{title}: automašīnu pārdošanas sludinājumi Latvijā no privātpersonām un dīleriem."
 }

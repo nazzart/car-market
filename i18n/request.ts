@@ -18,6 +18,7 @@ const namespaces = [
   "sell",
   "favorites",
   "compare",
+  "info",
 ] as const;
 
 export default getRequestConfig(async ({ requestLocale }) => {

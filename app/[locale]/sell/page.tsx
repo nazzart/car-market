@@ -1,7 +1,20 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import Container from "@/components/layout/Container";
 import { SellVehicleLayout } from "@/features/sell-vehicle/components/SellVehicleLayout";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "sell" });
+
+  return { title: t("metaTitle") };
+}
 
 export default function SellVehiclePage() {
   return (

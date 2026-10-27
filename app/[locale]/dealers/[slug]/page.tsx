@@ -190,7 +190,7 @@ export default async function DealerPage({ params }: Props) {
 
         {/* Sidebar */}
 
-        <aside className="lg:sticky lg:top-4 space-y-4">
+        <aside className="lg:sticky lg:top-20 space-y-4">
           <div className="rounded-2xl border border-gray-200 p-5 shadow-xl shadow-black/5">
             <ContactPhoneButton phone={dealer.phone} className="w-full" />
 

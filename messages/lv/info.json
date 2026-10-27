@@ -1,0 +1,117 @@
+{
+  "nav": "Informācija",
+  "about": {
+    "title": "Par mums",
+    "lead": "bestauto.lv — vieta, kur pirkt un pārdot automašīnas Latvijā: privātpersonu un dīleru sludinājumi vienuviet.",
+    "sections": [
+      {
+        "title": "Ko mēs darām",
+        "text": [
+          "Mēs apkopojam jaunu un lietotu automašīnu pārdošanas sludinājumus visā Latvijā un palīdzam ātri atrast piemērotāko: ērta meklēšana ar filtriem, kolekcijas, salīdzināšana un izlase."
+        ]
+      },
+      {
+        "title": "Pārdevējiem",
+        "text": [
+          "Privātpersonas sludinājumus ievieto bez maksas. Dīleri saņem uzņēmuma lapu ar karti, darba laiku un visiem pieejamajiem auto."
+        ]
+      },
+      {
+        "title": "Divās valodās",
+        "text": [
+          "Vietne darbojas latviešu un krievu valodā. Adreses un ielu nosaukumi vienmēr tiek norādīti latviešu valodā — tāpat kā oficiālajos dokumentos."
+        ]
+      }
+    ]
+  },
+  "rules": {
+    "title": "Ievietošanas noteikumi",
+    "lead": "Vienkārši noteikumi, lai sludinājumi būtu godīgi un pircējiem būtu ērti meklēt.",
+    "sections": [
+      {
+        "title": "Viens sludinājums — viens auto",
+        "text": [
+          "Neievietojiet vairākas automašīnas vienā sludinājumā un nedublējiet sludinājumus. Atkārtoti sludinājumi tiek dzēsti."
+        ]
+      },
+      {
+        "title": "Īstas fotogrāfijas un dati",
+        "text": [
+          "Izmantojiet tieši šī auto fotogrāfijas. Norādiet patieso nobraukumu, izlaiduma gadu, bojājumus un īpašnieku skaitu."
+        ]
+      },
+      {
+        "title": "Īsta cena",
+        "text": [
+          "Norādiet pilnu auto cenu eiro. Cenas kā «1 €» vai «pēc vienošanās» summas vietā nav atļautas."
+        ]
+      },
+      {
+        "title": "Tūnings un kolekcijas",
+        "text": [
+          "Atzīmi «Tūnings» lieciet tikai pārveidotiem auto — šādi sludinājumi tiek pārbaudīti pirms iekļaušanas kolekcijā."
+        ]
+      },
+      {
+        "title": "Aizliegts",
+        "text": [
+          "Zagtu auto un auto bez dokumentiem pārdošana, kā arī priekšapmaksas pieprasīšana pirms apskates. Šādi sludinājumi tiek dzēsti, un konts var tikt bloķēts."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Privātums",
+    "lead": "Īsumā par to, kādus datus mēs glabājam un kāpēc.",
+    "sections": [
+      {
+        "title": "Konta dati",
+        "text": [
+          "Reģistrējoties mēs glabājam vārdu, e-pastu un tālruni. Tālrunis pircējiem tiek parādīts tikai pēc pogas «Rādīt tālruni» nospiešanas."
+        ]
+      },
+      {
+        "title": "Dati pārlūkā",
+        "text": [
+          "Izlase, salīdzināšanas saraksts un izvēlētā valoda tiek glabāti jūsu pārlūkā (localStorage). Tos var dzēst, notīrot vietnes datus."
+        ]
+      },
+      {
+        "title": "Kartes un adreses",
+        "text": [
+          "Kartei un adrešu ieteikumiem tiek izmantoti OpenStreetMap pakalpojumi. Mēs tiem nododam tikai to, ko ievadāt adreses laukā."
+        ]
+      },
+      {
+        "title": "Pilnā versija",
+        "text": [
+          "Pilna privātuma politika tiks publicēta pirms vietnes palaišanas. Jautājumos par datiem rakstiet mums — kontakti lapā «Kontakti»."
+        ]
+      }
+    ]
+  },
+  "contacts": {
+    "title": "Kontakti",
+    "lead": "Ir jautājums, ierosinājums vai sūdzība par sludinājumu? Rakstiet mums.",
+    "sections": [
+      {
+        "title": "E-pasts",
+        "text": [
+          "info@bestauto.lv — atbildam darba dienās."
+        ]
+      },
+      {
+        "title": "Sūdzība par sludinājumu",
+        "text": [
+          "Norādiet sludinājuma numuru (tas ir sludinājuma lapā) un aprakstiet problēmu — mēs to pārbaudīsim darba dienas laikā."
+        ]
+      },
+      {
+        "title": "Dīleriem",
+        "text": [
+          "Vēlaties izvietot savu autosalonu bestauto.lv? Rakstiet uz info@bestauto.lv ar tēmu «Dīleris»."
+        ]
+      }
+    ]
+  }
+}

@@ -52,5 +52,7 @@
     "private": "Частное лицо",
     "morePhotos": "Ещё {count} фото"
   },
-  "moreFilters": "Ещё фильтры"
+  "moreFilters": "Ещё фильтры",
+  "metaTitle": "{title} — {results} | bestauto.lv",
+  "metaDescription": "{title}: объявления о продаже автомобилей в Латвии от частных лиц и дилеров."
 }

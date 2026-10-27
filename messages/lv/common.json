@@ -29,5 +29,13 @@
   "owners": "{count, plural, zero {# īpašnieki} one {# īpašnieks} other {# īpašnieki}}",
   "inLatvia": "Latvijā",
   "latvia": "Latvija",
-  "chooseOption": "Izvēlieties variantu"
+  "chooseOption": "Izvēlieties variantu",
+  "notFound": {
+    "title": "Lapa nav atrasta",
+    "text": "Iespējams, sludinājums jau ir noņemts vai saite ir novecojusi. Mēģiniet atrast auto meklēšanā.",
+    "cars": "Skatīt sludinājumus",
+    "home": "Uz sākumu",
+    "popular": "Populāras markas",
+    "dealers": "Dīleri"
+  }
 }

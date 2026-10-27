@@ -6,7 +6,9 @@ import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import { brandListingCount } from "@/features/cars/data/counts";
 import { Link } from "@/i18n/navigation";
+import { formatNumber } from "@/lib/utils";
 
 import { Brand, brands } from "../data/brands";
 
@@ -25,6 +27,8 @@ const groupByLetter =(list: Brand[]) => {
 };
 
 function BrandLink({ brand }: { brand: Brand }) {
+  const count = brandListingCount(brand.slug);
+
   return (
     <Link
       href={`/cars/${brand.slug}`}
@@ -41,9 +45,7 @@ function BrandLink({ brand }: { brand: Brand }) {
         {brand.name}
       </span>
 
-      <span className="text-xs text-gray-500 tabular-nums">
-        {brand.count.toLocaleString("ru-RU")}
-      </span>
+      {count > 0 && <span className="text-xs text-gray-500 tabular-nums">{formatNumber(count)}</span>}
     </Link>
   );
 }

@@ -27,7 +27,7 @@ export default function FavoriteButton({ listing, className }: Props) {
       aria-pressed={active}
       aria-label={active ? t("removeFavorite") : t("addFavorite")}
       className={`
-        w-9 h-9
+        w-10 h-10
         flex items-center justify-center
         rounded-full
         bg-white/90 backdrop-blur

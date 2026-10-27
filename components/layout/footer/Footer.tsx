@@ -9,7 +9,7 @@ const columns = [
     links: [
       { label: "Легковые", href: "/cars" },
       { label: "Коммерческие", href: "#" },
-      { label: "Дилеры", href: "#" },
+      { label: "Дилеры", href: "/dealers" },
       { label: "Избранное", href: "#" },
     ],
   },

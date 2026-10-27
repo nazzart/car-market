@@ -8,6 +8,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import { brands } from "@/features/brands/data/brands";
 import { collections } from "@/features/collections/data/collections";
+import { dealers } from "@/features/dealers/data/dealers";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import { formatNumber, plural } from "@/lib/utils";
@@ -45,7 +46,11 @@ export default function CarsSearchView() {
   const brandName = brands.find((b) => b.slug === params.get("brand"))?.name;
   const collection = collections.find((c) => c.slug === params.get("collection"));
 
-  const title = brandName
+  const dealerName = dealers.find((d) => d.slug === params.get("dealer"))?.name;
+
+  const title = dealerName
+    ? `Автомобили ${dealerName}`
+    : brandName
     ? [brandName, params.get("model")].filter(Boolean).join(" ")
     : collection?.label ?? "Купить автомобиль";
 

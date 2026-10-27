@@ -30,7 +30,9 @@ export default function MobileMenu() {
               Легковые
             </Link>
 
-            <a className="hover:text-black">Дилеры</a>
+            <Link href="/dealers" onClick={() => setOpen(false)} className="hover:text-black">
+              Дилеры
+            </Link>
 
             <a className="hover:text-black">Коммерческие</a>
           </nav>

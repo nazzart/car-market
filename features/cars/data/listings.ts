@@ -22,6 +22,7 @@ export type Listing = {
   condition: "used" | "new";
   sellerType: SellerType;
   sellerName?: string;
+  dealer?: string; // slug из features/dealers/data/dealers.ts
   city: string;
   postedAt: string;
   phone: string;
@@ -73,6 +74,7 @@ export const listings: Listing[] = [
     condition: "used",
     sellerType: "dealer",
     sellerName: "Premium Cars Riga",
+    dealer: "premium-cars-riga",
     city: "Рига",
     postedAt: "15 минут назад",
     phone: "+371 2000 1001",
@@ -178,6 +180,7 @@ export const listings: Listing[] = [
     condition: "used",
     sellerType: "dealer",
     sellerName: "Baltic Auto",
+    dealer: "baltic-auto",
     city: "Рига",
     postedAt: "3 часа назад",
     phone: "+371 2000 1004",
@@ -251,6 +254,7 @@ export const listings: Listing[] = [
     condition: "new",
     sellerType: "dealer",
     sellerName: "Kia Center Riga",
+    dealer: "kia-center-riga",
     city: "Рига",
     postedAt: "4 часа назад",
     phone: "+371 2000 1012",
@@ -312,6 +316,7 @@ export const listings: Listing[] = [
     condition: "used",
     sellerType: "dealer",
     sellerName: "Baltic Auto",
+    dealer: "baltic-auto",
     city: "Огре",
     postedAt: "Сегодня",
     phone: "+371 2000 1010",

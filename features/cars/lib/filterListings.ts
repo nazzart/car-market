@@ -42,7 +42,8 @@ export function filterListings(listings: Listing[], params: Params) {
       eq("fuel", l.fuel) &&
       eq("transmission", l.transmission) &&
       eq("drive", l.drive) &&
-      eq("sellerType", l.sellerType)
+      eq("sellerType", l.sellerType) &&
+      eq("dealer", l.dealer ?? "")
   );
 
   switch (params.get("sort")) {

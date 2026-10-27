@@ -1,0 +1,168 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import Link from "next/link";
+import L from "leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
+import { Dealer } from "../data/dealers";
+
+export type MapBounds = { north: number; south: number; east: number; west: number };
+
+type Props = {
+  dealers: Dealer[];
+  activeSlug: string | null;
+  hoveredSlug: string | null;
+  fitKey: string; // меняется при смене фильтров → карта подстраивается под результаты
+  onSelect: (slug: string) => void;
+  onBoundsChange: (bounds: MapBounds) => void;
+};
+
+const LATVIA_CENTER: [number, number] = [56.88, 24.6];
+
+const initials = (name: string) =>
+  name
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
+// Метка — HTML-иконка, чтобы стилизовать её Tailwind-классами
+const markerIcon = (dealer: Dealer, highlighted: boolean) =>
+  L.divIcon({
+    className: "",
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+    popupAnchor: [0, -22],
+    html: `<div class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white shadow-lg transition-transform duration-150 ${
+      highlighted ? "bg-primary scale-125" : "bg-gray-900"
+    }">${initials(dealer.name)}</div>`,
+  });
+
+function FitToDealers({ dealers, fitKey }: { dealers: Dealer[]; fitKey: string }) {
+  const map = useMap();
+  const dealersRef = useRef(dealers);
+
+  useEffect(() => {
+    dealersRef.current = dealers;
+  });
+
+  const fit = () => {
+    const list = dealersRef.current;
+    if (list.length === 0) return;
+
+    map.fitBounds(
+      list.map((d) => [d.lat, d.lng] as [number, number]),
+      { padding: [48, 48], maxZoom: 13 }
+    );
+  };
+
+  useEffect(() => {
+    fit();
+    // подстраиваемся только при смене фильтров, не при каждом рендере
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fitKey, map]);
+
+  // На телефоне карта сначала скрыта (display: none) — когда она появляется,
+  // Leaflet нужно пересчитать размер и заново показать дилеров
+  useEffect(() => {
+    const container = map.getContainer();
+    let wasHidden = container.clientWidth === 0;
+
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize();
+
+      const hidden = container.clientWidth === 0;
+      if (wasHidden && !hidden) fit();
+      wasHidden = hidden;
+    });
+
+    observer.observe(container);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
+
+  return null;
+}
+
+function FlyToActive({ dealer }: { dealer?: Dealer }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!dealer) return;
+    map.flyTo([dealer.lat, dealer.lng], Math.max(map.getZoom(), 13), { duration: 0.6 });
+  }, [dealer, map]);
+
+  return null;
+}
+
+function BoundsWatcher({ onChange }: { onChange: Props["onBoundsChange"] }) {
+  const map = useMapEvents({
+    moveend: () => report(),
+  });
+
+  const report = () => {
+    const b = map.getBounds();
+    onChange({ north: b.getNorth(), south: b.getSouth(), east: b.getEast(), west: b.getWest() });
+  };
+
+  return null;
+}
+
+export default function DealersMap({
+  dealers,
+  activeSlug,
+  hoveredSlug,
+  fitKey,
+  onSelect,
+  onBoundsChange,
+}: Props) {
+  const active = dealers.find((d) => d.slug === activeSlug);
+
+  return (
+    <MapContainer
+      center={LATVIA_CENTER}
+      zoom={7}
+      scrollWheelZoom
+      className="w-full h-full"
+    >
+      {/* Тайлы OpenStreetMap подходят для разработки; для продакшена нужен свой
+          провайдер (MapTiler, Stadia и т.п.) — см. tile usage policy OSM */}
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+
+      <FitToDealers dealers={dealers} fitKey={fitKey} />
+      <FlyToActive dealer={active} />
+      <BoundsWatcher onChange={onBoundsChange} />
+
+      {dealers.map((dealer) => (
+        <Marker
+          key={dealer.slug}
+          position={[dealer.lat, dealer.lng]}
+          icon={markerIcon(dealer, dealer.slug === activeSlug || dealer.slug === hoveredSlug)}
+          zIndexOffset={dealer.slug === activeSlug ? 1000 : 0}
+          eventHandlers={{ click: () => onSelect(dealer.slug) }}
+        >
+          <Popup>
+            <div className="min-w-48">
+              <div className="font-semibold text-gray-900 text-sm">{dealer.name}</div>
+              <div className="text-xs text-gray-500 mt-0.5">
+                {dealer.city}, {dealer.address}
+              </div>
+              <Link
+                href={`/cars?dealer=${dealer.slug}`}
+                className="inline-block mt-2 text-xs font-semibold !text-gray-900 underline underline-offset-2"
+              >
+                {dealer.carsInStock} авто в наличии →
+              </Link>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+  );
+}

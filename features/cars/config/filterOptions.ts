@@ -1,5 +1,6 @@
 import { brands } from "@/features/brands/data/brands";
 import { collections } from "@/features/collections/data/collections";
+import { dealers } from "@/features/dealers/data/dealers";
 import { formatNumber } from "@/lib/utils";
 
 type Option = { label: string; value: string };
@@ -72,6 +73,7 @@ export const FILTER_KEYS = [
   "transmission",
   "drive",
   "sellerType",
+  "dealer",
 ] as const;
 
 export type FilterKey = (typeof FILTER_KEYS)[number];
@@ -107,5 +109,7 @@ export const chipLabel = (key: FilterKey, value: string): string => {
       return `${labelOf(driveOptions, value)} привод`;
     case "sellerType":
       return labelOf(sellerOptions, value);
+    case "dealer":
+      return dealers.find((d) => d.slug === value)?.name ?? value;
   }
 };

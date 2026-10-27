@@ -44,7 +44,7 @@ function BrandLink({ brand }: { brand: Brand }) {
         {brand.name}
       </span>
 
-      <span className="text-xs text-gray-400 tabular-nums">
+      <span className="text-xs text-gray-500 tabular-nums">
         {brand.count.toLocaleString("ru-RU")}
       </span>
     </Link>
@@ -128,7 +128,7 @@ export default function BrandList() {
           <div className="columns-2 md:columns-3 lg:columns-5 gap-x-4">
             {groupByLetter(filtered).map(([letter, list]) => (
               <div key={letter} className="break-inside-avoid mb-4">
-                <div className="px-3 pb-1 text-sm font-semibold text-gray-400">
+                <div className="px-3 pb-1 text-sm font-semibold text-gray-500">
                   {letter}
                 </div>
 

@@ -4,6 +4,13 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { latestListings } from "../data/latestListings";
 import CarCard from "./CarCard";
 
+// На главной — только объявления с фото: это «витрина» сайта
+const HOMEPAGE_LIMIT = 6;
+
+const homepageListings = latestListings
+  .filter((listing) => listing.image)
+  .slice(0, HOMEPAGE_LIMIT);
+
 export default function CarGrid() {
   return (
     <section className="py-8">
@@ -19,8 +26,8 @@ export default function CarGrid() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
-        {latestListings.map((listing) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-8">
+        {homepageListings.map((listing) => (
           <CarCard key={listing.id} listing={listing} />
         ))}
       </div>

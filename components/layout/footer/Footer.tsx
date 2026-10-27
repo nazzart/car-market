@@ -69,7 +69,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-200 text-xs text-gray-400">
+        <div className="mt-10 pt-6 border-t border-gray-200 text-xs text-gray-500">
           © {new Date().getFullYear()} bestauto.lv
         </div>
       </Container>

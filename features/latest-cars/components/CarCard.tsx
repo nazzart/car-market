@@ -21,7 +21,7 @@ export default function CarCard({ listing }: { listing: ListingPreview }) {
               src={image}
               alt={title}
               fill
-              sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+              sizes="(min-width: 1280px) 400px, (min-width: 768px) 33vw, 50vw"
               className="object-cover transition duration-300 group-hover:scale-[1.03]"
             />
           ) : (
@@ -45,7 +45,7 @@ export default function CarCard({ listing }: { listing: ListingPreview }) {
             {year} · {formatNumber(mileage)} км · {fuel} · {transmission}
           </div>
 
-          <div className="text-xs text-gray-400 pt-1">
+          <div className="text-xs text-gray-500 pt-1">
             {city} · {postedAt}
           </div>
         </div>

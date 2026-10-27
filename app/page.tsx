@@ -8,18 +8,27 @@ import SellBanner from "@/features/sell-vehicle/components/SellBanner";
 
 export default function Home() {
   return (
-    <Container>
-      <QuickSearch />
+    <>
+      <Container>
+        <QuickSearch />
 
-      <BrandGrid />
+        <CarGrid />
 
-      <BrandList />
+        <BrandGrid />
+      </Container>
 
-      <CarGrid />
+      {/* Серая полоса во всю ширину — разбивает однотипные белые секции */}
+      <div className="bg-gray-50 border-y border-gray-100 mt-4 py-4">
+        <Container className="bg-transparent">
+          <BrandList />
+        </Container>
+      </div>
 
-      <QuickLinks />
+      <Container>
+        <QuickLinks />
 
-      <SellBanner />
-    </Container>
+        <SellBanner />
+      </Container>
+    </>
   );
 }

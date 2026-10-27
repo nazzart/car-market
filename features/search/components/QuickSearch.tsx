@@ -74,7 +74,7 @@ function Segment({
           rounded-2xl md:rounded-full
           transition
           cursor-pointer
-          disabled:cursor-not-allowed disabled:opacity-40
+          disabled:cursor-not-allowed disabled:opacity-60
           ${active ? "bg-gray-100" : "hover:bg-gray-50"}
         `}
       >
@@ -82,7 +82,7 @@ function Segment({
 
         <div
           className={`text-sm truncate pr-6 ${
-            value ? "text-gray-900" : "text-gray-400"
+            value ? "text-gray-900" : "text-gray-500"
           }`}
         >
           {value || placeholder}
@@ -435,7 +435,7 @@ export default function QuickSearch() {
                   <span>{b.name}</span>
                   <span
                     className={`text-xs tabular-nums ${
-                      brand === b.slug ? "text-white/60" : "text-gray-400"
+                      brand === b.slug ? "text-white/70" : "text-gray-500"
                     }`}
                   >
                     {formatNumber(b.count)}

@@ -68,7 +68,7 @@ export default function CollectionsMenu() {
                   </span>
                 </span>
 
-                <span className="text-xs text-gray-400 tabular-nums">
+                <span className="text-xs text-gray-500 tabular-nums">
                   {formatNumber(c.count)}
                 </span>
               </Link>

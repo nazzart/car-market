@@ -13,6 +13,7 @@ import { cityLabel } from "@/lib/cities";
 import { initials } from "@/lib/utils";
 
 import { Dealer } from "../data/dealers";
+import OpenStatus from "./OpenStatus";
 
 export type MapBounds = { north: number; south: number; east: number; west: number };
 
@@ -167,8 +168,9 @@ export default function DealersMap({
               <div className="min-w-48">
                 <div className="font-semibold text-gray-900 text-sm">{dealer.name}</div>
                 <div className="text-xs text-gray-500 mt-0.5">
-                  {cityLabel(tOptions, dealer.city)}, {dealer.address}
+                  {dealer.address}, {cityLabel(tOptions, dealer.city)}
                 </div>
+                <OpenStatus hours={dealer.hours} className="mt-1.5 text-xs" />
                 <div className="flex gap-3 mt-2">
                   <Link
                     href={`/dealers/${dealer.slug}`}

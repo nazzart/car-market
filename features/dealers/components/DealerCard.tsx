@@ -14,6 +14,7 @@ import { Link } from "@/i18n/navigation";
 import { initials } from "@/lib/utils";
 
 import { Dealer, formatHours, hasRating } from "../data/dealers";
+import OpenStatus from "./OpenStatus";
 
 type Props = {
   dealer: Dealer;
@@ -21,7 +22,6 @@ type Props = {
   onSelect: () => void;
   onHover: (hovered: boolean) => void;
 };
-
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
@@ -38,8 +38,8 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
       className={`
-        scroll-mt-24
-        p-4 sm:p-5
+        scroll-mt-4
+        p-4
         rounded-2xl
         border
         bg-white
@@ -55,7 +55,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
       <div className="flex gap-4">
         {/* Logo */}
 
-        <span className="w-14 h-14 shrink-0 flex items-center justify-center rounded-2xl bg-gray-900 text-white font-bold">
+        <span className="w-12 h-12 shrink-0 flex items-center justify-center rounded-2xl bg-gray-900 text-white font-bold">
           {initials(dealer.name)}
         </span>
 
@@ -111,12 +111,15 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
 
           <div className="mt-3 space-y-1 text-sm text-gray-700">
             <div className="flex items-start gap-1.5">
-              <PlaceOutlinedIcon sx={{ fontSize: 17 }} className="text-gray-500 mt-px" />
-              {cityLabel(tOptions, dealer.city)}, {dealer.address}
+              <PlaceOutlinedIcon sx={{ fontSize: 17 }} className="text-gray-500 mt-px shrink-0" />
+              {dealer.address}, {cityLabel(tOptions, dealer.city)}
             </div>
             <div className="flex items-start gap-1.5">
-              <ScheduleOutlinedIcon sx={{ fontSize: 17 }} className="text-gray-500 mt-px" />
-              {formatHours(dealer.hours, (d) => tOptions(`days.${d}`))}
+              <ScheduleOutlinedIcon sx={{ fontSize: 17 }} className="text-gray-500 mt-px shrink-0" />
+              <div>
+                <OpenStatus hours={dealer.hours} />
+                <div className="text-xs text-gray-500">{formatHours(dealer.hours, (d) => tOptions(`days.${d}`))}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -125,7 +128,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
       {/* Actions */}
 
       <div
-        className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-gray-100"
+        className="flex flex-wrap items-center justify-between gap-3 mt-3 pt-3 border-t border-gray-100"
         onClick={(e) => e.stopPropagation()}
       >
         <Link

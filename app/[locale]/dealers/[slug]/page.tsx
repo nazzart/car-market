@@ -16,7 +16,9 @@ import { cityLabel } from "@/lib/cities";
 import ContactPhoneButton from "@/features/cars/car-view/components/ContactPhoneButton";
 import { listings } from "@/features/cars/data/listings";
 import DealerMiniMap from "@/features/dealers/components/DealerMiniMap";
-import { dealers, formatHours, hasRating } from "@/features/dealers/data/dealers";
+import { dealers, hasRating } from "@/features/dealers/data/dealers";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import OpenStatus, { WeekHours } from "@/features/dealers/components/OpenStatus";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import { Link } from "@/i18n/navigation";
 import { formatNumber, initials } from "@/lib/utils";
@@ -69,7 +71,6 @@ export default async function DealerPage({ params }: Props) {
 
   const stats = [
     { label: t("page.inStockShort"), value: formatNumber(dealer.carsInStock) },
-    { label: t("page.city"), value: cityName },
     { label: t("page.since"), value: String(dealer.since) },
     ...(rated
       ? [{ label: t("page.rating", { count: formatNumber(dealer.reviews!) }), value: dealer.rating!.toFixed(1) }]
@@ -141,7 +142,7 @@ export default async function DealerPage({ params }: Props) {
 
       {/* Stats */}
 
-      <div className={`grid grid-cols-2 gap-3 mt-8 ${rated ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
+      <div className={`grid grid-cols-2 gap-3 mt-8 ${rated ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
         {stats.map((s) => (
           <div key={s.label} className="p-4 rounded-2xl bg-gray-50">
             <div className="text-2xl font-semibold tracking-tight">{s.value}</div>
@@ -189,7 +190,7 @@ export default async function DealerPage({ params }: Props) {
 
         {/* Sidebar */}
 
-        <aside className="lg:sticky lg:top-24 space-y-4">
+        <aside className="lg:sticky lg:top-4 space-y-4">
           <div className="rounded-2xl border border-gray-200 p-5 shadow-xl shadow-black/5">
             <ContactPhoneButton phone={dealer.phone} className="w-full" />
 
@@ -202,7 +203,19 @@ export default async function DealerPage({ params }: Props) {
               </div>
               <div className="flex items-start gap-2">
                 <ScheduleOutlinedIcon sx={{ fontSize: 20 }} className="text-gray-500" />
-                <span>{formatHours(dealer.hours, (d) => tOptions(`days.${d}`))}</span>
+                {/* Статус всегда виден, расписание на неделю — по клику */}
+                <details className="group flex-1">
+                  <summary className="flex items-center justify-between gap-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <OpenStatus hours={dealer.hours} />
+                    <KeyboardArrowDownIcon
+                      sx={{ fontSize: 20 }}
+                      className="text-gray-500 transition group-open:rotate-180"
+                    />
+                  </summary>
+                  <div className="mt-2">
+                    <WeekHours hours={dealer.hours} />
+                  </div>
+                </details>
               </div>
             </div>
 

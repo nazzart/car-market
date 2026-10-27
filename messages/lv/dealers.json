@@ -7,7 +7,7 @@
   "city": "Pilsēta",
   "allCities": "Visas pilsētas",
   "brand": "Marka",
-  "brandPlaceholder": "Markas oficiālais dīleris",
+  "brandPlaceholder": "Jebkura marka",
   "all": "Visi",
   "types": {
     "official": "Oficiālie",
@@ -30,7 +30,6 @@
   "page": {
     "metaTitle": "{name} — {city} | bestauto.lv",
     "inStockShort": "Pieejamie auto",
-    "city": "Pilsēta",
     "since": "Portālā kopš",
     "rating": "Vērtējums · {count} atsauksmes",
     "carsInStock": "Pieejamās automašīnas",
@@ -42,5 +41,14 @@
     "carsShort": "{count} auto",
     "aboutOfficial": "Oficiālais {brands} dīleris ({city}). Jaunas un lietotas automašīnas, kā arī serviss.",
     "aboutUsed": "Lietotu automašīnu salons ({city}). Auto atlase, pārbaude un palīdzība dokumentu noformēšanā."
+  },
+  "openNow": "Atvērts tagad",
+  "status": {
+    "openUntil": "Atvērts līdz {time}",
+    "closed": "Slēgts",
+    "opensToday": "atvērsies plkst. {time}",
+    "opensTomorrow": "atvērsies rīt plkst. {time}",
+    "opensOn": "atvērsies {day} plkst. {time}",
+    "dayOff": "Brīvdiena"
   }
 }

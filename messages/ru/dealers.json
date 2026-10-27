@@ -7,7 +7,7 @@
   "city": "Город",
   "allCities": "Все города",
   "brand": "Марка",
-  "brandPlaceholder": "Официальный дилер марки",
+  "brandPlaceholder": "Любая марка",
   "all": "Все",
   "types": {
     "official": "Официальные",
@@ -30,7 +30,6 @@
   "page": {
     "metaTitle": "{name} — {city} | bestauto.lv",
     "inStockShort": "Автомобилей в наличии",
-    "city": "Город",
     "since": "На сайте с",
     "rating": "Рейтинг · {count} отз.",
     "carsInStock": "Автомобили в наличии",
@@ -42,5 +41,14 @@
     "carsShort": "{count} авто",
     "aboutOfficial": "Официальный дилер {brands} ({city}). Новые автомобили, автомобили с пробегом и сервисное обслуживание.",
     "aboutUsed": "Автосалон автомобилей с пробегом ({city}). Подбор, проверка и помощь с оформлением документов."
+  },
+  "openNow": "Открыто сейчас",
+  "status": {
+    "openUntil": "Открыто до {time}",
+    "closed": "Закрыто",
+    "opensToday": "откроется в {time}",
+    "opensTomorrow": "откроется завтра в {time}",
+    "opensOn": "откроется {day} в {time}",
+    "dayOff": "Выходной"
   }
 }

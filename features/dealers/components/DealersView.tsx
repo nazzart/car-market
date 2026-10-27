@@ -6,12 +6,15 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import SearchIcon from "@mui/icons-material/Search";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
+import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import ViewListIcon from "@mui/icons-material/ViewList";
 
 import { brands } from "@/features/brands/data/brands";
 import { cityLabel } from "@/lib/cities";
 import { Segmented, Select, inputClass } from "@/features/cars/car-list/components/ui";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
+import { getOpenStatus, useNow } from "../lib/openStatus";
 import { useDealers } from "../useDealers";
 import DealerCard from "./DealerCard";
 import type { MapBounds } from "./DealersMap";
@@ -54,6 +57,8 @@ export default function DealersView() {
   const type = params.get("type") ?? "";
   const city = params.get("city") ?? "";
   const brand = params.get("brand") ?? "";
+  const openNow = params.get("open") === "1";
+  const now = useNow();
 
   const setParam = (key: string) => (value: string | null) => {
     const next = new URLSearchParams(params.toString());
@@ -69,6 +74,7 @@ export default function DealersView() {
   const setType = setParam("type");
   const setCity = setParam("city");
   const setBrand = setParam("brand");
+  const setOpenNow = (value: boolean) => setParam("open")(value ? "1" : null);
 
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
@@ -84,9 +90,11 @@ export default function DealersView() {
         (!q || d.name.toLowerCase().includes(q) || d.address.toLowerCase().includes(q)) &&
         (!type || d.type === type) &&
         (!city || d.city === city) &&
-        (!brand || d.brands.includes(brand))
+        (!brand || d.brands.includes(brand)) &&
+        // «Открыто сейчас» работает после гидратации, когда известно время
+        (!openNow || now === null || getOpenStatus(d.hours, now).open)
     );
-  }, [dealers, query, type, city, brand]);
+  }, [dealers, query, type, city, brand, openNow, now]);
 
   // «Искать при перемещении карты» — список показывает только то, что видно на карте
   const visible =
@@ -124,8 +132,8 @@ export default function DealersView() {
 
       {/* Filters */}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_1fr_1fr_auto] gap-2 mb-6">
-        <div className="relative sm:col-span-2 lg:col-span-1">
+      <div className="grid grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_1fr_1fr_auto_auto] gap-2 mb-6">
+        <div className="relative col-span-2 lg:col-span-1">
           <SearchIcon
             fontSize="small"
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
@@ -149,28 +157,33 @@ export default function DealersView() {
           onChange={setBrand}
         />
 
-        <div className="sm:col-span-2 lg:col-span-1 lg:w-80">
-          <Segmented
-            anyLabel={t("all")}
-            options={typeOptions}
-            value={type}
-            onChange={setType}
-          />
+        <div className="col-span-2 lg:col-span-1 flex flex-wrap sm:flex-nowrap gap-2">
+          <div className="basis-full sm:basis-auto sm:flex-1 lg:w-80">
+            <Segmented
+              anyLabel={t("all")}
+              options={typeOptions}
+              value={type}
+              onChange={setType}
+            />
+          </div>
+
+          <button
+            type="button"
+            aria-pressed={openNow}
+            onClick={() => setOpenNow(!openNow)}
+            className={`shrink-0 inline-flex items-center gap-2 h-11 px-4 rounded-xl border text-sm font-medium whitespace-nowrap transition cursor-pointer ${
+              openNow
+                ? "bg-emerald-50 border-emerald-600 text-emerald-800"
+                : "border-gray-200 text-gray-700 hover:border-gray-900"
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full ${openNow ? "bg-emerald-500" : "bg-gray-300"}`} />
+            {t("openNow")}
+          </button>
         </div>
       </div>
 
-      {/* Mobile: list / map */}
-
-      <div className="lg:hidden mb-4">
-        <Segmented
-          anyLabel={t("list")}
-          options={[{ label: t("map"), value: "map" }]}
-          value={mobileView === "map" ? "map" : ""}
-          onChange={(v) => setMobileView(v ? "map" : "list")}
-        />
-      </div>
-
-      <div className="grid lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] gap-6 items-start">
+      <div className="grid lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)] gap-6 items-start">
         {/* List */}
 
         <div className={mobileView === "map" ? "hidden lg:block" : ""}>
@@ -180,7 +193,7 @@ export default function DealersView() {
               <span className="font-medium text-gray-900">{tCommon("companies", { count: visible.length })}</span>
             </span>
 
-            {(query || type || city || brand || searchOnMove) && (
+            {(query || type || city || brand || openNow || searchOnMove) && (
               <button
                 type="button"
                 onClick={resetFilters}
@@ -219,11 +232,12 @@ export default function DealersView() {
         {/* Map */}
 
         <div
+          id="dealers-map"
           className={`
             ${mobileView === "list" ? "hidden lg:block" : ""}
             relative isolate
-            h-[70vh] lg:h-[calc(100vh-7rem)]
-            lg:sticky lg:top-24
+            h-[calc(100svh-8rem)] lg:h-[calc(100vh-2rem)]
+            lg:sticky lg:top-4
             rounded-3xl overflow-hidden
             border border-gray-200
           `}
@@ -248,6 +262,26 @@ export default function DealersView() {
           </label>
         </div>
       </div>
+
+      {/* Mobile: плавающий переключатель список / карта, как на Airbnb */}
+
+      <button
+        type="button"
+        onClick={() => {
+          const next = mobileView === "map" ? "list" : "map";
+          setMobileView(next);
+          // карта ниже фильтров — сразу показываем её целиком
+          requestAnimationFrame(() =>
+            next === "map"
+              ? document.getElementById("dealers-map")?.scrollIntoView({ block: "end" })
+              : window.scrollTo({ top: 0 })
+          );
+        }}
+        className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[1100] inline-flex items-center gap-2 h-12 px-5 rounded-full bg-gray-900 text-white text-sm font-semibold shadow-xl shadow-black/25 cursor-pointer"
+      >
+        {mobileView === "map" ? <ViewListIcon fontSize="small" /> : <MapOutlinedIcon fontSize="small" />}
+        {mobileView === "map" ? t("list") : t("map")}
+      </button>
     </div>
   );
 }

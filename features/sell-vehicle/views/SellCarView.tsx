@@ -7,40 +7,15 @@ import { useProgressiveSections } from "../hooks/useProgressiveSections";
 
 import { PublishSection } from "../sections/PublishSection";
 import { sections } from "../config/sectionsConfig";
-import { getSectionsState } from "../utils/sectionUtils";
+import { getInitialFormData, getSectionsState } from "../utils/sectionUtils";
 import { validateAndScroll } from "../lib/formSubmit";
 
 export function SellCarView() {
   const { visibleSections, revealSection } = useProgressiveSections(sections);
 
-  const [formData, setFormData] = useState({
-    brand: "",
-    model: "",
-    year: "",
-    mileage: "",
-    price: "",
-    bodyType: "",
-    color: "",
-    petrolType: "",
-    engineCapacity: "",
-    transmission: "",
-    drive: "",
-    power: "",
-    vin: "",
-    owners: "",
-    mileageLatvia: "",
-    inspectionUntil: "",
-    condition: "",
-    hadAccident: "",
-    hasServiceDone: "",
-    hasServiceBook: "",
-    equipment: "",
-    description: "",
-    sellerName: "",
-    sellerPhone: "",
-    sellerEmail: "",
-    sellerCity: "",
-  });
+  const [formData, setFormData] = useState(() =>
+    getInitialFormData(sections)
+  );
 
   const updateField = (field: string, value: any) => {
     setFormData((prev) => ({
@@ -52,9 +27,9 @@ export function SellCarView() {
   const sectionsState = getSectionsState(sections, formData);
 
   const handleSubmit = () => {
-    // const isOk = validateAndScroll(sections, formData);
+    const isOk = validateAndScroll(sections, formData);
 
-    // if (!isOk) return;
+    if (!isOk) return;
 
     console.log("SUBMIT", formData);
   };

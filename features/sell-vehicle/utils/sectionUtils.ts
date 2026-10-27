@@ -3,6 +3,7 @@ import { validateField } from "./validationRules";
 export type FieldConfig = {
   name: string;
   rules?: string[];
+  defaultValue?: unknown;
 };
 
 export type SectionConfig = {
@@ -23,6 +24,8 @@ export const validateSection = (
       ? value.length > 0
       : typeof value === "string"
       ? value.trim() !== ""
+      : value && typeof value === "object"
+      ? Object.keys(value).length > 0
       : Boolean(value);
 
     const isValid = validateField(value, field.rules);
@@ -34,6 +37,19 @@ export const validateSection = (
     isValid: results.every((f) => f.isValid),
     isFilled: results.some((f) => f.isFilled),
   };
+};
+
+// 🧠 начальные значения формы из конфига секций
+export const getInitialFormData = (sections: SectionConfig[]) => {
+  const data: Record<string, any> = {};
+
+  for (const section of sections) {
+    for (const field of section.fields) {
+      data[field.name] = field.defaultValue ?? "";
+    }
+  }
+
+  return data;
 };
 
 // 🧠 состояние всех секций (для sidebar)

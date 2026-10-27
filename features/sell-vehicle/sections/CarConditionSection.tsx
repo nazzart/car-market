@@ -96,7 +96,10 @@ export function CarConditionSection({
         </FormControl>
       </div>
       <div className="space-y-6">
-        <CarDamageSelector />
+        <CarDamageSelector
+          value={data.damages}
+          onChange={(value) => updateField("damages", value)}
+        />
       </div>
     </SectionContainer>
   );

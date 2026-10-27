@@ -12,7 +12,14 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
-type Damage = "paint" | "scratch" | "dent" | "rust";
+export type Damage = "paint" | "scratch" | "dent" | "rust";
+
+export type DamageMap = Record<string, Damage[]>;
+
+type Props = {
+  value?: DamageMap;
+  onChange: (value: DamageMap) => void;
+};
 
 const options: { value: Damage; label: string }[] = [
   { value: "paint", label: "Окрас" },
@@ -123,12 +130,13 @@ function DamagePoint({
   );
 }
 
-export function CarDamageSelector() {
+export function CarDamageSelector({ value, onChange }: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [activePoint, setActivePoint] = useState<string | null>(null);
 
   const [selected, setSelected] = useState<Damage[]>([]);
-  const [damages, setDamages] = useState<Record<string, Damage[]>>({});
+
+  const damages = value ?? {};
 
   const openPopover = (e: any, id: string) => {
     setAnchorEl(e.currentTarget);
@@ -151,10 +159,15 @@ export function CarDamageSelector() {
   const saveDamage = () => {
     if (!activePoint) return;
 
-    setDamages((prev) => ({
-      ...prev,
+    if (selected.length === 0) {
+      deleteDamage();
+      return;
+    }
+
+    onChange({
+      ...damages,
       [activePoint]: selected,
-    }));
+    });
 
     closePopover();
   };
@@ -162,11 +175,9 @@ export function CarDamageSelector() {
   const deleteDamage = () => {
     if (!activePoint) return;
 
-    setDamages((prev) => {
-      const copy = { ...prev };
-      delete copy[activePoint];
-      return copy;
-    });
+    const copy = { ...damages };
+    delete copy[activePoint];
+    onChange(copy);
 
     closePopover();
   };

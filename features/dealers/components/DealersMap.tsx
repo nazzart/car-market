@@ -4,7 +4,11 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
+import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
+
+import { initials } from "@/lib/utils";
 
 import { Dealer } from "../data/dealers";
 
@@ -21,13 +25,6 @@ type Props = {
 
 const LATVIA_CENTER: [number, number] = [56.88, 24.6];
 
-const initials = (name: string) =>
-  name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
 
 // Метка — HTML-иконка, чтобы стилизовать её Tailwind-классами
 const markerIcon = (dealer: Dealer, highlighted: boolean) =>
@@ -39,6 +36,14 @@ const markerIcon = (dealer: Dealer, highlighted: boolean) =>
     html: `<div class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white shadow-lg transition-transform duration-150 ${
       highlighted ? "bg-primary scale-125" : "bg-gray-900"
     }">${initials(dealer.name)}</div>`,
+  });
+
+// Кластер — тот же стиль, что и метки, с числом дилеров внутри
+const clusterIcon = (cluster: L.MarkerCluster) =>
+  L.divIcon({
+    className: "",
+    iconSize: [48, 48],
+    html: `<div class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-900/90 text-white text-sm font-bold border-4 border-white/70 shadow-lg">${cluster.getChildCount()}</div>`,
   });
 
 function FitToDealers({ dealers, fitKey }: { dealers: Dealer[]; fitKey: string }) {
@@ -139,30 +144,46 @@ export default function DealersMap({
       <FlyToActive dealer={active} />
       <BoundsWatcher onChange={onBoundsChange} />
 
-      {dealers.map((dealer) => (
-        <Marker
-          key={dealer.slug}
-          position={[dealer.lat, dealer.lng]}
-          icon={markerIcon(dealer, dealer.slug === activeSlug || dealer.slug === hoveredSlug)}
-          zIndexOffset={dealer.slug === activeSlug ? 1000 : 0}
-          eventHandlers={{ click: () => onSelect(dealer.slug) }}
-        >
-          <Popup>
-            <div className="min-w-48">
-              <div className="font-semibold text-gray-900 text-sm">{dealer.name}</div>
-              <div className="text-xs text-gray-500 mt-0.5">
-                {dealer.city}, {dealer.address}
+      <MarkerClusterGroup
+        iconCreateFunction={clusterIcon}
+        showCoverageOnHover={false}
+        maxClusterRadius={48}
+        disableClusteringAtZoom={13}
+        chunkedLoading
+      >
+        {dealers.map((dealer) => (
+          <Marker
+            key={dealer.slug}
+            position={[dealer.lat, dealer.lng]}
+            icon={markerIcon(dealer, dealer.slug === activeSlug || dealer.slug === hoveredSlug)}
+            zIndexOffset={dealer.slug === activeSlug ? 1000 : 0}
+            eventHandlers={{ click: () => onSelect(dealer.slug) }}
+          >
+            <Popup>
+              <div className="min-w-48">
+                <div className="font-semibold text-gray-900 text-sm">{dealer.name}</div>
+                <div className="text-xs text-gray-500 mt-0.5">
+                  {dealer.city}, {dealer.address}
+                </div>
+                <div className="flex gap-3 mt-2">
+                  <Link
+                    href={`/dealers/${dealer.slug}`}
+                    className="text-xs font-semibold !text-gray-900 underline underline-offset-2"
+                  >
+                    О дилере
+                  </Link>
+                  <Link
+                    href={`/cars?dealer=${dealer.slug}`}
+                    className="text-xs font-semibold !text-gray-900 underline underline-offset-2"
+                  >
+                    {dealer.carsInStock} авто →
+                  </Link>
+                </div>
               </div>
-              <Link
-                href={`/cars?dealer=${dealer.slug}`}
-                className="inline-block mt-2 text-xs font-semibold !text-gray-900 underline underline-offset-2"
-              >
-                {dealer.carsInStock} авто в наличии →
-              </Link>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+            </Popup>
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
     </MapContainer>
   );
 }

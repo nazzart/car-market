@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import Container from "@/components/layout/Container";
 import DealersView from "@/features/dealers/components/DealersView";
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 export default function DealersPage() {
   return (
     <Container>
-      <DealersView />
+      {/* Suspense нужен для useSearchParams в клиентском компоненте */}
+      <Suspense>
+        <DealersView />
+      </Suspense>
     </Container>
   );
 }

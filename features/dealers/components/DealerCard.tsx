@@ -9,9 +9,9 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import { brands } from "@/features/brands/data/brands";
 import PhoneButton from "@/features/cars/car-list/components/PhoneButton";
-import { formatNumber, plural } from "@/lib/utils";
+import { formatNumber, initials, plural } from "@/lib/utils";
 
-import { Dealer } from "../data/dealers";
+import { Dealer, hasRating } from "../data/dealers";
 
 type Props = {
   dealer: Dealer;
@@ -20,13 +20,6 @@ type Props = {
   onHover: (hovered: boolean) => void;
 };
 
-const initials = (name: string) =>
-  name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
@@ -65,7 +58,15 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1">
-            <h3 className="font-semibold text-gray-900 truncate">{dealer.name}</h3>
+            <h3 className="font-semibold text-gray-900 truncate">
+              <Link
+                href={`/dealers/${dealer.slug}`}
+                onClick={(e) => e.stopPropagation()}
+                className="hover:underline underline-offset-4"
+              >
+                {dealer.name}
+              </Link>
+            </h3>
             {official && (
               <VerifiedIcon
                 sx={{ fontSize: 16 }}
@@ -77,14 +78,18 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
 
           <div className="flex flex-wrap items-center gap-x-2 text-sm text-gray-500">
             <span>{official ? "Официальный дилер" : "Автосалон с пробегом"}</span>
-            <span className="inline-flex items-center gap-0.5 text-gray-900">
-              <StarIcon sx={{ fontSize: 15 }} className="text-amber-500" />
-              {dealer.rating.toFixed(1)}
-            </span>
-            <span>
-              {formatNumber(dealer.reviews)}{" "}
-              {plural(dealer.reviews, ["отзыв", "отзыва", "отзывов"])}
-            </span>
+            {hasRating(dealer) && (
+              <>
+                <span className="inline-flex items-center gap-0.5 text-gray-900">
+                  <StarIcon sx={{ fontSize: 15 }} className="text-amber-500" />
+                  {dealer.rating!.toFixed(1)}
+                </span>
+                <span>
+                  {formatNumber(dealer.reviews!)}{" "}
+                  {plural(dealer.reviews!, ["отзыв", "отзыва", "отзывов"])}
+                </span>
+              </>
+            )}
           </div>
 
           {official && dealer.brands.length > 0 && (

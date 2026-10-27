@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import SearchIcon from "@mui/icons-material/Search";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
@@ -40,10 +41,30 @@ const pluralDealers = (n: number) =>
   `${n} ${plural(n, ["компания", "компании", "компаний"])}`;
 
 export default function DealersView() {
-  const [query, setQuery] = useState("");
-  const [type, setType] = useState("");
-  const [city, setCity] = useState("");
-  const [brand, setBrand] = useState("");
+  // Фильтры в URL, как на /cars: ссылкой можно поделиться, «Назад» их сохраняет
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+
+  const query = params.get("q") ?? "";
+  const type = params.get("type") ?? "";
+  const city = params.get("city") ?? "";
+  const brand = params.get("brand") ?? "";
+
+  const setParam = (key: string) => (value: string | null) => {
+    const next = new URLSearchParams(params.toString());
+
+    if (value) next.set(key, value);
+    else next.delete(key);
+
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
+
+  const setQuery = setParam("q");
+  const setType = setParam("type");
+  const setCity = setParam("city");
+  const setBrand = setParam("brand");
 
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
@@ -77,10 +98,7 @@ export default function DealersView() {
   }, [activeSlug]);
 
   const resetFilters = () => {
-    setQuery("");
-    setType("");
-    setCity("");
-    setBrand("");
+    router.replace(pathname, { scroll: false });
     setSearchOnMove(false);
   };
 
@@ -132,7 +150,7 @@ export default function DealersView() {
             anyLabel="Все"
             options={typeOptions}
             value={type}
-            onChange={(v) => setType(v ?? "")}
+            onChange={setType}
           />
         </div>
       </div>

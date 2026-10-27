@@ -10,9 +10,12 @@ export type Dealer = {
   lng: number;
   phone: string;
   hours: string;
-  rating: number;
-  reviews: number;
+  // Рейтинга пока нет — появится вместе с отзывами
+  rating?: number;
+  reviews?: number;
   carsInStock: number;
+  since: number; // на сайте с
+  description?: string;
 };
 
 export const dealers: Dealer[] = [
@@ -27,9 +30,10 @@ export const dealers: Dealer[] = [
     lng: 24.0475,
     phone: "+371 2000 2001",
     hours: "Пн–Пт 9:00–19:00, Сб 10:00–16:00",
-    rating: 4.8,
-    reviews: 214,
     carsInStock: 126,
+    since: 2016,
+    description:
+      "Официальный дилер BMW и MINI в Риге. Продажа новых автомобилей и автомобилей с пробегом BMW Premium Selection, сервисный центр, кузовной ремонт и шиномонтаж. Возможен лизинг и трейд-ин — оценка вашего автомобиля за 30 минут.",
   },
   {
     slug: "kia-center-riga",
@@ -42,9 +46,10 @@ export const dealers: Dealer[] = [
     lng: 24.1918,
     phone: "+371 2000 2002",
     hours: "Пн–Пт 9:00–19:00, Сб 10:00–15:00",
-    rating: 4.6,
-    reviews: 158,
     carsInStock: 84,
+    since: 2018,
+    description:
+      "Официальный дилер Kia: весь модельный ряд в наличии и под заказ, тест-драйв в день обращения, гарантия до 7 лет. Собственный сервис и склад запчастей.",
   },
   {
     slug: "nord-motors",
@@ -57,9 +62,8 @@ export const dealers: Dealer[] = [
     lng: 24.1122,
     phone: "+371 2000 2003",
     hours: "Пн–Пт 8:30–19:00, Сб 10:00–16:00",
-    rating: 4.9,
-    reviews: 341,
     carsInStock: 172,
+    since: 2015,
   },
   {
     slug: "autoplaza",
@@ -72,9 +76,8 @@ export const dealers: Dealer[] = [
     lng: 24.1821,
     phone: "+371 2000 2004",
     hours: "Пн–Пт 9:00–19:00, Сб 10:00–16:00",
-    rating: 4.7,
-    reviews: 267,
     carsInStock: 203,
+    since: 2015,
   },
   {
     slug: "scandi-cars",
@@ -87,9 +90,8 @@ export const dealers: Dealer[] = [
     lng: 24.1062,
     phone: "+371 2000 2005",
     hours: "Пн–Пт 9:00–18:00",
-    rating: 4.8,
-    reviews: 96,
     carsInStock: 58,
+    since: 2019,
   },
   {
     slug: "premium-cars-riga",
@@ -102,9 +104,10 @@ export const dealers: Dealer[] = [
     lng: 24.1372,
     phone: "+371 2000 1001",
     hours: "Пн–Сб 10:00–19:00",
-    rating: 4.5,
-    reviews: 132,
     carsInStock: 47,
+    since: 2019,
+    description:
+      "Автосалон премиальных автомобилей с пробегом. Каждый автомобиль проходит диагностику по 120 пунктам и проверку истории. Помогаем с лизингом и регистрацией в CSDD.",
   },
   {
     slug: "e-drive-riga",
@@ -117,9 +120,8 @@ export const dealers: Dealer[] = [
     lng: 24.1263,
     phone: "+371 2000 2007",
     hours: "Пн–Пт 10:00–18:00",
-    rating: 4.4,
-    reviews: 61,
     carsInStock: 32,
+    since: 2021,
   },
   {
     slug: "jurmala-auto",
@@ -132,9 +134,8 @@ export const dealers: Dealer[] = [
     lng: 23.7702,
     phone: "+371 2000 2008",
     hours: "Пн–Сб 10:00–18:00",
-    rating: 4.3,
-    reviews: 44,
     carsInStock: 29,
+    since: 2020,
   },
   {
     slug: "ogre-auto",
@@ -147,9 +148,8 @@ export const dealers: Dealer[] = [
     lng: 24.6051,
     phone: "+371 2000 2009",
     hours: "Пн–Пт 9:00–18:00",
-    rating: 4.2,
-    reviews: 27,
     carsInStock: 18,
+    since: 2022,
   },
   {
     slug: "zemgale-cars",
@@ -162,9 +162,8 @@ export const dealers: Dealer[] = [
     lng: 23.7214,
     phone: "+371 2000 2010",
     hours: "Пн–Пт 9:00–18:00, Сб 10:00–14:00",
-    rating: 4.5,
-    reviews: 73,
     carsInStock: 64,
+    since: 2017,
   },
   {
     slug: "latgale-motors",
@@ -177,9 +176,8 @@ export const dealers: Dealer[] = [
     lng: 26.5362,
     phone: "+371 2000 2011",
     hours: "Пн–Пт 9:00–18:00",
-    rating: 4.6,
-    reviews: 52,
     carsInStock: 41,
+    since: 2018,
   },
   {
     slug: "kurzeme-auto",
@@ -192,9 +190,8 @@ export const dealers: Dealer[] = [
     lng: 21.0108,
     phone: "+371 2000 2012",
     hours: "Пн–Сб 9:00–18:00",
-    rating: 4.4,
-    reviews: 38,
     carsInStock: 36,
+    since: 2019,
   },
   {
     slug: "ventspils-auto",
@@ -207,9 +204,8 @@ export const dealers: Dealer[] = [
     lng: 21.5647,
     phone: "+371 2000 2013",
     hours: "Пн–Пт 9:00–18:00",
-    rating: 4.1,
-    reviews: 19,
     carsInStock: 22,
+    since: 2021,
   },
   {
     slug: "vidzeme-motors",
@@ -222,8 +218,14 @@ export const dealers: Dealer[] = [
     lng: 25.4271,
     phone: "+371 2000 2014",
     hours: "Пн–Пт 9:00–18:00, Сб 10:00–14:00",
-    rating: 4.7,
-    reviews: 65,
     carsInStock: 27,
+    since: 2017,
   },
 ];
+
+// Рейтинг показываем только при достаточном числе отзывов:
+// «5.0» по одному отзыву вводит покупателей в заблуждение
+const MIN_REVIEWS_FOR_RATING = 5;
+
+export const hasRating = (dealer: Dealer) =>
+  dealer.rating !== undefined && (dealer.reviews ?? 0) >= MIN_REVIEWS_FOR_RATING;

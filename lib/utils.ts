@@ -19,3 +19,13 @@ export function plural(n: number, forms: [string, string, string]) {
 export function formatNumber(n: number) {
   return n.toLocaleString("ru-RU");
 }
+
+// "Baltic Auto" → "BA"
+export function initials(name: string) {
+  return name
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+}

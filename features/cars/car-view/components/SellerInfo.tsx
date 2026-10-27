@@ -1,16 +1,11 @@
+import Link from "next/link";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
-import { Listing } from "../../data/listings";
+import { initials } from "@/lib/utils";
 
-const initials = (name: string) =>
-  name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
+import { Listing } from "../../data/listings";
 
 export default function SellerInfo({ listing }: { listing: Listing }) {
   const isDealer = listing.sellerType === "dealer";
@@ -24,7 +19,13 @@ export default function SellerInfo({ listing }: { listing: Listing }) {
 
       <div className="min-w-0">
         <div className="flex items-center gap-1 font-semibold text-gray-900">
-          <span className="truncate">{name}</span>
+          {listing.dealer ? (
+            <Link href={`/dealers/${listing.dealer}`} className="truncate hover:underline underline-offset-4">
+              {name}
+            </Link>
+          ) : (
+            <span className="truncate">{name}</span>
+          )}
           {isDealer && (
             <VerifiedIcon sx={{ fontSize: 16 }} className="text-sky-600" titleAccess="Проверенный дилер" />
           )}
@@ -39,6 +40,15 @@ export default function SellerInfo({ listing }: { listing: Listing }) {
           <PlaceOutlinedIcon sx={{ fontSize: 16 }} className="text-gray-500" />
           {listing.city}, Латвия
         </div>
+
+        {listing.dealer && (
+          <Link
+            href={`/dealers/${listing.dealer}`}
+            className="inline-block mt-2 text-sm font-semibold text-gray-900 underline underline-offset-4 hover:text-primary"
+          >
+            Страница дилера и все авто
+          </Link>
+        )}
       </div>
     </div>
   );

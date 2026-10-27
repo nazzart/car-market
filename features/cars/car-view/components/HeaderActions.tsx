@@ -7,6 +7,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import CheckIcon from "@mui/icons-material/Check";
 
+import CompareButton from "@/features/compare/components/CompareButton";
 import { toggleFavorite, useIsFavorite } from "@/features/favorites/store";
 
 const buttonClass = `
@@ -49,6 +50,8 @@ export default function HeaderActions({ listing }: Props) {
 
   return (
     <div className="flex items-center -mx-4 sm:mx-0">
+      <CompareButton id={listing.id} variant="text" />
+
       <button type="button" onClick={share} className={buttonClass}>
         {copied ? (
           <CheckIcon fontSize="small" className="text-emerald-600" />

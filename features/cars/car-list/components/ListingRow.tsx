@@ -1,6 +1,7 @@
 import { useLocale, useTranslations } from "next-intl";
 
 import FavoriteButton from "@/features/latest-cars/components/FavoriteButton";
+import CompareButton from "@/features/compare/components/CompareButton";
 import { Link } from "@/i18n/navigation";
 import { formatAgo, formatNumber } from "@/lib/utils";
 
@@ -51,6 +52,7 @@ export default function ListingRow({ listing }: { listing: Listing }) {
       <div className="relative md:w-[260px] lg:w-[280px] shrink-0">
         <ListingGallery href={href} title={listing.title} images={listing.images} />
         <FavoriteButton listing={listing} className="absolute top-2 right-2 z-20" />
+        <CompareButton id={listing.id} className="absolute top-12 right-2 z-20" />
       </div>
 
       {/* Info */}

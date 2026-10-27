@@ -21,6 +21,8 @@ import { Link } from "@/i18n/navigation";
 import { useNow } from "@/lib/useNow";
 import { formatAgo, formatNumber } from "@/lib/utils";
 
+import CompareButton from "@/features/compare/components/CompareButton";
+
 import { FavoriteEntry, addFavorite, clearFavorites, removeFavorite, useFavorites } from "../store";
 
 const SORTS = ["added", "price_asc", "price_desc"] as const;
@@ -237,7 +239,10 @@ function FavoriteCard({
             </div>
           </div>
 
-          <RemoveButton onClick={onRemove} />
+          <div className="flex items-center">
+            <CompareButton id={listing.id} className="relative z-10 shadow-none bg-gray-100 hover:bg-gray-200" />
+            <RemoveButton onClick={onRemove} />
+          </div>
         </div>
 
         {diff < 0 && (

@@ -1,0 +1,46 @@
+{
+  "metaTitle": "Auto salīdzināšana | bestauto.lv",
+  "title": "Salīdzināšana",
+  "subtitle": "{count} no {max} automašīnām",
+  "add": "Salīdzināt",
+  "inCompare": "Salīdzinājumā",
+  "remove": "Izņemt no salīdzinājuma",
+  "clear": "Notīrīt",
+  "full": "Var salīdzināt līdz {max} automašīnām — izņemiet kādu no saraksta",
+  "bar": {
+    "title": "Salīdzinājums · {count} no {max}",
+    "addMore": "Pievienojiet vēl vienu auto",
+    "open": "Salīdzināt"
+  },
+  "onlyDiff": "Tikai atšķirības",
+  "noDiff": "Automašīnas šajos parametros neatšķiras",
+  "best": "labāk",
+  "yes": "Jā",
+  "no": "Nē",
+  "privateSeller": "Privātpersona",
+  "addOneMore": "Pievienojiet vēl vienu auto, lai salīdzinātu",
+  "addCar": "Pievienot auto",
+  "fromFavorites": "No izlases ({count})",
+  "noDamages": "Bez bojājumiem",
+  "damagedParts": "{count, plural, zero {# detaļas} one {# detaļa} other {# detaļas}} ar bojājumiem",
+  "sections": {
+    "main": "Galvenais",
+    "engine": "Dzinējs un transmisija",
+    "body": "Virsbūve",
+    "history": "Vēsture un stāvoklis",
+    "equipment": "Komplektācija"
+  },
+  "rows": {
+    "price": "Cena",
+    "city": "Pilsēta",
+    "seller": "Pārdevējs",
+    "noAccidents": "Bez avārijām",
+    "damages": "Virsbūves bojājumi",
+    "equipmentCount": "Opciju kopā"
+  },
+  "empty": {
+    "title": "Pagaidām nav ko salīdzināt",
+    "text": "Spiediet ⇄ uz sludinājumiem, lai pievienotu līdz {max} automašīnām un salīdzinātu to parametrus, stāvokli un komplektāciju.",
+    "cta": "Izvēlēties auto"
+  }
+}

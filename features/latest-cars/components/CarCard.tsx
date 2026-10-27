@@ -8,6 +8,7 @@ import { formatAgo, formatNumber } from "@/lib/utils";
 import { Listing } from "@/features/cars/data/listings";
 
 import FavoriteButton from "./FavoriteButton";
+import CompareButton from "@/features/compare/components/CompareButton";
 
 export default function CarCard({ listing }: { listing: Listing }) {
   const t = useTranslations("common");
@@ -58,6 +59,7 @@ export default function CarCard({ listing }: { listing: Listing }) {
       </Link>
 
       <FavoriteButton listing={listing} className="absolute top-2 right-2" />
+      <CompareButton id={listing.id} className="absolute top-12 right-2" />
     </article>
   );
 }

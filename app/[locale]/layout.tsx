@@ -10,6 +10,7 @@ import Container from "@/components/layout/Container";
 import { colors } from "@/lib/colors";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
+import CompareBar from "@/features/compare/components/CompareBar";
 import { routing } from "@/i18n/routing";
 
 // latin-ext — латышские ā, ē, ļ, š…; cyrillic — русский
@@ -64,6 +65,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             </Container>
             {children}
             <Footer />
+            <CompareBar />
           </AppThemeProvider>
         </NextIntlClientProvider>
       </body>

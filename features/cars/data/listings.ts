@@ -1,4 +1,6 @@
 // Временные данные — позже заменим на запрос к БД
+import type { DamageMap } from "../config/damage";
+
 export type Fuel = "petrol" | "diesel" | "hybrid" | "electric" | "gas";
 export type Transmission = "automatic" | "manual";
 export type Drive = "fwd" | "rwd" | "awd";
@@ -37,6 +39,7 @@ export type Listing = {
   equipment?: string[];
   sellerSince?: number;
   views?: number;
+  damages?: DamageMap; // {} — продавец отметил, что повреждений нет
 };
 
 const bmwGallery = [
@@ -135,6 +138,7 @@ export const listings: Listing[] = [
     ],
     sellerSince: 2021,
     views: 238,
+    damages: {},
     images: bmwGallery,
     tuned: true,
   },
@@ -225,6 +229,10 @@ export const listings: Listing[] = [
     equipment: ["Пакет M Sport", "LED-фары", "Подогрев сидений", "Круиз-контроль"],
     sellerSince: 2020,
     views: 96,
+    damages: {
+      frontBumper: ["scratch"],
+      leftRearDoor: ["paint"],
+    },
     images: rotate(bmwGallery, 1),
   },
   {
@@ -315,6 +323,9 @@ export const listings: Listing[] = [
       "Экономичный дизель с полным приводом. Проверен на нашем техническом центре, отчёт по диагностике предоставим. Возможен лизинг.",
     sellerSince: 2016,
     views: 71,
+    damages: {
+      rightRearDoor: ["dent"],
+    },
     images: rotate(bmwGallery, 4),
   },
   {
@@ -382,6 +393,12 @@ export const listings: Listing[] = [
     description: "BMW 435i на механике — редкая комплектация. Машина живая, едет отлично.",
     sellerSince: 2023,
     views: 58,
+    damages: {
+      hood: ["scratch", "dent"],
+      rightFrontFender: ["paint"],
+      rearBumper: ["scratch"],
+      leftRearFender: ["rust"],
+    },
     images: rotate(bmwGallery, 3),
   },
 ];

@@ -7,6 +7,7 @@ import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import { listings } from "@/features/cars/data/listings";
 import ContactCard from "@/features/cars/car-view/components/ContactCard";
+import DamageReport from "@/features/cars/car-view/components/DamageReport";
 import EquipmentList from "@/features/cars/car-view/components/EquipmentList";
 import HeaderActions from "@/features/cars/car-view/components/HeaderActions";
 import Highlights from "@/features/cars/car-view/components/Highlights";
@@ -106,6 +107,12 @@ export default async function ListingPage({ params }: Props) {
           <Section title="Характеристики">
             <SpecsTable listing={listing} />
           </Section>
+
+          {listing.damages && (
+            <Section title="Состояние кузова">
+              <DamageReport damages={listing.damages} />
+            </Section>
+          )}
 
           {listing.equipment && listing.equipment.length > 0 && (
             <Section title="Комплектация">

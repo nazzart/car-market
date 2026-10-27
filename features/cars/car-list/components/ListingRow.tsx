@@ -50,7 +50,7 @@ export default function ListingRow({ listing }: { listing: Listing }) {
 
       <div className="relative md:w-[260px] lg:w-[280px] shrink-0">
         <ListingGallery href={href} title={listing.title} images={listing.images} />
-        <FavoriteButton className="absolute top-2 right-2 z-20" />
+        <FavoriteButton listing={listing} className="absolute top-2 right-2 z-20" />
       </div>
 
       {/* Info */}

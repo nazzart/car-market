@@ -1,19 +1,29 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
-// Пока состояние локальное — позже сохраним избранное в профиле пользователя
-export default function FavoriteButton({ className }: { className?: string }) {
+import { toggleFavorite, useIsFavorite } from "@/features/favorites/store";
+
+type Props = {
+  listing: { id: string; price: number };
+  className?: string;
+};
+
+export default function FavoriteButton({ listing, className }: Props) {
   const t = useTranslations("common");
-  const [active, setActive] = useState(false);
+  const active = useIsFavorite(listing.id);
 
   return (
     <button
       type="button"
-      onClick={() => setActive((prev) => !prev)}
+      onClick={(e) => {
+        // кнопка лежит поверх ссылки на объявление
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFavorite(listing);
+      }}
       aria-pressed={active}
       aria-label={active ? t("removeFavorite") : t("addFavorite")}
       className={`

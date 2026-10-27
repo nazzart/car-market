@@ -89,7 +89,7 @@ export default async function ListingPage({ params }: Props) {
           </p>
         </div>
 
-        <HeaderActions title={listing.title} />
+        <HeaderActions listing={{ id: listing.id, title: listing.title, price: listing.price }} />
       </header>
 
       <PhotoGallery images={listing.images} title={listing.title} />

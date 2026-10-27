@@ -7,6 +7,8 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import CheckIcon from "@mui/icons-material/Check";
 
+import { toggleFavorite, useIsFavorite } from "@/features/favorites/store";
+
 const buttonClass = `
   inline-flex items-center gap-2
   h-10 px-4
@@ -18,9 +20,14 @@ const buttonClass = `
 `;
 
 // «Сохранить» и «Поделиться» в шапке объявления
-export default function HeaderActions({ title }: { title: string }) {
+type Props = {
+  listing: { id: string; title: string; price: number };
+};
+
+export default function HeaderActions({ listing }: Props) {
+  const { title } = listing;
   const t = useTranslations("listing.actions");
-  const [saved, setSaved] = useState(false);
+  const saved = useIsFavorite(listing.id);
   const [copied, setCopied] = useState(false);
 
   const share = async () => {
@@ -53,7 +60,7 @@ export default function HeaderActions({ title }: { title: string }) {
 
       <button
         type="button"
-        onClick={() => setSaved((prev) => !prev)}
+        onClick={() => toggleFavorite(listing)}
         aria-pressed={saved}
         className={buttonClass}
       >

@@ -1,0 +1,33 @@
+{
+  "metaTitle": "Izlase | bestauto.lv",
+  "title": "Izlase",
+  "sort": {
+    "label": "Kārtošana",
+    "added": "Nesen pievienotie",
+    "price_asc": "Vispirms lētākie",
+    "price_desc": "Vispirms dārgākie"
+  },
+  "clear": "Notīrīt",
+  "added": "Pievienots {ago}",
+  "priceDropped": "Cena samazinājās par {amount} €",
+  "priceRaised": "Cena pieauga par {amount} €",
+  "remove": "Izņemt no izlases",
+  "removed": "Izņemts no izlases",
+  "cleared": "Izlase notīrīta",
+  "undo": "Atsaukt",
+  "unavailable": {
+    "title": "Sludinājums noņemts",
+    "text": "Pārdevējs dzēsa sludinājumu vai auto jau ir pārdots"
+  },
+  "guest": {
+    "text": "Izlase saglabāta tikai šajā pārlūkā. Ienāciet, lai to nepazaudētu un redzētu citās ierīcēs.",
+    "login": "Ienākt"
+  },
+  "empty": {
+    "title": "Izlase pagaidām ir tukša",
+    "text": "Spiediet ♡ uz sludinājumiem — tie saglabāsies šeit, un mēs parādīsim, ja cena samazināsies.",
+    "cta": "Skatīt sludinājumus",
+    "suggested": "Jaunākie sludinājumi"
+  },
+  "addedJustNow": "Pievienots tikko"
+}

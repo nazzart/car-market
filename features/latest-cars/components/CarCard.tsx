@@ -57,7 +57,7 @@ export default function CarCard({ listing }: { listing: Listing }) {
         </div>
       </Link>
 
-      <FavoriteButton className="absolute top-2 right-2" />
+      <FavoriteButton listing={listing} className="absolute top-2 right-2" />
     </article>
   );
 }

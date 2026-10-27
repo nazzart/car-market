@@ -1,5 +1,3 @@
-import { useSyncExternalStore } from "react";
-
 import { DAYS, Day, OpeningHours } from "../data/dealers";
 
 // Часы дилеров — по времени Риги, независимо от часового пояса посетителя
@@ -40,12 +38,4 @@ export function getOpenStatus(hours: OpeningHours, timestamp: number): OpenStatu
   return { open: false };
 }
 
-// Текущая минута. На сервере — null: статус «открыто» считаем только в браузере,
-// иначе разметка сервера и клиента разойдётся
-const subscribe = (onChange: () => void) => {
-  const id = setInterval(onChange, 30_000);
-  return () => clearInterval(id);
-};
-const getMinute = () => Math.floor(Date.now() / 60_000) * 60_000;
-
-export const useNow = () => useSyncExternalStore(subscribe, getMinute, () => null);
+export { useNow } from "@/lib/useNow";

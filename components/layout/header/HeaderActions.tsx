@@ -5,7 +5,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AddIcon from "@mui/icons-material/Add";
 
-import { IconButton, Button } from "@mui/material";
+import { Badge, IconButton, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
@@ -14,12 +14,14 @@ import LocaleSwitcher from "./LocaleSwitcher";
 import UserMenu from "./UserMenu";
 import AuthModal from "@/features/auth/components/AuthModal";
 import { onOpenAuthModal, useAuth } from "@/features/auth/store";
+import { useFavorites } from "@/features/favorites/store";
 
 export default function HeaderActions() {
   const t = useTranslations("nav");
   const [authOpen, setAuthOpen] = useState(false);
 
   const { user } = useAuth();
+  const { count: favoritesCount } = useFavorites();
 
   // окно входа можно открыть с любой страницы через openAuthModal()
   useEffect(() => onOpenAuthModal(() => setAuthOpen(true)), []);
@@ -29,8 +31,14 @@ export default function HeaderActions() {
       <div className="flex items-center gap-2 sm:gap-3">
         <LocaleSwitcher className="hidden lg:inline-flex mr-1" />
 
-        <IconButton aria-label={t("favorites")}>
-          <FavoriteBorderIcon className="text-gray-600" />
+        <IconButton component={Link} href="/favorites" aria-label={t("favorites")}>
+          <Badge
+            badgeContent={favoritesCount}
+            max={99}
+            sx={{ "& .MuiBadge-badge": { bgcolor: "var(--color-primary)", color: "white", fontWeight: 600 } }}
+          >
+            <FavoriteBorderIcon className="text-gray-600" />
+          </Badge>
         </IconButton>
 
         <IconButton aria-label={t("notifications")}>

@@ -1,75 +1,129 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Paper } from "@mui/material";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Dialog, useMediaQuery, useTheme } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import LoginView from "../views/LoginView";
 import ForgotPasswordView from "../views/ForgotPasswordView";
 import AccountTypeView from "../views/AccountTypeView";
-import { AuthView } from "../types/authView";
+import RegisterView from "../views/RegisterView";
+import RegisterSuccessView from "../views/RegisterSuccessView";
+import { AccountType, AuthView } from "../types/authView";
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  initialView?: AuthView;
 };
 
-export default function AuthModal({ open, onClose }: Props) {
-  const [view, setView] = useState<AuthView>("login");
+// Куда ведёт кнопка «Назад» с каждого шага
+const backTo: Partial<Record<AuthView, AuthView>> = {
+  forgotPassword: "login",
+  accountType: "login",
+  register: "accountType",
+};
 
-  // reset view when modal opens
-  useEffect(() => {
-    if (open) setView("login");
-  }, [open]);
+const iconButtonClass =
+  "w-10 h-10 flex items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition cursor-pointer";
 
-  // ESC close
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+// MUI Dialog: фокус внутри окна, блокировка прокрутки, Esc; на телефоне — на весь экран
+export default function AuthModal({ open, onClose, initialView = "login" }: Props) {
+  const router = useRouter();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-    if (open) {
-      window.addEventListener("keydown", handleEsc);
-    }
+  const [view, setView] = useState<AuthView>(initialView);
+  const [accountType, setAccountType] = useState<AccountType | undefined>();
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
-    return () => {
-      window.removeEventListener("keydown", handleEsc);
-    };
-  }, [open, onClose]);
-
-  if (!open) return null;
+  const back = backTo[view];
 
   return (
-    <section className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* overlay */}
-      <button
-        aria-label="Close modal"
-        onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm"
-      />
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullScreen={fullScreen}
+      aria-label="Вход и регистрация"
+      slotProps={{
+        paper: {
+          sx: {
+            width: "100%",
+            maxWidth: fullScreen ? "none" : 440,
+            borderRadius: fullScreen ? 0 : "24px",
+            m: fullScreen ? 0 : 2,
+          },
+        },
+        // сбрасываем шаги, когда окно закрылось (а не в момент закрытия — без «мигания»)
+        transition: {
+          onExited: () => {
+            setView(initialView);
+            setAccountType(undefined);
+          },
+        },
+      }}
+    >
+      <div className="relative px-6 pb-8 pt-16 sm:px-8">
+        {/* Top bar */}
 
-      <Paper
-        elevation={10}
-        className="relative w-full max-w-[440px] rounded-3xl p-10 shadow-xl animate-[modalIn_.18s_ease-out]"
-      >
+        <div className="absolute top-3 inset-x-3 flex items-center justify-between">
+          {back ? (
+            <button type="button" onClick={() => setView(back)} aria-label="Назад" className={iconButtonClass}>
+              <ArrowBackIcon fontSize="small" />
+            </button>
+          ) : (
+            <span />
+          )}
+
+          <button type="button" onClick={onClose} aria-label="Закрыть" className={iconButtonClass}>
+            <CloseIcon fontSize="small" />
+          </button>
+        </div>
+
+        {/* Steps */}
+
         {view === "login" && (
           <LoginView
             onForgotPassword={() => setView("forgotPassword")}
             onCreateAccount={() => setView("accountType")}
-          />
-        )}
-
-        {view === "forgotPassword" && (
-          <ForgotPasswordView onBack={() => setView("login")} />
-        )}
-
-        {view === "accountType" && (
-          <AccountTypeView
-            onSelect={(type) => {
-              console.log("Selected:", type);
+            onLoggedIn={() => {
+              onClose();
+              router.push("/account");
             }}
           />
         )}
-      </Paper>
-    </section>
+
+        {view === "forgotPassword" && <ForgotPasswordView onBack={() => setView("login")} />}
+
+        {view === "accountType" && (
+          <AccountTypeView
+            initial={accountType}
+            onLogin={() => setView("login")}
+            onSelect={(type) => {
+              setAccountType(type);
+              setView("register");
+            }}
+          />
+        )}
+
+        {view === "register" && (
+          <RegisterView
+            accountType={accountType ?? "individual"}
+            onChangeType={() => setView("accountType")}
+            onLogin={() => setView("login")}
+            onRegistered={(email) => {
+              setRegisteredEmail(email);
+              setView("registerSuccess");
+            }}
+          />
+        )}
+
+        {view === "registerSuccess" && (
+          <RegisterSuccessView email={registeredEmail} onClose={onClose} />
+        )}
+      </div>
+    </Dialog>
   );
 }

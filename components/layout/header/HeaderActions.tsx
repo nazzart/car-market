@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,27 +9,28 @@ import { IconButton, Button } from "@mui/material";
 
 import UserMenu from "./UserMenu";
 import AuthModal from "@/features/auth/components/AuthModal";
+import { onOpenAuthModal, useAuth } from "@/features/auth/store";
 
 export default function HeaderActions() {
   const [authOpen, setAuthOpen] = useState(false);
 
-  const isLoggedIn = false; // replace with real auth
+  const { user } = useAuth();
+
+  // окно входа можно открыть с любой страницы через openAuthModal()
+  useEffect(() => onOpenAuthModal(() => setAuthOpen(true)), []);
 
   return (
     <>
       <div className="flex items-center gap-2 sm:gap-3">
-        <IconButton>
+        <IconButton aria-label="Избранное">
           <FavoriteBorderIcon className="text-gray-600" />
         </IconButton>
 
-        <IconButton>
+        <IconButton aria-label="Уведомления">
           <NotificationsNoneIcon className="text-gray-600" />
         </IconButton>
 
-        <UserMenu
-          isLoggedIn={isLoggedIn}
-          onLoginClick={() => setAuthOpen(true)}
-        />
+        <UserMenu user={user} onLoginClick={() => setAuthOpen(true)} />
 
         <div className="hidden sm:block">
           <Button
@@ -45,6 +46,7 @@ export default function HeaderActions() {
         <div className="sm:hidden">
           <IconButton
             href="/sell"
+            aria-label="Разместить объявление"
             sx={{
               width: 42,
               height: 42,

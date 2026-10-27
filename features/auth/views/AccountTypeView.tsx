@@ -3,107 +3,105 @@
 import { useState } from "react";
 import { Button } from "@mui/material";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
+import CheckIcon from "@mui/icons-material/Check";
+
+import { AccountType } from "../types/authView";
+import { AuthHeader, TextLinkButton, pillSx } from "../ui";
 
 type Props = {
-  onSelect: (type: "individual" | "company") => void;
+  initial?: AccountType;
+  onSelect: (type: AccountType) => void;
+  onLogin: () => void;
 };
 
-export default function AccountTypeView({ onSelect }: Props) {
-  const [selected, setSelected] = useState<"individual" | "company" | null>(
-    null
-  );
+const options = [
+  {
+    value: "individual" as const,
+    title: "Частное лицо",
+    description: "Продаю свой автомобиль",
+    icon: PersonOutlineIcon,
+  },
+  {
+    value: "company" as const,
+    title: "Компания",
+    description: "Автосалон, дилер или другой бизнес",
+    icon: StorefrontOutlinedIcon,
+  },
+];
+
+export default function AccountTypeView({ initial, onSelect, onLogin }: Props) {
+  const [selected, setSelected] = useState<AccountType | null>(initial ?? null);
 
   return (
     <>
-      {/* header */}
-      <header className="text-center mb-8">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Create account
-        </h2>
+      <AuthHeader title="Регистрация" subtitle="Кто будет размещать объявления?" />
 
-        <p className="text-sm text-gray-500 mt-1">
-          Who are you registering as?
-        </p>
-      </header>
+      <div role="radiogroup" aria-label="Тип аккаунта" className="flex flex-col gap-3 mb-6">
+        {options.map(({ value, title, description, icon: Icon }) => {
+          const active = selected === value;
 
-      {/* account type cards */}
-      <div className="flex flex-col gap-4 mb-8">
-        {/* individual */}
-        <button
-          onClick={() => setSelected("individual")}
-          className={`group flex items-start gap-4 border rounded-xl p-5 text-left transition
-          ${
-            selected === "individual"
-              ? "border-red-500 bg-red-50"
-              : "border-gray-200 hover:border-red-400 hover:bg-gray-50"
-          }`}
-        >
-          <div
-            className={`flex items-center justify-center w-10 h-10 rounded-full
-            ${
-              selected === "individual"
-                ? "bg-red-500 text-white"
-                : "bg-gray-100 text-gray-600 group-hover:bg-red-100 group-hover:text-red-500"
-            }`}
-          >
-            <PersonOutlineIcon fontSize="small" />
-          </div>
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => setSelected(value)}
+              className={`
+                flex items-center gap-4
+                p-4
+                rounded-2xl
+                border
+                text-left
+                transition
+                cursor-pointer
+                ${
+                  active
+                    ? "border-gray-900 ring-1 ring-gray-900 bg-gray-50"
+                    : "border-gray-200 hover:border-gray-400"
+                }
+              `}
+            >
+              <span
+                className={`w-11 h-11 shrink-0 flex items-center justify-center rounded-xl transition ${
+                  active ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                <Icon fontSize="small" />
+              </span>
 
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900">
-              Individual
-            </h3>
+              <span className="flex-1 min-w-0">
+                <span className="block font-semibold text-gray-900">{title}</span>
+                <span className="block text-sm text-gray-500">{description}</span>
+              </span>
 
-            <p className="text-sm text-gray-500">
-              Selling as a private person.
-            </p>
-          </div>
-        </button>
-
-        {/* company */}
-        <button
-          onClick={() => setSelected("company")}
-          className={`group flex items-start gap-4 border rounded-xl p-5 text-left transition
-          ${
-            selected === "company"
-              ? "border-red-500 bg-red-50"
-              : "border-gray-200 hover:border-red-400 hover:bg-gray-50"
-          }`}
-        >
-          <div
-            className={`flex items-center justify-center w-10 h-10 rounded-full
-            ${
-              selected === "company"
-                ? "bg-red-500 text-white"
-                : "bg-gray-100 text-gray-600 group-hover:bg-red-100 group-hover:text-red-500"
-            }`}
-          >
-            <DirectionsCarIcon fontSize="small" />
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900">
-              Company
-            </h3>
-
-            <p className="text-sm text-gray-500">
-              Selling on behalf of a registered business.
-            </p>
-          </div>
-        </button>
+              <span
+                className={`w-6 h-6 shrink-0 flex items-center justify-center rounded-full border-2 transition ${
+                  active ? "bg-gray-900 border-gray-900 text-white" : "border-gray-300"
+                }`}
+              >
+                {active && <CheckIcon sx={{ fontSize: 14 }} />}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* continue button */}
       <Button
         variant="contained"
         size="large"
         fullWidth
         disabled={!selected}
         onClick={() => selected && onSelect(selected)}
+        sx={pillSx}
       >
-        Continue
+        Продолжить
       </Button>
+
+      <p className="text-sm text-gray-600 text-center mt-6">
+        Уже есть аккаунт? <TextLinkButton onClick={onLogin}>Войти</TextLinkButton>
+      </p>
     </>
   );
 }

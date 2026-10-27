@@ -8,7 +8,6 @@ const columns = [
     title: "Покупателям",
     links: [
       { label: "Легковые", href: "/cars" },
-      { label: "Коммерческие", href: "#" },
       { label: "Дилеры", href: "/dealers" },
       { label: "Избранное", href: "#" },
     ],
@@ -17,7 +16,7 @@ const columns = [
     title: "Продавцам",
     links: [
       { label: "Разместить объявление", href: "/sell" },
-      { label: "Мои объявления", href: "/account/listings" },
+      { label: "Личный кабинет", href: "/account" },
       { label: "Профиль", href: "/account/profile" },
     ],
   },

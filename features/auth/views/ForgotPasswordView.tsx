@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Typography, TextField, Button, InputAdornment } from "@mui/material";
+import { Button, TextField } from "@mui/material";
+import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { AuthHeader, isEmail, pillSx } from "../ui";
 
 type Props = {
   onBack: () => void;
@@ -12,78 +12,64 @@ type Props = {
 
 export default function ForgotPasswordView({ onBack }: Props) {
   const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const [sent, setSent] = useState(false);
+
+  const emailError = submitted && !isEmail(email);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+
+    if (!isEmail(email)) return;
+
+    // TODO: отправка письма через API
+    setSent(true);
+  };
+
+  if (sent) {
+    return (
+      <div className="text-center">
+        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 mb-5">
+          <MarkEmailReadOutlinedIcon sx={{ fontSize: 32 }} />
+        </span>
+
+        <AuthHeader
+          title="Проверьте почту"
+          subtitle={`Если аккаунт с адресом ${email.trim()} существует, мы отправили на него ссылку для смены пароля.`}
+        />
+
+        <Button variant="contained" size="large" fullWidth onClick={onBack} sx={pillSx}>
+          Вернуться ко входу
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <>
-      {!sent ? (
-        <>
-          {/* back */}
-          <button
-            onClick={onBack}
-            className="flex items-center gap-1 text-sm text-gray-500 hover:text-black mb-6"
-          >
-            <ArrowBackIcon fontSize="small" />
-            Back
-          </button>
+      <AuthHeader
+        title="Восстановление пароля"
+        subtitle="Укажите email — пришлём ссылку для создания нового пароля"
+      />
 
-          {/* header */}
-          <header className="text-center mb-8">
-            <Typography variant="h5" fontWeight={600}>
-              Reset password
-            </Typography>
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+        <TextField
+          label="Email"
+          type="email"
+          autoComplete="email"
+          autoFocus
+          fullWidth
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={emailError}
+          helperText={emailError && "Введите корректный email"}
+        />
 
-            <Typography color="text.secondary">
-              Enter your email and we'll send you a reset link.
-            </Typography>
-          </header>
-
-          {/* form */}
-          <div className="flex flex-col gap-6">
-            <TextField
-              label="Email"
-              type="email"
-              fullWidth
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <MailOutlineIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <Button
-              variant="contained"
-              size="large"
-              disabled={!email}
-              onClick={() => setSent(true)}
-            >
-              Send reset link
-            </Button>
-          </div>
-        </>
-      ) : (
-        <>
-          {/* success */}
-          <header className="text-center mb-8">
-            <Typography variant="h5" fontWeight={600}>
-              Check your email
-            </Typography>
-
-            <Typography color="text.secondary">
-              If an account exists for <b>{email}</b>, you'll receive a password
-              reset link shortly.
-            </Typography>
-          </header>
-
-          <Button variant="contained" size="large" fullWidth onClick={onBack}>
-            Back to login
-          </Button>
-        </>
-      )}
+        <Button type="submit" variant="contained" size="large" fullWidth sx={pillSx}>
+          Отправить ссылку
+        </Button>
+      </form>
     </>
   );
 }

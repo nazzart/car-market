@@ -30,8 +30,6 @@ export default function DesktopNav() {
         );
       })}
 
-      <a className="hover:text-black cursor-pointer">Коммерческие</a>
-
       <CollectionsMenu />
     </nav>
   );

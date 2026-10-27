@@ -1,4 +1,8 @@
 export type AuthView =
   | "login"
   | "forgotPassword"
-  | "accountType";
+  | "accountType"
+  | "register"
+  | "registerSuccess";
+
+export type AccountType = "individual" | "company";

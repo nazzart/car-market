@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IosShareIcon from "@mui/icons-material/IosShare";
@@ -18,6 +19,7 @@ const buttonClass = `
 
 // «Сохранить» и «Поделиться» в шапке объявления
 export default function HeaderActions({ title }: { title: string }) {
+  const t = useTranslations("listing.actions");
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -46,7 +48,7 @@ export default function HeaderActions({ title }: { title: string }) {
         ) : (
           <IosShareIcon fontSize="small" />
         )}
-        {copied ? "Ссылка скопирована" : "Поделиться"}
+        {copied ? t("copied") : t("share")}
       </button>
 
       <button
@@ -60,7 +62,7 @@ export default function HeaderActions({ title }: { title: string }) {
         ) : (
           <FavoriteBorderIcon fontSize="small" />
         )}
-        {saved ? "Сохранено" : "Сохранить"}
+        {saved ? t("saved") : t("save")}
       </button>
     </div>
   );

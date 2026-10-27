@@ -1,0 +1,76 @@
+{
+  "metaTitle": "Mans konts | bestauto.lv",
+  "loggedOut": {
+    "title": "Mans konts",
+    "text": "Ienāciet, lai pārvaldītu sludinājumus un sekotu skatījumiem",
+    "login": "Ienākt",
+    "demo": "Pārbaudei ir demo piekļuve: privātpersona vai dīleris"
+  },
+  "tabs": {
+    "active": "Aktīvie",
+    "draft": "Melnraksti",
+    "sold": "Pārdotie"
+  },
+  "row": {
+    "active": "Aktīvs",
+    "open": "Atvērt"
+  },
+  "stats": {
+    "active": "{count, plural, zero {aktīvi sludinājumi} one {aktīvs sludinājums} other {aktīvi sludinājumi}}",
+    "views": "{count, plural, zero {skatījumi} one {skatījums} other {skatījumi}}",
+    "phone": "{count, plural, zero {tālruņa skatījumi} one {tālruņa skatījums} other {tālruņa skatījumi}}",
+    "favorites": "{count, plural, zero {pievienojuši izlasei} one {pievienojis izlasei} other {pievienojuši izlasei}}",
+    "period": "Statistika par pēdējām 30 dienām"
+  },
+  "header": {
+    "dealerCabinet": "Dīlera konts",
+    "cabinet": "Mans konts",
+    "hello": "Sveiki, {name}!",
+    "verified": "Oficiālais dīleris",
+    "publicPage": "Publiskā lapa",
+    "post": "Ievietot sludinājumu"
+  },
+  "listings": {
+    "dealer": "Pārdošanā esošās automašīnas",
+    "mine": "Mani sludinājumi",
+    "empty": "Šeit pagaidām nekā nav"
+  },
+  "profile": {
+    "company": "Uzņēmuma kontakti",
+    "title": "Profils",
+    "name": "Vārds",
+    "email": "E-pasts",
+    "phone": "Tālrunis",
+    "city": "Pilsēta",
+    "since": "Portālā kopš",
+    "edit": "Rediģēt profilu",
+    "dealerCenter": "Dīlera centrs",
+    "tip": "Pircēji sazinās ar jums pa tālruni no sludinājuma. Numurs tiek parādīts tikai pēc pogas «Rādīt tālruni» nospiešanas."
+  },
+  "profilePage": {
+    "editTitle": "Profila iestatījumi",
+    "createTitle": "Profila izveide",
+    "subtitle": "Personas dati un kontakti pircējiem.",
+    "basic": "Pamatinformācija",
+    "firstName": "Vārds",
+    "lastName": "Uzvārds",
+    "contact": "Kontakti",
+    "contactDescription": "Kā pircēji varēs ar jums sazināties.",
+    "email": "E-pasts",
+    "phone": "Tālrunis",
+    "location": "Atrašanās vieta",
+    "locationDescription": "Kur jūs atrodaties.",
+    "country": "Valsts",
+    "city": "Pilsēta",
+    "cancel": "Atcelt",
+    "save": "Saglabāt izmaiņas",
+    "create": "Izveidot profilu",
+    "success": {
+      "title": "Profils izveidots",
+      "text": "Konts ir gatavs. Tagad varat ievietot pirmo sludinājumu vai doties uz savu kontu.",
+      "post": "Ievietot sludinājumu",
+      "account": "Doties uz kontu",
+      "browse": "Skatīt automašīnas"
+    }
+  }
+}

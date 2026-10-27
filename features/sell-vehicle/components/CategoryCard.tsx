@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useTranslations } from "next-intl";
 
 type CategoryCardProps = {
   title: string;
@@ -18,6 +19,8 @@ export default function CategoryCard({
   soon,
   onClick,
 }: CategoryCardProps) {
+  const t = useTranslations("sell.category");
+
   return (
     <button
       type="button"
@@ -40,7 +43,7 @@ export default function CategoryCard({
     >
       {soon && (
         <span className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-full bg-gray-900 text-white text-xs font-medium">
-          Скоро
+          {t("soon")}
         </span>
       )}
 

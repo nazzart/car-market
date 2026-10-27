@@ -1,0 +1,30 @@
+{
+  "brands": {
+    "popular": "Populārās markas",
+    "all": "Visas markas",
+    "inCatalog": "{count, plural, zero {# markas} one {# marka} other {# markas}} katalogā",
+    "searchPlaceholder": "Meklēt marku",
+    "notFound": "Pēc vaicājuma «{query}» nekas nav atrasts",
+    "collapse": "Sakļaut",
+    "showAll": "Rādīt visas {count, plural, zero {# markas} one {# marku} other {# markas}}"
+  },
+  "latest": {
+    "title": "Jaunākie sludinājumi",
+    "viewAll": "Skatīt visus"
+  },
+  "quickLinks": {
+    "byBody": "Pēc virsbūves tipa",
+    "byPrice": "Pēc cenas",
+    "upTo": "līdz {price} €"
+  },
+  "sellBanner": {
+    "title": "Pārdodiet auto ātri",
+    "text": "Ievietojiet sludinājumu — to redzēs pircēji visā Latvijā.",
+    "benefits": {
+      "free": "Bezmaksas ievietošana",
+      "fast": "Sludinājums 5 minūtēs",
+      "buyers": "Tūkstošiem pircēju katru dienu"
+    },
+    "cta": "Ievietot sludinājumu"
+  }
+}

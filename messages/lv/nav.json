@@ -1,0 +1,33 @@
+{
+  "cars": "Vieglie auto",
+  "dealers": "Dīleri",
+  "collections": "Kolekcijas",
+  "favorites": "Izlase",
+  "notifications": "Paziņojumi",
+  "login": "Ienākt",
+  "post": "Ievietot",
+  "postListing": "Ievietot sludinājumu",
+  "openMenu": "Atvērt izvēlni",
+  "language": "Valoda",
+  "account": {
+    "menu": "Konta izvēlne",
+    "dashboard": "Mans konts",
+    "dealerPage": "Dīlera lapa",
+    "settings": "Profila iestatījumi",
+    "logout": "Iziet",
+    "individual": "Privātpersona",
+    "dealer": "Dīleris"
+  },
+  "footer": {
+    "tagline": "Jaunu un lietotu automašīnu pirkšana un pārdošana Latvijā.",
+    "buyers": "Pircējiem",
+    "sellers": "Pārdevējiem",
+    "about": "Par servisu",
+    "aboutUs": "Par mums",
+    "rules": "Ievietošanas noteikumi",
+    "privacy": "Privātums",
+    "contacts": "Kontakti",
+    "account": "Mans konts",
+    "profile": "Profils"
+  }
+}

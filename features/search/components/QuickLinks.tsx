@@ -1,16 +1,13 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 
-// value совпадает со значениями bodyType в форме продажи
-const bodyTypes = [
-  { label: "Седан", value: "sedan" },
-  { label: "Внедорожник", value: "suv" },
-  { label: "Универсал", value: "wagon" },
-  { label: "Хэтчбек", value: "hatchback" },
-  { label: "Минивэн", value: "minivan" },
-  { label: "Купе", value: "coupe" },
-  { label: "Кабриолет", value: "convertible" },
-  { label: "Пикап", value: "pickup" },
-];
+import { bodyTypes as allBodyTypes } from "@/features/cars/config/filterOptions";
+import { Link } from "@/i18n/navigation";
+import { formatNumber } from "@/lib/utils";
+
+// Порядок по популярности; значения — как в форме продажи
+const bodyTypes = ["sedan", "suv", "wagon", "hatchback", "minivan", "coupe", "convertible", "pickup"].filter(
+  (v) => allBodyTypes.includes(v)
+);
 
 const priceRanges = [3000, 5000, 10000, 15000, 20000, 30000];
 
@@ -25,26 +22,29 @@ const pillClass = `
 `;
 
 export default function QuickLinks() {
+  const t = useTranslations("home.quickLinks");
+  const tOptions = useTranslations("options");
+
   return (
     <section className="py-8 grid md:grid-cols-2 gap-8">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight mb-4">По типу кузова</h2>
+        <h2 className="text-xl font-semibold tracking-tight mb-4">{t("byBody")}</h2>
 
         <div className="flex flex-wrap gap-2">
           {bodyTypes.map((type) => (
             <Link
-              key={type.value}
-              href={`/cars?bodyType=${type.value}`}
+              key={type}
+              href={`/cars?bodyType=${type}`}
               className={pillClass}
             >
-              {type.label}
+              {tOptions(`bodyType.${type}`)}
             </Link>
           ))}
         </div>
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold tracking-tight mb-4">По цене</h2>
+        <h2 className="text-xl font-semibold tracking-tight mb-4">{t("byPrice")}</h2>
 
         <div className="flex flex-wrap gap-2">
           {priceRanges.map((price) => (
@@ -53,7 +53,7 @@ export default function QuickLinks() {
               href={`/cars?priceTo=${price}`}
               className={pillClass}
             >
-              до {price.toLocaleString("ru-RU")} €
+              {t("upTo", { price: formatNumber(price) })}
             </Link>
           ))}
         </div>

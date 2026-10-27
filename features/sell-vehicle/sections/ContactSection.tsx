@@ -1,6 +1,7 @@
 "use client";
 
 import { TextField } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 import { SectionContainer } from "../components/SectionContainer";
 import { useSectionNext } from "../hooks/useSectionNext";
@@ -17,6 +18,8 @@ export function ContactInfoSection({
   onNext,
   updateField,
 }: FormStepProps) {
+  const t = useTranslations("sell.contact");
+
   const { isValid } = useSectionValidation(fields, data);
 
   const { attemptedNext, handleNext } = useSectionNext(
@@ -39,7 +42,7 @@ export function ContactInfoSection({
         {/* Name */}
 
         <TextField
-          label="Имя"
+          label={t("name")}
           required
           value={data.sellerName ?? ""}
           onChange={(e) => updateField("sellerName", e.target.value)}
@@ -53,7 +56,7 @@ export function ContactInfoSection({
         {/* Phone */}
 
         <TextField
-          label="Телефон"
+          label={t("phone")}
           value={data.sellerPhone ?? ""}
           onChange={(e) => updateField("sellerPhone", e.target.value)}
           error={
@@ -68,7 +71,7 @@ export function ContactInfoSection({
         {/* Email */}
 
         <TextField
-          label="Email"
+          label={t("email")}
           required
           value={data.sellerEmail ?? ""}
           onChange={(e) => updateField("sellerEmail", e.target.value)}
@@ -83,7 +86,7 @@ export function ContactInfoSection({
         {/* City */}
 
         <TextField
-          label="Город"
+          label={t("city")}
           required
           value={data.sellerCity ?? ""}
           onChange={(e) => updateField("sellerCity", e.target.value)}

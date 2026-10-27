@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import PhotoCameraOutlinedIcon from "@mui/icons-material/PhotoCameraOutlined";
+
+import { Link } from "@/i18n/navigation";
 
 const MAX_PREVIEW = 5;
 
@@ -16,6 +18,8 @@ type Props = {
 
 // Листание фото движением курсора по превью
 export default function ListingGallery({ href, title, images }: Props) {
+  const t = useTranslations("cars.row");
+  const tCommon = useTranslations("common");
   const [active, setActive] = useState(0);
 
   const preview = images.slice(0, MAX_PREVIEW);
@@ -42,7 +46,7 @@ export default function ListingGallery({ href, title, images }: Props) {
       {preview.length === 0 ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-gray-300">
           <DirectionsCarOutlinedIcon sx={{ fontSize: 48 }} />
-          <span className="text-xs text-gray-500">Нет фото</span>
+          <span className="text-xs text-gray-500">{tCommon("noPhoto")}</span>
         </div>
       ) : (
         <>
@@ -56,7 +60,7 @@ export default function ListingGallery({ href, title, images }: Props) {
 
           {remaining > 0 && isLast && (
             <div className="absolute inset-0 bg-black/55 flex items-center justify-center text-white font-semibold text-lg">
-              Ещё {remaining} фото
+              {t("morePhotos", { count: remaining })}
             </div>
           )}
 

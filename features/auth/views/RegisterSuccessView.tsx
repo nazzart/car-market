@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@mui/material";
 import MarkEmailUnreadOutlinedIcon from "@mui/icons-material/MarkEmailUnreadOutlined";
 
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export default function RegisterSuccessView({ email, onClose }: Props) {
+  const t = useTranslations("auth.success");
   const [resent, setResent] = useState(false);
 
   return (
@@ -21,27 +23,27 @@ export default function RegisterSuccessView({ email, onClose }: Props) {
       </span>
 
       <AuthHeader
-        title="Подтвердите email"
-        subtitle={`Мы отправили письмо на ${email}. Перейдите по ссылке в письме, чтобы активировать аккаунт.`}
+        title={t("title")}
+        subtitle={t("text", { email })}
       />
 
       <Button variant="contained" size="large" fullWidth onClick={onClose} sx={pillSx}>
-        Понятно
+        {t("ok")}
       </Button>
 
       <p className="text-sm text-gray-600 mt-5">
         {resent ? (
-          "Письмо отправлено повторно"
+          t("resent")
         ) : (
           <>
-            Письмо не пришло? Проверьте «Спам» или{" "}
+            {t("notReceived")}{" "}
             {/* TODO: повторная отправка через API */}
             <button
               type="button"
               onClick={() => setResent(true)}
               className="font-semibold text-gray-900 underline underline-offset-4 hover:text-primary cursor-pointer"
             >
-              отправьте ещё раз
+              {t("resend")}
             </button>
           </>
         )}

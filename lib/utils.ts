@@ -5,17 +5,6 @@ export function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
 }
 
-// plural(5, ["марка", "марки", "марок"]) → "марок"
-export function plural(n: number, forms: [string, string, string]) {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-
-  if (mod10 === 1 && mod100 !== 11) return forms[0];
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return forms[1];
-
-  return forms[2];
-}
-
 export function formatNumber(n: number) {
   return n.toLocaleString("ru-RU");
 }
@@ -28,4 +17,13 @@ export function initials(name: string) {
     .map((w) => w[0])
     .join("")
     .toUpperCase();
+}
+
+// 15 → «15 минут назад» / «pirms 15 minūtēm»; 1500 → «вчера» / «vakar»
+export function formatAgo(minutes: number, locale: string) {
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+
+  if (minutes < 60) return rtf.format(-minutes, "minute");
+  if (minutes < 24 * 60) return rtf.format(-Math.round(minutes / 60), "hour");
+  return rtf.format(-Math.round(minutes / (24 * 60)), "day");
 }

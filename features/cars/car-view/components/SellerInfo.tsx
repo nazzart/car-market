@@ -1,15 +1,19 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
+import { Link } from "@/i18n/navigation";
 import { initials } from "@/lib/utils";
 
 import { Listing } from "../../data/listings";
 
 export default function SellerInfo({ listing }: { listing: Listing }) {
+  const t = useTranslations("listing.seller");
+  const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
   const isDealer = listing.sellerType === "dealer";
-  const name = isDealer ? listing.sellerName ?? "Дилер" : "Частное лицо";
+  const name = isDealer ? listing.sellerName ?? t("dealer") : t("private");
 
   return (
     <div className="flex items-start gap-3">
@@ -27,18 +31,18 @@ export default function SellerInfo({ listing }: { listing: Listing }) {
             <span className="truncate">{name}</span>
           )}
           {isDealer && (
-            <VerifiedIcon sx={{ fontSize: 16 }} className="text-sky-600" titleAccess="Проверенный дилер" />
+            <VerifiedIcon sx={{ fontSize: 16 }} className="text-sky-600" titleAccess={t("verified")} />
           )}
         </div>
 
         <div className="text-sm text-gray-500">
-          {isDealer ? "Дилер" : "Продавец"}
-          {listing.sellerSince && ` · на сайте с ${listing.sellerSince} г.`}
+          {isDealer ? t("dealer") : t("seller")}
+          {listing.sellerSince && ` · ${t("since", { year: listing.sellerSince })}`}
         </div>
 
         <div className="flex items-center gap-1 text-sm text-gray-700 mt-1">
           <PlaceOutlinedIcon sx={{ fontSize: 16 }} className="text-gray-500" />
-          {listing.city}, Латвия
+          {tOptions(`cities.${listing.city}`)}, {tCommon("latvia")}
         </div>
 
         {listing.dealer && (
@@ -46,7 +50,7 @@ export default function SellerInfo({ listing }: { listing: Listing }) {
             href={`/dealers/${listing.dealer}`}
             className="inline-block mt-2 text-sm font-semibold text-gray-900 underline underline-offset-4 hover:text-primary"
           >
-            Страница дилера и все авто
+            {t("dealerPage")}
           </Link>
         )}
       </div>

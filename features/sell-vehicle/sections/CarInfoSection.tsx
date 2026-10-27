@@ -1,6 +1,7 @@
 "use client";
 
 import { TextField, MenuItem, InputAdornment } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 import { SectionContainer } from "../components/SectionContainer";
 import { ChipSelect } from "../../../components/ui/chip-select/ChipSelect";
@@ -8,7 +9,7 @@ import { useSectionNext } from "../hooks/useSectionNext";
 import { FormStepProps } from "../types";
 import { useSectionValidation } from "../hooks/useSectionValidation";
 import { validateField } from "../utils/validationRules";
-import { bodyTypeOptions } from "@/features/cars/config/filterOptions";
+import { bodyTypes } from "@/features/cars/config/filterOptions";
 
 export function CarInfoSection({
   id,
@@ -19,24 +20,31 @@ export function CarInfoSection({
   onNext,
   updateField,
 }: FormStepProps) {
+  const t = useTranslations("sell.info");
+  const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
+
   const brands = ["Audi", "BMW", "Mercedes"];
 
   const colors = [
-    { label: "Чёрный", value: "black", color: "#111111" },
-    { label: "Белый", value: "white", color: "#f5f5f5" },
-    { label: "Серый", value: "gray", color: "#9ca3af" },
-    { label: "Серебристый", value: "silver", color: "#cbd5e1" },
-    { label: "Синий", value: "blue", color: "#2563eb" },
-    { label: "Красный", value: "red", color: "#dc2626" },
-    { label: "Бордовый", value: "burgundy", color: "#7f1d1d" },
-    { label: "Зелёный", value: "green", color: "#16a34a" },
-    { label: "Жёлтый", value: "yellow", color: "#eab308" },
-    { label: "Оранжевый", value: "orange", color: "#ea580c" },
-    { label: "Коричневый", value: "brown", color: "#92400e" },
-    { label: "Бежевый", value: "beige", color: "#e8d3a7" },
-    { label: "Фиолетовый", value: "purple", color: "#7c3aed" },
-    { label: "Золотой", value: "gold", color: "#d4af37" },
+    { value: "black", color: "#111111" },
+    { value: "white", color: "#f5f5f5" },
+    { value: "gray", color: "#9ca3af" },
+    { value: "silver", color: "#cbd5e1" },
+    { value: "blue", color: "#2563eb" },
+    { value: "red", color: "#dc2626" },
+    { value: "burgundy", color: "#7f1d1d" },
+    { value: "green", color: "#16a34a" },
+    { value: "yellow", color: "#eab308" },
+    { value: "orange", color: "#ea580c" },
+    { value: "brown", color: "#92400e" },
+    { value: "beige", color: "#e8d3a7" },
+    { value: "purple", color: "#7c3aed" },
+    { value: "gold", color: "#d4af37" },
   ];
+
+  const colorOptions = colors.map((c) => ({ ...c, label: tOptions(`colors.${c.value}`) }));
+  const bodyTypeOptions = bodyTypes.map((value) => ({ value, label: tOptions(`bodyType.${value}`) }));
 
   const { isValid } = useSectionValidation(fields, data);
 
@@ -62,7 +70,7 @@ export function CarInfoSection({
         <div className="grid md:grid-cols-2 gap-4">
           <TextField
             select
-            label="Марка"
+            label={t("brand")}
             required
             fullWidth
             value={data.brand ?? ""}
@@ -79,9 +87,9 @@ export function CarInfoSection({
           </TextField>
 
           <TextField
-            label="Модель"
+            label={t("model")}
             required
-            placeholder="Например: A4"
+            placeholder={t("modelPlaceholder")}
             fullWidth
             value={data.model ?? ""}
             onChange={(e) => updateField("model", e.target.value)}
@@ -95,7 +103,7 @@ export function CarInfoSection({
 
         <div className="grid md:grid-cols-2 gap-4">
           <TextField
-            label="Год выпуска"
+            label={t("year")}
             type="number"
             required
             fullWidth
@@ -106,7 +114,7 @@ export function CarInfoSection({
           />
 
           <TextField
-            label="Пробег"
+            label={t("mileage")}
             type="number"
             required
             fullWidth
@@ -116,7 +124,7 @@ export function CarInfoSection({
               attemptedNext && !validateField(data.mileage, getRules("mileage"))
             }
             InputProps={{
-              endAdornment: <InputAdornment position="end">км</InputAdornment>,
+              endAdornment: <InputAdornment position="end">{tCommon("units.km")}</InputAdornment>,
             }}
             inputProps={{ min: 0 }}
           />
@@ -126,7 +134,7 @@ export function CarInfoSection({
 
         <div className="grid md:grid-cols-2 gap-4">
           <TextField
-            label="Цена"
+            label={t("price")}
             type="number"
             required
             fullWidth
@@ -143,13 +151,13 @@ export function CarInfoSection({
 
           <TextField
             select
-            label="Торг"
+            label={t("negotiable")}
             fullWidth
             value={data.negotiable ?? ""}
             onChange={(e) => updateField("negotiable", e.target.value)}
           >
-            <MenuItem value="yes">Возможен</MenuItem>
-            <MenuItem value="no">Нет</MenuItem>
+            <MenuItem value="yes">{t("negotiableYes")}</MenuItem>
+            <MenuItem value="no">{t("negotiableNo")}</MenuItem>
           </TextField>
         </div>
 
@@ -157,7 +165,7 @@ export function CarInfoSection({
 
         <ChipSelect
           inline
-          label="Тип кузова"
+          label={t("body")}
           options={bodyTypeOptions}
           value={data.bodyType}
           onChange={(value) => updateField("bodyType", value)}
@@ -173,8 +181,8 @@ export function CarInfoSection({
 
         <ChipSelect
           inline
-          label="Цвет"
-          options={colors}
+          label={t("color")}
+          options={colorOptions}
           value={data.color}
           onChange={(value) => updateField("color", value)}
           variant="color"

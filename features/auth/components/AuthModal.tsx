@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Dialog, useMediaQuery, useTheme } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -11,6 +11,8 @@ import ForgotPasswordView from "../views/ForgotPasswordView";
 import AccountTypeView from "../views/AccountTypeView";
 import RegisterView from "../views/RegisterView";
 import RegisterSuccessView from "../views/RegisterSuccessView";
+import { useRouter } from "@/i18n/navigation";
+
 import { AccountType, AuthView } from "../types/authView";
 
 type Props = {
@@ -31,6 +33,8 @@ const iconButtonClass =
 
 // MUI Dialog: фокус внутри окна, блокировка прокрутки, Esc; на телефоне — на весь экран
 export default function AuthModal({ open, onClose, initialView = "login" }: Props) {
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -46,7 +50,7 @@ export default function AuthModal({ open, onClose, initialView = "login" }: Prop
       open={open}
       onClose={onClose}
       fullScreen={fullScreen}
-      aria-label="Вход и регистрация"
+      aria-label={t("dialogLabel")}
       slotProps={{
         paper: {
           sx: {
@@ -70,14 +74,14 @@ export default function AuthModal({ open, onClose, initialView = "login" }: Prop
 
         <div className="absolute top-3 inset-x-3 flex items-center justify-between">
           {back ? (
-            <button type="button" onClick={() => setView(back)} aria-label="Назад" className={iconButtonClass}>
+            <button type="button" onClick={() => setView(back)} aria-label={tCommon("back")} className={iconButtonClass}>
               <ArrowBackIcon fontSize="small" />
             </button>
           ) : (
             <span />
           )}
 
-          <button type="button" onClick={onClose} aria-label="Закрыть" className={iconButtonClass}>
+          <button type="button" onClick={onClose} aria-label={tCommon("close")} className={iconButtonClass}>
             <CloseIcon fontSize="small" />
           </button>
         </div>

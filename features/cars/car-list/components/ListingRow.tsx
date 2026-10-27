@@ -1,36 +1,35 @@
-import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
 import FavoriteButton from "@/features/latest-cars/components/FavoriteButton";
-import { formatNumber } from "@/lib/utils";
+import { Link } from "@/i18n/navigation";
+import { formatAgo, formatNumber } from "@/lib/utils";
 
 import { Listing } from "../../data/listings";
-import {
-  bodyTypeOptions,
-  driveOptions,
-  fuelOptions,
-  labelOf,
-  transmissionOptions,
-} from "../../config/filterOptions";
 import ListingGallery from "./ListingGallery";
 import PhoneButton from "./PhoneButton";
 
 const badgeClass = "px-2 py-0.5 rounded-md text-xs font-medium";
 
 export default function ListingRow({ listing }: { listing: Listing }) {
+  const t = useTranslations("cars.row");
+  const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
+  const locale = useLocale();
+
   const href = `/listing/${listing.id}`;
 
   const specs = [
     String(listing.year),
-    `${formatNumber(listing.mileage)} км`,
-    listing.engine ? `${listing.engine.toFixed(1)} л` : null,
-    `${listing.power} л.с.`,
-    labelOf(fuelOptions, listing.fuel),
+    `${formatNumber(listing.mileage)} ${tCommon("units.km")}`,
+    listing.engine ? `${listing.engine.toFixed(1)} ${tCommon("units.liters")}` : null,
+    `${listing.power} ${tCommon("units.hp")}`,
+    tOptions(`fuel.${listing.fuel}`),
   ].filter(Boolean);
 
   const details = [
-    labelOf(bodyTypeOptions, listing.bodyType),
-    labelOf(transmissionOptions, listing.transmission),
-    `${labelOf(driveOptions, listing.drive).toLowerCase()} привод`,
+    tOptions(`bodyType.${listing.bodyType}`),
+    tOptions(`transmission.${listing.transmission}`),
+    tOptions(`driveFull.${listing.drive}`),
   ];
 
   return (
@@ -74,25 +73,25 @@ export default function ListingRow({ listing }: { listing: Listing }) {
           <div className="flex flex-wrap items-center gap-1.5 mt-3">
             {listing.condition === "new" && (
               <span className={`${badgeClass} bg-emerald-50 text-emerald-700`}>
-                Новый
+                {t("new")}
               </span>
             )}
 
             {listing.tuned && (
               <span className={`${badgeClass} bg-amber-50 text-amber-700`}>
-                Тюнинг
+                {t("tuning")}
               </span>
             )}
 
             <span className={`${badgeClass} bg-gray-100 text-gray-700`}>
               {listing.sellerType === "dealer"
-                ? `Дилер · ${listing.sellerName}`
-                : "Частное лицо"}
+                ? t("dealer", { name: listing.sellerName ?? "" })
+                : t("private")}
             </span>
           </div>
 
           <div className="text-xs text-gray-500 mt-auto pt-3">
-            {listing.city} · {listing.postedAt}
+            {tOptions(`cities.${listing.city}`)} · {formatAgo(listing.postedMinutesAgo, locale)}
           </div>
         </div>
 

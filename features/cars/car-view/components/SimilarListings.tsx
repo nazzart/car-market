@@ -1,8 +1,9 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import { brands } from "@/features/brands/data/brands";
 import CarCard from "@/features/latest-cars/components/CarCard";
+import { Link } from "@/i18n/navigation";
 
 import { Listing, listings } from "../../data/listings";
 
@@ -10,6 +11,8 @@ const LIMIT = 3;
 
 // Сначала та же марка, потом тот же кузов; с фото — в приоритете
 export default function SimilarListings({ listing }: { listing: Listing }) {
+  const t = useTranslations("listing.similar");
+
   const score = (l: Listing) =>
     (l.brand === listing.brand ? 2 : 0) +
     (l.bodyType === listing.bodyType ? 1 : 0) +
@@ -27,13 +30,13 @@ export default function SimilarListings({ listing }: { listing: Listing }) {
   return (
     <section className="mt-16 pt-10 border-t border-gray-100">
       <div className="flex items-end justify-between gap-4 mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Похожие объявления</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
 
         <Link
           href={`/cars?brand=${listing.brand}`}
           className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-black transition"
         >
-          Все {brandName}
+          {t("all", { brand: brandName ?? "" })}
           <ArrowForwardIcon sx={{ fontSize: 16 }} />
         </Link>
       </div>

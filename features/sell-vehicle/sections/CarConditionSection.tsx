@@ -1,6 +1,7 @@
 "use client";
 
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 import { SectionContainer } from "../components/SectionContainer";
 import { CarDamageSelector } from "./CarDamageSelector";
@@ -17,6 +18,7 @@ export function CarConditionSection({
   onNext,
   updateField,
 }: FormStepProps) {
+  const t = useTranslations("sell.condition");
   const { isValid } = useSectionValidation(fields, data);
 
   const { handleNext } = useSectionNext(isValid, required, onNext);
@@ -25,7 +27,7 @@ export function CarConditionSection({
     <SectionContainer
       id={id}
       title={title}
-      description="Информация о текущем состоянии автомобиля"
+      description={t("description")}
       required={required}
       isValid={isValid}
       onNext={handleNext}
@@ -34,64 +36,67 @@ export function CarConditionSection({
         {/* General condition */}
 
         <FormControl fullWidth>
-          <InputLabel>Общее состояние</InputLabel>
+          <InputLabel>{t("overall")}</InputLabel>
 
           <Select
             value={data.condition ?? ""}
-            label="Общее состояние"
+            label={t("overall")}
             onChange={(e) => updateField("condition", e.target.value)}
           >
-            <MenuItem value="excellent">Отличное</MenuItem>
-            <MenuItem value="good">Хорошее</MenuItem>
-            <MenuItem value="average">Среднее</MenuItem>
-            <MenuItem value="repair">Требует ремонта</MenuItem>
+            {["excellent", "good", "average", "repair"].map((value) => (
+              <MenuItem key={value} value={value}>
+                {t(`overallOptions.${value}`)}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
         {/* Accident */}
 
         <FormControl fullWidth>
-          <InputLabel>Была в ДТП</InputLabel>
+          <InputLabel>{t("accident")}</InputLabel>
 
           <Select
             value={data.hadAccident}
-            label="Была в ДТП"
+            label={t("accident")}
             onChange={(e) => updateField("hadAccident", e.target.value)}
           >
-            <MenuItem value="no">Нет</MenuItem>
-            <MenuItem value="yes">Да</MenuItem>
-            <MenuItem value="unknown">Не знаю</MenuItem>
+            <MenuItem value="no">{t("no")}</MenuItem>
+            <MenuItem value="yes">{t("yes")}</MenuItem>
+            <MenuItem value="unknown">{t("unknown")}</MenuItem>
           </Select>
         </FormControl>
 
         {/* Service done */}
 
         <FormControl fullWidth>
-          <InputLabel>Сделано обслуживание</InputLabel>
+          <InputLabel>{t("service")}</InputLabel>
 
           <Select
             value={data.hasServiceDone}
-            label="Сделано обслуживание"
+            label={t("service")}
             onChange={(e) => updateField("hasServiceDone", e.target.value)}
           >
-            <MenuItem value="recent">Недавно обслуживалась</MenuItem>
-            <MenuItem value="partial">Частично обслужена</MenuItem>
-            <MenuItem value="required">Требуется обслуживание</MenuItem>
+            {["recent", "partial", "required"].map((value) => (
+              <MenuItem key={value} value={value}>
+                {t(`serviceOptions.${value}`)}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
         {/* Service book */}
 
         <FormControl fullWidth>
-          <InputLabel>Сервисная книжка</InputLabel>
+          <InputLabel>{t("serviceBook")}</InputLabel>
 
           <Select
             value={data.hasServiceBook}
-            label="Сервисная книжка"
+            label={t("serviceBook")}
             onChange={(e) => updateField("hasServiceBook", e.target.value)}
           >
-            <MenuItem value="yes">Есть</MenuItem>
-            <MenuItem value="no">Нет</MenuItem>
+            <MenuItem value="yes">{t("has")}</MenuItem>
+            <MenuItem value="no">{t("no")}</MenuItem>
           </Select>
         </FormControl>
       </div>

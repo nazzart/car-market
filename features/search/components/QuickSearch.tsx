@@ -2,8 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Popover } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
@@ -14,6 +13,7 @@ import {
   collectionHref,
   visibleCollections,
 } from "@/features/collections/data/collections";
+import { Link, useRouter } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
 
 type Panel = "brand" | "model" | "price" | "year";
@@ -21,23 +21,13 @@ type Panel = "brand" | "model" | "price" | "year";
 const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
 const totalCount = brands.reduce((sum, b) => sum + b.count, 0);
 
-const conditions = [
-  { label: "Все", value: "" },
-  { label: "С пробегом", value: "used" },
-  { label: "Новые", value: "new" },
-];
+const conditions = ["", "used", "new"];
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 24 }, (_, i) => String(currentYear - i));
 
 const pricePresets = [3000, 5000, 10000, 15000, 20000, 30000];
 
-const formatPrice = (from: string, to: string) => {
-  if (from && to) return `${formatNumber(+from)} – ${formatNumber(+to)} €`;
-  if (from) return `от ${formatNumber(+from)} €`;
-  if (to) return `до ${formatNumber(+to)} €`;
-  return "";
-};
 
 /* ---------- UI parts ---------- */
 
@@ -62,6 +52,8 @@ function Segment({
   onClear,
   segmentRef,
 }: SegmentProps) {
+  const t = useTranslations("search");
+
   return (
     <div ref={segmentRef} className="relative flex-1 min-w-0">
       <button
@@ -93,7 +85,7 @@ function Segment({
         <button
           type="button"
           onClick={onClear}
-          aria-label={`Очистить: ${label}`}
+          aria-label={t("clear", { label })}
           className="
             absolute right-3 top-1/2 -translate-y-1/2
             w-6 h-6
@@ -163,6 +155,8 @@ const priceInputClass = `
 /* ---------- Main ---------- */
 
 export default function QuickSearch() {
+  const t = useTranslations("search");
+  const tOptions = useTranslations("options");
   const router = useRouter();
   const modelRef = useRef<HTMLDivElement>(null);
 
@@ -176,6 +170,13 @@ export default function QuickSearch() {
   const [priceTo, setPriceTo] = useState("");
   const [yearFrom, setYearFrom] = useState("");
   const [brandQuery, setBrandQuery] = useState("");
+
+  const formatPrice = (from: string, to: string) => {
+    if (from && to) return t("priceRange", { from: formatNumber(+from), to: formatNumber(+to) });
+    if (from) return t("priceFrom", { value: formatNumber(+from) });
+    if (to) return t("priceTo", { value: formatNumber(+to) });
+    return "";
+  };
 
   const models = modelsByBrand[brand] ?? [];
   const brandName = brands.find((b) => b.slug === brand)?.name ?? "";
@@ -247,12 +248,11 @@ export default function QuickSearch() {
 
         <div className="relative px-4 py-10 sm:px-10 sm:py-16 lg:py-20">
           <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white max-w-2xl leading-tight">
-            Найдите свой следующий автомобиль
+            {t("heroTitle")}
           </h1>
 
           <p className="text-white/75 mt-3 sm:text-lg">
-            {formatNumber(totalCount)} объявлений от частных лиц и дилеров по
-            всей Латвии
+            {t("heroSubtitle", { count: totalCount })}
           </p>
 
           {/* Condition */}
@@ -260,10 +260,10 @@ export default function QuickSearch() {
           <div className="inline-flex mt-8 p-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
             {conditions.map((c) => (
               <button
-                key={c.value}
+                key={c}
                 type="button"
-                onClick={() => setCondition(c.value)}
-                aria-pressed={condition === c.value}
+                onClick={() => setCondition(c)}
+                aria-pressed={condition === c}
                 className={`
                   px-4 py-1.5
                   rounded-full
@@ -271,13 +271,13 @@ export default function QuickSearch() {
                   transition
                   cursor-pointer
                   ${
-                    condition === c.value
+                    condition === c
                       ? "bg-white text-gray-900"
                       : "text-white/80 hover:text-white"
                   }
                 `}
               >
-                {c.label}
+                {c ? tOptions(`condition.${c}`) : t("all")}
               </button>
             ))}
           </div>
@@ -297,9 +297,9 @@ export default function QuickSearch() {
             "
           >
             <Segment
-              label="Марка"
+              label={t("brand")}
               value={brandName}
-              placeholder="Любая марка"
+              placeholder={t("anyBrand")}
               active={panel === "brand"}
               onOpen={(el) => openPanel("brand", el)}
               onClear={() => selectBrand("")}
@@ -309,9 +309,9 @@ export default function QuickSearch() {
 
             <Segment
               segmentRef={modelRef}
-              label="Модель"
+              label={t("model")}
               value={model}
-              placeholder={brand ? "Любая модель" : "Сначала марку"}
+              placeholder={brand ? t("anyModel") : t("brandFirst")}
               active={panel === "model"}
               disabled={!brand || models.length === 0}
               onOpen={(el) => openPanel("model", el)}
@@ -321,9 +321,9 @@ export default function QuickSearch() {
             <SegmentDivider />
 
             <Segment
-              label="Цена"
+              label={t("price")}
               value={formatPrice(priceFrom, priceTo)}
-              placeholder="Любая"
+              placeholder={t("anyPrice")}
               active={panel === "price"}
               onOpen={(el) => openPanel("price", el)}
               onClear={() => {
@@ -335,9 +335,9 @@ export default function QuickSearch() {
             <SegmentDivider />
 
             <Segment
-              label="Год выпуска"
-              value={yearFrom ? `от ${yearFrom}` : ""}
-              placeholder="Любой"
+              label={t("year")}
+              value={yearFrom ? t("yearFrom", { year: yearFrom }) : ""}
+              placeholder={t("anyYear")}
               active={panel === "year"}
               onOpen={(el) => openPanel("year", el)}
               onClear={() => setYearFrom("")}
@@ -359,14 +359,14 @@ export default function QuickSearch() {
               "
             >
               <SearchIcon fontSize="small" />
-              Показать {formatNumber(count)}
+              {t("show", { count })}
             </button>
           </form>
 
           {/* Collections */}
 
           <div className="flex flex-wrap items-center gap-2 mt-5">
-            <span className="text-sm text-white/60 mr-1">Подборки:</span>
+            <span className="text-sm text-white/60 mr-1">{t("collections")}</span>
 
             {visibleCollections.map((c) => {
               const Icon = c.icon;
@@ -387,7 +387,7 @@ export default function QuickSearch() {
                   "
                 >
                   <Icon sx={{ fontSize: 16 }} />
-                  {c.label}
+                  {tOptions(`collections.${c.slug}.label`)}
                 </Link>
               );
             })}
@@ -421,7 +421,7 @@ export default function QuickSearch() {
               autoFocus
               value={brandQuery}
               onChange={(e) => setBrandQuery(e.target.value)}
-              placeholder="Найти марку"
+              placeholder={t("findBrand")}
               className={priceInputClass}
             />
 
@@ -445,7 +445,7 @@ export default function QuickSearch() {
 
               {filteredBrands.length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-6">
-                  Ничего не найдено
+                  {t("nothingFound")}
                 </p>
               )}
             </div>
@@ -455,7 +455,7 @@ export default function QuickSearch() {
         {panel === "model" && (
           <div>
             <div className="text-xs font-semibold text-gray-500 mb-2 px-1">
-              Модели {brandName}
+              {t("modelsOf", { brand: brandName })}
             </div>
 
             <div className="grid grid-cols-2 gap-1 max-h-80 overflow-y-auto">
@@ -466,7 +466,7 @@ export default function QuickSearch() {
                   closePanel();
                 }}
               >
-                Любая
+                {t("any")}
               </OptionButton>
 
               {models.map((m) => (
@@ -494,7 +494,7 @@ export default function QuickSearch() {
                 min={0}
                 value={priceFrom}
                 onChange={(e) => setPriceFrom(e.target.value)}
-                placeholder="От, €"
+                placeholder={t("fromPlaceholder")}
                 className={priceInputClass}
               />
 
@@ -503,7 +503,7 @@ export default function QuickSearch() {
                 min={0}
                 value={priceTo}
                 onChange={(e) => setPriceTo(e.target.value)}
-                placeholder="До, €"
+                placeholder={t("toPlaceholder")}
                 className={priceInputClass}
               />
             </div>
@@ -531,7 +531,7 @@ export default function QuickSearch() {
                     }
                   `}
                 >
-                  до {formatNumber(p)} €
+                  {t("priceTo", { value: formatNumber(p) })}
                 </button>
               ))}
             </div>
@@ -541,7 +541,7 @@ export default function QuickSearch() {
               onClick={closePanel}
               className="mt-4 w-full py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-black transition cursor-pointer"
             >
-              Готово
+              {t("done")}
             </button>
           </div>
         )}
@@ -549,7 +549,7 @@ export default function QuickSearch() {
         {panel === "year" && (
           <div>
             <div className="text-xs font-semibold text-gray-500 mb-2 px-1">
-              Год выпуска от
+              {t("yearFromTitle")}
             </div>
 
             <div className="grid grid-cols-4 gap-1">
@@ -560,7 +560,7 @@ export default function QuickSearch() {
                   closePanel();
                 }}
               >
-                Любой
+                {t("anyYearOption")}
               </OptionButton>
 
               {years.map((y) => (

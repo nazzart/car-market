@@ -1,0 +1,92 @@
+{
+  "metaTitle": "{title}, {year} — {price} € | bestauto.lv",
+  "breadcrumbs": {
+    "home": "Главная",
+    "aria": "Навигация"
+  },
+  "negotiable": "Торг возможен",
+  "sections": {
+    "description": "Описание",
+    "specs": "Характеристики",
+    "body": "Состояние кузова",
+    "equipment": "Комплектация",
+    "seller": "Продавец"
+  },
+  "actions": {
+    "share": "Поделиться",
+    "copied": "Ссылка скопирована",
+    "save": "Сохранить",
+    "saved": "Сохранено"
+  },
+  "specs": {
+    "brand": "Марка",
+    "year": "Год выпуска",
+    "mileage": "Пробег",
+    "body": "Кузов",
+    "color": "Цвет",
+    "engine": "Двигатель",
+    "power": "Мощность",
+    "fuel": "Топливо",
+    "gearbox": "Коробка",
+    "drive": "Привод",
+    "owners": "Владельцев",
+    "inspection": "Техосмотр",
+    "inspectionUntil": "до {date}",
+    "condition": "Состояние",
+    "conditionNew": "Новый",
+    "conditionUsed": "С пробегом",
+    "vin": "VIN"
+  },
+  "keySpecs": {
+    "year": "Год",
+    "mileage": "Пробег",
+    "engine": "Двигатель",
+    "power": "Мощность",
+    "gearbox": "Коробка",
+    "drive": "Привод"
+  },
+  "highlights": {
+    "new": "Новый автомобиль",
+    "noAccidents": "Без ДТП",
+    "inspection": "Техосмотр до {date}",
+    "tuning": "Тюнинг",
+    "negotiable": "Торг возможен"
+  },
+  "description": {
+    "empty": "Продавец не добавил описание.",
+    "more": "Читать полностью",
+    "less": "Свернуть"
+  },
+  "contact": {
+    "safety": "Не вносите предоплату до личного осмотра автомобиля и проверки документов.",
+    "listingNo": "Объявление №{id}"
+  },
+  "seller": {
+    "dealer": "Дилер",
+    "private": "Частное лицо",
+    "seller": "Продавец",
+    "verified": "Проверенный дилер",
+    "since": "на сайте с {year} г.",
+    "dealerPage": "Страница дилера и все авто"
+  },
+  "similar": {
+    "title": "Похожие объявления",
+    "all": "Все {brand}"
+  },
+  "gallery": {
+    "noPhotos": "Продавец не добавил фото",
+    "open": "Открыть фото {n}",
+    "alt": "{title} — фото {n}",
+    "all": "Все фото ({count})",
+    "prev": "Предыдущее фото",
+    "next": "Следующее фото",
+    "photo": "Фото {n}"
+  },
+  "damage": {
+    "none": "Повреждений нет",
+    "noneText": "Продавец отметил, что на кузове нет сколов, вмятин и ржавчины",
+    "diagramAlt": "Схема кузова, вид сверху",
+    "rear": "← Зад",
+    "front": "Перед →"
+  }
+}

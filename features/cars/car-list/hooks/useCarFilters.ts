@@ -1,6 +1,8 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 import { FILTER_KEYS } from "../../config/filterOptions";
 

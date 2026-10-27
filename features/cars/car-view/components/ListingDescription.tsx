@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { useTranslations } from "next-intl";
 
 export default function ListingDescription({ text }: { text?: string }) {
+  const t = useTranslations("listing.description");
   const ref = useRef<HTMLParagraphElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [overflows, setOverflows] = useState(false);
@@ -23,7 +25,7 @@ export default function ListingDescription({ text }: { text?: string }) {
   }, []);
 
   if (!text) {
-    return <p className="text-gray-500">Продавец не добавил описание.</p>;
+    return <p className="text-gray-500">{t("empty")}</p>;
   }
 
   return (
@@ -44,7 +46,7 @@ export default function ListingDescription({ text }: { text?: string }) {
           aria-expanded={expanded}
           className="mt-3 inline-flex items-center gap-0.5 text-sm font-semibold text-gray-900 underline underline-offset-4 cursor-pointer"
         >
-          {expanded ? "Свернуть" : "Читать полностью"}
+          {expanded ? t("less") : t("more")}
           <KeyboardArrowDownIcon
             fontSize="small"
             className={`transition-transform ${expanded ? "rotate-180" : ""}`}

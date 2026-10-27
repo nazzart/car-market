@@ -5,25 +5,28 @@ import NewReleasesOutlinedIcon from "@mui/icons-material/NewReleasesOutlined";
 import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
 import HandshakeOutlinedIcon from "@mui/icons-material/HandshakeOutlined";
 
-import { plural } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 import { Listing } from "../../data/listings";
 
 // Короткие «плюсы» автомобиля под характеристиками
 export default function Highlights({ listing }: { listing: Listing }) {
+  const t = useTranslations("listing.highlights");
+  const tCommon = useTranslations("common");
+
   const items = [
-    listing.condition === "new" && { icon: NewReleasesOutlinedIcon, text: "Новый автомобиль" },
-    listing.noAccidents && { icon: VerifiedOutlinedIcon, text: "Без ДТП" },
+    listing.condition === "new" && { icon: NewReleasesOutlinedIcon, text: t("new") },
+    listing.noAccidents && { icon: VerifiedOutlinedIcon, text: t("noAccidents") },
     listing.owners && {
       icon: PersonOutlineIcon,
-      text: `${listing.owners} ${plural(listing.owners, ["владелец", "владельца", "владельцев"])}`,
+      text: tCommon("owners", { count: listing.owners }),
     },
     listing.inspectionUntil && {
       icon: FactCheckOutlinedIcon,
-      text: `Техосмотр до ${listing.inspectionUntil}`,
+      text: t("inspection", { date: listing.inspectionUntil }),
     },
-    listing.tuned && { icon: BuildOutlinedIcon, text: "Тюнинг" },
-    listing.negotiable && { icon: HandshakeOutlinedIcon, text: "Торг возможен" },
+    listing.tuned && { icon: BuildOutlinedIcon, text: t("tuning") },
+    listing.negotiable && { icon: HandshakeOutlinedIcon, text: t("negotiable") },
   ].filter(Boolean) as { icon: typeof VerifiedOutlinedIcon; text: string }[];
 
   if (items.length === 0) return null;

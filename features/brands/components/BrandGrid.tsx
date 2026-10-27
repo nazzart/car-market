@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Tooltip from "@mui/material/Tooltip";
+import { useTranslations } from "next-intl";
+
+import { Link } from "@/i18n/navigation";
 
 export default function BrandGrid() {
+  const t = useTranslations("home.brands");
   const brands = [
     { name: "BMW", logo: "/brands/bmw.svg", url: "bmw" },
     { name: "Toyota", logo: "/brands/toyota.svg", url: "toyota" },
@@ -17,13 +21,13 @@ export default function BrandGrid() {
 
   return (
     <section className="max-w-7xl mx-auto py-8">
-      <h2 className="text-2xl font-semibold tracking-tight mb-6">Популярные марки</h2>
+      <h2 className="text-2xl font-semibold tracking-tight mb-6">{t("popular")}</h2>
 
       <div className="flex md:grid md:grid-cols-5 lg:grid-cols-10 gap-3 overflow-x-auto md:overflow-visible -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x scroll-px-4 scrollbar-none">
         {brands.map((brand) => (
           <Tooltip key={brand.name} title={brand.name} arrow>
-            <a
-              href={`/cars/${brand.url}`}
+            <Link
+              href={`/cars?brand=${brand.url}`}
               className="
                 group
                 shrink-0 w-24 md:w-auto
@@ -47,7 +51,7 @@ export default function BrandGrid() {
                 height={40}
                 className="object-contain opacity-60 group-hover:opacity-100 transition"
               />
-            </a>
+            </Link>
           </Tooltip>
         ))}
       </div>

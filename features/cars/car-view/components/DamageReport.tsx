@@ -3,16 +3,19 @@
 import Image from "next/image";
 import { Tooltip } from "@mui/material";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
+import { useTranslations } from "next-intl";
 
-import {
-  DamageMap,
-  damageLabel,
-  damagePoints,
-} from "../../config/damage";
+import { DamageMap, damagePoints } from "../../config/damage";
 
 // Схема кузова «только для просмотра»: те же точки, что и в форме продажи.
 // Маркеры пронумерованы и продублированы списком — на телефоне подсказки не работают
 export default function DamageReport({ damages }: { damages: DamageMap }) {
+  const t = useTranslations("listing.damage");
+  const tOptions = useTranslations("options");
+
+  const partLabel = (id: string) => tOptions(`damageParts.${id}`);
+  const damageLabel = (damage: string) => tOptions(`damageTypes.${damage}`);
+
   const damaged = damagePoints.filter((p) => damages[p.id]?.length);
 
   if (damaged.length === 0) {
@@ -20,9 +23,9 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
       <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 text-emerald-900">
         <VerifiedOutlinedIcon className="text-emerald-600" />
         <div>
-          <div className="font-medium">Повреждений нет</div>
+          <div className="font-medium">{t("none")}</div>
           <div className="text-sm text-emerald-800/80">
-            Продавец отметил, что на кузове нет сколов, вмятин и ржавчины
+            {t("noneText")}
           </div>
         </div>
       </div>
@@ -37,7 +40,7 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
         <div className="relative">
           <Image
             src="/cars/car-top.png"
-            alt="Схема кузова, вид сверху"
+            alt={t("diagramAlt")}
             width={680}
             height={352}
             className="w-full h-auto opacity-40"
@@ -50,7 +53,7 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
               placement="top"
               title={
                 <div className="text-center">
-                  <div className="font-semibold">{point.label}</div>
+                  <div className="font-semibold">{partLabel(point.id)}</div>
                   <div className="text-sm">
                     {damages[point.id].map(damageLabel).join(", ")}
                   </div>
@@ -59,7 +62,7 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
             >
               <span
                 tabIndex={0}
-                aria-label={`${i + 1}. ${point.label}`}
+                aria-label={`${i + 1}. ${partLabel(point.id)}`}
                 style={{ top: point.top, left: point.left }}
                 className="
                   absolute -translate-x-1/2 -translate-y-1/2
@@ -80,8 +83,8 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
         </div>
 
         <div className="flex justify-between text-xs text-gray-400 mt-1 px-1">
-          <span>← Зад</span>
-          <span>Перед →</span>
+          <span>{t("rear")}</span>
+          <span>{t("front")}</span>
         </div>
       </div>
 
@@ -95,7 +98,7 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
             </span>
 
             <div className="min-w-0">
-              <div className="font-medium text-gray-900">{point.label}</div>
+              <div className="font-medium text-gray-900">{partLabel(point.id)}</div>
 
               <div className="flex flex-wrap gap-1 mt-1">
                 {damages[point.id].map((damage) => (

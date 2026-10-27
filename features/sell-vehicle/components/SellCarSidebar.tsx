@@ -1,11 +1,11 @@
 "use client";
 
 import CheckIcon from "@mui/icons-material/Check";
+import { useTranslations } from "next-intl";
 
 type Props = {
   sections: {
     id: string;
-    title: string;
     required?: boolean;
   }[];
   sectionsValid: Record<string, boolean>;
@@ -26,12 +26,14 @@ const scrollToSection = (id: string) => {
 };
 
 function Progress({ done, total }: { done: number; total: number }) {
+  const t = useTranslations("sell.form");
+
   return (
     <div>
       <div className="flex items-baseline justify-between text-sm">
-        <span className="font-medium text-gray-900">Обязательные разделы</span>
+        <span className="font-medium text-gray-900">{t("required")}</span>
         <span className="text-gray-500 tabular-nums">
-          {done} из {total}
+          {t("progress", { done, total })}
         </span>
       </div>
 
@@ -52,6 +54,8 @@ export function SellCarSidebar({
   requiredDone,
   requiredTotal,
 }: Props) {
+  const t = useTranslations("sell");
+
   return (
     <>
       {/* Mobile: только прогресс */}
@@ -101,9 +105,9 @@ export function SellCarSidebar({
                     <span
                       className={`text-sm ${reached ? "text-gray-900" : "text-gray-400"}`}
                     >
-                      {item.title}
+                      {t(`sections.${item.id}`)}
                       {!item.required && (
-                        <span className="text-gray-400"> · необяз.</span>
+                        <span className="text-gray-400"> · {t("form.optionalShort")}</span>
                       )}
                     </span>
                   </button>

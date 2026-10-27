@@ -1,23 +1,21 @@
 import Image from "next/image";
-import Link from "next/link";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
+import { useLocale, useTranslations } from "next-intl";
 
-import { formatNumber } from "@/lib/utils";
+import { Link } from "@/i18n/navigation";
+import { formatAgo, formatNumber } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/data/listings";
-import {
-  fuelOptions,
-  labelOf,
-  transmissionOptions,
-} from "@/features/cars/config/filterOptions";
 
 import FavoriteButton from "./FavoriteButton";
 
 export default function CarCard({ listing }: { listing: Listing }) {
-  const { id, title, year, price, mileage, city, postedAt } = listing;
+  const t = useTranslations("common");
+  const tOptions = useTranslations("options");
+  const locale = useLocale();
+
+  const { id, title, year, price, mileage } = listing;
   const image = listing.images[0];
-  const fuel = labelOf(fuelOptions, listing.fuel);
-  const transmission = labelOf(transmissionOptions, listing.transmission);
 
   return (
     <article className="group relative">
@@ -34,7 +32,7 @@ export default function CarCard({ listing }: { listing: Listing }) {
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-gray-300">
               <DirectionsCarOutlinedIcon sx={{ fontSize: 48 }} />
-              <span className="text-xs text-gray-500">Нет фото</span>
+              <span className="text-xs text-gray-500">{t("noPhoto")}</span>
             </div>
           )}
         </div>
@@ -49,11 +47,12 @@ export default function CarCard({ listing }: { listing: Listing }) {
           </div>
 
           <div className="text-sm text-gray-500 truncate">
-            {year} · {formatNumber(mileage)} км · {fuel} · {transmission}
+            {year} · {formatNumber(mileage)} {t("units.km")} · {tOptions(`fuel.${listing.fuel}`)} ·{" "}
+            {tOptions(`transmission.${listing.transmission}`)}
           </div>
 
           <div className="text-xs text-gray-500 pt-1">
-            {city} · {postedAt}
+            {tOptions(`cities.${listing.city}`)} · {formatAgo(listing.postedMinutesAgo, locale)}
           </div>
         </div>
       </Link>

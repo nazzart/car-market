@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@mui/material";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
@@ -18,26 +19,27 @@ type Props = {
 const options = [
   {
     value: "individual" as const,
-    title: "Частное лицо",
-    description: "Продаю свой автомобиль",
+    title: "individual",
+    description: "individualDesc",
     icon: PersonOutlineIcon,
   },
   {
     value: "company" as const,
-    title: "Компания",
-    description: "Автосалон, дилер или другой бизнес",
+    title: "company",
+    description: "companyDesc",
     icon: StorefrontOutlinedIcon,
   },
 ];
 
 export default function AccountTypeView({ initial, onSelect, onLogin }: Props) {
+  const t = useTranslations("auth");
   const [selected, setSelected] = useState<AccountType | null>(initial ?? null);
 
   return (
     <>
-      <AuthHeader title="Регистрация" subtitle="Кто будет размещать объявления?" />
+      <AuthHeader title={t("accountType.title")} subtitle={t("accountType.subtitle")} />
 
-      <div role="radiogroup" aria-label="Тип аккаунта" className="flex flex-col gap-3 mb-6">
+      <div role="radiogroup" aria-label={t("accountType.aria")} className="flex flex-col gap-3 mb-6">
         {options.map(({ value, title, description, icon: Icon }) => {
           const active = selected === value;
 
@@ -72,8 +74,8 @@ export default function AccountTypeView({ initial, onSelect, onLogin }: Props) {
               </span>
 
               <span className="flex-1 min-w-0">
-                <span className="block font-semibold text-gray-900">{title}</span>
-                <span className="block text-sm text-gray-500">{description}</span>
+                <span className="block font-semibold text-gray-900">{t(`types.${title}`)}</span>
+                <span className="block text-sm text-gray-500">{t(`types.${description}`)}</span>
               </span>
 
               <span
@@ -96,11 +98,12 @@ export default function AccountTypeView({ initial, onSelect, onLogin }: Props) {
         onClick={() => selected && onSelect(selected)}
         sx={pillSx}
       >
-        Продолжить
+        {t("accountType.continue")}
       </Button>
 
       <p className="text-sm text-gray-600 text-center mt-6">
-        Уже есть аккаунт? <TextLinkButton onClick={onLogin}>Войти</TextLinkButton>
+        {t("accountType.haveAccount")}{" "}
+        <TextLinkButton onClick={onLogin}>{t("accountType.login")}</TextLinkButton>
       </p>
     </>
   );

@@ -5,6 +5,7 @@ import { Dialog } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useTranslations } from "next-intl";
 
 type Props = {
   images: string[];
@@ -28,6 +29,8 @@ const navButtonClass = `
 
 // Полноэкранный просмотр фото: стрелки, клавиатура, миниатюры
 export default function PhotoLightbox({ images, title, index, onChange, onClose }: Props) {
+  const t = useTranslations("listing.gallery");
+  const tCommon = useTranslations("common");
   const open = index !== null;
   const current = index ?? 0;
 
@@ -60,7 +63,7 @@ export default function PhotoLightbox({ images, title, index, onChange, onClose 
           <button
             type="button"
             onClick={onClose}
-            aria-label="Закрыть"
+            aria-label={tCommon("close")}
             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition cursor-pointer"
           >
             <CloseIcon />
@@ -74,7 +77,7 @@ export default function PhotoLightbox({ images, title, index, onChange, onClose 
             <Image
               key={images[current]}
               src={images[current]}
-              alt={`${title} — фото ${current + 1}`}
+              alt={t("alt", { title, n: current + 1 })}
               fill
               sizes="100vw"
               className="object-contain"
@@ -87,7 +90,7 @@ export default function PhotoLightbox({ images, title, index, onChange, onClose 
               <button
                 type="button"
                 onClick={() => go(-1)}
-                aria-label="Предыдущее фото"
+                aria-label={t("prev")}
                 className={`${navButtonClass} -left-16`}
               >
                 <ChevronLeftIcon />
@@ -96,7 +99,7 @@ export default function PhotoLightbox({ images, title, index, onChange, onClose 
               <button
                 type="button"
                 onClick={() => go(1)}
-                aria-label="Следующее фото"
+                aria-label={t("next")}
                 className={`${navButtonClass} -right-16`}
               >
                 <ChevronRightIcon />
@@ -105,13 +108,13 @@ export default function PhotoLightbox({ images, title, index, onChange, onClose 
               {/* на телефоне — тап по краям */}
               <button
                 type="button"
-                aria-label="Предыдущее фото"
+                aria-label={t("prev")}
                 onClick={() => go(-1)}
                 className="sm:hidden absolute inset-y-0 left-0 w-1/3"
               />
               <button
                 type="button"
-                aria-label="Следующее фото"
+                aria-label={t("next")}
                 onClick={() => go(1)}
                 className="sm:hidden absolute inset-y-0 right-0 w-1/3"
               />
@@ -128,7 +131,7 @@ export default function PhotoLightbox({ images, title, index, onChange, onClose 
                 key={src}
                 type="button"
                 onClick={() => onChange(i)}
-                aria-label={`Фото ${i + 1}`}
+                aria-label={t("photo", { n: i + 1 })}
                 className={`relative w-20 h-14 shrink-0 rounded-lg overflow-hidden transition cursor-pointer ${
                   i === current ? "ring-2 ring-white" : "opacity-50 hover:opacity-100"
                 }`}

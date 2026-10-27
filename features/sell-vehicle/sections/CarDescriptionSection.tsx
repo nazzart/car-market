@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { TextField } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 import { SectionContainer } from "../components/SectionContainer";
 import { useSectionNext } from "../hooks/useSectionNext";
@@ -18,6 +18,8 @@ export function CarDescriptionSection({
   onNext,
   updateField,
 }: FormStepProps) {
+  const t = useTranslations("sell.description");
+
   const { isValid } = useSectionValidation(fields, data);
 
   const { attemptedNext, handleNext } = useSectionNext(
@@ -38,7 +40,7 @@ export function CarDescriptionSection({
     >
       <div className="grid gap-4">
         <TextField
-          label="Описание"
+          label={t("label")}
           value={data.description ?? ""}
           onChange={(e) => updateField("description", e.target.value)}
           error={
@@ -49,7 +51,7 @@ export function CarDescriptionSection({
           required
           rows={5}
           fullWidth
-          placeholder="Например: автомобиль в хорошем состоянии, обслуживался вовремя, недавно заменены тормоза и масло..."
+          placeholder={t("placeholder")}
         />
       </div>
     </SectionContainer>

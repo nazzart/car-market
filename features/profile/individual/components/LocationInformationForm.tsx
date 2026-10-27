@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { TextField, InputAdornment } from "@mui/material";
 
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
@@ -18,15 +20,16 @@ export default function LocationInformationForm({
   city,
   updateField,
 }: Props) {
+  const t = useTranslations("account.profilePage");
   return (
     <ProfileSectionCard
-      title="Location"
-      description="Where you are located."
+      title={t("location")}
+      description={t("locationDescription")}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         <TextField
-          label="Country"
+          label={t("country")}
           value={country}
           required
           onChange={(e) =>
@@ -46,7 +49,7 @@ export default function LocationInformationForm({
         />
 
         <TextField
-          label="City"
+          label={t("city")}
           value={city}
           required
           onChange={(e) =>

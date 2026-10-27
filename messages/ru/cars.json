@@ -1,0 +1,55 @@
+{
+  "title": "Купить автомобиль",
+  "dealerCars": "Автомобили {dealer}",
+  "resultsIn": "{count, plural, one {# объявление} few {# объявления} many {# объявлений} other {# объявления}} в Латвии",
+  "found": "Найдено:",
+  "allCars": "Все автомобили",
+  "filters": "Фильтры",
+  "sort": "Сортировка",
+  "viewList": "Списком",
+  "viewGrid": "Плиткой",
+  "showResults": "Показать {results}",
+  "empty": {
+    "title": "Ничего не найдено",
+    "text": "Попробуйте изменить или сбросить фильтры"
+  },
+  "chips": {
+    "remove": "Убрать фильтр: {label}",
+    "priceFrom": "от {value} €",
+    "priceTo": "до {value} €",
+    "yearFrom": "от {value} г.",
+    "yearTo": "до {value} г.",
+    "mileageTo": "пробег до {value} км"
+  },
+  "panel": {
+    "condition": "Состояние",
+    "all": "Все",
+    "brandModel": "Марка и модель",
+    "brand": "Марка",
+    "anyBrand": "Любая марка",
+    "model": "Модель",
+    "anyModel": "Любая модель",
+    "brandFirst": "Сначала выберите марку",
+    "price": "Цена",
+    "year": "Год выпуска",
+    "mileage": "Пробег",
+    "body": "Кузов",
+    "engine": "Двигатель",
+    "gearbox": "Коробка передач",
+    "any": "Любая",
+    "drive": "Привод",
+    "seller": "Продавец",
+    "from": "От, {unit}",
+    "to": "До, {unit}",
+    "unitYear": "год",
+    "unitKm": "км",
+    "unitEur": "€"
+  },
+  "row": {
+    "new": "Новый",
+    "tuning": "Тюнинг",
+    "dealer": "Дилер · {name}",
+    "private": "Частное лицо",
+    "morePhotos": "Ещё {count} фото"
+  }
+}

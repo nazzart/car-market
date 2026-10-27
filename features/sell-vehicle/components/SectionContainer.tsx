@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useTranslations } from "next-intl";
 
 type Props = {
   id: string;
@@ -26,6 +27,7 @@ export function SectionContainer({
   onNext,
   onSkip,
 }: Props) {
+  const t = useTranslations("sell.form");
   const [completed, setCompleted] = useState(false);
 
   const handleNext = () => {
@@ -54,7 +56,7 @@ export function SectionContainer({
 
           {!required && (
             <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
-              Необязательно
+              {t("optional")}
             </span>
           )}
         </div>
@@ -84,7 +86,7 @@ export function SectionContainer({
                 onClick={handleSkip}
                 className="h-11 px-5 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition cursor-pointer"
               >
-                Пропустить
+                {t("skip")}
               </button>
             )}
 
@@ -93,7 +95,7 @@ export function SectionContainer({
               onClick={handleNext}
               className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-semibold transition cursor-pointer"
             >
-              Далее
+              {t("next")}
               <ArrowForwardIcon sx={{ fontSize: 18 }} />
             </button>
           </div>

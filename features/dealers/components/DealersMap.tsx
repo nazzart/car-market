@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
 import L from "leaflet";
+import { useTranslations } from "next-intl";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
 import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
 
+import { Link } from "@/i18n/navigation";
 import { initials } from "@/lib/utils";
 
 import { Dealer } from "../data/dealers";
@@ -124,6 +125,8 @@ export default function DealersMap({
   onSelect,
   onBoundsChange,
 }: Props) {
+  const t = useTranslations("dealers");
+  const tOptions = useTranslations("options");
   const active = dealers.find((d) => d.slug === activeSlug);
 
   return (
@@ -163,20 +166,20 @@ export default function DealersMap({
               <div className="min-w-48">
                 <div className="font-semibold text-gray-900 text-sm">{dealer.name}</div>
                 <div className="text-xs text-gray-500 mt-0.5">
-                  {dealer.city}, {dealer.address}
+                  {tOptions(`cities.${dealer.city}`)}, {dealer.address}
                 </div>
                 <div className="flex gap-3 mt-2">
                   <Link
                     href={`/dealers/${dealer.slug}`}
                     className="text-xs font-semibold !text-gray-900 underline underline-offset-2"
                   >
-                    О дилере
+                    {t("popup.about")}
                   </Link>
                   <Link
                     href={`/cars?dealer=${dealer.slug}`}
                     className="text-xs font-semibold !text-gray-900 underline underline-offset-2"
                   >
-                    {dealer.carsInStock} авто →
+                    {t("popup.cars", { count: dealer.carsInStock })}
                   </Link>
                 </div>
               </div>

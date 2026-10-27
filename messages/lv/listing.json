@@ -1,0 +1,92 @@
+{
+  "metaTitle": "{title}, {year} — {price} € | bestauto.lv",
+  "breadcrumbs": {
+    "home": "Sākums",
+    "aria": "Navigācija"
+  },
+  "negotiable": "Iespējama kaulēšanās",
+  "sections": {
+    "description": "Apraksts",
+    "specs": "Tehniskie dati",
+    "body": "Virsbūves stāvoklis",
+    "equipment": "Komplektācija",
+    "seller": "Pārdevējs"
+  },
+  "actions": {
+    "share": "Kopīgot",
+    "copied": "Saite nokopēta",
+    "save": "Saglabāt",
+    "saved": "Saglabāts"
+  },
+  "specs": {
+    "brand": "Marka",
+    "year": "Izlaiduma gads",
+    "mileage": "Nobraukums",
+    "body": "Virsbūve",
+    "color": "Krāsa",
+    "engine": "Dzinējs",
+    "power": "Jauda",
+    "fuel": "Degviela",
+    "gearbox": "Ātrumkārba",
+    "drive": "Piedziņa",
+    "owners": "Īpašnieki",
+    "inspection": "Tehniskā apskate",
+    "inspectionUntil": "līdz {date}",
+    "condition": "Stāvoklis",
+    "conditionNew": "Jauns",
+    "conditionUsed": "Lietots",
+    "vin": "VIN"
+  },
+  "keySpecs": {
+    "year": "Gads",
+    "mileage": "Nobraukums",
+    "engine": "Dzinējs",
+    "power": "Jauda",
+    "gearbox": "Ātrumkārba",
+    "drive": "Piedziņa"
+  },
+  "highlights": {
+    "new": "Jauna automašīna",
+    "noAccidents": "Bez avārijām",
+    "inspection": "TA līdz {date}",
+    "tuning": "Tūnings",
+    "negotiable": "Iespējama kaulēšanās"
+  },
+  "description": {
+    "empty": "Pārdevējs nav pievienojis aprakstu.",
+    "more": "Lasīt vairāk",
+    "less": "Sakļaut"
+  },
+  "contact": {
+    "safety": "Neveiciet priekšapmaksu pirms automašīnas apskates un dokumentu pārbaudes.",
+    "listingNo": "Sludinājums Nr. {id}"
+  },
+  "seller": {
+    "dealer": "Dīleris",
+    "private": "Privātpersona",
+    "seller": "Pārdevējs",
+    "verified": "Pārbaudīts dīleris",
+    "since": "portālā kopš {year}. gada",
+    "dealerPage": "Dīlera lapa un visi auto"
+  },
+  "similar": {
+    "title": "Līdzīgi sludinājumi",
+    "all": "Visi {brand}"
+  },
+  "gallery": {
+    "noPhotos": "Pārdevējs nav pievienojis foto",
+    "open": "Atvērt foto {n}",
+    "alt": "{title} — foto {n}",
+    "all": "Visi foto ({count})",
+    "prev": "Iepriekšējais foto",
+    "next": "Nākamais foto",
+    "photo": "Foto {n}"
+  },
+  "damage": {
+    "none": "Bojājumu nav",
+    "noneText": "Pārdevējs norādījis, ka virsbūvei nav šķembu, iespiedumu un rūsas",
+    "diagramAlt": "Virsbūves shēma, skats no augšas",
+    "rear": "← Aizmugure",
+    "front": "Priekša →"
+  }
+}

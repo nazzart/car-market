@@ -1,20 +1,17 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-import { plural } from "@/lib/utils";
+import { Link } from "@/i18n/navigation";
 
 import { Brand, brands } from "../data/brands";
 
 const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
 const popularBrands = sortedBrands.filter((b) => b.popular);
-
-const pluralBrands = (n: number) =>
-  `${n} ${plural(n, ["марка", "марки", "марок"])}`;
 
 const groupByLetter =(list: Brand[]) => {
   const groups: Record<string, Brand[]> = {};
@@ -52,6 +49,7 @@ function BrandLink({ brand }: { brand: Brand }) {
 }
 
 export default function BrandList() {
+  const t = useTranslations("home.brands");
   const [expanded, setExpanded] = useState(false);
   const [query, setQuery] = useState("");
   const sectionRef = useRef<HTMLElement>(null);
@@ -82,16 +80,16 @@ export default function BrandList() {
 
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Все марки</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">{t("all")}</h2>
 
           <p className="text-sm text-gray-500 mt-1">
-            {pluralBrands(sortedBrands.length)} в каталоге
+            {t("inCatalog", { count: sortedBrands.length })}
           </p>
         </div>
 
         <TextField
           size="small"
-          placeholder="Найти марку"
+          placeholder={t("searchPlaceholder")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="sm:w-64"
@@ -110,7 +108,7 @@ export default function BrandList() {
       <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4">
         {filtered.length === 0 && (
           <p className="text-gray-500 text-center py-8">
-            Ничего не найдено по запросу «{query.trim()}»
+            {t("notFound", { query: query.trim() })}
           </p>
         )}
 
@@ -159,8 +157,8 @@ export default function BrandList() {
               "
             >
               {expanded
-                ? "Свернуть"
-                : `Показать все ${pluralBrands(sortedBrands.length)}`}
+                ? t("collapse")
+                : t("showAll", { count: sortedBrands.length })}
 
               <KeyboardArrowDownIcon
                 fontSize="small"

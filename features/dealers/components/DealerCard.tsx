@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import StarIcon from "@mui/icons-material/Star";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
@@ -9,9 +9,10 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import { brands } from "@/features/brands/data/brands";
 import PhoneButton from "@/features/cars/car-list/components/PhoneButton";
-import { formatNumber, initials, plural } from "@/lib/utils";
+import { Link } from "@/i18n/navigation";
+import { initials } from "@/lib/utils";
 
-import { Dealer, hasRating } from "../data/dealers";
+import { Dealer, formatHours, hasRating } from "../data/dealers";
 
 type Props = {
   dealer: Dealer;
@@ -24,6 +25,9 @@ type Props = {
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
 export default function DealerCard({ dealer, active, onSelect, onHover }: Props) {
+  const t = useTranslations("dealers");
+  const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
   const official = dealer.type === "official";
 
   return (
@@ -71,13 +75,13 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
               <VerifiedIcon
                 sx={{ fontSize: 16 }}
                 className="text-sky-600 shrink-0"
-                titleAccess="Официальный дилер"
+                titleAccess={t("official")}
               />
             )}
           </div>
 
           <div className="flex flex-wrap items-center gap-x-2 text-sm text-gray-500">
-            <span>{official ? "Официальный дилер" : "Автосалон с пробегом"}</span>
+            <span>{official ? t("official") : t("used")}</span>
             {hasRating(dealer) && (
               <>
                 <span className="inline-flex items-center gap-0.5 text-gray-900">
@@ -85,8 +89,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
                   {dealer.rating!.toFixed(1)}
                 </span>
                 <span>
-                  {formatNumber(dealer.reviews!)}{" "}
-                  {plural(dealer.reviews!, ["отзыв", "отзыва", "отзывов"])}
+                  {tCommon("reviews", { count: dealer.reviews! })}
                 </span>
               </>
             )}
@@ -108,11 +111,11 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
           <div className="mt-3 space-y-1 text-sm text-gray-700">
             <div className="flex items-start gap-1.5">
               <PlaceOutlinedIcon sx={{ fontSize: 17 }} className="text-gray-500 mt-px" />
-              {dealer.city}, {dealer.address}
+              {tOptions(`cities.${dealer.city}`)}, {dealer.address}
             </div>
             <div className="flex items-start gap-1.5">
               <ScheduleOutlinedIcon sx={{ fontSize: 17 }} className="text-gray-500 mt-px" />
-              {dealer.hours}
+              {formatHours(dealer.hours, (d) => tOptions(`days.${d}`))}
             </div>
           </div>
         </div>
@@ -128,8 +131,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
           href={`/cars?dealer=${dealer.slug}`}
           className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 hover:text-primary transition"
         >
-          {formatNumber(dealer.carsInStock)}{" "}
-          {plural(dealer.carsInStock, ["автомобиль", "автомобиля", "автомобилей"])} в наличии
+          {t("inStock", { count: dealer.carsInStock })}
           <ArrowForwardIcon sx={{ fontSize: 16 }} />
         </Link>
 

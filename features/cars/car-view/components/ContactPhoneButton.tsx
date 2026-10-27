@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 
 const buttonClass = `
@@ -22,6 +23,7 @@ export default function ContactPhoneButton({
   phone: string;
   className?: string;
 }) {
+  const t = useTranslations("common");
   const [shown, setShown] = useState(false);
 
   if (shown) {
@@ -40,7 +42,7 @@ export default function ContactPhoneButton({
       className={`${buttonClass} ${className ?? ""}`}
     >
       <PhoneOutlinedIcon fontSize="small" />
-      Показать телефон
+      {t("showPhone")}
     </button>
   );
 }

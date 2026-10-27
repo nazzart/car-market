@@ -1,16 +1,18 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
 
 import { useCarFilters } from "../hooks/useCarFilters";
 import {
-  bodyTypeOptions,
-  conditionOptions,
-  driveOptions,
-  fuelOptions,
-  sellerOptions,
-  transmissionOptions,
+  bodyTypes,
+  conditions,
+  drives,
+  fuels,
+  sellerTypes,
+  transmissions,
 } from "../../config/filterOptions";
 import { ChipGroup, FilterSection, Segmented, Select, inputClass } from "./ui";
 
@@ -29,6 +31,7 @@ function RangeInputs({
   toKey: string;
   unit: string;
 }) {
+  const t = useTranslations("cars.panel");
   const { params, updateFilter } = useCarFilters();
 
   const commit = (key: string) => (e: React.FocusEvent<HTMLInputElement>) => {
@@ -55,18 +58,24 @@ function RangeInputs({
     />
   );
 
-  if (!fromKey) return field(toKey, `До, ${unit}`);
+  if (!fromKey) return field(toKey, t("to", { unit }));
 
   return (
     <div className="grid grid-cols-2 gap-2">
-      {field(fromKey, `От, ${unit}`)}
-      {field(toKey, `До, ${unit}`)}
+      {field(fromKey, t("from", { unit }))}
+      {field(toKey, t("to", { unit }))}
     </div>
   );
 }
 
 export default function FiltersPanel() {
+  const t = useTranslations("cars.panel");
+  const tOptions = useTranslations("options");
   const { params, updateFilter } = useCarFilters();
+
+  // value → { label, value } из переводов options.{group}
+  const opts = (group: string, values: string[]) =>
+    values.map((value) => ({ value, label: tOptions(`${group}.${value}`) }));
 
   const get = (key: string) => params.get(key) ?? "";
   const set = (key: string) => (value: string | null) =>
@@ -80,28 +89,28 @@ export default function FiltersPanel() {
 
   return (
     <div>
-      <FilterSection title="Состояние">
+      <FilterSection title={t("condition")}>
         <Segmented
-          anyLabel="Все"
-          options={conditionOptions}
+          anyLabel={t("all")}
+          options={opts("condition", conditions)}
           value={get("condition")}
           onChange={set("condition")}
         />
       </FilterSection>
 
-      <FilterSection title="Марка и модель">
+      <FilterSection title={t("brandModel")}>
         <div className="space-y-2">
           <Select
-            label="Марка"
-            placeholder="Любая марка"
+            label={t("brand")}
+            placeholder={t("anyBrand")}
             options={brandOptions}
             value={brand}
             onChange={set("brand")}
           />
 
           <Select
-            label="Модель"
-            placeholder={brand ? "Любая модель" : "Сначала выберите марку"}
+            label={t("model")}
+            placeholder={brand ? t("anyModel") : t("brandFirst")}
             options={models}
             value={get("model")}
             onChange={set("model")}
@@ -110,55 +119,55 @@ export default function FiltersPanel() {
         </div>
       </FilterSection>
 
-      <FilterSection title="Цена">
-        <RangeInputs fromKey="priceFrom" toKey="priceTo" unit="€" />
+      <FilterSection title={t("price")}>
+        <RangeInputs fromKey="priceFrom" toKey="priceTo" unit={t("unitEur")} />
       </FilterSection>
 
-      <FilterSection title="Год выпуска">
-        <RangeInputs fromKey="yearFrom" toKey="yearTo" unit="год" />
+      <FilterSection title={t("year")}>
+        <RangeInputs fromKey="yearFrom" toKey="yearTo" unit={t("unitYear")} />
       </FilterSection>
 
-      <FilterSection title="Пробег">
-        <RangeInputs toKey="mileageTo" unit="км" />
+      <FilterSection title={t("mileage")}>
+        <RangeInputs toKey="mileageTo" unit={t("unitKm")} />
       </FilterSection>
 
-      <FilterSection title="Кузов">
+      <FilterSection title={t("body")}>
         <ChipGroup
-          options={bodyTypeOptions}
+          options={opts("bodyType", bodyTypes)}
           value={get("bodyType")}
           onChange={set("bodyType")}
         />
       </FilterSection>
 
-      <FilterSection title="Двигатель">
+      <FilterSection title={t("engine")}>
         <ChipGroup
-          options={fuelOptions}
+          options={opts("fuel", fuels)}
           value={get("fuel")}
           onChange={set("fuel")}
         />
       </FilterSection>
 
-      <FilterSection title="Коробка передач">
+      <FilterSection title={t("gearbox")}>
         <Segmented
-          anyLabel="Любая"
-          options={transmissionOptions}
+          anyLabel={t("any")}
+          options={opts("transmission", transmissions)}
           value={get("transmission")}
           onChange={set("transmission")}
         />
       </FilterSection>
 
-      <FilterSection title="Привод">
+      <FilterSection title={t("drive")}>
         <ChipGroup
-          options={driveOptions}
+          options={opts("drive", drives)}
           value={get("drive")}
           onChange={set("drive")}
         />
       </FilterSection>
 
-      <FilterSection title="Продавец">
+      <FilterSection title={t("seller")}>
         <Segmented
-          anyLabel="Все"
-          options={sellerOptions}
+          anyLabel={t("all")}
+          options={opts("sellerType", sellerTypes)}
           value={get("sellerType")}
           onChange={set("sellerType")}
         />

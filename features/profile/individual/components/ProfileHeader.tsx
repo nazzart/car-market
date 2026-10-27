@@ -1,15 +1,18 @@
+import { useTranslations } from "next-intl";
+
 import { ProfileMode } from "../../types/profile";
 
 export default function ProfileHeader({ mode }: { mode: ProfileMode }) {
+  const t = useTranslations("account.profilePage");
   const isEdit = mode === "edit";
   return (
     <header>
       <h1 className="text-[28px] font-semibold tracking-tight">
-        {isEdit ? "Edit account" : "Create account"}
+        {isEdit ? t("editTitle") : t("createTitle")}
       </h1>
 
       <p className="text-gray-500 mt-2">
-        Manage your personal information and contact details.
+        {t("subtitle")}
       </p>
     </header>
   );

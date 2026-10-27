@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "title": "bestauto.lv — покупка и продажа автомобилей",
+    "description": "Объявления о продаже новых и подержанных автомобилей в Латвии"
+  },
+  "close": "Закрыть",
+  "back": "Назад",
+  "reset": "Сбросить",
+  "resetAll": "Сбросить всё",
+  "resetFilters": "Сбросить фильтры",
+  "showPhone": "Показать телефон",
+  "addFavorite": "Добавить в избранное",
+  "removeFavorite": "Убрать из избранного",
+  "noPhoto": "Нет фото",
+  "viewAll": "Смотреть все",
+  "more": "Подробнее",
+  "units": {
+    "km": "км",
+    "hp": "л.с.",
+    "liters": "л"
+  },
+  "listings": "{count, plural, one {# объявление} few {# объявления} many {# объявлений} other {# объявления}}",
+  "cars": "{count, plural, one {# автомобиль} few {# автомобиля} many {# автомобилей} other {# автомобиля}}",
+  "reviews": "{count, plural, one {# отзыв} few {# отзыва} many {# отзывов} other {# отзыва}}",
+  "views": "{count, plural, one {# просмотр} few {# просмотра} many {# просмотров} other {# просмотра}}",
+  "photos": "{count, plural, one {# фото} other {# фото}}",
+  "brands": "{count, plural, one {# марка} few {# марки} many {# марок} other {# марки}}",
+  "companies": "{count, plural, one {# компания} few {# компании} many {# компаний} other {# компании}}",
+  "owners": "{count, plural, one {# владелец} few {# владельца} many {# владельцев} other {# владельца}}",
+  "inLatvia": "в Латвии",
+  "latvia": "Латвия",
+  "chooseOption": "Выберите вариант"
+}

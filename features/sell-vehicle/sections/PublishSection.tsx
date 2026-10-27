@@ -3,8 +3,9 @@
 import Image from "next/image";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
+import { useTranslations } from "next-intl";
 
-import { formatNumber, plural } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils";
 
 type Props = {
   data: Record<string, any>;
@@ -15,8 +16,11 @@ type Props = {
 
 // Итог перед публикацией: как объявление будет выглядеть в списке
 export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: Props) {
+  const t = useTranslations("sell.publish");
+  const tCommon = useTranslations("common");
+
   const photos: string[] = data.photos ?? [];
-  const title = [data.brand, data.model].filter(Boolean).join(" ") || "Ваш автомобиль";
+  const title = [data.brand, data.model].filter(Boolean).join(" ") || t("yourCar");
   const complete = requiredDone === requiredTotal;
 
   return (
@@ -24,8 +28,8 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
       id="publish"
       className="scroll-mt-24 bg-white rounded-3xl border border-gray-200 p-5 sm:p-8"
     >
-      <h2 className="text-xl font-semibold tracking-tight">Публикация</h2>
-      <p className="text-gray-500 text-sm mt-1">Так объявление увидят покупатели</p>
+      <h2 className="text-xl font-semibold tracking-tight">{t("title")}</h2>
+      <p className="text-gray-500 text-sm mt-1">{t("subtitle")}</p>
 
       {/* Preview */}
 
@@ -50,9 +54,9 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
 
           <div className="text-sm text-gray-500 mt-1">
             {[
-              data.mileage && `${formatNumber(Number(data.mileage))} км`,
+              data.mileage && `${formatNumber(Number(data.mileage))} ${tCommon("units.km")}`,
               data.sellerCity,
-              `${photos.length} ${plural(photos.length, ["фото", "фото", "фото"])}`,
+              tCommon("photos", { count: photos.length }),
             ]
               .filter(Boolean)
               .join(" · ")}
@@ -63,8 +67,7 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
       {!complete && (
         <div className="flex gap-3 mt-4 p-4 rounded-2xl bg-amber-50 text-sm text-amber-900">
           <WarningAmberOutlinedIcon fontSize="small" className="text-amber-600 shrink-0" />
-          Заполнено обязательных разделов: {requiredDone} из {requiredTotal}. При
-          публикации мы покажем, что осталось.
+          {t("missing", { done: requiredDone, total: requiredTotal })}
         </div>
       )}
 
@@ -73,11 +76,11 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
         onClick={onSubmit}
         className="w-full h-14 mt-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-base font-semibold transition cursor-pointer"
       >
-        Опубликовать объявление
+        {t("submit")}
       </button>
 
       <p className="text-xs text-gray-500 text-center mt-3">
-        Нажимая «Опубликовать», вы соглашаетесь с правилами размещения объявлений
+        {t("terms")}
       </p>
     </section>
   );

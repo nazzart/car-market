@@ -5,7 +5,7 @@ export type User = {
   name: string;
   email: string;
   phone: string;
-  city: string;
+  city: string; // ключ города
   since: number;
   dealerSlug?: string; // для дилера — его страница /dealers/[slug]
   listingIds?: string[]; // объявления частного лица
@@ -17,10 +17,10 @@ export const demoUsers: User[] = [
   {
     id: "demo-individual",
     type: "individual",
-    name: "Андрей Петров",
-    email: "andrey@demo.lv",
+    name: "Andris Bērziņš",
+    email: "andris@demo.lv",
     phone: "+371 2000 3001",
-    city: "Рига",
+    city: "riga",
     since: 2023,
     listingIds: ["2", "9"],
   },
@@ -30,7 +30,7 @@ export const demoUsers: User[] = [
     name: "Baltic Auto",
     email: "dealer@demo.lv",
     phone: "+371 2000 2001",
-    city: "Рига",
+    city: "riga",
     since: 2016,
     dealerSlug: "baltic-auto",
   },

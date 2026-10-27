@@ -1,31 +1,30 @@
 import { brands } from "@/features/brands/data/brands";
+import { useTranslations } from "next-intl";
+
 import { formatNumber } from "@/lib/utils";
 
 import { Listing } from "../../data/listings";
-import {
-  bodyTypeOptions,
-  driveOptions,
-  fuelOptions,
-  labelOf,
-  transmissionOptions,
-} from "../../config/filterOptions";
 
 export default function SpecsTable({ listing }: { listing: Listing }) {
+  const t = useTranslations("listing.specs");
+  const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
+
   const rows: [string, string | null | undefined][] = [
-    ["Марка", brands.find((b) => b.slug === listing.brand)?.name],
-    ["Год выпуска", String(listing.year)],
-    ["Пробег", `${formatNumber(listing.mileage)} км`],
-    ["Кузов", labelOf(bodyTypeOptions, listing.bodyType)],
-    ["Цвет", listing.color],
-    ["Двигатель", listing.engine ? `${listing.engine.toFixed(1)} л` : null],
-    ["Мощность", `${listing.power} л.с.`],
-    ["Топливо", labelOf(fuelOptions, listing.fuel)],
-    ["Коробка", labelOf(transmissionOptions, listing.transmission)],
-    ["Привод", labelOf(driveOptions, listing.drive)],
-    ["Владельцев", listing.owners ? String(listing.owners) : null],
-    ["Техосмотр", listing.inspectionUntil ? `до ${listing.inspectionUntil}` : null],
-    ["Состояние", listing.condition === "new" ? "Новый" : "С пробегом"],
-    ["VIN", listing.vin],
+    ["brand", brands.find((b) => b.slug === listing.brand)?.name],
+    ["year", String(listing.year)],
+    ["mileage", `${formatNumber(listing.mileage)} ${tCommon("units.km")}`],
+    ["body", tOptions(`bodyType.${listing.bodyType}`)],
+    ["color", listing.color && tOptions(`colors.${listing.color}`)],
+    ["engine", listing.engine ? `${listing.engine.toFixed(1)} ${tCommon("units.liters")}` : null],
+    ["power", `${listing.power} ${tCommon("units.hp")}`],
+    ["fuel", tOptions(`fuel.${listing.fuel}`)],
+    ["gearbox", tOptions(`transmission.${listing.transmission}`)],
+    ["drive", tOptions(`drive.${listing.drive}`)],
+    ["owners", listing.owners ? String(listing.owners) : null],
+    ["inspection", listing.inspectionUntil ? t("inspectionUntil", { date: listing.inspectionUntil }) : null],
+    ["condition", listing.condition === "new" ? t("conditionNew") : t("conditionUsed")],
+    ["vin", listing.vin],
   ];
 
   return (
@@ -37,10 +36,10 @@ export default function SpecsTable({ listing }: { listing: Listing }) {
             key={label}
             className="flex items-baseline justify-between gap-4 py-3 border-b border-gray-100"
           >
-            <dt className="text-gray-500">{label}</dt>
+            <dt className="text-gray-500">{t(label)}</dt>
             <dd
               className={`font-medium text-gray-900 text-right ${
-                label === "VIN" ? "font-mono text-sm tracking-wide" : ""
+                label === "vin" ? "font-mono text-sm tracking-wide" : ""
               }`}
             >
               {value}

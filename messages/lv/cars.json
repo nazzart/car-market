@@ -1,0 +1,55 @@
+{
+  "title": "Pirkt automašīnu",
+  "dealerCars": "{dealer} automašīnas",
+  "resultsIn": "{count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}} Latvijā",
+  "found": "Atrasti:",
+  "allCars": "Visas automašīnas",
+  "filters": "Filtri",
+  "sort": "Kārtošana",
+  "viewList": "Sarakstā",
+  "viewGrid": "Režģī",
+  "showResults": "Rādīt {results}",
+  "empty": {
+    "title": "Nekas nav atrasts",
+    "text": "Mēģiniet mainīt vai notīrīt filtrus"
+  },
+  "chips": {
+    "remove": "Noņemt filtru: {label}",
+    "priceFrom": "no {value} €",
+    "priceTo": "līdz {value} €",
+    "yearFrom": "no {value}. g.",
+    "yearTo": "līdz {value}. g.",
+    "mileageTo": "nobraukums līdz {value} km"
+  },
+  "panel": {
+    "condition": "Stāvoklis",
+    "all": "Visi",
+    "brandModel": "Marka un modelis",
+    "brand": "Marka",
+    "anyBrand": "Jebkura marka",
+    "model": "Modelis",
+    "anyModel": "Jebkurš modelis",
+    "brandFirst": "Vispirms izvēlieties marku",
+    "price": "Cena",
+    "year": "Izlaiduma gads",
+    "mileage": "Nobraukums",
+    "body": "Virsbūve",
+    "engine": "Dzinējs",
+    "gearbox": "Ātrumkārba",
+    "any": "Jebkura",
+    "drive": "Piedziņa",
+    "seller": "Pārdevējs",
+    "from": "No, {unit}",
+    "to": "Līdz, {unit}",
+    "unitYear": "gads",
+    "unitKm": "km",
+    "unitEur": "€"
+  },
+  "row": {
+    "new": "Jauns",
+    "tuning": "Tūnings",
+    "dealer": "Dīleris · {name}",
+    "private": "Privātpersona",
+    "morePhotos": "Vēl {count} foto"
+  }
+}

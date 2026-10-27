@@ -5,6 +5,7 @@ import { Chip, IconButton } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
+import { useTranslations } from "next-intl";
 import { ChipSelectProps } from "./types";
 
 export function ChipSelect({
@@ -21,6 +22,7 @@ export function ChipSelect({
   required,
   inline = false,
 }: ChipSelectProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -162,7 +164,7 @@ export function ChipSelect({
           </div>
         )}
 
-        {isError && <p className="text-xs text-error mt-2">Выберите вариант</p>}
+        {isError && <p className="text-xs text-error mt-2">{t("chooseOption")}</p>}
       </div>
     );
   }

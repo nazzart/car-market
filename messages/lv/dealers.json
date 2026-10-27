@@ -1,0 +1,46 @@
+{
+  "metaTitle": "Dīleri un autosaloni Latvijā | bestauto.lv",
+  "title": "Dīleri un autosaloni",
+  "subtitle": "{count, plural, zero {# uzņēmumi} one {# uzņēmums} other {# uzņēmumi}} visā Latvijā",
+  "search": "Nosaukums vai adrese",
+  "searchAria": "Meklēt dīleri",
+  "city": "Pilsēta",
+  "allCities": "Visas pilsētas",
+  "brand": "Marka",
+  "brandPlaceholder": "Markas oficiālais dīleris",
+  "all": "Visi",
+  "types": {
+    "official": "Oficiālie",
+    "used": "Lietoti auto"
+  },
+  "list": "Saraksts",
+  "map": "Karte",
+  "shown": "Parādīti:",
+  "notFound": "Dīleri nav atrasti",
+  "moveMap": "Pārvietojiet vai attāliniet karti, lai redzētu vairāk",
+  "changeFilters": "Mēģiniet mainīt filtrus",
+  "searchOnMove": "Meklēt, pārvietojot karti",
+  "official": "Oficiālais dīleris",
+  "used": "Lietotu auto salons",
+  "inStock": "Pieejami {count, number} auto",
+  "popup": {
+    "about": "Par dīleri",
+    "cars": "{count} auto →"
+  },
+  "page": {
+    "metaTitle": "{name} — {city} | bestauto.lv",
+    "inStockShort": "Pieejamie auto",
+    "city": "Pilsēta",
+    "since": "Portālā kopš",
+    "rating": "Vērtējums · {count} atsauksmes",
+    "carsInStock": "Pieejamās automašīnas",
+    "all": "Visi {count}",
+    "noCars": "Dīleris vēl nav ievietojis sludinājumus",
+    "about": "Par uzņēmumu",
+    "directions": "Maršruts",
+    "others": "Citi dīleri · {city}",
+    "carsShort": "{count} auto",
+    "aboutOfficial": "Oficiālais {brands} dīleris ({city}). Jaunas un lietotas automašīnas, kā arī serviss.",
+    "aboutUsed": "Lietotu automašīnu salons ({city}). Auto atlase, pārbaude un palīdzība dokumentu noformēšanā."
+  }
+}

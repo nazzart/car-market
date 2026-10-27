@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import { Link } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
 
 import { collectionHref, visibleCollections } from "../data/collections";
 
 // Выпадающее меню «Подборки» в шапке (десктоп)
 export default function CollectionsMenu() {
+  const t = useTranslations("nav");
+  const tOptions = useTranslations("options");
   const [open, setOpen] = useState(false);
 
   return (
@@ -29,7 +32,7 @@ export default function CollectionsMenu() {
         aria-haspopup="true"
         className="inline-flex items-center gap-0.5 hover:text-black cursor-pointer"
       >
-        Подборки
+        {t("collections")}
         <KeyboardArrowDownIcon
           sx={{ fontSize: 18 }}
           className={`transition-transform ${open ? "rotate-180" : ""}`}
@@ -61,10 +64,10 @@ export default function CollectionsMenu() {
 
                 <span className="flex-1 min-w-0">
                   <span className="block font-medium text-gray-900">
-                    {c.label}
+                    {tOptions(`collections.${c.slug}.label`)}
                   </span>
                   <span className="block text-xs text-gray-500 truncate">
-                    {c.description}
+                    {tOptions(`collections.${c.slug}.description`)}
                   </span>
                 </span>
 

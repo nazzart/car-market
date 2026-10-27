@@ -11,11 +11,12 @@ import {
   Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useTranslations } from "next-intl";
 
 import {
   Damage,
   DamageMap,
-  damageOptions as options,
+  damageTypes,
   damagePoints as points,
 } from "@/features/cars/config/damage";
 
@@ -68,6 +69,8 @@ function DamagePoint({
 }
 
 export function CarDamageSelector({ value, onChange }: Props) {
+  const t = useTranslations("sell.damage");
+  const tOptions = useTranslations("options");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [activePoint, setActivePoint] = useState<string | null>(null);
 
@@ -123,7 +126,7 @@ export function CarDamageSelector({ value, onChange }: Props) {
     if (!damages || damages.length === 0) return null;
 
     return damages
-      .map((d) => options.find((o) => o.value === d)?.label)
+      .map((d) => tOptions(`damageTypes.${d}`))
       .join(", ");
   };
 
@@ -156,7 +159,7 @@ export function CarDamageSelector({ value, onChange }: Props) {
               placement="top"
               title={
                 <div className="text-center">
-                  <div className="font-semibold text-white">{p.label}</div>
+                  <div className="font-semibold text-white">{tOptions(`damageParts.${p.id}`)}</div>
 
                   {damageLabel && (
                     <div className="text-sm text-white">{damageLabel}</div>
@@ -194,29 +197,29 @@ export function CarDamageSelector({ value, onChange }: Props) {
       >
         <Box p={2}>
           <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-            {activePart?.label ?? "Деталь кузова"}
+            {activePart ? tOptions(`damageParts.${activePart.id}`) : t("part")}
           </Typography>
 
           <Typography
             variant="caption"
             sx={{ color: "text.secondary", mb: 1.5, display: "block" }}
           >
-            Выберите повреждения
+            {t("choose")}
           </Typography>
 
           <Stack gap={1}>
-            {options.map((o) => {
-              const active = selected.includes(o.value);
+            {damageTypes.map((value) => {
+              const active = selected.includes(value);
 
               return (
                 <Button
-                  key={o.value}
+                  key={value}
                   variant={active ? "contained" : "outlined"}
                   size="small"
-                  onClick={() => toggleDamage(o.value)}
+                  onClick={() => toggleDamage(value)}
                   sx={{ textTransform: "none" }}
                 >
-                  {o.label}
+                  {tOptions(`damageTypes.${value}`)}
                 </Button>
               );
             })}
@@ -227,11 +230,11 @@ export function CarDamageSelector({ value, onChange }: Props) {
 
         <Stack direction="row" justifyContent="space-between" p={1.5}>
           <Button size="small" color="error" onClick={deleteDamage}>
-            Удалить
+            {t("remove")}
           </Button>
 
           <Button size="small" variant="contained" onClick={saveDamage}>
-            Сохранить
+            {t("save")}
           </Button>
         </Stack>
       </Popover>

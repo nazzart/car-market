@@ -7,12 +7,23 @@ import {
   InputLabel,
   Select,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 import { SectionContainer } from "../components/SectionContainer";
 import { useSectionNext } from "../hooks/useSectionNext";
 import { FormStepProps } from "../types";
 import { useSectionValidation } from "../hooks/useSectionValidation";
 import { validateField } from "../utils/validationRules";
+
+// значение в форме → ключ перевода
+const mileageLvOptions = [
+  ["0", "none"],
+  ["10000", "upTo10k"],
+  ["50000", "from10to50k"],
+  ["100000", "from50to100k"],
+  ["100000+", "over100k"],
+  ["unknown", "unknown"],
+];
 
 export function CarHistorySection({
   id,
@@ -23,6 +34,8 @@ export function CarHistorySection({
   onNext,
   updateField,
 }: FormStepProps) {
+  const t = useTranslations("sell.history");
+
   const { isValid } = useSectionValidation(fields, data);
 
   const { attemptedNext, handleNext } = useSectionNext(
@@ -53,7 +66,7 @@ export function CarHistorySection({
     <SectionContainer
       id={id}
       title={title}
-      description="Основная информация о происхождении автомобиля"
+      description={t("description")}
       required={required}
       isValid={isValid}
       onNext={handleNext}
@@ -62,7 +75,7 @@ export function CarHistorySection({
         {/* VIN */}
 
         <TextField
-          label="VIN номер"
+          label={t("vin")}
           value={data.vin ?? ""}
           onChange={(e) => updateField("vin", e.target.value.toUpperCase())}
           fullWidth
@@ -71,11 +84,11 @@ export function CarHistorySection({
         {/* Owners */}
 
         <FormControl fullWidth>
-          <InputLabel>Количество владельцев</InputLabel>
+          <InputLabel>{t("owners")}</InputLabel>
 
           <Select
             value={data.owners ?? ""}
-            label="Количество владельцев"
+            label={t("owners")}
             onChange={(e) => updateField("owners", e.target.value)}
           >
             <MenuItem value="1">1</MenuItem>
@@ -88,19 +101,18 @@ export function CarHistorySection({
         {/* Mileage Latvia */}
 
         <FormControl fullWidth>
-          <InputLabel>Пробег по Латвии</InputLabel>
+          <InputLabel>{t("mileageLv")}</InputLabel>
 
           <Select
             value={data.mileageLatvia ?? ""}
-            label="Пробег по Латвии"
+            label={t("mileageLv")}
             onChange={(e) => updateField("mileageLatvia", e.target.value)}
           >
-            <MenuItem value="0">Без пробега по Латвии</MenuItem>
-            <MenuItem value="10000">До 10 000 км</MenuItem>
-            <MenuItem value="50000">10 000 – 50 000 км</MenuItem>
-            <MenuItem value="100000">50 000 – 100 000 км</MenuItem>
-            <MenuItem value="100000+">Более 100 000 км</MenuItem>
-            <MenuItem value="unknown">Не знаю</MenuItem>
+            {mileageLvOptions.map(([value, key]) => (
+              <MenuItem key={value} value={value}>
+                {t(`mileageLvOptions.${key}`)}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
@@ -113,14 +125,14 @@ export function CarHistorySection({
             !validateField(data.inspectionUntil, getRules("inspectionUntil"))
           }
         >
-          <InputLabel>Техосмотр до</InputLabel>
+          <InputLabel>{t("inspection")}</InputLabel>
 
           <Select
             value={data.inspectionUntil ?? ""}
-            label="Техосмотр до"
+            label={t("inspection")}
             onChange={(e) => updateField("inspectionUntil", e.target.value)}
           >
-            <MenuItem value="none">Нет</MenuItem>
+            <MenuItem value="none">{t("none")}</MenuItem>
 
             {inspectionOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>

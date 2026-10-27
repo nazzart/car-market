@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
+import { useTranslations } from "next-intl";
 
 import PhotoLightbox from "./PhotoLightbox";
 
@@ -14,6 +15,7 @@ type Props = {
 
 // Десктоп: мозаика (1 большое + до 4 маленьких). Телефон: свайп-карусель
 export default function PhotoGallery({ images, title }: Props) {
+  const t = useTranslations("listing.gallery");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [slide, setSlide] = useState(0);
 
@@ -21,7 +23,7 @@ export default function PhotoGallery({ images, title }: Props) {
     return (
       <div className="h-64 md:h-[420px] rounded-2xl bg-gray-100 flex flex-col items-center justify-center gap-2 text-gray-300">
         <DirectionsCarOutlinedIcon sx={{ fontSize: 64 }} />
-        <span className="text-sm text-gray-500">Продавец не добавил фото</span>
+        <span className="text-sm text-gray-500">{t("noPhotos")}</span>
       </div>
     );
   }
@@ -34,12 +36,12 @@ export default function PhotoGallery({ images, title }: Props) {
       key={src}
       type="button"
       onClick={() => setLightboxIndex(i)}
-      aria-label={`Открыть фото ${i + 1}`}
+      aria-label={t("open", { n: i + 1 })}
       className={`relative overflow-hidden bg-gray-100 cursor-zoom-in group ${className}`}
     >
       <Image
         src={src}
-        alt={`${title} — фото ${i + 1}`}
+        alt={t("alt", { title, n: i + 1 })}
         fill
         sizes={sizes}
         priority={i === 0}
@@ -71,7 +73,7 @@ export default function PhotoGallery({ images, title }: Props) {
             className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-sm font-medium shadow-lg transition cursor-pointer"
           >
             <GridViewOutlinedIcon sx={{ fontSize: 18 }} />
-            Все фото ({images.length})
+            {t("all", { count: images.length })}
           </button>
         )}
       </div>

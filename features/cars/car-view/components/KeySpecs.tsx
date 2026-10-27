@@ -5,34 +5,33 @@ import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import AltRouteOutlinedIcon from "@mui/icons-material/AltRouteOutlined";
 
+import { useTranslations } from "next-intl";
+
 import { formatNumber } from "@/lib/utils";
 
 import { Listing } from "../../data/listings";
-import {
-  driveOptions,
-  fuelOptions,
-  labelOf,
-  transmissionOptions,
-} from "../../config/filterOptions";
 
 export default function KeySpecs({ listing }: { listing: Listing }) {
-  const fuel = labelOf(fuelOptions, listing.fuel);
+  const t = useTranslations("listing.keySpecs");
+  const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
+  const fuel = tOptions(`fuel.${listing.fuel}`);
 
   const specs = [
-    { icon: CalendarMonthOutlinedIcon, label: "Год", value: String(listing.year) },
-    { icon: SpeedOutlinedIcon, label: "Пробег", value: `${formatNumber(listing.mileage)} км` },
+    { icon: CalendarMonthOutlinedIcon, label: t("year"), value: String(listing.year) },
+    { icon: SpeedOutlinedIcon, label: t("mileage"), value: `${formatNumber(listing.mileage)} ${tCommon("units.km")}` },
     {
       icon: LocalGasStationOutlinedIcon,
-      label: "Двигатель",
-      value: listing.engine ? `${listing.engine.toFixed(1)} л · ${fuel}` : fuel,
+      label: t("engine"),
+      value: listing.engine ? `${listing.engine.toFixed(1)} ${tCommon("units.liters")} · ${fuel}` : fuel,
     },
-    { icon: BoltOutlinedIcon, label: "Мощность", value: `${listing.power} л.с.` },
+    { icon: BoltOutlinedIcon, label: t("power"), value: `${listing.power} ${tCommon("units.hp")}` },
     {
       icon: SettingsOutlinedIcon,
-      label: "Коробка",
-      value: labelOf(transmissionOptions, listing.transmission),
+      label: t("gearbox"),
+      value: tOptions(`transmission.${listing.transmission}`),
     },
-    { icon: AltRouteOutlinedIcon, label: "Привод", value: labelOf(driveOptions, listing.drive) },
+    { icon: AltRouteOutlinedIcon, label: t("drive"), value: tOptions(`drive.${listing.drive}`) },
   ];
 
   return (

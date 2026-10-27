@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button, TextField } from "@mui/material";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export default function ForgotPasswordView({ onBack }: Props) {
+  const t = useTranslations("auth");
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [sent, setSent] = useState(false);
@@ -35,12 +37,12 @@ export default function ForgotPasswordView({ onBack }: Props) {
         </span>
 
         <AuthHeader
-          title="Проверьте почту"
-          subtitle={`Если аккаунт с адресом ${email.trim()} существует, мы отправили на него ссылку для смены пароля.`}
+          title={t("forgot.sentTitle")}
+          subtitle={t("forgot.sentText", { email: email.trim() })}
         />
 
         <Button variant="contained" size="large" fullWidth onClick={onBack} sx={pillSx}>
-          Вернуться ко входу
+          {t("forgot.back")}
         </Button>
       </div>
     );
@@ -49,13 +51,13 @@ export default function ForgotPasswordView({ onBack }: Props) {
   return (
     <>
       <AuthHeader
-        title="Восстановление пароля"
-        subtitle="Укажите email — пришлём ссылку для создания нового пароля"
+        title={t("forgot.title")}
+        subtitle={t("forgot.subtitle")}
       />
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <TextField
-          label="Email"
+          label={t("emailLabel")}
           type="email"
           autoComplete="email"
           autoFocus
@@ -63,11 +65,11 @@ export default function ForgotPasswordView({ onBack }: Props) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={emailError}
-          helperText={emailError && "Введите корректный email"}
+          helperText={emailError && t("invalidEmail")}
         />
 
         <Button type="submit" variant="contained" size="large" fullWidth sx={pillSx}>
-          Отправить ссылку
+          {t("forgot.submit")}
         </Button>
       </form>
     </>

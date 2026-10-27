@@ -1,15 +1,15 @@
 import Image from "next/image";
-import { Button } from "@mui/material";
+import { useTranslations } from "next-intl";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 
-const benefits = [
-  "Бесплатное размещение",
-  "Объявление за 5 минут",
-  "Тысячи покупателей каждый день",
-];
+import { Link } from "@/i18n/navigation";
+
+const benefits = ["free", "fast", "buyers"];
 
 export default function SellBanner() {
+  const t = useTranslations("home.sellBanner");
+
   return (
     <section className="py-8">
       <div className="relative overflow-hidden rounded-3xl bg-gray-900">
@@ -25,11 +25,11 @@ export default function SellBanner() {
 
         <div className="relative px-6 py-10 sm:px-12 sm:py-14 max-w-xl">
           <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-white">
-            Продайте автомобиль быстро
+            {t("title")}
           </h2>
 
           <p className="text-white/70 mt-3 sm:text-lg">
-            Разместите объявление — его увидят покупатели со всей Латвии.
+            {t("text")}
           </p>
 
           <ul className="mt-6 space-y-2.5">
@@ -38,21 +38,18 @@ export default function SellBanner() {
                 <span className="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
                   <CheckIcon sx={{ fontSize: 14 }} />
                 </span>
-                {b}
+                {t(`benefits.${b}`)}
               </li>
             ))}
           </ul>
 
-          <Button
+          <Link
             href="/sell"
-            variant="contained"
-            color="success"
-            size="large"
-            startIcon={<AddIcon />}
-            sx={{ mt: 4, px: 3, py: 1.25, fontWeight: 600, borderRadius: "999px" }}
+            className="inline-flex items-center gap-2 mt-8 h-12 px-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition"
           >
-            Разместить объявление
-          </Button>
+            <AddIcon fontSize="small" />
+            {t("cta")}
+          </Link>
         </div>
       </div>
     </section>

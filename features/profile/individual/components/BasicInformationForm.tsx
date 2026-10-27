@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { TextField, InputAdornment } from "@mui/material";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ProfileSectionCard from "./ProfileSectionCard";
@@ -16,11 +18,12 @@ export default function BasicInformationForm({
   lastName,
   updateField,
 }: Props) {
+  const t = useTranslations("account.profilePage");
   return (
-    <ProfileSectionCard title="Basic information">
+    <ProfileSectionCard title={t("basic")}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <TextField
-          label="First name"
+          label={t("firstName")}
           value={firstName}
           onChange={(e) => updateField("firstName", e.target.value)}
           fullWidth
@@ -35,7 +38,7 @@ export default function BasicInformationForm({
         />
 
         <TextField
-          label="Last name"
+          label={t("lastName")}
           value={lastName}
           onChange={(e) => updateField("lastName", e.target.value)}
           fullWidth

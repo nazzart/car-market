@@ -1,7 +1,8 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import { listings } from "@/features/cars/data/listings";
+import { Link } from "@/i18n/navigation";
 
 import CarCard from "./CarCard";
 
@@ -13,16 +14,18 @@ const homepageListings = listings
   .slice(0, HOMEPAGE_LIMIT);
 
 export default function CarGrid() {
+  const t = useTranslations("home.latest");
+
   return (
     <section className="py-8">
       <div className="flex items-end justify-between gap-4 mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Свежие объявления</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
 
         <Link
           href="/cars"
           className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-black transition"
         >
-          Смотреть все
+          {t("viewAll")}
           <ArrowForwardIcon sx={{ fontSize: 16 }} />
         </Link>
       </div>

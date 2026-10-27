@@ -5,6 +5,7 @@ import Image from "next/image";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
+import { useTranslations } from "next-intl";
 
 import { SectionContainer } from "../components/SectionContainer";
 import { FormStepProps } from "../types";
@@ -13,6 +14,7 @@ const MAX_PHOTOS = 20;
 
 // Пока фото живут только в браузере (object URL) — загрузку в хранилище добавим вместе с API
 export function PhotosSection({ id, title, data, required, updateField }: FormStepProps) {
+  const t = useTranslations("sell.photos");
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -43,7 +45,7 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
     <SectionContainer
       id={id}
       title={title}
-      description="Первое фото станет обложкой объявления"
+      description={t("description")}
       required={required}
       isValid
     >
@@ -88,11 +90,13 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
         </span>
 
         <span className="font-medium text-gray-900">
-          Перетащите фото сюда или <span className="underline underline-offset-4">выберите файлы</span>
+          {t.rich("drop", {
+            choose: (chunks) => <span className="underline underline-offset-4">{chunks}</span>,
+          })}
         </span>
 
         <span className="text-sm text-gray-500">
-          JPG, PNG или HEIC · до {MAX_PHOTOS} фото · {photos.length} добавлено
+          {t("formats", { max: MAX_PHOTOS, count: photos.length })}
         </span>
       </label>
 
@@ -107,7 +111,7 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
             >
               <Image
                 src={url}
-                alt={`Фото ${i + 1}`}
+                alt={t("alt", { n: i + 1 })}
                 fill
                 unoptimized
                 className="object-cover"
@@ -115,14 +119,14 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
 
               {i === 0 && (
                 <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-gray-900/80 text-white text-xs font-medium">
-                  Обложка
+                  {t("cover")}
                 </span>
               )}
 
               <button
                 type="button"
                 onClick={() => remove(url)}
-                aria-label="Удалить фото"
+                aria-label={t("remove")}
                 className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-sm hover:bg-white transition cursor-pointer"
               >
                 <CloseIcon sx={{ fontSize: 16 }} />
@@ -134,7 +138,7 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
                   onClick={() => makeCover(url)}
                   className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-white/90 text-gray-900 text-xs font-medium opacity-0 group-hover:opacity-100 focus:opacity-100 transition cursor-pointer"
                 >
-                  Сделать обложкой
+                  {t("makeCover")}
                 </button>
               )}
             </div>
@@ -147,8 +151,7 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
       <div className="flex gap-3 mt-5 p-4 rounded-2xl bg-amber-50 text-sm text-amber-900">
         <LightbulbOutlinedIcon fontSize="small" className="text-amber-600 shrink-0" />
         <p>
-          Снимайте при дневном свете, покажите автомобиль со всех сторон, салон, приборную
-          панель с пробегом и багажник. Оптимально — 8–15 фото.
+          {t("tips")}
         </p>
       </div>
     </SectionContainer>

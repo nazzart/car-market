@@ -6,12 +6,17 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AddIcon from "@mui/icons-material/Add";
 
 import { IconButton, Button } from "@mui/material";
+import { useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
+
+import LocaleSwitcher from "./LocaleSwitcher";
 import UserMenu from "./UserMenu";
 import AuthModal from "@/features/auth/components/AuthModal";
 import { onOpenAuthModal, useAuth } from "@/features/auth/store";
 
 export default function HeaderActions() {
+  const t = useTranslations("nav");
   const [authOpen, setAuthOpen] = useState(false);
 
   const { user } = useAuth();
@@ -22,11 +27,13 @@ export default function HeaderActions() {
   return (
     <>
       <div className="flex items-center gap-2 sm:gap-3">
-        <IconButton aria-label="Избранное">
+        <LocaleSwitcher className="hidden lg:inline-flex mr-1" />
+
+        <IconButton aria-label={t("favorites")}>
           <FavoriteBorderIcon className="text-gray-600" />
         </IconButton>
 
-        <IconButton aria-label="Уведомления">
+        <IconButton aria-label={t("notifications")}>
           <NotificationsNoneIcon className="text-gray-600" />
         </IconButton>
 
@@ -36,17 +43,19 @@ export default function HeaderActions() {
           <Button
             variant="contained"
             color="success"
+            component={Link}
             href="/sell"
             startIcon={<AddIcon fontSize="small" />}
           >
-            Разместить
+            {t("post")}
           </Button>
         </div>
 
         <div className="sm:hidden">
           <IconButton
+            component={Link}
             href="/sell"
-            aria-label="Разместить объявление"
+            aria-label={t("postListing")}
             sx={{
               width: 42,
               height: 42,

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { Drawer } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -14,6 +16,8 @@ type Props = {
 
 // Фильтры на мобильных — нижняя шторка с той же панелью, что и в сайдбаре
 export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: Props) {
+  const t = useTranslations("cars");
+  const tCommon = useTranslations("common");
   const { resetFilters, activeCount } = useCarFilters();
 
   return (
@@ -37,12 +41,12 @@ export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: Pro
         <div className="relative flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
           <span className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-gray-200" />
 
-          <h2 className="text-lg font-semibold">Фильтры</h2>
+          <h2 className="text-lg font-semibold">{t("filters")}</h2>
 
           <button
             type="button"
             onClick={onClose}
-            aria-label="Закрыть"
+            aria-label={tCommon("close")}
             className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer"
           >
             <CloseIcon fontSize="small" />
@@ -64,7 +68,7 @@ export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: Pro
               onClick={resetFilters}
               className="px-4 h-12 text-sm font-medium text-gray-700 hover:text-black cursor-pointer"
             >
-              Сбросить
+              {tCommon("reset")}
             </button>
           )}
 
@@ -73,7 +77,7 @@ export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: Pro
             onClick={onClose}
             className="flex-1 h-12 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition cursor-pointer"
           >
-            Показать {resultsLabel}
+            {t("showResults", { results: resultsLabel })}
           </button>
         </div>
       </div>

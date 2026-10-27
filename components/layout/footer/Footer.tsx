@@ -1,37 +1,42 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+
+import { Link } from "@/i18n/navigation";
 
 import Container from "../Container";
 
 // "#" — страницы, которые ещё не созданы
+// Ключи — nav.* в messages; "#" — страницы, которые ещё не созданы
 const columns = [
   {
-    title: "Покупателям",
+    title: "footer.buyers",
     links: [
-      { label: "Легковые", href: "/cars" },
-      { label: "Дилеры", href: "/dealers" },
-      { label: "Избранное", href: "#" },
+      { label: "cars", href: "/cars" },
+      { label: "dealers", href: "/dealers" },
+      { label: "favorites", href: "#" },
     ],
   },
   {
-    title: "Продавцам",
+    title: "footer.sellers",
     links: [
-      { label: "Разместить объявление", href: "/sell" },
-      { label: "Личный кабинет", href: "/account" },
-      { label: "Профиль", href: "/account/profile" },
+      { label: "postListing", href: "/sell" },
+      { label: "footer.account", href: "/account" },
+      { label: "footer.profile", href: "/account/profile" },
     ],
   },
   {
-    title: "О сервисе",
+    title: "footer.about",
     links: [
-      { label: "О нас", href: "#" },
-      { label: "Правила размещения", href: "#" },
-      { label: "Конфиденциальность", href: "#" },
-      { label: "Контакты", href: "#" },
+      { label: "footer.aboutUs", href: "#" },
+      { label: "footer.rules", href: "#" },
+      { label: "footer.privacy", href: "#" },
+      { label: "footer.contacts", href: "#" },
     ],
   },
 ];
 
 export default function Footer() {
+  const t = useTranslations("nav");
+
   return (
     <footer className="mt-12 border-t border-gray-200 bg-gray-50">
       <Container className="bg-transparent py-10">
@@ -42,14 +47,14 @@ export default function Footer() {
             </Link>
 
             <p className="text-sm text-gray-500 mt-2 max-w-xs">
-              Покупка и продажа новых и подержанных автомобилей в Латвии.
+              {t("footer.tagline")}
             </p>
           </div>
 
           {columns.map((col) => (
             <div key={col.title}>
               <h3 className="text-sm font-semibold text-gray-900 mb-3">
-                {col.title}
+                {t(col.title)}
               </h3>
 
               <ul className="space-y-2">
@@ -59,7 +64,7 @@ export default function Footer() {
                       href={link.href}
                       className="text-sm text-gray-500 hover:text-black transition"
                     >
-                      {link.label}
+                      {t(link.label)}
                     </Link>
                   </li>
                 ))}

@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "title": "bestauto.lv — automašīnu pirkšana un pārdošana",
+    "description": "Jaunu un lietotu automašīnu pārdošanas sludinājumi Latvijā"
+  },
+  "close": "Aizvērt",
+  "back": "Atpakaļ",
+  "reset": "Notīrīt",
+  "resetAll": "Notīrīt visu",
+  "resetFilters": "Notīrīt filtrus",
+  "showPhone": "Rādīt tālruni",
+  "addFavorite": "Pievienot izlasei",
+  "removeFavorite": "Izņemt no izlases",
+  "noPhoto": "Nav foto",
+  "viewAll": "Skatīt visus",
+  "more": "Vairāk",
+  "units": {
+    "km": "km",
+    "hp": "ZS",
+    "liters": "l"
+  },
+  "listings": "{count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}}",
+  "cars": "{count, plural, zero {# automašīnas} one {# automašīna} other {# automašīnas}}",
+  "reviews": "{count, plural, zero {# atsauksmes} one {# atsauksme} other {# atsauksmes}}",
+  "views": "{count, plural, zero {# skatījumi} one {# skatījums} other {# skatījumi}}",
+  "photos": "{count, plural, zero {# foto} one {# foto} other {# foto}}",
+  "brands": "{count, plural, zero {# markas} one {# marka} other {# markas}}",
+  "companies": "{count, plural, zero {# uzņēmumi} one {# uzņēmums} other {# uzņēmumi}}",
+  "owners": "{count, plural, zero {# īpašnieki} one {# īpašnieks} other {# īpašnieki}}",
+  "inLatvia": "Latvijā",
+  "latvia": "Latvija",
+  "chooseOption": "Izvēlieties variantu"
+}

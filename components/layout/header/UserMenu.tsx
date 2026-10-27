@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+
+import { Link, useRouter } from "@/i18n/navigation";
 
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export default function UserMenu({ user, onLoginClick }: Props) {
+  const t = useTranslations("nav");
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -36,7 +38,7 @@ export default function UserMenu({ user, onLoginClick }: Props) {
         className="flex items-center gap-1 text-sm text-gray-700 hover:text-black cursor-pointer"
       >
         <PersonOutlineIcon fontSize="small" />
-        Войти
+        {t("login")}
       </button>
     );
   }
@@ -44,12 +46,12 @@ export default function UserMenu({ user, onLoginClick }: Props) {
   const isDealer = user.type === "dealer";
 
   const items = [
-    { href: "/account", label: "Личный кабинет", icon: DashboardOutlinedIcon },
-    { href: "/sell", label: "Разместить объявление", icon: AddIcon },
+    { href: "/account", label: t("account.dashboard"), icon: DashboardOutlinedIcon },
+    { href: "/sell", label: t("postListing"), icon: AddIcon },
     ...(isDealer && user.dealerSlug
-      ? [{ href: `/dealers/${user.dealerSlug}`, label: "Страница дилера", icon: StorefrontOutlinedIcon }]
+      ? [{ href: `/dealers/${user.dealerSlug}`, label: t("account.dealerPage"), icon: StorefrontOutlinedIcon }]
       : []),
-    { href: "/account/profile", label: "Настройки профиля", icon: ManageAccountsOutlinedIcon },
+    { href: "/account/profile", label: t("account.settings"), icon: ManageAccountsOutlinedIcon },
   ];
 
   return (
@@ -57,7 +59,7 @@ export default function UserMenu({ user, onLoginClick }: Props) {
       <button
         type="button"
         onClick={(e) => setAnchorEl(e.currentTarget)}
-        aria-label="Меню аккаунта"
+        aria-label={t("account.menu")}
         aria-haspopup="menu"
         aria-expanded={Boolean(anchorEl)}
         className={`w-9 h-9 flex items-center justify-center text-white text-xs font-bold bg-gray-900 hover:ring-4 hover:ring-gray-200 transition cursor-pointer ${
@@ -88,7 +90,7 @@ export default function UserMenu({ user, onLoginClick }: Props) {
         <div className="px-3 pt-2 pb-3">
           <div className="font-semibold text-gray-900">{user.name}</div>
           <div className="text-xs text-gray-500">
-            {isDealer ? "Дилер" : "Частное лицо"} · {user.email}
+            {isDealer ? t("account.dealer") : t("account.individual")} · {user.email}
           </div>
         </div>
 
@@ -116,7 +118,7 @@ export default function UserMenu({ user, onLoginClick }: Props) {
           <ListItemIcon sx={{ color: "#dc2626" }}>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Выйти</ListItemText>
+          <ListItemText>{t("account.logout")}</ListItemText>
         </MenuItem>
       </Menu>
     </>

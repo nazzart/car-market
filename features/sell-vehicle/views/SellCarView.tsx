@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
+import { Link } from "@/i18n/navigation";
 
 import { SellCarSidebar } from "../components/SellCarSidebar";
 import { useProgressiveSections } from "../hooks/useProgressiveSections";
@@ -13,6 +15,7 @@ import { getInitialFormData, getSectionsState } from "../utils/sectionUtils";
 import { validateAndScroll } from "../lib/formSubmit";
 
 export function SellCarView() {
+  const t = useTranslations("sell");
   const { visibleSections, revealSection } = useProgressiveSections(sections);
 
   const [formData, setFormData] = useState(() =>
@@ -54,15 +57,15 @@ export function SellCarView() {
           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-black transition"
         >
           <ArrowBackIcon sx={{ fontSize: 16 }} />
-          Выбрать другую категорию
+          {t("form.back")}
         </Link>
 
         <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mt-3">
-          Продать легковой автомобиль
+          {t("form.title")}
         </h1>
 
         <p className="text-gray-500 mt-1">
-          Заполните обязательные разделы — остальное можно добавить позже
+          {t("form.subtitle")}
         </p>
       </div>
 
@@ -86,7 +89,7 @@ export function SellCarView() {
               <Component
                 key={section.id}
                 id={section.id}
-                title={section.title}
+                title={t(`sections.${section.id}`)}
                 data={formData}
                 required={section.required}
                 fields={section.fields}

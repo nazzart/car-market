@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Alert, Button, IconButton, InputAdornment, TextField } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -18,11 +19,12 @@ type Props = {
 };
 
 const demoButtons = [
-  { type: "individual", label: "Частное лицо", icon: PersonOutlineIcon },
-  { type: "dealer", label: "Дилер", icon: StorefrontOutlinedIcon },
+  { type: "individual", icon: PersonOutlineIcon },
+  { type: "dealer", icon: StorefrontOutlinedIcon },
 ] as const;
 
 export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedIn }: Props) {
+  const t = useTranslations("auth");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -48,7 +50,7 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
     const user = findDemoUser(email, password);
 
     if (!user) {
-      setError("Неверный email или пароль");
+      setError(t("login.wrong"));
       return;
     }
 
@@ -57,11 +59,11 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
 
   return (
     <>
-      <AuthHeader title="Вход" subtitle="Размещайте объявления и сохраняйте избранное" />
+      <AuthHeader title={t("login.title")} subtitle={t("login.subtitle")} />
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <TextField
-          label="Email"
+          label={t("emailLabel")}
           type="email"
           autoComplete="email"
           autoFocus
@@ -69,25 +71,25 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={emailError}
-          helperText={emailError && "Введите корректный email"}
+          helperText={emailError && t("invalidEmail")}
         />
 
         <TextField
-          label="Пароль"
+          label={t("passwordLabel")}
           type={showPassword ? "text" : "password"}
           autoComplete="current-password"
           fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           error={passwordError}
-          helperText={passwordError && "Введите пароль"}
+          helperText={passwordError && t("enterPassword")}
           slotProps={{
             input: {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
                     onClick={() => setShowPassword((prev) => !prev)}
-                    aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                    aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                     edge="end"
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -104,7 +106,7 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
             onClick={onForgotPassword}
             className="text-sm text-gray-600 hover:text-black hover:underline underline-offset-4 cursor-pointer"
           >
-            Забыли пароль?
+            {t("login.forgot")}
           </button>
         </div>
 
@@ -115,20 +117,20 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
         )}
 
         <Button type="submit" variant="contained" size="large" fullWidth sx={pillSx}>
-          Войти
+          {t("login.submit")}
         </Button>
       </form>
 
       {/* Демо-доступ — пока нет настоящих аккаунтов */}
 
       <div className="mt-6 p-4 rounded-2xl bg-gray-50">
-        <div className="text-sm font-semibold text-gray-900">Демо-доступ</div>
+        <div className="text-sm font-semibold text-gray-900">{t("login.demoTitle")}</div>
         <p className="text-xs text-gray-500 mt-0.5">
-          Войдите в один клик или используйте {demoUsers[0].email} / {DEMO_PASSWORD}
+          {t("login.demoText", { email: demoUsers[0].email, password: DEMO_PASSWORD })}
         </p>
 
         <div className="grid grid-cols-2 gap-2 mt-3">
-          {demoButtons.map(({ type, label, icon: Icon }) => (
+          {demoButtons.map(({ type, icon: Icon }) => (
             <button
               key={type}
               type="button"
@@ -136,14 +138,15 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
               className="inline-flex items-center justify-center gap-1.5 h-10 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:border-gray-900 transition cursor-pointer"
             >
               <Icon sx={{ fontSize: 18 }} />
-              {label}
+              {t(`types.${type}`)}
             </button>
           ))}
         </div>
       </div>
 
       <p className="text-sm text-gray-600 text-center mt-6">
-        Нет аккаунта? <TextLinkButton onClick={onCreateAccount}>Зарегистрироваться</TextLinkButton>
+        {t("login.noAccount")}{" "}
+        <TextLinkButton onClick={onCreateAccount}>{t("login.register")}</TextLinkButton>
       </p>
     </>
   );

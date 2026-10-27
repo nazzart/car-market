@@ -7,12 +7,12 @@ import { CarDescriptionSection } from "../sections/CarDescriptionSection";
 import { ContactInfoSection } from "../sections/ContactSection";
 import { PhotosSection } from "../sections/PhotosSection";
 
+// Названия разделов — messages/{locale}/sell.json → sections.{id}
 export const sections = [
   {
     id: "basic-info",
     component: CarInfoSection,
     required: true,
-    title: "Основная информация",
     fields: [
       { name: "brand", rules: ["required"] },
       { name: "model", rules: ["required"] },
@@ -28,7 +28,6 @@ export const sections = [
     id: "technical",
     component: TechnicalSection,
     required: true,
-    title: "Технические характеристики",
     fields: [
       { name: "fuel", rules: ["required"] },
       { name: "engineCapacity", rules: ["required", "isEngineCapacity"] },
@@ -41,7 +40,6 @@ export const sections = [
     id: "history",
     component: CarHistorySection,
     required: true,
-    title: "История автомобиля",
     fields: [
       { name: "vin" },
       { name: "owners" },
@@ -53,7 +51,6 @@ export const sections = [
     id: "condition",
     component: CarConditionSection,
     required: false,
-    title: "Состояние автомобиля",
     fields: [
       { name: "condition" },
       { name: "hadAccident" },
@@ -66,7 +63,6 @@ export const sections = [
     id: "equipment",
     component: CarEquipmentSection,
     required: false,
-    title: "Комплектация",
     fields: [
       { name: "comfort", defaultValue: [] },
       { name: "safety", defaultValue: [] },
@@ -80,14 +76,12 @@ export const sections = [
     id: "description",
     component: CarDescriptionSection,
     required: true,
-    title: "Описание автомобиля",
     fields: [{ name: "description", rules: ["required"] }],
   },
   {
     id: "contact",
     component: ContactInfoSection,
     required: true,
-    title: "Контактная информация",
     fields: [
       { name: "sellerName", rules: ["required"] },
       { name: "sellerPhone", rules: ["required", "phone"] },
@@ -99,7 +93,6 @@ export const sections = [
     id: "photos",
     component: PhotosSection,
     required: false,
-    title: "Фото",
     fields: [{ name: "photos", defaultValue: [] }],
   },
 ];

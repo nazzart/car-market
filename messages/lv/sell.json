@@ -1,0 +1,137 @@
+{
+  "category": {
+    "eyebrow": "Jauns sludinājums",
+    "title": "Ko jūs pārdodat?",
+    "soon": "Drīzumā",
+    "benefits": {
+      "free": "Bez maksas",
+      "fast": "5–10 minūtes",
+      "buyers": "Pircēji visā Latvijā"
+    },
+    "car": {
+      "title": "Vieglais auto",
+      "description": "Sedani, apvidus auto, hečbeki"
+    },
+    "commercial": {
+      "title": "Komerctransports",
+      "description": "Kravas auto, furgoni, specializētā tehnika"
+    },
+    "moto": {
+      "title": "Motocikls",
+      "description": "Motocikli, motorolleri, kvadricikli"
+    }
+  },
+  "form": {
+    "back": "Izvēlēties citu kategoriju",
+    "title": "Pārdot vieglo auto",
+    "subtitle": "Aizpildiet obligātās sadaļas — pārējo varēsiet pievienot vēlāk",
+    "optional": "Nav obligāti",
+    "optionalShort": "nav obl.",
+    "skip": "Izlaist",
+    "next": "Tālāk",
+    "required": "Obligātās sadaļas",
+    "progress": "{done} no {total}"
+  },
+  "sections": {
+    "basic-info": "Pamatinformācija",
+    "technical": "Tehniskie dati",
+    "history": "Automašīnas vēsture",
+    "condition": "Automašīnas stāvoklis",
+    "equipment": "Komplektācija",
+    "description": "Automašīnas apraksts",
+    "contact": "Kontaktinformācija",
+    "photos": "Foto"
+  },
+  "info": {
+    "brand": "Marka",
+    "model": "Modelis",
+    "modelPlaceholder": "Piemēram: A4",
+    "year": "Izlaiduma gads",
+    "mileage": "Nobraukums",
+    "price": "Cena",
+    "negotiable": "Kaulēšanās",
+    "negotiableYes": "Iespējama",
+    "negotiableNo": "Nē",
+    "body": "Virsbūves tips",
+    "color": "Krāsa"
+  },
+  "technical": {
+    "fuel": "Degvielas veids",
+    "engine": "Dzinēja tilpums",
+    "power": "Jauda",
+    "gearbox": "Ātrumkārba",
+    "drive": "Piedziņa"
+  },
+  "history": {
+    "description": "Pamatinformācija par automašīnas izcelsmi",
+    "vin": "VIN numurs",
+    "owners": "Īpašnieku skaits",
+    "mileageLv": "Nobraukums Latvijā",
+    "mileageLvOptions": {
+      "none": "Bez nobraukuma Latvijā",
+      "upTo10k": "Līdz 10 000 km",
+      "from10to50k": "10 000 – 50 000 km",
+      "from50to100k": "50 000 – 100 000 km",
+      "over100k": "Vairāk nekā 100 000 km",
+      "unknown": "Nezinu"
+    },
+    "inspection": "Tehniskā apskate līdz",
+    "none": "Nav"
+  },
+  "condition": {
+    "description": "Informācija par automašīnas pašreizējo stāvokli",
+    "overall": "Vispārējais stāvoklis",
+    "overallOptions": {
+      "excellent": "Teicams",
+      "good": "Labs",
+      "average": "Vidējs",
+      "repair": "Nepieciešams remonts"
+    },
+    "accident": "Bijusi avārijā",
+    "yes": "Jā",
+    "no": "Nē",
+    "unknown": "Nezinu",
+    "service": "Veikta apkope",
+    "serviceOptions": {
+      "recent": "Nesen apkopta",
+      "partial": "Daļēji apkopta",
+      "required": "Nepieciešama apkope"
+    },
+    "serviceBook": "Servisa grāmatiņa",
+    "has": "Ir"
+  },
+  "damage": {
+    "part": "Virsbūves detaļa",
+    "choose": "Izvēlieties bojājumus",
+    "remove": "Dzēst",
+    "save": "Saglabāt"
+  },
+  "description": {
+    "label": "Apraksts",
+    "placeholder": "Piemēram: automašīna labā stāvoklī, apkope veikta laikā, nesen nomainītas bremzes un eļļa..."
+  },
+  "contact": {
+    "name": "Vārds",
+    "phone": "Tālrunis",
+    "email": "E-pasts",
+    "city": "Pilsēta"
+  },
+  "photos": {
+    "description": "Pirmais foto būs sludinājuma titulattēls",
+    "drop": "Ievelciet foto šeit vai <choose>izvēlieties failus</choose>",
+    "formats": "JPG, PNG vai HEIC · līdz {max} foto · pievienoti {count}",
+    "alt": "Foto {n}",
+    "cover": "Titulattēls",
+    "remove": "Dzēst foto",
+    "makeCover": "Padarīt par titulattēlu",
+    "tips": "Fotografējiet dienasgaismā, parādiet automašīnu no visām pusēm, salonu, mērinstrumentu paneli ar nobraukumu un bagāžnieku. Optimāli — 8–15 foto."
+  },
+  "publish": {
+    "title": "Publicēšana",
+    "subtitle": "Tā sludinājumu redzēs pircēji",
+    "yourCar": "Jūsu automašīna",
+    "missing": "Aizpildītas obligātās sadaļas: {done} no {total}. Publicējot parādīsim, kas vēl jāaizpilda.",
+    "submit": "Publicēt sludinājumu",
+    "terms": "Nospiežot «Publicēt», jūs piekrītat sludinājumu ievietošanas noteikumiem"
+  }
+}

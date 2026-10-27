@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 import BasicInformationForm from "../individual/components/BasicInformationForm";
 import ContactInformationForm from "../individual/components/ContactInformationForm";
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export default function IndividualProfilePage({ mode }: Props) {
+  const t = useTranslations("account.profilePage");
   const [profile, setProfile] = useState<Profile>({
     firstName: "",
     lastName: "",
@@ -71,7 +73,7 @@ export default function IndividualProfilePage({ mode }: Props) {
           variant="outlined"
           sx={{ textTransform: "none", borderRadius: "10px" }}
         >
-          Cancel
+          {t("cancel")}
         </Button>
 
         <Button
@@ -83,7 +85,7 @@ export default function IndividualProfilePage({ mode }: Props) {
             fontWeight: 600,
           }}
         >
-          {isEdit ? "Save changes" : "Create profile"}
+          {isEdit ? t("save") : t("create")}
         </Button>
       </div>
     </section>

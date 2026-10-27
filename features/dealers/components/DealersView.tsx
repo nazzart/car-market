@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import SearchIcon from "@mui/icons-material/Search";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import { brands } from "@/features/brands/data/brands";
 import { Segmented, Select, inputClass } from "@/features/cars/car-list/components/ui";
-import { plural } from "@/lib/utils";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 import { dealers } from "../data/dealers";
 import DealerCard from "./DealerCard";
@@ -20,14 +21,8 @@ const DealersMap = dynamic(() => import("./DealersMap"), {
   loading: () => <div className="w-full h-full bg-gray-100 animate-pulse" />,
 });
 
-const typeOptions = [
-  { label: "Официальные", value: "official" },
-  { label: "С пробегом", value: "used" },
-];
-
-const cityOptions = [...new Set(dealers.map((d) => d.city))]
-  .sort((a, b) => a.localeCompare(b))
-  .map((city) => ({ label: city, value: city }));
+const dealerTypes = ["official", "used"];
+const cityKeys = [...new Set(dealers.map((d) => d.city))];
 
 // В фильтре — только марки, у которых есть официальные дилеры
 const brandOptions = [...new Set(dealers.flatMap((d) => d.brands))]
@@ -37,13 +32,19 @@ const brandOptions = [...new Set(dealers.flatMap((d) => d.brands))]
 const inBounds = (lat: number, lng: number, b: MapBounds) =>
   lat <= b.north && lat >= b.south && lng <= b.east && lng >= b.west;
 
-const pluralDealers = (n: number) =>
-  `${n} ${plural(n, ["компания", "компании", "компаний"])}`;
-
 export default function DealersView() {
   // Фильтры в URL, как на /cars: ссылкой можно поделиться, «Назад» их сохраняет
+  const t = useTranslations("dealers");
+  const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
+
   const router = useRouter();
   const pathname = usePathname();
+
+  const typeOptions = dealerTypes.map((value) => ({ value, label: t(`types.${value}`) }));
+  const cityOptions = cityKeys
+    .map((value) => ({ value, label: tOptions(`cities.${value}`) }))
+    .sort((a, b) => a.label.localeCompare(b.label));
   const params = useSearchParams();
 
   const query = params.get("q") ?? "";
@@ -113,9 +114,9 @@ export default function DealersView() {
 
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-          Дилеры и автосалоны
+          {t("title")}
         </h1>
-        <p className="text-gray-500 mt-1">{pluralDealers(dealers.length)} по всей Латвии</p>
+        <p className="text-gray-500 mt-1">{t("subtitle", { count: dealers.length })}</p>
       </div>
 
       {/* Filters */}
@@ -129,17 +130,17 @@ export default function DealersView() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Название или адрес"
-            aria-label="Поиск дилера"
+            placeholder={t("search")}
+            aria-label={t("searchAria")}
             className={`${inputClass} pl-9`}
           />
         </div>
 
-        <Select label="Город" placeholder="Все города" options={cityOptions} value={city} onChange={setCity} />
+        <Select label={t("city")} placeholder={t("allCities")} options={cityOptions} value={city} onChange={setCity} />
 
         <Select
-          label="Марка"
-          placeholder="Официальный дилер марки"
+          label={t("brand")}
+          placeholder={t("brandPlaceholder")}
           options={brandOptions}
           value={brand}
           onChange={setBrand}
@@ -147,7 +148,7 @@ export default function DealersView() {
 
         <div className="sm:col-span-2 lg:col-span-1 lg:w-80">
           <Segmented
-            anyLabel="Все"
+            anyLabel={t("all")}
             options={typeOptions}
             value={type}
             onChange={setType}
@@ -159,8 +160,8 @@ export default function DealersView() {
 
       <div className="lg:hidden mb-4">
         <Segmented
-          anyLabel="Список"
-          options={[{ label: "Карта", value: "map" }]}
+          anyLabel={t("list")}
+          options={[{ label: t("map"), value: "map" }]}
           value={mobileView === "map" ? "map" : ""}
           onChange={(v) => setMobileView(v ? "map" : "list")}
         />
@@ -172,7 +173,8 @@ export default function DealersView() {
         <div className={mobileView === "map" ? "hidden lg:block" : ""}>
           <div className="flex items-center justify-between mb-3 text-sm">
             <span className="text-gray-500">
-              Показано: <span className="font-medium text-gray-900">{pluralDealers(visible.length)}</span>
+              {t("shown")}{" "}
+              <span className="font-medium text-gray-900">{tCommon("companies", { count: visible.length })}</span>
             </span>
 
             {(query || type || city || brand || searchOnMove) && (
@@ -181,7 +183,7 @@ export default function DealersView() {
                 onClick={resetFilters}
                 className="text-gray-600 hover:text-black hover:underline underline-offset-4 cursor-pointer"
               >
-                Сбросить
+                {tCommon("reset")}
               </button>
             )}
           </div>
@@ -189,11 +191,11 @@ export default function DealersView() {
           {visible.length === 0 ? (
             <div className="text-center py-14 px-6 rounded-2xl border border-dashed border-gray-200">
               <StorefrontOutlinedIcon sx={{ fontSize: 44 }} className="text-gray-300" />
-              <h3 className="font-semibold mt-3">Дилеры не найдены</h3>
+              <h3 className="font-semibold mt-3">{t("notFound")}</h3>
               <p className="text-sm text-gray-500 mt-1">
                 {searchOnMove
-                  ? "Сдвиньте или отдалите карту, чтобы увидеть больше"
-                  : "Попробуйте изменить фильтры"}
+                  ? t("moveMap")
+                  : t("changeFilters")}
               </p>
             </div>
           ) : (
@@ -239,7 +241,7 @@ export default function DealersView() {
               onChange={(e) => setSearchOnMove(e.target.checked)}
               className="w-4 h-4 accent-gray-900"
             />
-            Искать при перемещении карты
+            {t("searchOnMove")}
           </label>
         </div>
       </div>

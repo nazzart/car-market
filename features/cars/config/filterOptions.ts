@@ -1,61 +1,18 @@
 import { brands } from "@/features/brands/data/brands";
-import { collections } from "@/features/collections/data/collections";
 import { dealers } from "@/features/dealers/data/dealers";
 import { formatNumber } from "@/lib/utils";
 
-type Option = { label: string; value: string };
+// Только значения — названия берутся из messages/{locale}/options.json по группе
+// (value совпадают со значениями в форме продажи)
+export const bodyTypes = ["sedan", "suv", "wagon", "hatchback", "coupe", "convertible", "minivan", "pickup"];
+export const fuels = ["petrol", "diesel", "hybrid", "electric", "gas"];
+export const transmissions = ["automatic", "manual"];
+export const drives = ["fwd", "rwd", "awd"];
+export const sellerTypes = ["private", "dealer"];
+export const conditions = ["used", "new"];
 
-// value совпадают со значениями в форме продажи
-export const bodyTypeOptions: Option[] = [
-  { label: "Седан", value: "sedan" },
-  { label: "Внедорожник", value: "suv" },
-  { label: "Универсал", value: "wagon" },
-  { label: "Хэтчбек", value: "hatchback" },
-  { label: "Купе", value: "coupe" },
-  { label: "Кабриолет", value: "convertible" },
-  { label: "Минивэн", value: "minivan" },
-  { label: "Пикап", value: "pickup" },
-];
-
-export const fuelOptions: Option[] = [
-  { label: "Бензин", value: "petrol" },
-  { label: "Дизель", value: "diesel" },
-  { label: "Гибрид", value: "hybrid" },
-  { label: "Электро", value: "electric" },
-  { label: "Газ", value: "gas" },
-];
-
-export const transmissionOptions: Option[] = [
-  { label: "Автомат", value: "automatic" },
-  { label: "Механика", value: "manual" },
-];
-
-export const driveOptions: Option[] = [
-  { label: "Передний", value: "fwd" },
-  { label: "Задний", value: "rwd" },
-  { label: "Полный", value: "awd" },
-];
-
-export const sellerOptions: Option[] = [
-  { label: "Частные", value: "private" },
-  { label: "Дилеры", value: "dealer" },
-];
-
-export const conditionOptions: Option[] = [
-  { label: "С пробегом", value: "used" },
-  { label: "Новые", value: "new" },
-];
-
-export const sortOptions: Option[] = [
-  { label: "Сначала новые объявления", value: "" },
-  { label: "Сначала дешевле", value: "price_asc" },
-  { label: "Сначала дороже", value: "price_desc" },
-  { label: "С меньшим пробегом", value: "mileage_asc" },
-  { label: "Сначала новее год", value: "year_desc" },
-];
-
-export const labelOf = (options: Option[], value: string) =>
-  options.find((o) => o.value === value)?.label ?? value;
+// "" — сортировка по умолчанию (переводится как options.sort.newest)
+export const sortValues = ["", "price_asc", "price_desc", "mileage_asc", "year_desc"];
 
 // Ключи URL, которые считаются фильтрами (sort и view — нет)
 export const FILTER_KEYS = [
@@ -78,37 +35,44 @@ export const FILTER_KEYS = [
 
 export type FilterKey = (typeof FILTER_KEYS)[number];
 
-// Текст чипа активного фильтра
-export const chipLabel = (key: FilterKey, value: string): string => {
+type Translate = (key: string, values?: Record<string, string | number>) => string;
+
+// Текст чипа активного фильтра. tOptions — useTranslations("options"), tChips — useTranslations("cars.chips")
+export const chipLabel = (
+  key: FilterKey,
+  value: string,
+  tOptions: Translate,
+  tChips: Translate
+): string => {
   switch (key) {
     case "collection":
-      return collections.find((c) => c.slug === value)?.label ?? value;
+      return tOptions(`collections.${value}.label`);
     case "condition":
-      return labelOf(conditionOptions, value);
+      return tOptions(`condition.${value}`);
     case "brand":
       return brands.find((b) => b.slug === value)?.name ?? value;
     case "model":
       return value;
     case "priceFrom":
-      return `от ${formatNumber(+value)} €`;
+      return tChips("priceFrom", { value: formatNumber(+value) });
     case "priceTo":
-      return `до ${formatNumber(+value)} €`;
+      return tChips("priceTo", { value: formatNumber(+value) });
     case "yearFrom":
-      return `от ${value} г.`;
+      return tChips("yearFrom", { value });
     case "yearTo":
-      return `до ${value} г.`;
+      return tChips("yearTo", { value });
     case "mileageTo":
-      return `пробег до ${formatNumber(+value)} км`;
+      return tChips("mileageTo", { value: formatNumber(+value) });
     case "bodyType":
-      return labelOf(bodyTypeOptions, value);
+      return tOptions(`bodyType.${value}`);
     case "fuel":
-      return labelOf(fuelOptions, value);
+      return tOptions(`fuel.${value}`);
     case "transmission":
-      return labelOf(transmissionOptions, value);
+      return tOptions(`transmission.${value}`);
     case "drive":
-      return `${labelOf(driveOptions, value)} привод`;
+      return tOptions(`driveFull.${value}`);
     case "sellerType":
-      return labelOf(sellerOptions, value);
+      return tOptions(`sellerType.${value}`);
     case "dealer":
       return dealers.find((d) => d.slug === value)?.name ?? value;
   }

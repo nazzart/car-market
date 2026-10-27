@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Button,
   Checkbox,
@@ -27,15 +28,16 @@ type Props = {
 };
 
 const passwordRules = [
-  { label: "Не менее 8 символов", test: (p: string) => p.length >= 8 },
-  { label: "Хотя бы одна цифра", test: (p: string) => /\d/.test(p) },
-  { label: "Хотя бы одна буква", test: (p: string) => /\p{L}/u.test(p) },
+  { label: "length", test: (p: string) => p.length >= 8 },
+  { label: "digit", test: (p: string) => /\d/.test(p) },
+  { label: "letter", test: (p: string) => /\p{L}/u.test(p) },
 ];
 
 // Регистрационный номер компании в Латвии — 11 цифр
 const isRegNumber = (value: string) => /^\d{11}$/.test(value.replace(/\s/g, ""));
 
 export default function RegisterView({ accountType, onChangeType, onLogin, onRegistered }: Props) {
+  const t = useTranslations("auth");
   const isCompany = accountType === "company";
 
   const [name, setName] = useState("");
@@ -70,7 +72,7 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
 
   return (
     <>
-      <AuthHeader title="Регистрация" />
+      <AuthHeader title={t("register.title")} />
 
       {/* Выбранный тип аккаунта */}
 
@@ -81,50 +83,50 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
           ) : (
             <PersonOutlineIcon fontSize="small" />
           )}
-          {isCompany ? "Компания" : "Частное лицо"}
+          {isCompany ? t("types.company") : t("types.individual")}
         </span>
 
-        <TextLinkButton onClick={onChangeType}>Изменить</TextLinkButton>
+        <TextLinkButton onClick={onChangeType}>{t("register.change")}</TextLinkButton>
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <TextField
-          label={isCompany ? "Название компании" : "Имя"}
+          label={isCompany ? t("register.companyName") : t("register.name")}
           autoComplete={isCompany ? "organization" : "given-name"}
           autoFocus
           fullWidth
           value={name}
           onChange={(e) => setName(e.target.value)}
           error={show("name")}
-          helperText={show("name") && (isCompany ? "Укажите название компании" : "Укажите имя")}
+          helperText={show("name") && (isCompany ? t("register.companyRequired") : t("register.nameRequired"))}
         />
 
         {isCompany && (
           <TextField
-            label="Регистрационный номер"
+            label={t("register.regNumber")}
             inputMode="numeric"
             fullWidth
             value={regNumber}
             onChange={(e) => setRegNumber(e.target.value)}
             error={show("regNumber")}
-            helperText={show("regNumber") ? "Номер состоит из 11 цифр" : "11 цифр, как в Регистре предприятий"}
+            helperText={show("regNumber") ? t("register.regNumberError") : t("register.regNumberHint")}
           />
         )}
 
         <TextField
-          label="Email"
+          label={t("emailLabel")}
           type="email"
           autoComplete="email"
           fullWidth
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={show("email")}
-          helperText={show("email") && "Введите корректный email"}
+          helperText={show("email") && t("invalidEmail")}
         />
 
         <div>
           <TextField
-            label="Пароль"
+            label={t("passwordLabel")}
             type={showPassword ? "text" : "password"}
             autoComplete="new-password"
             fullWidth
@@ -137,7 +139,7 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setShowPassword((prev) => !prev)}
-                      aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                      aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                       edge="end"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -161,7 +163,7 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
                   }`}
                 >
                   <CheckIcon sx={{ fontSize: 14 }} className={ok ? "" : "opacity-40"} />
-                  {rule.label}
+                  {t(`register.rules.${rule.label}`)}
                 </li>
               );
             })}
@@ -179,14 +181,18 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
             }
             label={
               <span className="text-sm text-gray-700">
-                Я принимаю{" "}
-                <a href="#" className="underline underline-offset-4 hover:text-black">
-                  правила сайта
-                </a>{" "}
-                и{" "}
-                <a href="#" className="underline underline-offset-4 hover:text-black">
-                  политику конфиденциальности
-                </a>
+                {t.rich("register.terms", {
+                  rules: (chunks) => (
+                    <a href="#" className="underline underline-offset-4 hover:text-black">
+                      {chunks}
+                    </a>
+                  ),
+                  privacy: (chunks) => (
+                    <a href="#" className="underline underline-offset-4 hover:text-black">
+                      {chunks}
+                    </a>
+                  ),
+                })}
               </span>
             }
             sx={{ alignItems: "flex-start", mr: 0, "& .MuiCheckbox-root": { pt: 0.25 } }}
@@ -194,18 +200,19 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
 
           {show("accepted") && (
             <FormHelperText error sx={{ ml: 4 }}>
-              Необходимо принять правила
+              {t("register.termsRequired")}
             </FormHelperText>
           )}
         </div>
 
         <Button type="submit" variant="contained" size="large" fullWidth sx={pillSx}>
-          Создать аккаунт
+          {t("register.submit")}
         </Button>
       </form>
 
       <p className="text-sm text-gray-600 text-center mt-6">
-        Уже есть аккаунт? <TextLinkButton onClick={onLogin}>Войти</TextLinkButton>
+        {t("accountType.haveAccount")}{" "}
+        <TextLinkButton onClick={onLogin}>{t("accountType.login")}</TextLinkButton>
       </p>
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 
 const buttonClass = `
@@ -18,6 +19,7 @@ const buttonClass = `
 
 // Номер скрыт до клика — позже здесь будет учёт просмотров телефона
 export default function PhoneButton({ phone }: { phone: string }) {
+  const t = useTranslations("common");
   const [shown, setShown] = useState(false);
 
   if (shown) {
@@ -32,7 +34,7 @@ export default function PhoneButton({ phone }: { phone: string }) {
   return (
     <button type="button" onClick={() => setShown(true)} className={buttonClass}>
       <PhoneOutlinedIcon fontSize="small" />
-      Показать телефон
+      {t("showPhone")}
     </button>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useCarFilters } from "@/features/cars/car-list/hooks/useCarFilters";
 
 import { collections, visibleCollections } from "../data/collections";
@@ -22,6 +24,8 @@ const pillClass = (active: boolean) => `
 
 // Переключатель подборок на странице поиска — остальные фильтры сохраняются
 export default function CollectionPills() {
+  const t = useTranslations("cars");
+  const tOptions = useTranslations("options");
   const { params, updateFilter } = useCarFilters();
 
   const activeSlug = params.get("collection") ?? "";
@@ -36,7 +40,7 @@ export default function CollectionPills() {
           aria-pressed={!active}
           className={pillClass(!active)}
         >
-          Все автомобили
+          {t("allCars")}
         </button>
 
         {visibleCollections.map((c) => {
@@ -52,14 +56,16 @@ export default function CollectionPills() {
               className={pillClass(isActive)}
             >
               <Icon sx={{ fontSize: 18 }} />
-              {c.label}
+              {tOptions(`collections.${c.slug}.label`)}
             </button>
           );
         })}
       </div>
 
       {active && (
-        <p className="text-sm text-gray-500 mt-3">{active.description}</p>
+        <p className="text-sm text-gray-500 mt-3">
+          {tOptions(`collections.${active.slug}.description`)}
+        </p>
       )}
     </div>
   );

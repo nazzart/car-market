@@ -74,7 +74,7 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
       <button
         type="button"
         onClick={onSubmit}
-        className="w-full h-14 mt-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-base font-semibold transition cursor-pointer"
+        className="w-full h-14 mt-6 rounded-full bg-primary hover:bg-primary-hover text-white text-base font-semibold transition cursor-pointer"
       >
         {t("submit")}
       </button>

@@ -47,7 +47,7 @@ export default function HeaderActions() {
         <div className="hidden sm:block">
           <Button
             variant="contained"
-            color="success"
+            color="primary"
             component={Link}
             href="/sell"
             startIcon={<AddIcon fontSize="small" />}
@@ -64,12 +64,12 @@ export default function HeaderActions() {
             sx={{
               width: 42,
               height: 42,
-              background: "linear-gradient(135deg,#10b981,#059669)",
+              bgcolor: "primary.main",
               color: "white",
-              boxShadow: "0 8px 20px rgba(16,185,129,0.35)",
+              boxShadow: "0 8px 20px color-mix(in srgb, var(--color-primary) 35%, transparent)",
               transition: "all .2s ease",
               "&:hover": {
-                background: "linear-gradient(135deg,#34d399,#10b981)",
+                bgcolor: "primary.dark",
                 transform: "scale(1.05)",
               },
             }}

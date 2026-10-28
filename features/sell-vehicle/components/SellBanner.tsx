@@ -45,7 +45,7 @@ export default function SellBanner() {
 
           <Link
             href="/sell"
-            className="inline-flex items-center gap-2 mt-8 h-12 px-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition"
+            className="inline-flex items-center gap-2 mt-8 h-12 px-6 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition"
           >
             <AddIcon fontSize="small" />
             {t("cta")}

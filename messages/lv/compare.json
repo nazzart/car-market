@@ -8,7 +8,7 @@
   "clear": "Notīrīt",
   "full": "Var salīdzināt līdz {max} automašīnām — izņemiet kādu no saraksta",
   "bar": {
-    "title": "Salīdzinājums · {count} no {max}",
+    "title": "Salīdzinājums",
     "addMore": "Pievienojiet vēl vienu auto",
     "open": "Salīdzināt"
   },

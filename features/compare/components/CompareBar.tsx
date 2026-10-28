@@ -30,7 +30,7 @@ export default function CompareBar() {
   return (
     <>
       <div
-        className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-[1200] w-[calc(100%-2rem)] max-w-xl transition duration-300 ${
+        className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-[1200] w-[calc(100%-2rem)] max-w-2xl transition duration-300 ${
           visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"
         }`}
       >
@@ -62,9 +62,12 @@ export default function CompareBar() {
           </div>
 
           <div className="flex-1 min-w-0 text-sm">
-            <div className="font-semibold flex items-center gap-1.5">
+            <div className="font-semibold flex items-center gap-2 whitespace-nowrap">
               <CompareArrowsIcon sx={{ fontSize: 18 }} className="sm:hidden" />
-              {t("bar.title", { count: cars.length, max: MAX_COMPARE })}
+              <span className="truncate">{t("bar.title")}</span>
+              <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-white/15 text-xs tabular-nums">
+                {cars.length}/{MAX_COMPARE}
+              </span>
             </div>
             {cars.length < 2 && <div className="text-xs text-white/60 truncate">{t("bar.addMore")}</div>}
           </div>

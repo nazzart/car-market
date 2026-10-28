@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
@@ -13,7 +15,9 @@ import {
   bodyTypes,
   conditions,
   drives,
+  advancedKeys,
   flagFilters,
+  latviaOptions,
   postedPeriods,
   fuels,
   sellerTypes,
@@ -79,6 +83,27 @@ function RangeInputs({
   );
 }
 
+// Флажок-чип «да/нет» (в URL — "1")
+function FlagChip({ name }: { name: string }) {
+  const tChips = useTranslations("cars.chips");
+  const { params, updateFilter } = useCarFilters();
+  const on = params.get(name) === "1";
+
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={() => updateFilter(name, on ? null : "1")}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm transition cursor-pointer ${
+        on ? "bg-gray-900 border-gray-900 text-white" : "border-gray-200 text-gray-700 hover:border-gray-900"
+      }`}
+    >
+      {on && <CheckIcon sx={{ fontSize: 15 }} />}
+      {tChips(name)}
+    </button>
+  );
+}
+
 export default function FiltersPanel() {
   const t = useTranslations("cars.panel");
   const tOptions = useTranslations("options");
@@ -94,6 +119,12 @@ export default function FiltersPanel() {
     updateFilter(key, value || null);
 
   const isActive = (keys: string[]) => keys.some((key) => params.get(key));
+
+  const advancedActive = advancedKeys.filter((key) => params.get(key)).length;
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const advancedOpen = showAdvanced || advancedActive > 0;
+
+
 
   const brand = get("brand");
   const models = (modelsByBrand[brand] ?? []).map((m) => ({
@@ -133,10 +164,6 @@ export default function FiltersPanel() {
         </div>
       </FilterSection>
 
-      <FilterSection title={t("location")} active={isActive(["radius"])}>
-        <LocationFilter />
-      </FilterSection>
-
       <FilterSection title={t("price")} active={isActive(["priceFrom", "priceTo"])}>
         <RangeInputs fromKey="priceFrom" toKey="priceTo" unit={t("unitEur")} />
       </FilterSection>
@@ -149,58 +176,12 @@ export default function FiltersPanel() {
         <RangeInputs toKey="mileageTo" unit={t("unitKm")} />
       </FilterSection>
 
-      {/* Флажки доверия — несколько можно включить сразу */}
-      <FilterSection title={t("history")} active={isActive([...flagFilters])}>
-        <div className="flex flex-wrap gap-1.5">
-          {flagFilters.map((key) => {
-            const on = get(key) === "1";
-            return (
-              <button
-                key={key}
-                type="button"
-                aria-pressed={on}
-                onClick={() => set(key)(on ? null : "1")}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm transition cursor-pointer ${
-                  on ? "bg-gray-900 border-gray-900 text-white" : "border-gray-200 text-gray-700 hover:border-gray-900"
-                }`}
-              >
-                {on && <CheckIcon sx={{ fontSize: 15 }} />}
-                {tChips(key)}
-              </button>
-            );
-          })}
-        </div>
-      </FilterSection>
-
       <FilterSection title={t("body")} active={isActive(["bodyType"])}>
         <ChipGroup
           options={opts("bodyType", bodyTypes)}
           value={get("bodyType")}
           onChange={set("bodyType")}
         />
-      </FilterSection>
-
-      <FilterSection title={t("color")} active={isActive(["color"])}>
-        <div className="flex flex-wrap gap-2">
-          {carColors.map((c) => {
-            const on = get("color") === c.value;
-            const label = tOptions(`colors.${c.value}`);
-            return (
-              <button
-                key={c.value}
-                type="button"
-                aria-pressed={on}
-                aria-label={label}
-                title={label}
-                onClick={() => set("color")(on ? null : c.value)}
-                className={`w-8 h-8 rounded-full border transition cursor-pointer ${
-                  on ? "ring-2 ring-offset-2 ring-gray-900 border-transparent" : "border-gray-300 hover:scale-110"
-                }`}
-                style={{ background: c.color }}
-              />
-            );
-          })}
-        </div>
       </FilterSection>
 
       <FilterSection title={t("engine")} active={isActive(["fuel"])}>
@@ -220,31 +201,106 @@ export default function FiltersPanel() {
         />
       </FilterSection>
 
-      <FilterSection title={t("drive")} active={isActive(["drive"])}>
+      <FilterSection title={t("location")} active={isActive(["radius"])}>
+        <LocationFilter />
+      </FilterSection>
+
+      {/* Доверие: несколько флажков можно включить сразу */}
+      <FilterSection title={t("history")} active={isActive([...flagFilters, "latvia"])}>
+        <div className="flex flex-wrap gap-1.5">
+          {flagFilters.map((key) => (
+            <FlagChip key={key} name={key} />
+          ))}
+        </div>
+
+        <div className="text-xs text-gray-500 mt-4 mb-1.5">{t("mileageLatvia")}</div>
+        {/* чипы, а не переключатель: подписи длинные и должны переноситься */}
         <ChipGroup
-          options={opts("drive", drives)}
-          value={get("drive")}
-          onChange={set("drive")}
+          options={latviaOptions.map((value) => ({ value, label: tChips(`latvia.${value}`) }))}
+          value={get("latvia")}
+          onChange={set("latvia")}
         />
       </FilterSection>
 
-      <FilterSection title={t("seller")} active={isActive(["sellerType"])}>
-        <Segmented
-          anyLabel={t("all")}
-          options={opts("sellerType", sellerTypes)}
-          value={get("sellerType")}
-          onChange={set("sellerType")}
-        />
-      </FilterSection>
+      {/* Реже используемые — свёрнуты; раскрываются сами, если какой-то из них выбран */}
+      <div className="py-4">
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!advancedOpen)}
+          aria-expanded={advancedOpen}
+          className="w-full flex items-center justify-between gap-2 h-11 px-4 rounded-xl bg-gray-50 hover:bg-gray-100 text-sm font-semibold text-gray-900 transition cursor-pointer"
+        >
+          <span className="flex items-center gap-2">
+            {t("advanced")}
+            {advancedActive > 0 && (
+              <span className="min-w-5 h-5 px-1.5 rounded-full bg-primary text-white text-xs flex items-center justify-center">
+                {advancedActive}
+              </span>
+            )}
+          </span>
+          <KeyboardArrowDownIcon fontSize="small" className={`transition-transform ${advancedOpen ? "rotate-180" : ""}`} />
+        </button>
+      </div>
 
-      <FilterSection title={t("posted")} active={isActive(["posted"])}>
-        <Segmented
-          anyLabel={t("anyTime")}
-          options={Object.keys(postedPeriods).map((value) => ({ value, label: tChips(`postedShort.${value}`) }))}
-          value={get("posted")}
-          onChange={set("posted")}
-        />
-      </FilterSection>
+      {advancedOpen && (
+        <div className="border-t border-gray-100">
+          <FilterSection title={t("power")} active={isActive(["powerFrom", "powerTo"])}>
+            <RangeInputs fromKey="powerFrom" toKey="powerTo" unit={t("unitHp")} grouped={false} />
+          </FilterSection>
+
+          <FilterSection title={t("drive")} active={isActive(["drive"])}>
+            <ChipGroup
+              options={opts("drive", drives)}
+              value={get("drive")}
+              onChange={set("drive")}
+            />
+          </FilterSection>
+
+          <FilterSection title={t("color")} active={isActive(["color"])}>
+            <div className="flex flex-wrap gap-2">
+              {carColors.map((c) => {
+                const on = get("color") === c.value;
+                const label = tOptions(`colors.${c.value}`);
+                return (
+                  <button
+                    key={c.value}
+                    type="button"
+                    aria-pressed={on}
+                    aria-label={label}
+                    title={label}
+                    onClick={() => set("color")(on ? null : c.value)}
+                    className={`w-8 h-8 rounded-full border transition cursor-pointer ${
+                      on ? "ring-2 ring-offset-2 ring-gray-900 border-transparent" : "border-gray-300 hover:scale-110"
+                    }`}
+                    style={{ background: c.color }}
+                  />
+                );
+              })}
+            </div>
+          </FilterSection>
+
+          <FilterSection title={t("seller")} active={isActive(["sellerType"])}>
+            <Segmented
+              anyLabel={t("all")}
+              options={opts("sellerType", sellerTypes)}
+              value={get("sellerType")}
+              onChange={set("sellerType")}
+            />
+          </FilterSection>
+
+          <FilterSection title={t("posted")} active={isActive(["posted", "withPhotos"])}>
+            <Segmented
+              anyLabel={t("anyTime")}
+              options={Object.keys(postedPeriods).map((value) => ({ value, label: tChips(`postedShort.${value}`) }))}
+              value={get("posted")}
+              onChange={set("posted")}
+            />
+            <div className="mt-3">
+              <FlagChip name="withPhotos" />
+            </div>
+          </FilterSection>
+        </div>
+      )}
     </div>
   );
 }

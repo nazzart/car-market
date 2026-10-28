@@ -38,7 +38,19 @@ export const FILTER_KEYS = [
   "oneOwner",
   "serviceBook",
   "radius",
+  "powerFrom",
+  "powerTo",
+  "recentService",
+  "goodCondition",
+  "inspectionValid",
+  "latvia",
 ] as const;
+
+// Пробег в Латвии: «только что ввезён» / «уже ездил в Латвии»
+export const latviaOptions = ["imported", "local"];
+
+// Фильтры, спрятанные в «Дополнительные» (раскрываются сами, если какой-то выбран)
+export const advancedKeys = ["powerFrom", "powerTo", "drive", "color", "sellerType", "posted", "withPhotos"];
 
 // Радиус поиска от посетителя, км
 export const radiusOptions = ["25", "50", "100", "200"];
@@ -47,7 +59,7 @@ export const radiusOptions = ["25", "50", "100", "200"];
 export const postedPeriods = { "1d": 24 * 60, "3d": 3 * 24 * 60, "7d": 7 * 24 * 60 } as const;
 
 // Флажки «да/нет» (в URL значение "1")
-export const flagFilters = ["withPhotos", "noAccidents", "oneOwner", "serviceBook"] as const;
+export const flagFilters = ["noAccidents", "oneOwner", "serviceBook", "recentService", "goodCondition", "inspectionValid"] as const;
 
 export type FilterKey = (typeof FILTER_KEYS)[number];
 
@@ -97,10 +109,19 @@ export const chipLabel = (
       return tChips(`posted.${value}`);
     case "radius":
       return tChips("radius", { value });
+    case "powerFrom":
+      return tChips("powerFrom", { value });
+    case "powerTo":
+      return tChips("powerTo", { value });
+    case "latvia":
+      return tChips(`latvia.${value}`);
     case "withPhotos":
     case "noAccidents":
     case "oneOwner":
     case "serviceBook":
+    case "recentService":
+    case "goodCondition":
+    case "inspectionValid":
       return tChips(key);
   }
 };

@@ -33,6 +33,18 @@ export function filterListings(listings: Listing[], params: Params, distanceTo?:
   const posted = postedPeriods[params.get("posted") as keyof typeof postedPeriods];
   const flag = (key: string) => params.get(key) === "1";
   const radius = distanceTo ? num("radius") : null;
+  const powerFrom = num("powerFrom");
+  const powerTo = num("powerTo");
+  const latvia = params.get("latvia");
+
+  // техосмотр «MM.YYYY» действует, если не раньше текущего месяца
+  const now = new Date();
+  const thisMonth = now.getFullYear() * 100 + now.getMonth() + 1;
+  const inspectionValid = (date?: string) => {
+    if (!date) return false;
+    const [month, year] = date.split(".").map(Number);
+    return year * 100 + month >= thisMonth;
+  };
   const within = (l: Listing) => {
     if (radius === null) return true;
     const km = distanceTo!(l);
@@ -62,6 +74,12 @@ export function filterListings(listings: Listing[], params: Params, distanceTo?:
       (!flag("noAccidents") || Boolean(l.noAccidents)) &&
       (!flag("oneOwner") || l.owners === 1) &&
       (!flag("serviceBook") || Boolean(l.serviceBook)) &&
+      (!flag("recentService") || l.service === "recent") &&
+      (!flag("goodCondition") || l.overallCondition === "excellent" || l.overallCondition === "good") &&
+      (!flag("inspectionValid") || inspectionValid(l.inspectionUntil)) &&
+      (!latvia || (latvia === "imported" ? l.mileageLatvia === "none" : Boolean(l.mileageLatvia) && l.mileageLatvia !== "none")) &&
+      (powerFrom === null || l.power >= powerFrom) &&
+      (powerTo === null || l.power <= powerTo) &&
       within(l)
   );
 

@@ -52,13 +52,41 @@ export default function PhotoGallery({ images, title }: Props) {
 
   return (
     <>
+      {/* Desktop: одно фото — целиком, по центру, на размытом фоне из него же,
+          а не растянутое на всю ширину с обрезкой */}
+
+      {images.length === 1 && (
+        <button
+          type="button"
+          onClick={() => setLightboxIndex(0)}
+          aria-label={t("open", { n: 1 })}
+          className="hidden md:block relative w-full h-[420px] lg:h-[480px] rounded-2xl overflow-hidden bg-gray-900 cursor-zoom-in group"
+        >
+          <Image
+            src={images[0]}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover scale-110 blur-2xl opacity-60"
+          />
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="relative h-full aspect-[4/3] mx-auto">
+            <Image
+              src={images[0]}
+              alt={t("alt", { title, n: 1 })}
+              fill
+              priority
+              sizes="(min-width: 1024px) 640px, 560px"
+              className="object-cover shadow-2xl transition duration-300 group-hover:brightness-95"
+            />
+          </div>
+        </button>
+      )}
+
       {/* Desktop mosaic */}
 
-      {/* одно фото — ниже, чтобы цена и характеристики были на первом экране */}
       <div
-        className={`hidden md:grid relative grid-cols-4 grid-rows-2 gap-2 rounded-2xl overflow-hidden ${
-          small.length ? "h-[440px] lg:h-[500px]" : "h-[360px] lg:h-[420px]"
-        }`}
+        className={`${images.length === 1 ? "hidden" : "hidden md:grid"} relative grid-cols-4 grid-rows-2 gap-2 rounded-2xl overflow-hidden h-[440px] lg:h-[500px]`}
       >
         {tile(
           images[0],

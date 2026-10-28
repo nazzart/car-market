@@ -11,7 +11,10 @@
   "showResults": "Показать {results}",
   "empty": {
     "title": "Ничего не найдено",
-    "text": "Попробуйте изменить или сбросить фильтры"
+    "text": "Попробуйте изменить или сбросить фильтры",
+    "relax": "Попробуйте убрать один из фильтров:",
+    "without": "Без «{label}»",
+    "fresh": "Свежие объявления"
   },
   "chips": {
     "remove": "Убрать фильтр: {label}",
@@ -50,7 +53,10 @@
     "tuning": "Тюнинг",
     "dealer": "Дилер · {name}",
     "private": "Частное лицо",
-    "morePhotos": "Ещё {count} фото"
+    "morePhotos": "Ещё {count} фото",
+    "noAccidents": "Без ДТП",
+    "oneOwner": "1 владелец",
+    "negotiable": "Торг"
   },
   "moreFilters": "Ещё фильтры",
   "metaTitle": "{title} — {results} | bestauto.lv",

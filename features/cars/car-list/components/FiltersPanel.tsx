@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 
 import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
+import { formatNumber } from "@/lib/utils";
 
 import { useCarFilters } from "../hooks/useCarFilters";
 import {
@@ -22,22 +23,27 @@ const brandOptions = [...brands]
 
 // Поле «от–до». Неуправляемые input + key: значение применяется по blur/Enter,
 // а при сбросе фильтров поле пересоздаётся с новым значением из URL
+// grouped — цену и пробег показываем с разрядами: «40 000», год — как есть
 function RangeInputs({
   fromKey,
   toKey,
   unit,
+  grouped = true,
 }: {
   fromKey?: string;
   toKey: string;
   unit: string;
+  grouped?: boolean;
 }) {
   const t = useTranslations("cars.panel");
   const { params, updateFilter } = useCarFilters();
 
   const commit = (key: string) => (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = e.target.value.trim();
+    const value = e.target.value.replace(/\D/g, "");
     if (value !== (params.get(key) ?? "")) updateFilter(key, value || null);
   };
+
+  const display = (value: string | null) => (value ? (grouped ? formatNumber(Number(value)) : value) : "");
 
   const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") e.currentTarget.blur();
@@ -46,10 +52,10 @@ function RangeInputs({
   const field = (key: string, placeholder: string) => (
     <input
       key={`${key}-${params.get(key) ?? ""}`}
-      type="number"
-      min={0}
+      type="text"
       inputMode="numeric"
-      defaultValue={params.get(key) ?? ""}
+      autoComplete="off"
+      defaultValue={display(params.get(key))}
       placeholder={placeholder}
       aria-label={placeholder}
       onBlur={commit(key)}
@@ -126,7 +132,7 @@ export default function FiltersPanel() {
       </FilterSection>
 
       <FilterSection title={t("year")} active={isActive(["yearFrom", "yearTo"])}>
-        <RangeInputs fromKey="yearFrom" toKey="yearTo" unit={t("unitYear")} />
+        <RangeInputs fromKey="yearFrom" toKey="yearTo" unit={t("unitYear")} grouped={false} />
       </FilterSection>
 
       <FilterSection title={t("mileage")} active={isActive(["mileageTo"])}>

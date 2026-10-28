@@ -158,8 +158,9 @@ export default function CarsSearchView() {
               {activeCount > 0 && <CountBadge count={activeCount} inverted />}
             </button>
 
-            <div className="hidden lg:block text-sm text-gray-500">
-              {t("found")} <span className="font-medium text-gray-900">{resultsLabel}</span>
+            {/* Число объявлений уже под заголовком — здесь активные фильтры */}
+            <div className="hidden lg:block flex-1 min-w-0">
+              <ActiveFilterChips />
             </div>
 
             <div className="flex items-center gap-2">
@@ -209,7 +210,7 @@ export default function CarsSearchView() {
 
           {/* Active filters */}
 
-          <div className="mt-4 empty:hidden">
+          <div className="mt-4 empty:hidden lg:hidden">
             <ActiveFilterChips />
           </div>
 

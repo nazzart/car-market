@@ -85,6 +85,19 @@ export default function ListingRow({ listing }: { listing: Listing }) {
               </span>
             )}
 
+            {/* сигналы доверия — то, что покупатель спрашивает первым */}
+            {listing.noAccidents && (
+              <span className={`${badgeClass} bg-emerald-50 text-emerald-700`}>{t("noAccidents")}</span>
+            )}
+
+            {listing.owners === 1 && (
+              <span className={`${badgeClass} bg-sky-50 text-sky-700`}>{t("oneOwner")}</span>
+            )}
+
+            {listing.negotiable && (
+              <span className={`${badgeClass} bg-violet-50 text-violet-700`}>{t("negotiable")}</span>
+            )}
+
             <span className={`${badgeClass} bg-gray-100 text-gray-700`}>
               {listing.sellerType === "dealer"
                 ? t("dealer", { name: listing.sellerName ?? "" })

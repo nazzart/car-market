@@ -11,7 +11,10 @@
   "showResults": "Rādīt {results}",
   "empty": {
     "title": "Nekas nav atrasts",
-    "text": "Mēģiniet mainīt vai notīrīt filtrus"
+    "text": "Mēģiniet mainīt vai notīrīt filtrus",
+    "relax": "Mēģiniet noņemt kādu no filtriem:",
+    "without": "Bez «{label}»",
+    "fresh": "Jaunākie sludinājumi"
   },
   "chips": {
     "remove": "Noņemt filtru: {label}",
@@ -50,7 +53,10 @@
     "tuning": "Tūnings",
     "dealer": "Dīleris · {name}",
     "private": "Privātpersona",
-    "morePhotos": "Vēl {count} foto"
+    "morePhotos": "Vēl {count} foto",
+    "noAccidents": "Bez avārijām",
+    "oneOwner": "1 īpašnieks",
+    "negotiable": "Kaulēšanās"
   },
   "moreFilters": "Vairāk filtru",
   "metaTitle": "{title} — {results} | bestauto.lv",

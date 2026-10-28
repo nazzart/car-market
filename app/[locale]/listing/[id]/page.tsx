@@ -20,6 +20,8 @@ import SimilarListings from "@/features/cars/car-view/components/SimilarListings
 import CsddCheck from "@/features/cars/car-view/components/CsddCheck";
 import ListingStatusNotice from "@/features/cars/car-view/components/ListingStatusNotice";
 import ConditionSummary from "@/features/cars/car-view/components/ConditionSummary";
+import ListingVideo from "@/features/cars/car-view/components/ListingVideo";
+import { youtubeId } from "@/lib/youtube";
 import SectionNav from "@/features/cars/car-view/components/SectionNav";
 import SpecsTable from "@/features/cars/car-view/components/SpecsTable";
 import { Link } from "@/i18n/navigation";
@@ -39,8 +41,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const t = await getTranslations({ locale, namespace: "listing" });
 
+  const title = t("metaTitle", { title: listing.title, year: listing.year, price: formatNumber(listing.price) });
+  const description = `${listing.year} · ${formatNumber(listing.mileage)} km · ${listing.power} ZS · ${formatNumber(listing.price)} €`;
+
+  // картинку-превью добавляет opengraph-image.tsx рядом
   return {
-    title: t("metaTitle", { title: listing.title, year: listing.year, price: formatNumber(listing.price) }),
+    title,
+    description,
+    openGraph: { title: `${listing.title}, ${listing.year} — ${formatNumber(listing.price)} €`, description, type: "article" },
   };
 }
 
@@ -67,6 +75,7 @@ export default async function ListingPage({ params }: Props) {
 
   const navItems = [
     { id: "description", label: t("sections.description") },
+    listing.videoUrl && youtubeId(listing.videoUrl) && { id: "video", label: t("sections.video") },
     { id: "specs", label: t("sections.specs") },
     (listing.overallCondition || listing.service) && { id: "condition", label: t("sections.condition") },
     listing.damages && { id: "body", label: t("sections.body") },
@@ -135,6 +144,12 @@ export default async function ListingPage({ params }: Props) {
               <ListingDescription text={listing.description} />
             </div>
           </Section>
+
+          {listing.videoUrl && youtubeId(listing.videoUrl) && (
+            <Section id="video" title={t("sections.video")}>
+              <ListingVideo url={listing.videoUrl} title={listing.title} />
+            </Section>
+          )}
 
           <Section id="specs" title={t("sections.specs")}>
             <SpecsTable listing={listing} />

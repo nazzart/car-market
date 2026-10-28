@@ -1,3 +1,5 @@
+import { youtubeId } from "@/lib/youtube";
+
 export const rulesMap: Record<string, (value: any) => boolean> = {
   required: (v) => {
     if (Array.isArray(v)) return v.length > 0;
@@ -13,6 +15,11 @@ export const rulesMap: Record<string, (value: any) => boolean> = {
   phone: (v) => {
     if (!v) return true;
     return /^\+?[0-9]{7,15}$/.test(v);
+  },
+
+  youtube: (v) => {
+    if (!v) return true; // необязательно
+    return youtubeId(v) !== null;
   },
 
   isEngineCapacity: (v) => {

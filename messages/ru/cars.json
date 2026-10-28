@@ -22,7 +22,21 @@
     "priceTo": "до {value} €",
     "yearFrom": "от {value} г.",
     "yearTo": "до {value} г.",
-    "mileageTo": "пробег до {value} км"
+    "mileageTo": "пробег до {value} км",
+    "withPhotos": "С фото",
+    "noAccidents": "Без ДТП",
+    "oneOwner": "1 владелец",
+    "serviceBook": "Сервисная книжка",
+    "posted": {
+      "1d": "за 24 ч",
+      "3d": "за 3 дня",
+      "7d": "за 7 дней"
+    },
+    "postedShort": {
+      "1d": "24 ч",
+      "3d": "3 дн.",
+      "7d": "7 дн."
+    }
   },
   "panel": {
     "condition": "Состояние",
@@ -46,7 +60,11 @@
     "to": "До, {unit}",
     "unitYear": "год",
     "unitKm": "км",
-    "unitEur": "€"
+    "unitEur": "€",
+    "history": "История и состояние",
+    "color": "Цвет",
+    "posted": "Размещено",
+    "anyTime": "Когда угодно"
   },
   "row": {
     "new": "Новый",
@@ -57,9 +75,32 @@
     "noAccidents": "Без ДТП",
     "oneOwner": "1 владелец",
     "negotiable": "Торг уместен",
-    "serviceBook": "Сервисная книжка"
+    "serviceBook": "Сервисная книжка",
+    "fresh": "Новое"
   },
   "moreFilters": "Ещё фильтры",
   "metaTitle": "{title} — {results} | bestauto.lv",
-  "metaDescription": "{title}: объявления о продаже автомобилей в Латвии от частных лиц и дилеров."
+  "metaDescription": "{title}: объявления о продаже автомобилей в Латвии от частных лиц и дилеров.",
+  "brandPage": {
+    "breadcrumbs": "Навигация",
+    "home": "Главная",
+    "title": "{name} — новые и подержанные автомобили",
+    "intro": "{count, plural, one {# объявление} few {# объявления} many {# объявлений} other {# объявления}} {name} от частных лиц и дилеров по всей Латвии. Сравните цены, пробег и состояние.",
+    "introEmpty": "Сейчас нет объявлений {name}. Посмотрите похожие автомобили или загляните позже.",
+    "openSearch": "Искать с фильтрами",
+    "facts": {
+      "listings": "Объявления",
+      "price": "Цены",
+      "years": "Годы выпуска",
+      "body": "Популярный кузов"
+    },
+    "models": "Модели {brand}",
+    "listings": "Объявления {name}",
+    "empty": "Объявлений {name} пока нет",
+    "allOfBrand": "Все {brand}",
+    "allCars": "Все автомобили",
+    "otherBrands": "Другие популярные марки",
+    "metaTitle": "{name} в продаже в Латвии — {count, plural, one {# объявление} few {# объявления} many {# объявлений} other {# объявления}} | bestauto.lv",
+    "metaDescription": "Купить {name} в Латвии: новые и подержанные автомобили от частных лиц и дилеров. Цены, пробег, состояние и фото."
+  }
 }

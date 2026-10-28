@@ -8,16 +8,19 @@ import PhotoCameraOutlinedIcon from "@mui/icons-material/PhotoCameraOutlined";
 
 import { Link } from "@/i18n/navigation";
 
+import FreshBadge from "./FreshBadge";
+
 const MAX_PREVIEW = 5;
 
 type Props = {
   href: string;
   title: string;
   images: string[];
+  fresh?: boolean; // размещено за последние сутки
 };
 
 // Листание фото движением курсора по превью
-export default function ListingGallery({ href, title, images }: Props) {
+export default function ListingGallery({ href, title, images, fresh }: Props) {
   const t = useTranslations("cars.row");
   const tCommon = useTranslations("common");
   const [active, setActive] = useState(0);
@@ -64,12 +67,6 @@ export default function ListingGallery({ href, title, images }: Props) {
             </div>
           )}
 
-          {images.length > 1 && (
-            <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/55 backdrop-blur text-white text-xs">
-              <PhotoCameraOutlinedIcon sx={{ fontSize: 14 }} />
-              {images.length}
-            </span>
-          )}
 
           {preview.length > 1 && (
             <div className="absolute bottom-2 inset-x-2 flex gap-1 opacity-0 group-hover/gallery:opacity-100 transition">
@@ -84,6 +81,19 @@ export default function ListingGallery({ href, title, images }: Props) {
             </div>
           )}
         </>
+      )}
+
+      {/* метки слева сверху: «новое» и число фото */}
+      {(fresh || images.length > 1) && (
+        <div className="absolute top-2 left-2 flex items-center gap-1.5">
+          {fresh && <FreshBadge />}
+          {images.length > 1 && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/55 backdrop-blur text-white text-xs">
+              <PhotoCameraOutlinedIcon sx={{ fontSize: 14 }} />
+              {images.length}
+            </span>
+          )}
+        </div>
       )}
     </Link>
   );

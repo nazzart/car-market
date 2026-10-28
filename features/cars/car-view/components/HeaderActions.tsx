@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import IosShareIcon from "@mui/icons-material/IosShare";
-import CheckIcon from "@mui/icons-material/Check";
 
 import CompareButton from "@/features/compare/components/CompareButton";
 import { toggleFavorite, useIsFavorite } from "@/features/favorites/store";
+import { formatNumber } from "@/lib/utils";
+
+import ShareMenu from "./ShareMenu";
 
 const buttonClass = `
   inline-flex items-center gap-2
@@ -29,37 +29,11 @@ export default function HeaderActions({ listing }: Props) {
   const { title } = listing;
   const t = useTranslations("listing.actions");
   const saved = useIsFavorite(listing.id);
-  const [copied, setCopied] = useState(false);
-
-  const share = async () => {
-    const url = window.location.href;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, url });
-      } catch {
-        // пользователь закрыл окно «Поделиться»
-      }
-      return;
-    }
-
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <div className="flex items-center -mx-4 sm:mx-0">
       <CompareButton id={listing.id} variant="text" />
 
-      <button type="button" onClick={share} className={buttonClass}>
-        {copied ? (
-          <CheckIcon fontSize="small" className="text-emerald-600" />
-        ) : (
-          <IosShareIcon fontSize="small" />
-        )}
-        {copied ? t("copied") : t("share")}
-      </button>
+      <ShareMenu title={`${title}, ${formatNumber(listing.price)} €`} className={buttonClass} />
 
       <button
         type="button"

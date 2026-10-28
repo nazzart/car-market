@@ -38,8 +38,11 @@ export async function generateMetadata({ params }: Omit<Props, "children">): Pro
   const t = await getTranslations({ locale, namespace: "common.meta" });
 
   return {
+    // абсолютные ссылки для превью (og:image и т. п.)
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
     title: t("title"),
     description: t("description"),
+    openGraph: { siteName: "bestauto.lv", locale: locale === "ru" ? "ru_LV" : "lv_LV", type: "website" },
   };
 }
 

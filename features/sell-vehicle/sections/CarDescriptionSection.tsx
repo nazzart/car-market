@@ -1,6 +1,7 @@
 "use client";
 
 import { TextField } from "@mui/material";
+import YouTubeIcon from "@mui/icons-material/YouTube";
 import { useTranslations } from "next-intl";
 
 import { SectionContainer } from "../components/SectionContainer";
@@ -52,6 +53,20 @@ export function CarDescriptionSection({
           rows={5}
           fullWidth
           placeholder={t("placeholder")}
+        />
+
+        <TextField
+          label={t("video")}
+          value={data.videoUrl ?? ""}
+          onChange={(e) => updateField("videoUrl", e.target.value)}
+          error={Boolean(data.videoUrl) && !validateField(data.videoUrl, getRules("videoUrl"))}
+          helperText={
+            data.videoUrl && !validateField(data.videoUrl, getRules("videoUrl")) ? t("videoError") : t("videoHint")
+          }
+          placeholder="https://www.youtube.com/watch?v=…"
+          inputMode="url"
+          fullWidth
+          slotProps={{ input: { startAdornment: <YouTubeIcon className="text-red-600 mr-2" /> } }}
         />
       </div>
     </SectionContainer>

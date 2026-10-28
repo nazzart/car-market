@@ -11,13 +11,21 @@
     "body": "Virsbūves stāvoklis",
     "equipment": "Komplektācija",
     "seller": "Pārdevējs",
-    "condition": "Stāvoklis un apkope"
+    "condition": "Stāvoklis un apkope",
+    "video": "Video"
   },
   "actions": {
     "share": "Kopīgot",
     "copied": "Saite nokopēta",
     "save": "Saglabāt",
-    "saved": "Saglabāts"
+    "saved": "Saglabāts",
+    "shareTo": {
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram",
+      "facebook": "Facebook",
+      "copy": "Kopēt saiti",
+      "more": "Citas iespējas…"
+    }
   },
   "specs": {
     "brand": "Marka",
@@ -123,5 +131,9 @@
       "text": "Pārdevējs ir noņēmis šo sludinājumu."
     },
     "similar": "Skatīt līdzīgus"
+  },
+  "video": {
+    "play": "Skatīties video",
+    "frameTitle": "Video: {title}"
   }
 }

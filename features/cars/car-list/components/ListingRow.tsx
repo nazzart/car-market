@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { formatAgo, formatNumber } from "@/lib/utils";
 
 import { Listing } from "../../data/listings";
+import { isFresh } from "../../data/isFresh";
 import ListingGallery from "./ListingGallery";
 import PhoneButton from "./PhoneButton";
 
@@ -50,7 +51,7 @@ export default function ListingRow({ listing }: { listing: Listing }) {
       {/* Photo */}
 
       <div className="relative md:w-[260px] lg:w-[280px] shrink-0">
-        <ListingGallery href={href} title={listing.title} images={listing.images} />
+        <ListingGallery href={href} title={listing.title} images={listing.images} fresh={isFresh(listing)} />
         <FavoriteButton listing={listing} className="absolute top-2 right-2 z-20" />
         <CompareButton id={listing.id} className="absolute top-14 right-2 z-20" />
       </div>

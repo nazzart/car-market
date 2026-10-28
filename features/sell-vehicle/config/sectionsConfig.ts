@@ -76,7 +76,10 @@ export const sections = [
     id: "description",
     component: CarDescriptionSection,
     required: true,
-    fields: [{ name: "description", rules: ["required"] }],
+    fields: [
+      { name: "description", rules: ["required"] },
+      { name: "videoUrl", rules: ["youtube"] },
+    ],
   },
   {
     id: "contact",

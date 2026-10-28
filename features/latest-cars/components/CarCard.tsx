@@ -7,6 +7,9 @@ import { formatAgo, formatNumber } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/data/listings";
 
+import FreshBadge from "@/features/cars/car-list/components/FreshBadge";
+import { isFresh } from "@/features/cars/data/isFresh";
+
 import FavoriteButton from "./FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
 
@@ -57,6 +60,8 @@ export default function CarCard({ listing }: { listing: Listing }) {
           </div>
         </div>
       </Link>
+
+      {isFresh(listing) && <FreshBadge className="absolute top-2 left-2 pointer-events-none" />}
 
       <FavoriteButton listing={listing} className="absolute top-2 right-2" />
       {/* на телефоне карточки узкие — «сравнить» есть на странице объявления и в списке */}

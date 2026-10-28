@@ -31,7 +31,19 @@ export const FILTER_KEYS = [
   "drive",
   "sellerType",
   "dealer",
+  "color",
+  "posted",
+  "withPhotos",
+  "noAccidents",
+  "oneOwner",
+  "serviceBook",
 ] as const;
+
+// «Размещено за…»: значение в URL → минуты
+export const postedPeriods = { "1d": 24 * 60, "3d": 3 * 24 * 60, "7d": 7 * 24 * 60 } as const;
+
+// Флажки «да/нет» (в URL значение "1")
+export const flagFilters = ["withPhotos", "noAccidents", "oneOwner", "serviceBook"] as const;
 
 export type FilterKey = (typeof FILTER_KEYS)[number];
 
@@ -75,5 +87,14 @@ export const chipLabel = (
       return tOptions(`sellerType.${value}`);
     case "dealer":
       return dealers.find((d) => d.slug === value)?.name ?? value;
+    case "color":
+      return tOptions(`colors.${value}`);
+    case "posted":
+      return tChips(`posted.${value}`);
+    case "withPhotos":
+    case "noAccidents":
+    case "oneOwner":
+    case "serviceBook":
+      return tChips(key);
   }
 };

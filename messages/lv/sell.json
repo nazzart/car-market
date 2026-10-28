@@ -108,7 +108,10 @@
   },
   "description": {
     "label": "Apraksts",
-    "placeholder": "Piemēram: automašīna labā stāvoklī, apkope veikta laikā, nesen nomainītas bremzes un eļļa..."
+    "placeholder": "Piemēram: automašīna labā stāvoklī, apkope veikta laikā, nesen nomainītas bremzes un eļļa...",
+    "video": "Video saite (nav obligāti)",
+    "videoHint": "YouTube saite — pircēji redzēs video sludinājumā",
+    "videoError": "Ievadiet saiti uz YouTube video"
   },
   "contact": {
     "name": "Vārds",

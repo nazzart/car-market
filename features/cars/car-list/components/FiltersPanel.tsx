@@ -5,12 +5,16 @@ import { useTranslations } from "next-intl";
 import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
 import { formatNumber } from "@/lib/utils";
+import CheckIcon from "@mui/icons-material/Check";
+import { carColors } from "../../config/colors";
 
 import { useCarFilters } from "../hooks/useCarFilters";
 import {
   bodyTypes,
   conditions,
   drives,
+  flagFilters,
+  postedPeriods,
   fuels,
   sellerTypes,
   transmissions,
@@ -77,6 +81,7 @@ function RangeInputs({
 export default function FiltersPanel() {
   const t = useTranslations("cars.panel");
   const tOptions = useTranslations("options");
+  const tChips = useTranslations("cars.chips");
   const { params, updateFilter } = useCarFilters();
 
   // value → { label, value } из переводов options.{group}
@@ -139,12 +144,58 @@ export default function FiltersPanel() {
         <RangeInputs toKey="mileageTo" unit={t("unitKm")} />
       </FilterSection>
 
+      {/* Флажки доверия — несколько можно включить сразу */}
+      <FilterSection title={t("history")} active={isActive([...flagFilters])}>
+        <div className="flex flex-wrap gap-1.5">
+          {flagFilters.map((key) => {
+            const on = get(key) === "1";
+            return (
+              <button
+                key={key}
+                type="button"
+                aria-pressed={on}
+                onClick={() => set(key)(on ? null : "1")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm transition cursor-pointer ${
+                  on ? "bg-gray-900 border-gray-900 text-white" : "border-gray-200 text-gray-700 hover:border-gray-900"
+                }`}
+              >
+                {on && <CheckIcon sx={{ fontSize: 15 }} />}
+                {tChips(key)}
+              </button>
+            );
+          })}
+        </div>
+      </FilterSection>
+
       <FilterSection title={t("body")} active={isActive(["bodyType"])}>
         <ChipGroup
           options={opts("bodyType", bodyTypes)}
           value={get("bodyType")}
           onChange={set("bodyType")}
         />
+      </FilterSection>
+
+      <FilterSection title={t("color")} active={isActive(["color"])}>
+        <div className="flex flex-wrap gap-2">
+          {carColors.map((c) => {
+            const on = get("color") === c.value;
+            const label = tOptions(`colors.${c.value}`);
+            return (
+              <button
+                key={c.value}
+                type="button"
+                aria-pressed={on}
+                aria-label={label}
+                title={label}
+                onClick={() => set("color")(on ? null : c.value)}
+                className={`w-8 h-8 rounded-full border transition cursor-pointer ${
+                  on ? "ring-2 ring-offset-2 ring-gray-900 border-transparent" : "border-gray-300 hover:scale-110"
+                }`}
+                style={{ background: c.color }}
+              />
+            );
+          })}
+        </div>
       </FilterSection>
 
       <FilterSection title={t("engine")} active={isActive(["fuel"])}>
@@ -178,6 +229,15 @@ export default function FiltersPanel() {
           options={opts("sellerType", sellerTypes)}
           value={get("sellerType")}
           onChange={set("sellerType")}
+        />
+      </FilterSection>
+
+      <FilterSection title={t("posted")} active={isActive(["posted"])}>
+        <Segmented
+          anyLabel={t("anyTime")}
+          options={Object.keys(postedPeriods).map((value) => ({ value, label: tChips(`postedShort.${value}`) }))}
+          value={get("posted")}
+          onChange={set("posted")}
         />
       </FilterSection>
     </div>

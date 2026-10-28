@@ -45,6 +45,7 @@ export type Listing = {
   noAccidents?: boolean;
   negotiable?: boolean;
   description?: string;
+  videoUrl?: string; // ссылка на YouTube от продавца
   equipment?: string[]; // ключи из features/cars/config/equipment.ts
   sellerSince?: number;
   views?: number;
@@ -345,7 +346,7 @@ export const listings: Listing[] = [
     condition: "used",
     sellerType: "private",
     city: "liepaja",
-    postedMinutesAgo: 420,
+    postedMinutesAgo: 5760,
     phone: "+371 2000 1006",
     images: [],
   },
@@ -406,7 +407,7 @@ export const listings: Listing[] = [
     condition: "used",
     sellerType: "private",
     city: "riga",
-    postedMinutesAgo: 420,
+    postedMinutesAgo: 2880,
     phone: "+371 2000 1007",
     images: [],
   },
@@ -430,7 +431,7 @@ export const listings: Listing[] = [
     condition: "used",
     sellerType: "private",
     city: "valmiera",
-    postedMinutesAgo: 1500,
+    postedMinutesAgo: 4320,
     phone: "+371 2000 1008",
     images: [],
   },
@@ -454,7 +455,7 @@ export const listings: Listing[] = [
     condition: "used",
     sellerType: "private",
     city: "ventspils",
-    postedMinutesAgo: 1500,
+    postedMinutesAgo: 10080,
     phone: "+371 2000 1011",
     color: "white",
     owners: 3,

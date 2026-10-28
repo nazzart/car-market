@@ -1,6 +1,7 @@
 import { collections } from "@/features/collections/data/collections";
 
 import { Listing } from "../data/listings";
+import { postedPeriods } from "../config/filterOptions";
 
 type Params = { get: (key: string) => string | null };
 
@@ -26,6 +27,8 @@ export function filterListings(listings: Listing[], params: Params) {
   const yearTo = num("yearTo");
   const mileageTo = num("mileageTo");
   const model = params.get("model")?.toLowerCase();
+  const posted = postedPeriods[params.get("posted") as keyof typeof postedPeriods];
+  const flag = (key: string) => params.get(key) === "1";
 
   const result = listings.filter(
     (l) =>
@@ -43,7 +46,13 @@ export function filterListings(listings: Listing[], params: Params) {
       eq("transmission", l.transmission) &&
       eq("drive", l.drive) &&
       eq("sellerType", l.sellerType) &&
-      eq("dealer", l.dealer ?? "")
+      eq("dealer", l.dealer ?? "") &&
+      eq("color", l.color ?? "") &&
+      (!posted || l.postedMinutesAgo <= posted) &&
+      (!flag("withPhotos") || l.images.length > 0) &&
+      (!flag("noAccidents") || Boolean(l.noAccidents)) &&
+      (!flag("oneOwner") || l.owners === 1) &&
+      (!flag("serviceBook") || Boolean(l.serviceBook))
   );
 
   switch (params.get("sort")) {

@@ -37,5 +37,12 @@
     "home": "Uz sākumu",
     "popular": "Populāras markas",
     "dealers": "Dīleri"
+  },
+  "error": {
+    "title": "Kaut kas nogāja greizi",
+    "text": "Lapu neizdevās ielādēt. Mēģiniet vēlreiz — ja kļūda atkārtojas, atgriezieties sākumlapā.",
+    "retry": "Mēģināt vēlreiz",
+    "home": "Uz sākumu",
+    "code": "Kļūdas kods: {code}"
   }
 }

@@ -82,10 +82,6 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
           ))}
         </div>
 
-        <div className="flex justify-between text-xs text-gray-400 mt-1 px-1">
-          <span>{t("rear")}</span>
-          <span>{t("front")}</span>
-        </div>
       </div>
 
       {/* List */}

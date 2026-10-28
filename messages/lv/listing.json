@@ -97,9 +97,7 @@
   "damage": {
     "none": "Bojājumu nav",
     "noneText": "Pārdevējs norādījis, ka virsbūvei nav šķembu, iespiedumu un rūsas",
-    "diagramAlt": "Virsbūves shēma, skats no augšas",
-    "rear": "← Aizmugure",
-    "front": "Priekša →"
+    "diagramAlt": "Virsbūves shēma, skats no augšas"
   },
   "csdd": {
     "title": "Pārbaudiet nobraukumu CSDD",

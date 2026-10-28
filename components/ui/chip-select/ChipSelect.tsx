@@ -27,28 +27,28 @@ export function ChipSelect({
   const [touched, setTouched] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const currentValue = multiple
-    ? Array.isArray(value)
-      ? value
-      : []
-    : value || null;
+  // выбранные значения отдельно для мультивыбора и одиночного выбора — так типы точные
+  const selectedList: string[] = multiple && Array.isArray(value) ? value : [];
+  const selectedOne: string | null = !multiple && typeof value === "string" && value ? value : null;
+  const isSelected = (optionValue: string) =>
+    multiple ? selectedList.includes(optionValue) : selectedOne === optionValue;
 
-  const hasValue = multiple ? currentValue.length > 0 : currentValue !== null;
+  const hasValue = multiple ? selectedList.length > 0 : selectedOne !== null;
 
   const isError = error || (touched && required && !hasValue);
   const handleSelect = (optionValue: string) => {
     setTouched(true);
     if (multiple) {
-      const selected = currentValue.includes(optionValue);
+      const selected = selectedList.includes(optionValue);
 
       if (selected) {
         if (disableUnselect) return;
-        onChange(currentValue.filter((v) => v !== optionValue));
+        onChange(selectedList.filter((v) => v !== optionValue));
       } else {
-        onChange([...currentValue, optionValue]);
+        onChange([...selectedList, optionValue]);
       }
     } else {
-      if (currentValue === optionValue) {
+      if (selectedOne === optionValue) {
         if (disableUnselect) return;
         onChange(null);
       } else {
@@ -80,7 +80,7 @@ export function ChipSelect({
   if (inline) {
     const selectedLabel =
       !multiple && hasValue
-        ? options.find((o) => o.value === currentValue)?.label
+        ? options.find((o) => o.value === selectedOne)?.label
         : null;
 
     return (
@@ -96,7 +96,7 @@ export function ChipSelect({
         {variant === "color" ? (
           <div className="flex flex-wrap gap-2.5">
             {options.map((option) => {
-              const selected = currentValue === option.value;
+              const selected = selectedOne === option.value;
               const light = ["white", "beige", "silver", "yellow"].includes(option.value);
 
               return (
@@ -131,9 +131,7 @@ export function ChipSelect({
         ) : (
           <div className="flex flex-wrap gap-2">
             {options.map((option) => {
-              const selected = multiple
-                ? currentValue.includes(option.value)
-                : currentValue === option.value;
+              const selected = isSelected(option.value);
 
               return (
                 <button
@@ -218,8 +216,8 @@ export function ChipSelect({
             </span>
           ) : multiple ? (
             (() => {
-              const visible = currentValue.slice(0, 3);
-              const hidden = currentValue.length - visible.length;
+              const visible = selectedList.slice(0, 3);
+              const hidden = selectedList.length - visible.length;
 
               return (
                 <>
@@ -261,7 +259,7 @@ export function ChipSelect({
             })()
           ) : (
             (() => {
-              const option = options.find((o) => o.value === currentValue);
+              const option = options.find((o) => o.value === selectedOne);
 
               return (
                 <Chip
@@ -319,9 +317,7 @@ export function ChipSelect({
         {variant === "color" ? (
           <div className="flex flex-wrap gap-3 pt-3">
             {options.map((option) => {
-              const selected = multiple
-                ? currentValue.includes(option.value)
-                : currentValue === option.value;
+              const selected = isSelected(option.value);
 
               return (
                 <button
@@ -345,9 +341,7 @@ export function ChipSelect({
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3">
             {options.map((option) => {
-              const selected = multiple
-                ? currentValue.includes(option.value)
-                : currentValue === option.value;
+              const selected = isSelected(option.value);
 
               return (
                 <Chip

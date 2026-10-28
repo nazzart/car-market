@@ -8,12 +8,16 @@
   },
   "tabs": {
     "active": "Aktīvie",
-    "draft": "Melnraksti",
+    "paused": "Paslēptie",
     "sold": "Pārdotie"
   },
   "row": {
-    "active": "Aktīvs",
-    "open": "Atvērt"
+    "open": "Atvērt",
+    "status": {
+      "active": "Aktīvs",
+      "paused": "Paslēpts",
+      "sold": "Pārdots"
+    }
   },
   "stats": {
     "active": "{count, plural, zero {aktīvi sludinājumi} one {aktīvs sludinājums} other {aktīvi sludinājumi}}",
@@ -33,7 +37,11 @@
   "listings": {
     "dealer": "Pārdošanā esošās automašīnas",
     "mine": "Mani sludinājumi",
-    "empty": "Šeit pagaidām nekā nav"
+    "empty": {
+      "active": "Nav aktīvu sludinājumu",
+      "paused": "Nav paslēptu sludinājumu. Paslēpts sludinājums netiek rādīts meklēšanā, bet to var atkal aktivizēt.",
+      "sold": "Šeit būs automašīnas, kuras atzīmēsiet kā pārdotas"
+    }
   },
   "profile": {
     "company": "Uzņēmuma kontakti",
@@ -128,6 +136,26 @@
       "saved": "Izmaiņas saglabātas",
       "fixErrors": "Izlabojiet kļūdas formā",
       "demoNote": "Demo režīms: izmaiņas tiek saglabātas tikai šajā pārlūkā"
+    }
+  },
+  "actions": {
+    "menu": "Darbības",
+    "pause": "Paslēpt",
+    "activate": "Aktivizēt",
+    "sold": "Atzīmēt kā pārdotu",
+    "relist": "Atjaunot pārdošanā",
+    "delete": "Dzēst",
+    "cancel": "Atcelt",
+    "confirmTitle": "Dzēst sludinājumu?",
+    "confirmText": "«{title}» tiks dzēsts, un pircēji to vairs neredzēs.",
+    "confirmHint": "Ja auto vienkārši ir pārdots vai tirdzniecība uz laiku apturēta, labāk izvēlieties «Atzīmēt kā pārdotu» vai «Paslēpt».",
+    "confirmDelete": "Dzēst",
+    "undo": "Atsaukt",
+    "done": {
+      "active": "Sludinājums aktivizēts",
+      "paused": "Sludinājums paslēpts",
+      "sold": "Atzīmēts kā pārdots",
+      "deleted": "Sludinājums dzēsts"
     }
   }
 }

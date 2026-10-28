@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Snackbar } from "@mui/material";
 import Image from "next/image";
 import AddIcon from "@mui/icons-material/Add";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -20,8 +21,12 @@ import { cityLabel } from "@/lib/cities";
 import { User } from "@/features/auth/data/demoUsers";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import { Listing, listings } from "@/features/cars/data/listings";
+import OpenStatus from "@/features/dealers/components/OpenStatus";
 import { dealers, formatHours } from "@/features/dealers/data/dealers";
 import { Link } from "@/i18n/navigation";
+
+import ListingActions from "./listings/ListingActions";
+import { ListingStatus, setListingStatus, statusOf, useListingStatuses } from "./listings/statusStore";
 import { formatAgo, formatNumber, initials } from "@/lib/utils";
 
 // Пока статистики нет — считаем примерные значения от просмотров
@@ -33,11 +38,14 @@ const userListings = (user: User) =>
     ? listings.filter((l) => l.dealer === user.dealerSlug)
     : listings.filter((l) => user.listingIds?.includes(l.id));
 
-const tabs = [
-  { value: "active" },
-  { value: "draft" },
-  { value: "sold" },
-];
+// Вкладки = статусы объявлений (удалённые не показываем)
+const tabs = ["active", "paused", "sold"] as const;
+
+const statusBadge: Record<string, string> = {
+  active: "bg-emerald-50 text-emerald-700",
+  paused: "bg-gray-100 text-gray-600",
+  sold: "bg-sky-50 text-sky-700",
+};
 
 const primaryButton =
   "inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-full bg-primary hover:bg-primary-hover text-white text-sm font-semibold transition";
@@ -71,15 +79,29 @@ export function LoggedOut({ title }: { title?: string }) {
   );
 }
 
-function ListingRow({ listing }: { listing: Listing }) {
+function ListingRow({
+  listing,
+  status,
+  onStatusChange,
+}: {
+  listing: Listing;
+  status: ListingStatus;
+  onStatusChange: (status: ListingStatus) => void;
+}) {
   const t = useTranslations("account.row");
   const locale = useLocale();
 
   return (
-    <div className="flex gap-4 p-3 rounded-2xl border border-gray-200">
+    <div className={`flex gap-4 p-3 rounded-2xl border border-gray-200 ${status === "active" ? "" : "bg-gray-50/60"}`}>
       <div className="relative w-28 sm:w-36 aspect-[4/3] shrink-0 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
         {listing.images[0] ? (
-          <Image src={listing.images[0]} alt={listing.title} fill sizes="144px" className="object-cover" />
+          <Image
+            src={listing.images[0]}
+            alt={listing.title}
+            fill
+            sizes="144px"
+            className={`object-cover ${status === "active" ? "" : "grayscale opacity-70"}`}
+          />
         ) : (
           <DirectionsCarOutlinedIcon className="text-gray-300" />
         )}
@@ -88,8 +110,8 @@ function ListingRow({ listing }: { listing: Listing }) {
       <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-xs font-medium">
-              {t("active")}
+            <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${statusBadge[status]}`}>
+              {t(`status.${status}`)}
             </span>
             <span className="text-xs text-gray-500">{formatAgo(listing.postedMinutesAgo, locale)}</span>
           </div>
@@ -115,9 +137,12 @@ function ListingRow({ listing }: { listing: Listing }) {
           </div>
         </div>
 
-        <Link href={`/listing/${listing.id}`} className={`${secondaryButton} h-9 px-4 self-start sm:self-auto`}>
-          {t("open")}
-        </Link>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Link href={`/listing/${listing.id}`} className={`${secondaryButton} h-9 px-4`}>
+            {t("open")}
+          </Link>
+          <ListingActions title={listing.title} status={status} onChange={onStatusChange} />
+        </div>
       </div>
     </div>
   );
@@ -127,7 +152,9 @@ export default function AccountView() {
   const t = useTranslations("account");
   const tOptions = useTranslations("options");
   const { user } = useAuth();
-  const [tab, setTab] = useState("active");
+  const [tab, setTab] = useState<(typeof tabs)[number]>("active");
+  const statuses = useListingStatuses();
+  const [undo, setUndo] = useState<{ id: string; prev: ListingStatus; next: ListingStatus } | null>(null);
 
   if (!user) return <LoggedOut />;
 
@@ -135,8 +162,17 @@ export default function AccountView() {
   // каталог дилеров + изменения из настроек
   const baseDealer = dealers.find((d) => d.slug === user.dealerSlug);
   const dealer = baseDealer && { ...baseDealer, ...user.dealerProfile };
-  const own = userListings(user);
-  const shown = tab === "active" ? own : [];
+  const all = userListings(user).filter((l) => statusOf(statuses, l.id) !== "deleted");
+  const byStatus = (s: ListingStatus) => all.filter((l) => statusOf(statuses, l.id) === s);
+  // статистика — только по активным
+  const own = byStatus("active");
+  const shown = byStatus(tab);
+
+  const changeStatus = (id: string, next: ListingStatus) => {
+    const prev = statusOf(statuses, id);
+    setListingStatus(id, next);
+    setUndo({ id, prev, next });
+  };
 
   const totalViews = own.reduce((sum, l) => sum + (l.views ?? 0), 0);
   const totalPhone = own.reduce((sum, l) => sum + phoneShows(l), 0);
@@ -204,10 +240,10 @@ export default function AccountView() {
       </div>
       <p className="text-xs text-gray-500 mt-2">{t("stats.period")}</p>
 
-      <div className="grid lg:grid-cols-[minmax(0,1fr)_340px] gap-8 mt-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-8 mt-10 items-start">
         {/* Listings */}
 
-        <section>
+        <section className="min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <h2 className="text-xl font-semibold tracking-tight">
               {isDealer ? t("listings.dealer") : t("listings.mine")}
@@ -216,16 +252,16 @@ export default function AccountView() {
             <div className="flex p-1 rounded-xl bg-gray-100">
               {tabs.map((item) => (
                 <button
-                  key={item.value}
+                  key={item}
                   type="button"
-                  aria-pressed={tab === item.value}
-                  onClick={() => setTab(item.value)}
+                  aria-pressed={tab === item}
+                  onClick={() => setTab(item)}
                   className={`px-3 py-1.5 rounded-lg text-sm transition cursor-pointer ${
-                    tab === item.value ? "bg-white text-gray-900 font-medium shadow-sm" : "text-gray-600 hover:text-black"
+                    tab === item ? "bg-white text-gray-900 font-medium shadow-sm" : "text-gray-600 hover:text-black"
                   }`}
                 >
-                  {t(`tabs.${item.value}`)}
-                  <span className="ml-1 text-gray-400">{item.value === "active" ? own.length : 0}</span>
+                  {t(`tabs.${item}`)}
+                  <span className="ml-1 text-gray-400">{byStatus(item).length}</span>
                 </button>
               ))}
             </div>
@@ -234,13 +270,18 @@ export default function AccountView() {
           {shown.length > 0 ? (
             <div className="space-y-3">
               {shown.map((l) => (
-                <ListingRow key={l.id} listing={l} />
+                <ListingRow
+                  key={l.id}
+                  listing={l}
+                  status={statusOf(statuses, l.id)}
+                  onStatusChange={(next) => changeStatus(l.id, next)}
+                />
               ))}
             </div>
           ) : (
             <div className="text-center py-14 px-6 rounded-2xl border border-dashed border-gray-200">
               <DirectionsCarOutlinedIcon sx={{ fontSize: 44 }} className="text-gray-300" />
-              <p className="text-gray-500 mt-2">{t("listings.empty")}</p>
+              <p className="text-gray-500 mt-2">{t(`listings.empty.${tab}`)}</p>
             </div>
           )}
         </section>
@@ -292,7 +333,10 @@ export default function AccountView() {
                 </div>
                 <div className="flex items-start gap-2">
                   <ScheduleOutlinedIcon sx={{ fontSize: 18 }} className="text-gray-500" />
-                  {formatHours(dealer.hours, (d) => tOptions(`days.${d}`))}
+                  <div>
+                    <OpenStatus hours={dealer.hours} />
+                    <div className="text-xs text-gray-500">{formatHours(dealer.hours, (d) => tOptions(`days.${d}`))}</div>
+                  </div>
                 </div>
               </div>
 
@@ -314,6 +358,26 @@ export default function AccountView() {
           )}
         </aside>
       </div>
+
+      <Snackbar
+        open={Boolean(undo)}
+        autoHideDuration={5000}
+        onClose={(_, reason) => reason !== "clickaway" && setUndo(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        message={undo && t(`actions.done.${undo.next}`)}
+        action={
+          <button
+            type="button"
+            onClick={() => {
+              if (undo) setListingStatus(undo.id, undo.prev);
+              setUndo(null);
+            }}
+            className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white hover:bg-white/10 cursor-pointer"
+          >
+            {t("actions.undo")}
+          </button>
+        }
+      />
     </div>
   );
 }

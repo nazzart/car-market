@@ -1,30 +1,22 @@
 import { brands } from "@/features/brands/data/brands";
 import { useTranslations } from "next-intl";
 
-import { formatNumber } from "@/lib/utils";
-
 import { Listing } from "../../data/listings";
+import VinReveal from "./VinReveal";
 
 export default function SpecsTable({ listing }: { listing: Listing }) {
   const t = useTranslations("listing.specs");
-  const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
 
-  const rows: [string, string | null | undefined][] = [
+  const rows: [string, React.ReactNode][] = [
     ["brand", brands.find((b) => b.slug === listing.brand)?.name],
-    ["year", String(listing.year)],
-    ["mileage", `${formatNumber(listing.mileage)} ${tCommon("units.km")}`],
+    // год, пробег, двигатель, мощность, коробка и привод — в карточках над описанием
     ["body", tOptions(`bodyType.${listing.bodyType}`)],
     ["color", listing.color && tOptions(`colors.${listing.color}`)],
-    ["engine", listing.engine ? `${listing.engine.toFixed(1)} ${tCommon("units.liters")}` : null],
-    ["power", `${listing.power} ${tCommon("units.hp")}`],
-    ["fuel", tOptions(`fuel.${listing.fuel}`)],
-    ["gearbox", tOptions(`transmission.${listing.transmission}`)],
-    ["drive", tOptions(`drive.${listing.drive}`)],
     ["owners", listing.owners ? String(listing.owners) : null],
     ["inspection", listing.inspectionUntil ? t("inspectionUntil", { date: listing.inspectionUntil }) : null],
     ["condition", listing.condition === "new" ? t("conditionNew") : t("conditionUsed")],
-    ["vin", listing.vin],
+    ["vin", listing.vin && <VinReveal vin={listing.vin} />],
   ];
 
   return (
@@ -34,7 +26,7 @@ export default function SpecsTable({ listing }: { listing: Listing }) {
         .map(([label, value]) => (
           <div
             key={label}
-            className="flex items-baseline justify-between gap-4 py-3 border-b border-gray-100"
+            className="flex items-center justify-between gap-4 min-h-12 py-2 border-b border-gray-100"
           >
             <dt className="text-gray-500">{t(label)}</dt>
             <dd

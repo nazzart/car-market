@@ -9,7 +9,7 @@ import { toggleCompare, useCompare } from "../store";
 
 type Props = {
   id: string;
-  variant?: "icon" | "text";
+  variant?: "icon" | "soft" | "text";
   className?: string;
 };
 
@@ -51,8 +51,14 @@ export default function CompareButton({ id, variant = "icon", className }: Props
       aria-label={active ? t("remove") : t("add")}
       title={active ? t("remove") : t("add")}
       className={cn(
-        "w-10 h-10 flex items-center justify-center rounded-full shadow-sm backdrop-blur hover:scale-105 transition cursor-pointer",
-        active ? "bg-gray-900 text-white" : "bg-white/90 text-gray-700 hover:bg-white",
+        "w-10 h-10 flex items-center justify-center rounded-full transition cursor-pointer",
+        // icon — поверх фото; soft — на белой карточке
+        variant === "icon" && "shadow-sm backdrop-blur hover:scale-105",
+        active
+          ? "bg-gray-900 text-white"
+          : variant === "soft"
+            ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            : "bg-white/90 text-gray-700 hover:bg-white",
         className
       )}
     >

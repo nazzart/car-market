@@ -88,5 +88,30 @@
     "diagramAlt": "Virsbūves shēma, skats no augšas",
     "rear": "← Aizmugure",
     "front": "Priekša →"
+  },
+  "csdd": {
+    "title": "Pārbaudiet nobraukumu CSDD",
+    "text": "Bez maksas: nobraukums katrā tehniskajā apskatē Latvijā. Ievadiet numura zīmi no foto vai VIN kodu — nobraukumam starp apskatēm jāpieaug.",
+    "button": "Pārbaudīt nobraukumu CSDD"
+  },
+  "vin": {
+    "show": "Rādīt",
+    "copy": "Kopēt",
+    "copied": "Nokopēts"
+  },
+  "status": {
+    "paused": {
+      "title": "Sludinājums paslēpts",
+      "text": "Pārdevējs uz laiku ir apturējis pārdošanu."
+    },
+    "sold": {
+      "title": "Auto ir pārdots",
+      "text": "Pārdevējs atzīmējis šo automašīnu kā pārdotu."
+    },
+    "deleted": {
+      "title": "Sludinājums dzēsts",
+      "text": "Pārdevējs ir noņēmis šo sludinājumu."
+    },
+    "similar": "Skatīt līdzīgus"
   }
 }

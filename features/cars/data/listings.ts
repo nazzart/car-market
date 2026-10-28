@@ -32,7 +32,7 @@ export type Listing = {
   // Детали для страницы объявления (необязательные)
   color?: string; // ключ цвета, как в форме продажи
   owners?: number;
-  vin?: string; // хранится уже замаскированным
+  vin?: string; // полный VIN; на странице скрыт до нажатия «Показать VIN»
   inspectionUntil?: string; // техосмотр, «MM.YYYY»
   noAccidents?: boolean;
   negotiable?: boolean;
@@ -80,7 +80,7 @@ export const listings: Listing[] = [
     phone: "+371 2000 1001",
     color: "blue",
     owners: 2,
-    vin: "WUAZZZ4G*******21",
+    vin: "WUAZZZ4G5KN900321",
     inspectionUntil: "06.2027",
     noAccidents: true,
     negotiable: true,
@@ -123,7 +123,7 @@ export const listings: Listing[] = [
     phone: "+371 2000 1002",
     color: "white",
     owners: 1,
-    vin: "WBS4Y910*******48",
+    vin: "WBS4Y9107JAC81248",
     inspectionUntil: "03.2027",
     noAccidents: true,
     negotiable: false,
@@ -187,7 +187,7 @@ export const listings: Listing[] = [
     phone: "+371 2000 1004",
     color: "white",
     owners: 1,
-    vin: "WBA4J710*******03",
+    vin: "WBA4J7105LBH46703",
     inspectionUntil: "11.2027",
     noAccidents: true,
     negotiable: true,

@@ -23,6 +23,7 @@ import FiltersPanel from "./FiltersPanel";
 import ListingRow from "./ListingRow";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import ScrollArea from "./ScrollArea";
+import { statusOf, useListingStatuses } from "@/features/account/listings/statusStore";
 import { inputClass } from "./ui";
 
 // Сайдбар всегда целиком в окне: пока он не прилип, высота — до нижнего края экрана.
@@ -77,7 +78,9 @@ export default function CarsSearchView() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const sidebarRef = useFitToViewport<HTMLElement>();
 
-  const results = filterListings(listings, params);
+  // скрытые, проданные и удалённые продавцом — не в поиске (демо: статус из браузера)
+  const statuses = useListingStatuses();
+  const results = filterListings(listings, params).filter((l) => statusOf(statuses, l.id) === "active");
   const view = params.get("view") === "grid" ? "grid" : "list";
 
   const resultsLabel = tCommon("listings", { count: results.length });

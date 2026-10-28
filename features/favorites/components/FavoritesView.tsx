@@ -226,7 +226,7 @@ function FavoriteCard({
           <div className="min-w-0">
             {/* ссылка растянута на всю карточку через after: */}
             <Link href={href} className="after:absolute after:inset-0 after:rounded-2xl">
-              <h3 className="font-semibold text-gray-900 truncate group-hover:text-primary transition">
+              <h3 className="font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-primary transition">
                 {listing.title}
               </h3>
             </Link>
@@ -240,7 +240,7 @@ function FavoriteCard({
           </div>
 
           <div className="flex items-center">
-            <CompareButton id={listing.id} className="relative z-10 shadow-none bg-gray-100 hover:bg-gray-200" />
+            <CompareButton id={listing.id} variant="soft" className="relative z-10" />
             <RemoveButton onClick={onRemove} />
           </div>
         </div>
@@ -252,7 +252,7 @@ function FavoriteCard({
           </span>
         )}
 
-        <div className="text-sm text-gray-500 mt-1 truncate">
+        <div className="text-sm text-gray-500 mt-1 line-clamp-2">
           {listing.year} · {formatNumber(listing.mileage)} {tCommon("units.km")} · {tOptions(`fuel.${listing.fuel}`)} ·{" "}
           {tOptions(`transmission.${listing.transmission}`)}
         </div>

@@ -5,7 +5,7 @@ import { brands } from "@/features/brands/data/brands";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import { Link } from "@/i18n/navigation";
 
-import { Listing, listings } from "../../data/listings";
+import { Listing, publishedListings } from "../../data/listings";
 
 const LIMIT = 3;
 
@@ -18,7 +18,7 @@ export default function SimilarListings({ listing }: { listing: Listing }) {
     (l.bodyType === listing.bodyType ? 1 : 0) +
     (l.images.length ? 1 : 0);
 
-  const similar = listings
+  const similar = publishedListings
     .filter((l) => l.id !== listing.id && score(l) > 1)
     .sort((a, b) => score(b) - score(a))
     .slice(0, LIMIT);

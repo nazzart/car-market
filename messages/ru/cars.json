@@ -83,7 +83,6 @@
   },
   "row": {
     "new": "Новый",
-    "tuning": "Тюнинг",
     "dealer": "Дилер · {name}",
     "private": "Частное лицо",
     "morePhotos": "Ещё {count} фото",

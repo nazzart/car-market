@@ -1,0 +1,199 @@
+{
+  "reasons": {
+    "fraud": "Krāpšana vai aizdomīgs pārdevējs",
+    "wrongPrice": "Nereāla cena",
+    "wrongInfo": "Nepareiza informācija vai foto",
+    "duplicate": "Dublikāts",
+    "sold": "Auto jau pārdots",
+    "prohibited": "Aizliegts saturs",
+    "other": "Cits iemesls"
+  },
+  "report": {
+    "button": "Ziņot par sludinājumu",
+    "title": "Ziņot par sludinājumu",
+    "subtitle": "Moderators pārbaudīs sludinājumu darba dienas laikā.",
+    "placeholder": "Komentārs (nav obligāti)",
+    "cancel": "Atcelt",
+    "send": "Nosūtīt",
+    "thanksTitle": "Paldies!",
+    "thanksText": "Jūsu ziņojums nosūtīts moderatoram.",
+    "close": "Aizvērt"
+  },
+  "admin": {
+    "metaTitle": "Administrācija | bestauto.lv",
+    "title": "Administrācija",
+    "subtitle": "Sludinājumu moderācija un ziņojumi",
+    "noAccess": {
+      "title": "Nav piekļuves",
+      "text": "Šī sadaļa pieejama tikai moderatoriem.",
+      "login": "Ienākt kā moderatoram"
+    },
+    "tabs": {
+      "overview": "Pārskats",
+      "approvals": "Apstiprināšana",
+      "listings": "Sludinājumi",
+      "reports": "Ziņojumi",
+      "collections": "Kolekcijas",
+      "users": "Lietotāji"
+    },
+    "stats": {
+      "total": "Visi sludinājumi",
+      "public": "Redzami pircējiem",
+      "blocked": "Bloķēti",
+      "fresh": "Jauni 24 h"
+    },
+    "log": {
+      "title": "Pēdējās darbības",
+      "empty": "Pagaidām nav darbību",
+      "block": "Bloķēts",
+      "unblock": "Atbloķēts",
+      "remove": "Dzēsts",
+      "restore": "Atjaunots",
+      "dismiss": "Ziņojumi noraidīti",
+      "approve": "Apstiprināts",
+      "reject": "Noraidīts",
+      "exclude": "Izņemts no kolekcijas",
+      "include": "Atgriezts kolekcijā",
+      "blockAccount": "Konts bloķēts",
+      "unblockAccount": "Konts atbloķēts",
+      "verify": "Dīleris pārbaudīts",
+      "unverify": "Pārbaude atcelta"
+    },
+    "queue": {
+      "title": "Jāizskata",
+      "empty": "Nav atvērtu ziņojumu — viss kārtībā",
+      "all": "Visi ziņojumi"
+    },
+    "filters": {
+      "search": "Meklēt pēc nosaukuma, pārdevēja vai Nr.",
+      "all": "Visi",
+      "public": "Aktīvi",
+      "hidden": "Paslēpti / pārdoti",
+      "blocked": "Bloķēti",
+      "removed": "Dzēsti",
+      "reported": "Ar ziņojumiem",
+      "pending": "Gaida apstiprinājumu"
+    },
+    "table": {
+      "listing": "Sludinājums",
+      "seller": "Pārdevējs",
+      "price": "Cena",
+      "status": "Statuss",
+      "reports": "Ziņojumi",
+      "actions": "Darbības",
+      "empty": "Nekas nav atrasts",
+      "count": "{count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}}",
+      "private": "Privātpersona"
+    },
+    "status": {
+      "active": "Aktīvs",
+      "paused": "Paslēpts",
+      "sold": "Pārdots",
+      "deleted": "Dzēsts (pārdevējs)",
+      "blocked": "Bloķēts",
+      "removed": "Dzēsts (moderators)",
+      "pending": "Gaida apstiprinājumu",
+      "accountBlocked": "Konts bloķēts"
+    },
+    "actions": {
+      "view": "Skatīt",
+      "block": "Bloķēt",
+      "unblock": "Atbloķēt",
+      "remove": "Dzēst",
+      "restore": "Atjaunot",
+      "dismiss": "Noraidīt ziņojumus",
+      "menu": "Darbības",
+      "approve": "Apstiprināt",
+      "reject": "Noraidīt"
+    },
+    "dialog": {
+      "reason": "Iemesls",
+      "note": "Paskaidrojums pārdevējam (nav obligāti)",
+      "cancel": "Atcelt",
+      "block": {
+        "title": "Bloķēt sludinājumu",
+        "text": "«{name}» vairs nebūs redzams pircējiem. Pārdevējs redzēs iemeslu savā kontā.",
+        "confirm": "Bloķēt"
+      },
+      "remove": {
+        "title": "Dzēst sludinājumu",
+        "text": "«{name}» tiks dzēsts. Pārdevējs redzēs iemeslu savā kontā.",
+        "confirm": "Dzēst"
+      },
+      "reject": {
+        "title": "Noraidīt sludinājumu",
+        "text": "«{name}» netiks publicēts. Pārdevējs redzēs iemeslu un varēs izlabot sludinājumu.",
+        "confirm": "Noraidīt"
+      },
+      "blockAccount": {
+        "title": "Bloķēt kontu",
+        "text": "Visi «{name}» sludinājumi tiks paslēpti no pircējiem. Lietotājs redzēs iemeslu savā kontā.",
+        "confirm": "Bloķēt kontu"
+      }
+    },
+    "reports": {
+      "empty": "Ziņojumu nav",
+      "open": "Atvērti",
+      "resolved": "Izskatīti",
+      "count": "{count, plural, zero {# ziņojumi} one {# ziņojums} other {# ziņojumi}}",
+      "blocked": "Bloķēts",
+      "dismissed": "Noraidīts"
+    },
+    "demo": "Demo režīms: moderācija saglabājas tikai šajā pārlūkā.",
+    "tasks": {
+      "pending": "jauni sludinājumi gaida apstiprinājumu",
+      "reports": "atvērti ziņojumi no pircējiem",
+      "unverified": "dīleri nav pārbaudīti"
+    },
+    "approvals": {
+      "empty": "Visi jaunie sludinājumi ir izskatīti",
+      "hint": "Jauni sludinājumi nav redzami pircējiem, kamēr moderators tos neapstiprina. Automātiskās pārbaudes iezīmē aizdomīgās vietas.",
+      "clean": "Pārbaudes bez piezīmēm"
+    },
+    "flags": {
+      "contactInText": "Kontakti aprakstā",
+      "priceLow": "Aizdomīgi zema cena",
+      "newSeller": "Jauns pārdevējs",
+      "noPhotos": "Nav foto",
+      "duplicate": "Iespējams dublikāts"
+    },
+    "collections": {
+      "contentTitle": "Kolekciju saturs",
+      "contentHint": "Pārējās kolekcijas veidojas automātiski pēc noteikumiem. Ja sludinājums kolekcijai neatbilst, to var izņemt.",
+      "contentEmpty": "Šajā kolekcijā pagaidām nav sludinājumu",
+      "exclude": "Izņemt",
+      "include": "Atgriezt",
+      "excluded": "izņemts no kolekcijas"
+    },
+    "users": {
+      "filters": {
+        "all": "Visi",
+        "dealers": "Dīleri",
+        "individuals": "Privātpersonas",
+        "unverified": "Nepārbaudīti dīleri",
+        "blocked": "Bloķēti"
+      },
+      "verifyHint": "Pārbaudiet uzņēmuma nosaukumu un reģistrācijas numuru Uzņēmumu reģistrā, tad atzīmējiet dīleri kā pārbaudītu — tam parādīsies zilā zīme.",
+      "empty": "Nav lietotāju",
+      "verified": "Pārbaudīts dīleris",
+      "unverified": "Nav pārbaudīts",
+      "blocked": "Bloķēts",
+      "kind": {
+        "dealer": "Dīleris",
+        "individual": "Privātpersona"
+      },
+      "regNumber": "reģ. Nr. {value}",
+      "listings": "{count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}}",
+      "reports": "{count, plural, zero {# ziņojumi} one {# ziņojums} other {# ziņojumi}}",
+      "menu": "Darbības",
+      "showListings": "Skatīt sludinājumus",
+      "dealerPage": "Dīlera lapa",
+      "copyReg": "Kopēt reģ. numuru",
+      "openRegister": "Atvērt Uzņēmumu reģistru",
+      "verify": "Atzīmēt kā pārbaudītu",
+      "unverify": "Atcelt pārbaudi",
+      "block": "Bloķēt kontu",
+      "unblock": "Atbloķēt kontu"
+    }
+  }
+}

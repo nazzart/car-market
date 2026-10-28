@@ -83,7 +83,6 @@
   },
   "row": {
     "new": "Jauns",
-    "tuning": "Tūnings",
     "dealer": "Dīleris · {name}",
     "private": "Privātpersona",
     "morePhotos": "Vēl {count} foto",

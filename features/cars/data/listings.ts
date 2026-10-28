@@ -35,7 +35,7 @@ export type Listing = {
   postedMinutesAgo: number;
   phone: string;
   images: string[];
-  tuned?: boolean;
+  review?: "pending"; // новое объявление на проверке: не видно покупателям, пока модератор не одобрит
 
   // Детали для страницы объявления (необязательные)
   color?: string; // ключ цвета, как в форме продажи
@@ -166,7 +166,6 @@ export const listings: Listing[] = [
     views: 238,
     damages: {},
     images: bmwGallery,
-    tuned: true,
   },
   {
     id: "3",
@@ -472,4 +471,34 @@ export const listings: Listing[] = [
     },
     images: rotate(bmwGallery, 3),
   },
+  {
+    id: "13",
+    brand: "mercedes",
+    title: "Mercedes-Benz E 220d",
+    year: 2019,
+    price: 6900,
+    mileage: 98000,
+    engine: 2.0,
+    power: 194,
+    fuel: "diesel",
+    transmission: "automatic",
+    drive: "rwd",
+    bodyType: "sedan",
+    condition: "used",
+    sellerType: "private",
+    city: "riga",
+    postedMinutesAgo: 8,
+    phone: "+371 2999 1234",
+    images: [],
+    color: "black",
+    owners: 1,
+    sellerSince: 2023,
+    review: "pending",
+    description:
+      "Steidzami pārdodu, aizbraucu uz ārzemēm. Auto ideālā stāvoklī. Rakstiet WhatsApp +371 29991234 vai e-pastā andris.auto@example.com, nosūtīšu vairāk foto.",
+  },
 ];
+
+// Опубликованные: без объявлений на премодерации — для списков, которые рендерит сервер
+// TODO: с БД — запрос с условием статуса
+export const publishedListings = listings.filter((l) => l.review !== "pending");

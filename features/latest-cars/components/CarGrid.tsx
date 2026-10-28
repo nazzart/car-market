@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-import { listings } from "@/features/cars/data/listings";
+import { publishedListings } from "@/features/cars/data/listings";
 import { Link } from "@/i18n/navigation";
 
 import CarCard from "./CarCard";
@@ -9,7 +9,7 @@ import CarCard from "./CarCard";
 // На главной — только объявления с фото: это «витрина» сайта
 const HOMEPAGE_LIMIT = 6;
 
-const homepageListings = listings
+const homepageListings = publishedListings
   .filter((listing) => listing.images.length > 0)
   .slice(0, HOMEPAGE_LIMIT);
 

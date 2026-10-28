@@ -50,5 +50,6 @@
     "opensTomorrow": "atvērsies rīt plkst. {time}",
     "opensOn": "atvērsies {day} plkst. {time}",
     "dayOff": "Brīvdiena"
-  }
+  },
+  "verified": "Pārbaudīts dīleris"
 }

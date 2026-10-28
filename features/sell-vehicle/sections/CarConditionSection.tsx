@@ -1,6 +1,6 @@
 "use client";
 
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useTranslations } from "next-intl";
 
 import { SectionContainer } from "../components/SectionContainer";

@@ -45,6 +45,7 @@ export type Dealer = {
   lng: number;
   phone: string;
   regNumber?: string; // регистрационный номер (11 цифр)
+  verified?: boolean; // модератор сверил компанию с регистром предприятий → значок «Проверенный дилер»
   hours: OpeningHours;
   // Рейтинга пока нет — появится вместе с отзывами
   rating?: number;
@@ -57,6 +58,7 @@ export type Dealer = {
 export const dealers: Dealer[] = [
   {
     slug: "baltic-auto",
+    verified: true,
     regNumber: "40003512345",
     name: "Baltic Auto",
     type: "official",
@@ -81,6 +83,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "kia-center-riga",
+    regNumber: "40003615838",
+    verified: true,
     name: "Kia Center Riga",
     type: "official",
     brands: ["kia"],
@@ -104,6 +108,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "nord-motors",
+    regNumber: "40003623757",
+    verified: true,
     name: "Nord Motors",
     type: "official",
     brands: ["toyota", "lexus"],
@@ -125,6 +131,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "autoplaza",
+    regNumber: "40003631676",
+    verified: true,
     name: "AutoPlaza",
     type: "official",
     brands: ["volkswagen", "skoda", "audi"],
@@ -146,6 +154,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "scandi-cars",
+    regNumber: "40003639595",
+    verified: true,
     name: "Scandi Cars",
     type: "official",
     brands: ["volvo"],
@@ -166,6 +176,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "premium-cars-riga",
+    regNumber: "40003647514",
+    verified: true,
     name: "Premium Cars Riga",
     type: "used",
     brands: [],
@@ -189,6 +201,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "e-drive-riga",
+    regNumber: "40003655433",
+    verified: false,
     name: "E-Drive Riga",
     type: "used",
     brands: [],
@@ -209,6 +223,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "jurmala-auto",
+    regNumber: "40003663352",
+    verified: false,
     name: "Jūrmala Auto",
     type: "used",
     brands: [],
@@ -230,6 +246,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "ogre-auto",
+    regNumber: "40003671271",
+    verified: false,
     name: "Ogre Auto",
     type: "used",
     brands: [],
@@ -250,6 +268,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "zemgale-cars",
+    regNumber: "40003679190",
+    verified: true,
     name: "Zemgale Cars",
     type: "official",
     brands: ["renault", "dacia"],
@@ -271,6 +291,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "latgale-motors",
+    regNumber: "40003687109",
+    verified: false,
     name: "Latgale Motors",
     type: "official",
     brands: ["hyundai"],
@@ -291,6 +313,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "kurzeme-auto",
+    regNumber: "40003695028",
+    verified: false,
     name: "Kurzeme Auto",
     type: "used",
     brands: [],
@@ -312,6 +336,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "ventspils-auto",
+    regNumber: "40003702947",
+    verified: false,
     name: "Ventspils Auto Centrs",
     type: "used",
     brands: [],
@@ -332,6 +358,8 @@ export const dealers: Dealer[] = [
   },
   {
     slug: "vidzeme-motors",
+    regNumber: "40003710866",
+    verified: false,
     name: "Vidzeme Motors",
     type: "used",
     brands: [],

@@ -81,11 +81,6 @@ export default function ListingRow({ listing, distance }: { listing: Listing; di
               </span>
             )}
 
-            {listing.tuned && (
-              <span className={`${badgeClass} bg-amber-50 text-amber-700`}>
-                {t("tuning")}
-              </span>
-            )}
 
             {/* сигналы доверия — то, что покупатель спрашивает первым */}
             {listing.noAccidents && (

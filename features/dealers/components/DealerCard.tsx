@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import StarIcon from "@mui/icons-material/Star";
-import VerifiedIcon from "@mui/icons-material/Verified";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -15,6 +14,7 @@ import { initials } from "@/lib/utils";
 
 import { Dealer, formatHours, hasRating } from "../data/dealers";
 import OpenStatus from "./OpenStatus";
+import VerifiedBadge from "./VerifiedBadge";
 
 type Props = {
   dealer: Dealer;
@@ -72,13 +72,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
                 {dealer.name}
               </Link>
             </h3>
-            {official && (
-              <VerifiedIcon
-                sx={{ fontSize: 16 }}
-                className="text-sky-600 shrink-0"
-                titleAccess={t("official")}
-              />
-            )}
+            <VerifiedBadge slug={dealer.slug} />
           </div>
 
           <div className="flex flex-wrap items-center gap-x-2 text-sm text-gray-500">

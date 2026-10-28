@@ -24,7 +24,7 @@ import FiltersPanel from "./FiltersPanel";
 import ListingRow from "./ListingRow";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import ScrollArea from "./ScrollArea";
-import { statusOf, useListingStatuses } from "@/features/account/listings/statusStore";
+import { useCollectionMembership, useVisibility } from "@/features/moderation/visibility";
 import { inputClass } from "./ui";
 
 // Сайдбар всегда целиком в окне: пока он не прилип, высота — до нижнего края экрана.
@@ -80,11 +80,12 @@ export default function CarsSearchView() {
   const sidebarRef = useFitToViewport<HTMLElement>();
 
   // скрытые, проданные и удалённые продавцом — не в поиске (демо: статус из браузера)
-  const statuses = useListingStatuses();
+  const { isPublic } = useVisibility();
   const origin = useOrigin();
   const distanceTo = (l: Listing) => listingDistance(l, origin);
-  const results = filterListings(listings, params, origin ? distanceTo : undefined).filter(
-    (l) => statusOf(statuses, l.id) === "active"
+  const inCollection = useCollectionMembership();
+  const results = filterListings(listings, params, { distanceTo: origin ? distanceTo : undefined, inCollection }).filter(
+    (l) => isPublic(l.id)
   );
   const view = params.get("view") === "grid" ? "grid" : "list";
 

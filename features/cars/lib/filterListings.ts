@@ -1,15 +1,19 @@
-import { collections } from "@/features/collections/data/collections";
+import { Collection, collections } from "@/features/collections/data/collections";
 
 import { Listing } from "../data/listings";
 import { postedPeriods } from "../config/filterOptions";
 
 type Params = { get: (key: string) => string | null };
 
-// distanceTo — расстояние до объявления в км (если посетитель указал, где он); иначе радиус игнорируется
-type DistanceFn = (listing: Listing) => number | null;
+type Options = {
+  // расстояние до объявления в км (если посетитель указал, где он); иначе радиус игнорируется
+  distanceTo?: (listing: Listing) => number | null;
+  // попадание в подборку с учётом модерации; по умолчанию — правило подборки
+  inCollection?: (listing: Listing, collection: Collection) => boolean;
+};
 
 // Временная фильтрация на клиенте — позже это будет запрос к API
-export function filterListings(listings: Listing[], params: Params, distanceTo?: DistanceFn) {
+export function filterListings(listings: Listing[], params: Params, { distanceTo, inCollection }: Options = {}) {
   const num = (key: string) => {
     const value = params.get(key);
     return value ? Number(value) : null;
@@ -53,7 +57,7 @@ export function filterListings(listings: Listing[], params: Params, distanceTo?:
 
   const result = listings.filter(
     (l) =>
-      (!collection || collection.matches(l)) &&
+      (!collection || (inCollection ? inCollection(l, collection) : collection.matches(l))) &&
       eq("condition", l.condition) &&
       eq("brand", l.brand) &&
       (!model || l.title.toLowerCase().includes(model)) &&

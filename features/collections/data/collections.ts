@@ -1,7 +1,6 @@
 import type { SvgIconComponent } from "@mui/icons-material";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import SportsScoreOutlinedIcon from "@mui/icons-material/SportsScoreOutlined";
-import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";
 
@@ -35,12 +34,6 @@ const config: CollectionConfig[] = [
     icon: SportsScoreOutlinedIcon,
     matches: (l) =>
       ["coupe", "convertible"].includes(l.bodyType) && l.power >= 300,
-  },
-  {
-    slug: "tuning",
-    icon: BuildOutlinedIcon,
-    // продавец отмечает «Автомобиль с тюнингом» (с модерацией)
-    matches: (l) => Boolean(l.tuned),
   },
   {
     slug: "exotic",

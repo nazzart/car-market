@@ -1,4 +1,4 @@
-import { listings } from "@/features/cars/data/listings";
+import { publishedListings } from "@/features/cars/data/listings";
 
 import { brands } from "../data/brands";
 import { modelsByBrand } from "../data/models";
@@ -17,4 +17,4 @@ export const findModel = (brand: string, slug: string) =>
 
 // Те же правила, что и в поиске: модель ищется в названии объявления
 export const listingsFor = (brand: string, model?: string) =>
-  listings.filter((l) => l.brand === brand && (!model || l.title.toLowerCase().includes(model.toLowerCase())));
+  publishedListings.filter((l) => l.brand === brand && (!model || l.title.toLowerCase().includes(model.toLowerCase())));

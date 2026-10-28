@@ -1,11 +1,11 @@
 import { useTranslations } from "next-intl";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
-import VerifiedIcon from "@mui/icons-material/Verified";
 
 import { Link } from "@/i18n/navigation";
 import { initials } from "@/lib/utils";
 
+import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { Listing } from "../../data/listings";
 
 export default function SellerInfo({ listing }: { listing: Listing }) {
@@ -30,9 +30,7 @@ export default function SellerInfo({ listing }: { listing: Listing }) {
           ) : (
             <span className="truncate">{name}</span>
           )}
-          {isDealer && (
-            <VerifiedIcon sx={{ fontSize: 16 }} className="text-sky-600" titleAccess={t("verified")} />
-          )}
+          {listing.dealer && <VerifiedBadge slug={listing.dealer} />}
         </div>
 
         <div className="text-sm text-gray-500">

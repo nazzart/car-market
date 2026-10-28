@@ -6,6 +6,7 @@ import { Alert, Button, IconButton, InputAdornment, TextField } from "@mui/mater
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import { DEMO_PASSWORD, User, demoUsers, findDemoUser } from "../data/demoUsers";
@@ -19,8 +20,9 @@ type Props = {
 };
 
 const demoButtons = [
-  { type: "individual", icon: PersonOutlineIcon },
-  { type: "dealer", icon: StorefrontOutlinedIcon },
+  { id: "demo-individual", label: "types.individual", icon: PersonOutlineIcon },
+  { id: "demo-dealer", label: "types.dealer", icon: StorefrontOutlinedIcon },
+  { id: "demo-admin", label: "login.demoAdmin", icon: AdminPanelSettingsOutlinedIcon },
 ] as const;
 
 export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedIn }: Props) {
@@ -129,16 +131,16 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
           {t("login.demoText", { email: demoUsers[0].email, password: DEMO_PASSWORD })}
         </p>
 
-        <div className="grid grid-cols-2 gap-2 mt-3">
-          {demoButtons.map(({ type, icon: Icon }) => (
+        <div className="grid grid-cols-3 gap-2 mt-3">
+          {demoButtons.map(({ id, label, icon: Icon }) => (
             <button
-              key={type}
+              key={id}
               type="button"
-              onClick={() => signIn(demoUsers.find((u) => u.type === type)!)}
-              className="inline-flex items-center justify-center gap-1.5 h-10 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:border-gray-900 transition cursor-pointer"
+              onClick={() => signIn(demoUsers.find((u) => u.id === id)!)}
+              className="inline-flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 min-h-10 py-1.5 px-2 rounded-2xl sm:rounded-full border border-gray-200 bg-white text-xs sm:text-sm font-medium text-gray-900 hover:border-gray-900 transition cursor-pointer"
             >
               <Icon sx={{ fontSize: 18 }} />
-              {t(`types.${type}`)}
+              {t(label)}
             </button>
           ))}
         </div>

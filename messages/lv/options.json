@@ -92,10 +92,6 @@
       "label": "Sporta",
       "description": "Kupejas un kabrioleti no 300 ZS"
     },
-    "tuning": {
-      "label": "Tūnings",
-      "description": "Pārbūvētas automašīnas"
-    },
     "exotic": {
       "label": "Ekskluzīvi",
       "description": "Retas markas un auto no 100 000 €"

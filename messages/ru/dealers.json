@@ -50,5 +50,6 @@
     "opensTomorrow": "откроется завтра в {time}",
     "opensOn": "откроется {day} в {time}",
     "dayOff": "Выходной"
-  }
+  },
+  "verified": "Проверенный дилер"
 }

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
@@ -14,7 +15,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 import { Menu, MenuItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
 
-import { User } from "@/features/auth/data/demoUsers";
+import { User, isAdmin } from "@/features/auth/data/demoUsers";
 import { logout } from "@/features/auth/store";
 import { initials } from "@/lib/utils";
 
@@ -53,6 +54,7 @@ export default function UserMenu({ user, onLoginClick }: Props) {
       ? [{ href: `/dealers/${user.dealerSlug}`, label: t("account.dealerPage"), icon: StorefrontOutlinedIcon }]
       : []),
     { href: "/account/profile", label: t("account.settings"), icon: ManageAccountsOutlinedIcon },
+    ...(isAdmin(user) ? [{ href: "/admin", label: t("account.admin"), icon: AdminPanelSettingsOutlinedIcon }] : []),
   ];
 
   return (

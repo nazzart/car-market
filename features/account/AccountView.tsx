@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import BlockIcon from "@mui/icons-material/Block";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { Snackbar } from "@mui/material";
 import Image from "next/image";
 import AddIcon from "@mui/icons-material/Add";
-import VerifiedIcon from "@mui/icons-material/Verified";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
@@ -22,8 +23,13 @@ import { User } from "@/features/auth/data/demoUsers";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import { Listing, listings } from "@/features/cars/data/listings";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
+import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { dealers, formatHours } from "@/features/dealers/data/dealers";
 import { Link } from "@/i18n/navigation";
+
+import { accountOfUser } from "@/features/moderation/accounts";
+import { Moderation, useBlockedAccounts, useModeration } from "@/features/moderation/store";
+import { useVisibility } from "@/features/moderation/visibility";
 
 import ListingActions from "./listings/ListingActions";
 import { ListingStatus, setListingStatus, statusOf, useListingStatuses } from "./listings/statusStore";
@@ -38,13 +44,16 @@ const userListings = (user: User) =>
     ? listings.filter((l) => l.dealer === user.dealerSlug)
     : listings.filter((l) => user.listingIds?.includes(l.id));
 
-// Вкладки = статусы объявлений (удалённые не показываем)
-const tabs = ["active", "paused", "sold"] as const;
+// Вкладки = статусы объявлений (удалённые не показываем); «pending» и «blocked» — только если есть такие
+const tabs = ["active", "pending", "paused", "sold", "blocked"] as const;
+type Tab = (typeof tabs)[number];
 
 const statusBadge: Record<string, string> = {
   active: "bg-emerald-50 text-emerald-700",
+  pending: "bg-amber-50 text-amber-800",
   paused: "bg-gray-100 text-gray-600",
   sold: "bg-sky-50 text-sky-700",
+  blocked: "bg-red-50 text-red-700",
 };
 
 const primaryButton =
@@ -82,14 +91,20 @@ export function LoggedOut({ title }: { title?: string }) {
 function ListingRow({
   listing,
   status,
+  moderation,
+  pending,
   onStatusChange,
 }: {
   listing: Listing;
   status: ListingStatus;
+  moderation?: Moderation;
+  pending?: boolean;
   onStatusChange: (status: ListingStatus) => void;
 }) {
   const t = useTranslations("account.row");
+  const tReasons = useTranslations("moderation.reasons");
   const locale = useLocale();
+  const badge = moderation ? "blocked" : pending ? "pending" : status;
 
   return (
     <div className={`flex gap-4 p-3 rounded-2xl border border-gray-200 ${status === "active" ? "" : "bg-gray-50/60"}`}>
@@ -110,8 +125,8 @@ function ListingRow({
       <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${statusBadge[status]}`}>
-              {t(`status.${status}`)}
+            <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${statusBadge[badge]}`}>
+              {t(`status.${badge}`)}
             </span>
             <span className="text-xs text-gray-500">{formatAgo(listing.postedMinutesAgo, locale)}</span>
           </div>
@@ -120,6 +135,14 @@ function ListingRow({
             {listing.title}, {listing.year}
           </div>
           <div className="font-bold text-gray-900">{formatNumber(listing.price)} €</div>
+
+          {/* продавцу — причина блокировки */}
+          {moderation && (
+            <p className="mt-1.5 text-xs text-red-700">
+              {t("blockedReason", { reason: tReasons(moderation.reason) })}
+              {moderation.note && ` — ${moderation.note}`}
+            </p>
+          )}
 
           <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-gray-500">
             <span className="inline-flex items-center gap-1">
@@ -141,19 +164,59 @@ function ListingRow({
           <Link href={`/listing/${listing.id}`} className={`${secondaryButton} h-9 px-4`}>
             {t("open")}
           </Link>
-          <ListingActions title={listing.title} status={status} onChange={onStatusChange} />
+          {/* заблокированное модератором продавец не может снова активировать */}
+          {!moderation && !pending && <ListingActions title={listing.title} status={status} onChange={onStatusChange} />}
         </div>
       </div>
     </div>
   );
 }
 
+function Notice({
+  tone,
+  title,
+  children,
+  action,
+}: {
+  tone: "red" | "amber";
+  title: string;
+  children: React.ReactNode;
+  action?: { label: string; onClick: () => void };
+}) {
+  return (
+    <div
+      className={`flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl border ${
+        tone === "red" ? "bg-red-50 border-red-100 text-red-900" : "bg-amber-50 border-amber-100 text-amber-900"
+      }`}
+    >
+      {tone === "red" ? <BlockIcon className="shrink-0" /> : <HourglassEmptyIcon className="shrink-0" />}
+      <div className="flex-1">
+        <div className="font-semibold">{title}</div>
+        <div className="text-sm">{children}</div>
+      </div>
+      {action && (
+        <button
+          type="button"
+          onClick={action.onClick}
+          className="shrink-0 h-10 px-4 rounded-full bg-white border border-gray-200 hover:border-gray-900 text-sm font-semibold text-gray-900 transition cursor-pointer"
+        >
+          {action.label}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function AccountView() {
   const t = useTranslations("account");
+  const tReasons = useTranslations("moderation.reasons");
   const tOptions = useTranslations("options");
   const { user } = useAuth();
-  const [tab, setTab] = useState<(typeof tabs)[number]>("active");
+  const [tab, setTab] = useState<Tab>("active");
   const statuses = useListingStatuses();
+  const moderation = useModeration();
+  const { of } = useVisibility();
+  const blockedAccounts = useBlockedAccounts();
   const [undo, setUndo] = useState<{ id: string; prev: ListingStatus; next: ListingStatus } | null>(null);
 
   if (!user) return <LoggedOut />;
@@ -163,7 +226,17 @@ export default function AccountView() {
   const baseDealer = dealers.find((d) => d.slug === user.dealerSlug);
   const dealer = baseDealer && { ...baseDealer, ...user.dealerProfile };
   const all = userListings(user).filter((l) => statusOf(statuses, l.id) !== "deleted");
-  const byStatus = (s: ListingStatus) => all.filter((l) => statusOf(statuses, l.id) === s);
+  const tabOf = (id: string): Tab => {
+    const v = of(id);
+    if (v.moderation) return "blocked";
+    if (v.pending) return "pending";
+    return statusOf(statuses, id) as Tab;
+  };
+  const byStatus = (s: Tab) => all.filter((l) => tabOf(l.id) === s);
+  const visibleTabs = tabs.filter((item) => !["pending", "blocked"].includes(item) || byStatus(item).length > 0);
+  const accountBlock = blockedAccounts[accountOfUser(user)];
+  const blockedCount = byStatus("blocked").length;
+  const pendingCount = byStatus("pending").length;
   // статистика — только по активным
   const own = byStatus("active");
   const shown = byStatus(tab);
@@ -207,7 +280,7 @@ export default function AccountView() {
             <p className="text-sm text-gray-500">{isDealer ? t("header.dealerCabinet") : t("header.cabinet")}</p>
             <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-semibold tracking-tight">
               {isDealer ? user.name : t("header.hello", { name: user.name.split(" ")[0] })}
-              {isDealer && <VerifiedIcon className="text-sky-600" titleAccess={t("header.verified")} />}
+              {isDealer && user.dealerSlug && <VerifiedBadge slug={user.dealerSlug} size={24} />}
             </h1>
           </div>
         </div>
@@ -226,6 +299,34 @@ export default function AccountView() {
           </Link>
         </div>
       </header>
+
+      {/* Решения модератора — заметно, с причиной */}
+      <div className="space-y-3 mt-6 empty:hidden">
+        {accountBlock && (
+          <Notice tone="red" title={t("notices.accountTitle")}>
+            {t("notices.accountText", { reason: tReasons(accountBlock.reason) })}
+            {accountBlock.note && <> — {accountBlock.note}</>}
+          </Notice>
+        )}
+        {!accountBlock && blockedCount > 0 && (
+          <Notice
+            tone="red"
+            title={t("notices.blockedTitle", { count: blockedCount })}
+            action={{ label: t("notices.show"), onClick: () => setTab("blocked") }}
+          >
+            {t("notices.blockedText")}
+          </Notice>
+        )}
+        {pendingCount > 0 && (
+          <Notice
+            tone="amber"
+            title={t("notices.pendingTitle", { count: pendingCount })}
+            action={{ label: t("notices.show"), onClick: () => setTab("pending") }}
+          >
+            {t("notices.pendingText")}
+          </Notice>
+        )}
+      </div>
 
       {/* Stats */}
 
@@ -250,7 +351,7 @@ export default function AccountView() {
             </h2>
 
             <div className="flex p-1 rounded-xl bg-gray-100">
-              {tabs.map((item) => (
+              {visibleTabs.map((item) => (
                 <button
                   key={item}
                   type="button"
@@ -274,6 +375,8 @@ export default function AccountView() {
                   key={l.id}
                   listing={l}
                   status={statusOf(statuses, l.id)}
+                  moderation={moderation[l.id]}
+                  pending={tabOf(l.id) === "pending"}
                   onStatusChange={(next) => changeStatus(l.id, next)}
                 />
               ))}

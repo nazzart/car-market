@@ -64,7 +64,6 @@
     "new": "Jauna automašīna",
     "noAccidents": "Bez avārijām",
     "inspection": "TA līdz {date}",
-    "tuning": "Tūnings",
     "negotiable": "Cena runājama",
     "serviceBook": "Servisa grāmatiņa",
     "excellent": "Teicamā stāvoklī",
@@ -130,7 +129,15 @@
       "title": "Sludinājums dzēsts",
       "text": "Pārdevējs ir noņēmis šo sludinājumu."
     },
-    "similar": "Skatīt līdzīgus"
+    "similar": "Skatīt līdzīgus",
+    "blocked": {
+      "title": "Sludinājums bloķēts",
+      "text": "Moderators ir apturējis šī sludinājuma rādīšanu."
+    },
+    "pending": {
+      "title": "Sludinājums pārbaudē",
+      "text": "Jauns sludinājums — tas parādīsies pircējiem pēc moderatora pārbaudes."
+    }
   },
   "video": {
     "play": "Skatīties video",

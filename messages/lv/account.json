@@ -9,15 +9,20 @@
   "tabs": {
     "active": "Aktīvie",
     "paused": "Paslēptie",
-    "sold": "Pārdotie"
+    "sold": "Pārdotie",
+    "blocked": "Bloķētie",
+    "pending": "Pārbaudē"
   },
   "row": {
     "open": "Atvērt",
     "status": {
       "active": "Aktīvs",
       "paused": "Paslēpts",
-      "sold": "Pārdots"
-    }
+      "sold": "Pārdots",
+      "blocked": "Bloķēts",
+      "pending": "Gaida apstiprinājumu"
+    },
+    "blockedReason": "Bloķējis moderators: {reason}"
   },
   "stats": {
     "active": "{count, plural, zero {aktīvi sludinājumi} one {aktīvs sludinājums} other {aktīvi sludinājumi}}",
@@ -40,7 +45,9 @@
     "empty": {
       "active": "Nav aktīvu sludinājumu",
       "paused": "Nav paslēptu sludinājumu. Paslēpts sludinājums netiek rādīts meklēšanā, bet to var atkal aktivizēt.",
-      "sold": "Šeit būs automašīnas, kuras atzīmēsiet kā pārdotas"
+      "sold": "Šeit būs automašīnas, kuras atzīmēsiet kā pārdotas",
+      "blocked": "Nav bloķētu sludinājumu",
+      "pending": "Nav sludinājumu, kas gaida apstiprinājumu"
     }
   },
   "profile": {
@@ -157,5 +164,14 @@
       "sold": "Atzīmēts kā pārdots",
       "deleted": "Sludinājums dzēsts"
     }
+  },
+  "notices": {
+    "accountTitle": "Jūsu konts ir bloķēts",
+    "accountText": "Moderatora lēmums: {reason}. Jūsu sludinājumi nav redzami pircējiem. Ja uzskatāt, ka tā ir kļūda, rakstiet uz info@bestauto.lv.",
+    "blockedTitle": "{count, plural, zero {# sludinājumi bloķēti} one {# sludinājums bloķēts} other {# sludinājumi bloķēti}}",
+    "blockedText": "Moderators apturēja sludinājuma rādīšanu. Iemeslu redzēsiet pie sludinājuma — izlabojiet to vai sazinieties ar mums.",
+    "pendingTitle": "{count, plural, zero {# sludinājumi gaida} one {# sludinājums gaida} other {# sludinājumi gaida}} apstiprinājumu",
+    "pendingText": "Jauni sludinājumi parādās pircējiem pēc moderatora pārbaudes — parasti dažu stundu laikā.",
+    "show": "Skatīt"
   }
 }

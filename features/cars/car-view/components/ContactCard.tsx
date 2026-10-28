@@ -7,6 +7,7 @@ import { formatAgo, formatNumber } from "@/lib/utils";
 import { Listing } from "../../data/listings";
 import ContactPhoneButton from "./ContactPhoneButton";
 import SellerInfo from "./SellerInfo";
+import ReportButton from "@/features/moderation/ReportButton";
 
 // Цена + контакт продавца, «прилипает» к экрану на десктопе
 export default function ContactCard({ listing }: { listing: Listing }) {
@@ -41,6 +42,8 @@ export default function ContactCard({ listing }: { listing: Listing }) {
         {t("contact.listingNo", { id: listing.id })} · {formatAgo(listing.postedMinutesAgo, locale)}
         {listing.views && ` · ${tCommon("views", { count: listing.views })}`}
       </p>
+
+      <ReportButton listingId={listing.id} className="mt-2 px-2" />
     </div>
   );
 }

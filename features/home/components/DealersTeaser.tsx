@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import VerifiedIcon from "@mui/icons-material/Verified";
 
+import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
 import { dealers } from "@/features/dealers/data/dealers";
 import { Link } from "@/i18n/navigation";
@@ -48,7 +48,7 @@ export default function DealersTeaser() {
               <div className="min-w-0">
                 <div className="flex items-center gap-1">
                   <span className="font-semibold text-gray-900 truncate">{d.name}</span>
-                  {d.type === "official" && <VerifiedIcon sx={{ fontSize: 16 }} className="text-sky-600 shrink-0" />}
+                  <VerifiedBadge slug={d.slug} />
                 </div>
                 <div className="text-sm text-gray-500 truncate">
                   {cityLabel(tOptions, d.city)} · {d.type === "official" ? tDealers("official") : tDealers("used")}

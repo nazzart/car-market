@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import StarIcon from "@mui/icons-material/Star";
-import VerifiedIcon from "@mui/icons-material/Verified";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import DirectionsOutlinedIcon from "@mui/icons-material/DirectionsOutlined";
@@ -18,6 +17,7 @@ import { listings } from "@/features/cars/data/listings";
 import DealerMiniMap from "@/features/dealers/components/DealerMiniMap";
 import { dealers, hasRating } from "@/features/dealers/data/dealers";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import OpenStatus, { WeekHours } from "@/features/dealers/components/OpenStatus";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import { Link } from "@/i18n/navigation";
@@ -101,9 +101,7 @@ export default async function DealerPage({ params }: Props) {
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{dealer.name}</h1>
-            {official && (
-              <VerifiedIcon className="text-sky-600" titleAccess={t("official")} />
-            )}
+            <VerifiedBadge slug={dealer.slug} size={24} />
           </div>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-gray-600">

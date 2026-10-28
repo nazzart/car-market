@@ -8,6 +8,7 @@ import CarCard from "@/features/latest-cars/components/CarCard";
 import { FILTER_KEYS, FilterKey, chipLabel } from "../../config/filterOptions";
 import { Listing, listings } from "../../data/listings";
 import { listingDistance, useOrigin } from "../../lib/location";
+import { useCollectionMembership } from "@/features/moderation/visibility";
 import { filterListings } from "../../lib/filterListings";
 import { useCarFilters } from "../hooks/useCarFilters";
 
@@ -21,6 +22,7 @@ export default function EmptyResults() {
   const { params, updateFilter, resetFilters } = useCarFilters();
   const origin = useOrigin();
   const distanceTo = origin ? (l: Listing) => listingDistance(l, origin) : undefined;
+  const inCollection = useCollectionMembership();
 
   const suggestions = FILTER_KEYS.filter((key) => params.get(key))
     .map((key) => {
@@ -31,7 +33,7 @@ export default function EmptyResults() {
       return {
         key,
         label: chipLabel(key as FilterKey, params.get(key)!, tOptions, tChips),
-        count: filterListings(listings, without, distanceTo).length,
+        count: filterListings(listings, without, { distanceTo, inCollection }).length,
       };
     })
     .filter((s) => s.count > 0)

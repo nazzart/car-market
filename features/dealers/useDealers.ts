@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 
 import { useAuth } from "@/features/auth/store";
+import { useBlockedAccounts } from "@/features/moderation/store";
 
 import { dealers } from "./data/dealers";
 
@@ -10,6 +11,7 @@ import { dealers } from "./data/dealers";
 // TODO: заменить на запрос к API, когда профиль дилера будет сохраняться в БД
 export function useDealers() {
   const { user } = useAuth();
+  const blocked = useBlockedAccounts();
   const profile = user?.dealerProfile;
   const slug = user?.dealerSlug;
   const name = user?.name;
@@ -17,9 +19,11 @@ export function useDealers() {
 
   return useMemo(
     () =>
-      profile && slug
+      // заблокированные модератором дилеры не показываются в каталоге и на карте
+      (profile && slug
         ? dealers.map((d) => (d.slug === slug ? { ...d, ...profile, name: name ?? d.name, phone: phone ?? d.phone } : d))
-        : dealers,
-    [profile, slug, name, phone]
+        : dealers
+      ).filter((d) => !blocked[`dealer:${d.slug}`]),
+    [profile, slug, name, phone, blocked]
   );
 }

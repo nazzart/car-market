@@ -22,6 +22,7 @@ import ListingStatusNotice from "@/features/cars/car-view/components/ListingStat
 import ConditionSummary from "@/features/cars/car-view/components/ConditionSummary";
 import ListingVideo from "@/features/cars/car-view/components/ListingVideo";
 import { youtubeId } from "@/lib/youtube";
+import ReportButton from "@/features/moderation/ReportButton";
 import SectionNav from "@/features/cars/car-view/components/SectionNav";
 import SpecsTable from "@/features/cars/car-view/components/SpecsTable";
 import { Link } from "@/i18n/navigation";
@@ -179,6 +180,7 @@ export default async function ListingPage({ params }: Props) {
           <div className="lg:hidden">
             <Section id="seller" title={t("sections.seller")}>
               <SellerInfo listing={listing} />
+              <ReportButton listingId={listing.id} className="mt-5" />
             </Section>
           </div>
         </div>

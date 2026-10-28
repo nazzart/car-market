@@ -18,6 +18,7 @@ export type User = {
   dealerSlug?: string; // для дилера — его страница /dealers/[slug]
   listingIds?: string[]; // объявления частного лица
   dealerProfile?: DealerProfile;
+  role?: "admin"; // модератор: доступ к /admin
 };
 
 export const DEMO_PASSWORD = "demo1234";
@@ -31,7 +32,7 @@ export const demoUsers: User[] = [
     phone: "+371 2000 3001",
     city: "riga",
     since: 2023,
-    listingIds: ["2", "9"],
+    listingIds: ["2", "9", "13"],
   },
   {
     id: "demo-dealer",
@@ -43,7 +44,19 @@ export const demoUsers: User[] = [
     since: 2016,
     dealerSlug: "baltic-auto",
   },
+  {
+    id: "demo-admin",
+    type: "individual",
+    role: "admin",
+    name: "Moderators",
+    email: "admin@demo.lv",
+    phone: "+371 2000 0000",
+    city: "riga",
+    since: 2026,
+  },
 ];
+
+export const isAdmin = (user: User | null | undefined) => user?.role === "admin";
 
 export const findDemoUser = (email: string, password: string) =>
   password === DEMO_PASSWORD

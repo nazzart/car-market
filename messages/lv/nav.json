@@ -16,7 +16,8 @@
     "settings": "Profila iestatījumi",
     "logout": "Iziet",
     "individual": "Privātpersona",
-    "dealer": "Dīleris"
+    "dealer": "Dīleris",
+    "admin": "Administrācija"
   },
   "footer": {
     "tagline": "Jaunu un lietotu automašīnu pirkšana un pārdošana Latvijā.",

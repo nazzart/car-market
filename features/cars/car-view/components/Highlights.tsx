@@ -4,7 +4,6 @@ import FlightLandOutlinedIcon from "@mui/icons-material/FlightLandOutlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import NewReleasesOutlinedIcon from "@mui/icons-material/NewReleasesOutlined";
-import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
 
 import { useTranslations } from "next-intl";
 
@@ -36,7 +35,6 @@ export default function Highlights({ listing }: { listing: Listing }) {
     listing.service === "required" && { icon: BuildCircleOutlinedIcon, text: t("needsService"), tone: WARN },
     listing.overallCondition === "repair" && { icon: BuildCircleOutlinedIcon, text: tOptions("overallCondition.repair"), tone: WARN },
     listing.mileageLatvia === "none" && { icon: FlightLandOutlinedIcon, text: t("imported"), tone: NEUTRAL },
-    listing.tuned && { icon: BuildOutlinedIcon, text: t("tuning"), tone: "bg-amber-50 text-amber-800 border-amber-100" },
   ].filter(Boolean) as { icon: typeof VerifiedOutlinedIcon; text: string; tone: string }[];
 
   if (items.length === 0) return null;

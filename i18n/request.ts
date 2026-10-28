@@ -19,6 +19,7 @@ const namespaces = [
   "favorites",
   "compare",
   "info",
+  "moderation",
 ] as const;
 
 export default getRequestConfig(async ({ requestLocale }) => {

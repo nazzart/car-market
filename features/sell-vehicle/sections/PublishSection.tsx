@@ -5,6 +5,7 @@ import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import { useTranslations } from "next-intl";
 
+import { cityLabel } from "@/lib/cities";
 import { formatNumber } from "@/lib/utils";
 
 import { SellFormData } from "../types";
@@ -20,6 +21,7 @@ type Props = {
 export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: Props) {
   const t = useTranslations("sell.publish");
   const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
 
   const photos: string[] = data.photos ?? [];
   const title = [data.brand, data.model].filter(Boolean).join(" ") || t("yourCar");
@@ -57,7 +59,7 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
           <div className="text-sm text-gray-500 mt-1">
             {[
               data.mileage && `${formatNumber(Number(data.mileage))} ${tCommon("units.km")}`,
-              data.sellerCity,
+              data.sellerCity && cityLabel(tOptions, data.sellerCity),
               tCommon("photos", { count: photos.length }),
             ]
               .filter(Boolean)

@@ -31,6 +31,7 @@ export type Listing = {
   sellerType: SellerType;
   sellerName?: string;
   dealer?: string; // slug из features/dealers/data/dealers.ts
+  contactId?: string; // контактное лицо дилера (DealerContact.id); нет — основной телефон компании
   city: string; // ключ города: messages → options.cities
   postedMinutesAgo: number;
   phone: string;
@@ -193,6 +194,7 @@ export const listings: Listing[] = [
   },
   {
     id: "4",
+    contactId: "c-janis",
     overallCondition: "excellent",
     service: "recent",
     serviceBook: true,
@@ -351,6 +353,7 @@ export const listings: Listing[] = [
   },
   {
     id: "10",
+    contactId: "c-elina",
     overallCondition: "average",
     service: "partial",
     serviceBook: false,

@@ -11,6 +11,9 @@ const CITY_NAMES_LV: Record<string, string> = {
   ventspils: "Ventspils",
 };
 
+// Города из списка (ключи) — для выбора города в формах
+export const CITY_KEYS = Object.keys(CITY_NAMES_LV);
+
 // Город хранится ключом, если он есть в списке, иначе латышским названием («Ķekava»)
 export const cityFromName = (name: string) =>
   Object.keys(CITY_NAMES_LV).find((key) => CITY_NAMES_LV[key] === name) ?? name;

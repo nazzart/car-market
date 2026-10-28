@@ -41,11 +41,11 @@ export type SellFormData = {
   // описание
   description: string;
   videoUrl: string;
-  // контакты
-  sellerName: string;
+  // контакты (из аккаунта; телефон и место авто можно изменить для объявления)
+  account: string; // id вошедшего пользователя
   sellerPhone: string;
-  sellerEmail: string;
-  sellerCity: string;
+  sellerCity: string; // ключ города (или латышское название для дилера вне списка)
+  contactId: string; // дилер: контактное лицо, "" — телефон компании
   // фото (адреса превью)
   photos: string[];
 };

@@ -4,7 +4,7 @@ import type { Dealer } from "@/features/dealers/data/dealers";
 
 // Изменения, которые дилер сделал в настройках (поверх данных из dealers.ts)
 export type DealerProfile = Partial<
-  Pick<Dealer, "type" | "brands" | "regNumber" | "description" | "address" | "city" | "lat" | "lng" | "hours">
+  Pick<Dealer, "type" | "brands" | "contacts" | "regNumber" | "description" | "address" | "city" | "lat" | "lng" | "hours">
 >;
 
 export type User = {

@@ -34,6 +34,14 @@ export const formatHours = (hours: OpeningHours, dayLabel: (day: string) => stri
     .join(", ");
 };
 
+// Контактное лицо дилера (менеджер), которого можно указать у конкретного объявления
+export type DealerContact = {
+  id: string;
+  name: string;
+  phone: string;
+  role?: string; // «Pārdošanas konsultants» — как указал дилер
+};
+
 export type Dealer = {
   slug: string;
   name: string;
@@ -43,7 +51,8 @@ export type Dealer = {
   address: string; // официальный адрес на латышском — не переводится
   lat: number;
   lng: number;
-  phone: string;
+  phone: string; // основной телефон компании — контакт по умолчанию
+  contacts?: DealerContact[];
   regNumber?: string; // регистрационный номер (11 цифр)
   verified?: boolean; // модератор сверил компанию с регистром предприятий → значок «Проверенный дилер»
   hours: OpeningHours;
@@ -58,6 +67,10 @@ export type Dealer = {
 export const dealers: Dealer[] = [
   {
     slug: "baltic-auto",
+    contacts: [
+      { id: "c-janis", name: "Jānis Kalniņš", phone: "+371 2000 2101", role: "Pārdošanas konsultants" },
+      { id: "c-elina", name: "Elīna Ozola", phone: "+371 2000 2102", role: "Pārdošanas vadītāja" },
+    ],
     verified: true,
     regNumber: "40003512345",
     name: "Baltic Auto",

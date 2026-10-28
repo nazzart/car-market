@@ -86,7 +86,8 @@
     "seller": "Pārdevējs",
     "verified": "Pārbaudīts dīleris",
     "since": "portālā kopš {year}. gada",
-    "dealerPage": "Dīlera lapa un visi auto"
+    "dealerPage": "Dīlera lapa un visi auto",
+    "contactPerson": "Kontaktpersona"
   },
   "similar": {
     "title": "Līdzīgi sludinājumi",

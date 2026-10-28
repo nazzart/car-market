@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 
+import { telHref } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
 // primary — главная кнопка на странице объявления и дилера; outline — в списках и карточках
@@ -32,7 +33,7 @@ export default function PhoneButton({ phone, variant = "outline", className }: P
 
   if (shown) {
     return (
-      <a href={`tel:${phone.replace(/\s/g, "")}`} className={classes}>
+      <a href={telHref(phone)} className={classes}>
         <PhoneOutlinedIcon fontSize="small" />
         {phone}
       </a>

@@ -86,10 +86,11 @@ export const sections = [
     component: ContactInfoSection,
     required: true,
     fields: [
-      { name: "sellerName", rules: ["required"] },
+      // аккаунт продавца (заполняется сам после входа); имя и e-mail — из аккаунта
+      { name: "account", rules: ["required"] },
       { name: "sellerPhone", rules: ["required", "phone"] },
-      { name: "sellerEmail", rules: ["required", "email"] },
       { name: "sellerCity", rules: ["required"] },
+      { name: "contactId" }, // дилер: контактное лицо
     ],
   },
   {

@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { formatAgo, formatNumber } from "@/lib/utils";
 
 import { Listing } from "../../data/listings";
-import ContactPhoneButton from "./ContactPhoneButton";
+import ListingPhone, { ContactPerson } from "./ListingPhone";
 import SellerInfo from "./SellerInfo";
 import ReportButton from "@/features/moderation/ReportButton";
 
@@ -26,7 +26,8 @@ export default function ContactCard({ listing }: { listing: Listing }) {
           <div className="text-sm text-emerald-700 mt-1">{t("negotiable")}</div>
         )}
 
-        <ContactPhoneButton phone={listing.phone} className="w-full mt-5" />
+        <ListingPhone listing={listing} variant="primary" className="w-full mt-5" />
+        <ContactPerson listing={listing} className="mt-3 justify-center" />
 
         <div className="border-t border-gray-100 my-5" />
 

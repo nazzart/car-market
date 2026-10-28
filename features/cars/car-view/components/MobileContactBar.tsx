@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/utils";
 
 import { Listing } from "../../data/listings";
-import ContactPhoneButton from "./ContactPhoneButton";
+import ListingPhone from "./ListingPhone";
 
 // Фиксированная панель внизу экрана на телефоне — цена и звонок всегда под рукой
 export default function MobileContactBar({ listing }: { listing: Listing }) {
@@ -21,7 +21,7 @@ export default function MobileContactBar({ listing }: { listing: Listing }) {
           )}
         </div>
 
-        <ContactPhoneButton phone={listing.phone} className="flex-1" />
+        <ListingPhone listing={listing} variant="primary" className="flex-1" />
       </div>
     </div>
   );

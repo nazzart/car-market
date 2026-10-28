@@ -22,12 +22,16 @@ import { isEmail } from "@/features/auth/ui";
 import { brands } from "@/features/brands/data/brands";
 import { ChipGroup } from "@/features/cars/car-list/components/ui";
 import { Dealer, OpeningHours, dealers } from "@/features/dealers/data/dealers";
+import { listings } from "@/features/cars/data/listings";
+import { assignContact, useContactAssignments } from "@/features/dealers/contacts";
 import { Link } from "@/i18n/navigation";
-import { cityNameLv } from "@/lib/cities";
+import { CITY_KEYS, cityNameLv } from "@/lib/cities";
+import { isPhone } from "@/lib/phone";
 
 import { LoggedOut } from "../AccountView";
 import AddressField from "./AddressField";
 import { AddressResult, parseAddress, reverseGeocode } from "./geocoding";
+import ContactsEditor from "./ContactsEditor";
 import HoursEditor, { hoursInvalid } from "./HoursEditor";
 import SettingsCard from "./SettingsCard";
 
@@ -37,9 +41,7 @@ const LocationPicker = dynamic(() => import("./LocationPicker"), {
   loading: () => <div className="w-full h-full bg-gray-100 animate-pulse" />,
 });
 
-const CITY_KEYS = ["riga", "jurmala", "jelgava", "daugavpils", "liepaja", "ogre", "valmiera", "ventspils"];
 
-const isPhone = (value: string) => /^\+?[\d\s]{7,16}$/.test(value.trim());
 const isRegNumber = (value: string) => /^\d{11}$/.test(value.replace(/\s/g, ""));
 // Адрес хранится на латышском: кириллица — признак, что его ввели по-русски
 const hasCyrillic = (value: string) => /[Ѐ-ӿ]/.test(value);
@@ -370,7 +372,17 @@ function DealerSettings({ user }: { user: User }) {
     lat: dealer.lat,
     lng: dealer.lng,
     hours: dealer.hours as OpeningHours,
+    contacts: dealer.contacts ?? [],
+    // «контакт → кому передать его объявления» — применяется при сохранении
+    reassign: {} as Record<string, string>,
   });
+
+  // объявления дилера и кто за ними закреплён сейчас
+  const assignments = useContactAssignments();
+  const dealerListings = listings.filter((l) => l.dealer === user.dealerSlug);
+  const contactOf = (listingId: string, fallback?: string) => assignments[listingId] ?? fallback;
+  const contactUsage = (contactId: string) =>
+    dealerListings.filter((l) => contactOf(l.id, l.contactId) === contactId).length;
 
   const parsedAddress = parseAddress(form.address);
 
@@ -446,8 +458,16 @@ function DealerSettings({ user }: { user: User }) {
         lat: form.lat,
         lng: form.lng,
         hours: form.hours,
+        contacts: form.contacts,
       },
     });
+    // объявления удалённых контактов — тому, кого выбрал дилер
+    for (const [fromId, toId] of Object.entries(form.reassign)) {
+      const ids = dealerListings.filter((l) => contactOf(l.id, l.contactId) === fromId).map((l) => l.id);
+      if (ids.length) assignContact(ids, toId);
+    }
+    set("reassign")({});
+
     markSaved();
     setToast("saved");
   };
@@ -601,6 +621,18 @@ function DealerSettings({ user }: { user: User }) {
               </Button>
             </div>
           )}
+        </SettingsCard>
+
+        {/* Contact persons */}
+
+        <SettingsCard title={t("contacts.persons.title")} description={t("contacts.persons.description")}>
+          <ContactsEditor
+            contacts={form.contacts}
+            companyPhone={form.phone}
+            onChange={set("contacts")}
+            usage={contactUsage}
+            onReassign={(fromId, toId) => set("reassign")({ ...form.reassign, [fromId]: toId })}
+          />
         </SettingsCard>
 
         {/* Hours */}

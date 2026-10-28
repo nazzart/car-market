@@ -114,10 +114,23 @@
     "videoError": "Ievadiet saiti uz YouTube video"
   },
   "contact": {
-    "name": "Vārds",
+    "loginTitle": "Ienāciet, lai publicētu sludinājumu",
+    "loginText": "Sludinājums tiks piesaistīts jūsu kontam — tur varēsiet to rediģēt, paslēpt vai atzīmēt kā pārdotu. Aizpildītie dati saglabāsies.",
+    "login": "Ienākt vai reģistrēties",
+    "loginRequired": "Lai turpinātu, ienāciet savā kontā",
+    "fromCompany": "no uzņēmuma profila",
+    "whoAnswers": "Kas atbild uz zvaniem par šo auto?",
+    "companyPhone": "Uzņēmuma tālrunis",
+    "addContact": "Pievienot kontaktpersonu",
+    "fromAccount": "Kontaktinformācija no jūsu konta",
+    "editProfile": "Rediģēt profilu",
     "phone": "Tālrunis",
-    "email": "E-pasts",
-    "city": "Pilsēta"
+    "carLocation": "Kur atrodas automašīna",
+    "phoneError": "Ievadiet tālruņa numuru, piem. +371 2000 0000",
+    "changeForListing": "Mainīt šim sludinājumam",
+    "useAccount": "Izmantot konta datus",
+    "noCompanyPhone": "Jūsu uzņēmuma profilā vēl nav tālruņa. Norādiet to — pircēji zvanīs uz šo numuru.",
+    "savedToProfile": "Tālrunis tiks saglabāts uzņēmuma profilā"
   },
   "photos": {
     "description": "Pirmais foto būs sludinājuma titulattēls",

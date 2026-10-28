@@ -9,7 +9,7 @@ import { Listing } from "../../data/listings";
 import { isFresh } from "../../data/isFresh";
 import { roundKm } from "../../lib/location";
 import ListingGallery from "./ListingGallery";
-import PhoneButton from "./PhoneButton";
+import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 
 const badgeClass = "px-2 py-0.5 rounded-md text-xs font-medium";
 
@@ -117,7 +117,7 @@ export default function ListingRow({ listing, distance }: { listing: Listing; di
             {listing.negotiable && <div className="text-xs font-medium text-emerald-700">{t("negotiable")}</div>}
           </div>
 
-          <PhoneButton phone={listing.phone} />
+          <ListingPhone listing={listing} />
         </div>
       </div>
     </article>

@@ -95,7 +95,29 @@
       "email": "E-pasts",
       "emailError": "Ievadiet derīgu e-pastu",
       "phone": "Tālrunis",
-      "phoneError": "Formāts: +371 2000 0000"
+      "phoneError": "Formāts: +371 2000 0000",
+      "persons": {
+        "title": "Kontaktpersonas",
+        "description": "Pārdošanas konsultanti, kurus var norādīt pie konkrēta sludinājuma. Pircēji redzēs viņu vārdu un tālruni.",
+        "company": "Uzņēmuma tālrunis",
+        "default": "Pēc noklusējuma",
+        "name": "Vārds, uzvārds",
+        "phone": "Tālrunis",
+        "phoneError": "Ievadiet tālruņa numuru, piem. +371 2000 0000",
+        "role": "Amats (nav obligāti)",
+        "rolePlaceholder": "Piem. pārdošanas konsultants",
+        "cancel": "Atcelt",
+        "add": "Pievienot",
+        "saveEdit": "Saglabāt",
+        "addPerson": "Pievienot kontaktpersonu",
+        "edit": "Rediģēt",
+        "remove": "Dzēst",
+        "listings": "{count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}}",
+        "removeTitle": "Dzēst kontaktpersonu {name}?",
+        "removeText": "Šai personai piesaistīti {count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}}. Kam tos nodot?",
+        "reassignTo": "Nodot sludinājumus",
+        "removeConfirm": "Dzēst un nodot"
+      }
     },
     "location": {
       "title": "Atrašanās vieta",

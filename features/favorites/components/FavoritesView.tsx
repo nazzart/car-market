@@ -12,7 +12,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useLocale, useTranslations } from "next-intl";
 
 import { openAuthModal, useAuth } from "@/features/auth/store";
-import PhoneButton from "@/features/cars/car-list/components/PhoneButton";
+import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { inputClass } from "@/features/cars/car-list/components/ui";
 import { Listing, listings } from "@/features/cars/data/listings";
 import CollectionPills from "@/features/collections/components/CollectionPills";
@@ -266,7 +266,7 @@ function FavoriteCard({
           </div>
 
           <div className="hidden sm:block">
-            <PhoneButton phone={listing.phone} />
+            <ListingPhone listing={listing} />
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { isPhone } from "@/lib/phone";
 import { youtubeId } from "@/lib/youtube";
 
 export const rulesMap: Record<string, (value: unknown) => boolean> = {
@@ -10,7 +11,7 @@ export const rulesMap: Record<string, (value: unknown) => boolean> = {
   // остальные правила проверяют только заполненные строки; пустое поле — дело правила required
   email: (v) => typeof v !== "string" || !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
 
-  phone: (v) => typeof v !== "string" || !v || /^\+?[0-9]{7,15}$/.test(v),
+  phone: (v) => typeof v !== "string" || !v || isPhone(v),
 
   youtube: (v) => typeof v !== "string" || !v || youtubeId(v) !== null,
 

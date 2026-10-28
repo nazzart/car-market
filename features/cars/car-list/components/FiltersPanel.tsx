@@ -20,6 +20,7 @@ import {
   transmissions,
 } from "../../config/filterOptions";
 import { ChipGroup, FilterSection, Segmented, Select, inputClass } from "./ui";
+import LocationFilter from "./LocationFilter";
 
 const brandOptions = [...brands]
   .sort((a, b) => a.name.localeCompare(b.name))
@@ -130,6 +131,10 @@ export default function FiltersPanel() {
             disabled={!brand || models.length === 0}
           />
         </div>
+      </FilterSection>
+
+      <FilterSection title={t("location")} active={isActive(["radius"])}>
+        <LocationFilter />
       </FilterSection>
 
       <FilterSection title={t("price")} active={isActive(["priceFrom", "priceTo"])}>

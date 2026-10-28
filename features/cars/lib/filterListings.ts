@@ -5,8 +5,11 @@ import { postedPeriods } from "../config/filterOptions";
 
 type Params = { get: (key: string) => string | null };
 
+// distanceTo — расстояние до объявления в км (если посетитель указал, где он); иначе радиус игнорируется
+type DistanceFn = (listing: Listing) => number | null;
+
 // Временная фильтрация на клиенте — позже это будет запрос к API
-export function filterListings(listings: Listing[], params: Params) {
+export function filterListings(listings: Listing[], params: Params, distanceTo?: DistanceFn) {
   const num = (key: string) => {
     const value = params.get(key);
     return value ? Number(value) : null;
@@ -29,6 +32,12 @@ export function filterListings(listings: Listing[], params: Params) {
   const model = params.get("model")?.toLowerCase();
   const posted = postedPeriods[params.get("posted") as keyof typeof postedPeriods];
   const flag = (key: string) => params.get(key) === "1";
+  const radius = distanceTo ? num("radius") : null;
+  const within = (l: Listing) => {
+    if (radius === null) return true;
+    const km = distanceTo!(l);
+    return km !== null && km <= radius;
+  };
 
   const result = listings.filter(
     (l) =>
@@ -52,7 +61,8 @@ export function filterListings(listings: Listing[], params: Params) {
       (!flag("withPhotos") || l.images.length > 0) &&
       (!flag("noAccidents") || Boolean(l.noAccidents)) &&
       (!flag("oneOwner") || l.owners === 1) &&
-      (!flag("serviceBook") || Boolean(l.serviceBook))
+      (!flag("serviceBook") || Boolean(l.serviceBook)) &&
+      within(l)
   );
 
   switch (params.get("sort")) {
@@ -64,6 +74,8 @@ export function filterListings(listings: Listing[], params: Params) {
       return result.sort((a, b) => a.mileage - b.mileage);
     case "year_desc":
       return result.sort((a, b) => b.year - a.year);
+    case "distance":
+      return distanceTo ? result.sort((a, b) => (distanceTo(a) ?? 1e9) - (distanceTo(b) ?? 1e9)) : result;
     default:
       return result;
   }

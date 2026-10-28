@@ -12,7 +12,7 @@ export const sellerTypes = ["private", "dealer"];
 export const conditions = ["used", "new"];
 
 // "" — сортировка по умолчанию (переводится как options.sort.newest)
-export const sortValues = ["", "price_asc", "price_desc", "mileage_asc", "year_desc"];
+export const sortValues = ["", "price_asc", "price_desc", "mileage_asc", "year_desc", "distance"];
 
 // Ключи URL, которые считаются фильтрами (sort и view — нет)
 export const FILTER_KEYS = [
@@ -37,7 +37,11 @@ export const FILTER_KEYS = [
   "noAccidents",
   "oneOwner",
   "serviceBook",
+  "radius",
 ] as const;
+
+// Радиус поиска от посетителя, км
+export const radiusOptions = ["25", "50", "100", "200"];
 
 // «Размещено за…»: значение в URL → минуты
 export const postedPeriods = { "1d": 24 * 60, "3d": 3 * 24 * 60, "7d": 7 * 24 * 60 } as const;
@@ -91,6 +95,8 @@ export const chipLabel = (
       return tOptions(`colors.${value}`);
     case "posted":
       return tChips(`posted.${value}`);
+    case "radius":
+      return tChips("radius", { value });
     case "withPhotos":
     case "noAccidents":
     case "oneOwner":

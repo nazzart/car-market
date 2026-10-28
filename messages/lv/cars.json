@@ -36,7 +36,8 @@
       "1d": "24 h",
       "3d": "3 d.",
       "7d": "7 d."
-    }
+    },
+    "radius": "līdz {value} km"
   },
   "panel": {
     "condition": "Stāvoklis",
@@ -64,7 +65,8 @@
     "history": "Vēsture un stāvoklis",
     "color": "Krāsa",
     "posted": "Ievietots",
-    "anyTime": "Jebkad"
+    "anyTime": "Jebkad",
+    "location": "Atrašanās vieta"
   },
   "row": {
     "new": "Jauns",
@@ -76,7 +78,8 @@
     "oneOwner": "1 īpašnieks",
     "negotiable": "Cena runājama",
     "serviceBook": "Servisa grāmatiņa",
-    "fresh": "Tikko ievietots"
+    "fresh": "Tikko ievietots",
+    "distance": "{km} km no jums"
   },
   "moreFilters": "Vairāk filtru",
   "metaTitle": "{title} — {results} | bestauto.lv",
@@ -102,5 +105,16 @@
     "otherBrands": "Citas populāras markas",
     "metaTitle": "{name} pārdošanā Latvijā — {count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}} | bestauto.lv",
     "metaDescription": "Pērciet {name} Latvijā: lietotas un jaunas automašīnas no privātpersonām un dīleriem. Cenas, nobraukums, stāvoklis un foto."
+  },
+  "location": {
+    "useMine": "Noteikt manu atrašanās vietu",
+    "locating": "Nosaka atrašanās vietu…",
+    "error": "Neizdevās noteikt atrašanās vietu. Izvēlieties pilsētu.",
+    "orCity": "vai izvēlieties pilsētu",
+    "myLocation": "Mana atrašanās vieta",
+    "near": "netālu no: {city}",
+    "change": "Mainīt atrašanās vietu",
+    "anywhere": "Visur",
+    "radius": "Rādiuss, km"
   }
 }

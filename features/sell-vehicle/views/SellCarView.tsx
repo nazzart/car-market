@@ -13,30 +13,29 @@ import { PublishSection } from "../sections/PublishSection";
 import { sections } from "../config/sectionsConfig";
 import { getInitialFormData, getSectionsState } from "../utils/sectionUtils";
 import { validateAndScroll } from "../lib/formSubmit";
+import { SellFormData, UpdateField } from "../types";
 
 export function SellCarView() {
   const t = useTranslations("sell");
   const { visibleSections, revealSection } = useProgressiveSections(sections);
 
-  const [formData, setFormData] = useState(() =>
-    getInitialFormData(sections)
-  );
+  const [formData, setFormData] = useState(() => getInitialFormData<SellFormData>(sections));
 
-  const updateField = (field: string, value: any) => {
+  const updateField: UpdateField = (field, value) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  const sectionsState = getSectionsState(sections, formData);
+  const sectionsState = getSectionsState(sections, formData as Record<string, unknown>);
 
   const handleSubmit = () => {
     const isOk = validateAndScroll(sections, formData);
 
     if (!isOk) return;
 
-    console.log("SUBMIT", formData);
+    // TODO: отправка объявления на сервер (API), затем переход на страницу «объявление на проверке»
   };
 
   const lastSection = sections.at(-1);

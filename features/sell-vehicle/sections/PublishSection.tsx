@@ -7,8 +7,10 @@ import { useTranslations } from "next-intl";
 
 import { formatNumber } from "@/lib/utils";
 
+import { SellFormData } from "../types";
+
 type Props = {
-  data: Record<string, any>;
+  data: SellFormData;
   requiredDone: number;
   requiredTotal: number;
   onSubmit?: () => void;

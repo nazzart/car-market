@@ -1,5 +1,8 @@
 import { validateField } from "./validationRules";
 
+// Значения формы по имени поля (форма собирается из конфига секций)
+type FormValues = Record<string, unknown>;
+
 export type FieldConfig = {
   name: string;
   rules?: string[];
@@ -15,7 +18,7 @@ export type SectionConfig = {
 // 🧠 проверка одной секции
 export const validateSection = (
   fields: FieldConfig[],
-  data: Record<string, any>
+  data: FormValues
 ) => {
   const results = fields.map((field) => {
     const value = data[field.name];
@@ -40,8 +43,9 @@ export const validateSection = (
 };
 
 // 🧠 начальные значения формы из конфига секций
-export const getInitialFormData = (sections: SectionConfig[]) => {
-  const data: Record<string, any> = {};
+export const getInitialFormData = <T>(sections: SectionConfig[]): T => {
+  const data: FormValues = {};
+
 
   for (const section of sections) {
     for (const field of section.fields) {
@@ -49,13 +53,14 @@ export const getInitialFormData = (sections: SectionConfig[]) => {
     }
   }
 
-  return data;
+  // конфиг секций описывает все поля формы — значит, объект соответствует T
+  return data as T;
 };
 
 // 🧠 состояние всех секций (для sidebar)
 export const getSectionsState = (
   sections: SectionConfig[],
-  formData: Record<string, any>
+  formData: FormValues
 ) => {
   const state: Record<string, boolean> = {};
 
@@ -76,7 +81,7 @@ export const getSectionsState = (
 // 🔥 найти первую невалидную обязательную секцию (для submit)
 export const findFirstInvalidSection = (
   sections: SectionConfig[],
-  formData: Record<string, any>
+  formData: FormValues
 ) => {
   return sections.find((section) => {
     if (!section.required) return false;

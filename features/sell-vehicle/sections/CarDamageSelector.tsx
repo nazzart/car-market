@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import {
   Popover,
@@ -30,7 +31,7 @@ function DamagePoint({
   onClick,
 }: {
   damageCount?: number;
-  onClick: (e: any) => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const hasDamage = !!damageCount;
 
@@ -78,7 +79,7 @@ export function CarDamageSelector({ value, onChange }: Props) {
 
   const damages = value ?? {};
 
-  const openPopover = (e: any, id: string) => {
+  const openPopover = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
     setAnchorEl(e.currentTarget);
     setActivePoint(id);
     setSelected(damages[id] ?? []);
@@ -136,7 +137,7 @@ export function CarDamageSelector({ value, onChange }: Props) {
     <div className="relative">
       {/* изображение машины */}
 
-      <img src="/cars/car-top.png" alt="car" className="w-full opacity-50" />
+      <Image src="/cars/car-top.png" alt="" width={680} height={352} className="w-full h-auto opacity-50" />
 
       {/* точки */}
 

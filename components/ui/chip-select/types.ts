@@ -8,7 +8,8 @@ export type ChipSelectProps = {
   label: string;
   options: ChipOption[];
   value?: string | string[] | null;
-  onChange: (value: any) => void;
+  // одиночный выбор — строка или null (снят), мультивыбор — массив
+  onChange: (value: string | string[] | null) => void;
   multiple?: boolean;
   placeholder?: string;
   variant?: "chip" | "color";

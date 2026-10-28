@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# bestauto.lv
 
-## Getting Started
+Marketplace for buying and selling cars in Latvia — private sellers and dealers. Latvian (default) and Russian.
 
-First, run the development server:
+> **Status: front-end prototype.** All pages and flows work, but data is sample data in code and user
+> actions (login, favorites, moderation, settings) are stored in the browser. See [Before production](#before-production).
+
+## Stack
+
+- [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19, TypeScript (strict)
+- [Tailwind CSS 4](https://tailwindcss.com) + [MUI 7](https://mui.com) components
+- [next-intl](https://next-intl.dev) — Latvian / Russian
+- [Leaflet](https://leafletjs.com) + OpenStreetMap — dealer maps, location picker
+- [Photon](https://photon.komoot.io) — address suggestions (OpenStreetMap geocoder)
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Command | What it does |
+|---|---|
+| `npm run dev` | Development server with hot reload |
+| `npm run build` | Production build (also type-checks) |
+| `npm start` | Run the production build |
+| `npm run lint` | ESLint |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Purpose | Default |
+|---|---|---|
+| `NEXT_PUBLIC_SITE_URL` | Absolute site URL for link previews, sitemap and robots | `http://localhost:3000` |
 
-## Learn More
+### Demo accounts
 
-To learn more about Next.js, take a look at the following resources:
+Open **Ienākt** (Login) and use the demo buttons, or log in with password `demo1234`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Account | Email | What to try |
+|---|---|---|
+| Private seller | `andris@demo.lv` | Account page, listing statuses, settings |
+| Dealer | `dealer@demo.lv` | Dealer settings (address, map pin, opening hours) |
+| Moderator | `admin@demo.lv` | `/admin` — approvals, reports, users, collections |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```
+app/[locale]/      Routes (pages, metadata, error pages); locale is "lv" (no prefix) or "ru"
+features/          Code grouped by feature: cars, dealers, favorites, compare, account, admin, moderation…
+  */data/          Sample data — to be replaced by the database
+  */components/    Feature UI
+components/        Shared layout (header, footer) and UI pieces
+lib/               Helpers: formatting, geo, local storage store, colors
+messages/{lv,ru}/  Translations, one file per feature
+i18n/              next-intl routing and message loading
+proxy.ts           Locale routing (Next.js middleware)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Conventions:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- All user-facing text lives in `messages/` — never hard-code strings in components.
+- The brand color is defined once in `lib/colors.ts`.
+- Browser-stored state goes through `lib/localStore.ts`, so each store can later be swapped for an API call.
+- `TODO` comments mark the places to connect to the backend.
+
+## Security
+
+`next.config.ts` sends security headers on every page (Content-Security-Policy, HSTS, X-Frame-Options,
+nosniff, Referrer-Policy, Permissions-Policy). **When adding an external service** (map tiles, photo CDN,
+analytics…), add its domain to the `sources` list there, otherwise the browser will block it.
+
+## Before production
+
+- **Backend:** database for listings, users and dealers; real authentication; server-side admin role checks;
+  saving listings and photo uploads from the sell form.
+- **Services:** OpenStreetMap tiles and the public Photon server are for light use — switch to a tile provider
+  (e.g. MapTiler, Stadia) and a self-hosted geocoder or the VZD address register.
+- **Content:** real contact email and a lawyer-reviewed privacy policy.
+- **Monitoring:** connect an error-tracking service (see `app/[locale]/error.tsx`).

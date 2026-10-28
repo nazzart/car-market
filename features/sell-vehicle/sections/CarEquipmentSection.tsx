@@ -4,7 +4,7 @@ import { SectionContainer } from "../components/SectionContainer";
 import { ChipSelect } from "@/components/ui/chip-select/ChipSelect";
 import { FormStepProps } from "../types";
 import { useSectionNext } from "../hooks/useSectionNext";
-import { equipmentGroups } from "@/features/cars/config/equipment";
+import { EquipmentGroup, equipmentGroups } from "@/features/cars/config/equipment";
 import { useTranslations } from "next-intl";
 
 export function CarEquipmentSection({
@@ -30,11 +30,11 @@ export function CarEquipmentSection({
       onNext={handleNext}
     >
       <div className="flex flex-col gap-6">
-        {Object.entries(equipmentGroups).map(([key, values]) => (
+        {(Object.keys(equipmentGroups) as EquipmentGroup[]).map((key) => (
           <ChipSelect
             key={key}
             label={tOptions(`equipmentGroups.${key}`)}
-            options={values.map((value) => ({ value, label: tOptions(`equipment.${value}`) }))}
+            options={equipmentGroups[key].map((value) => ({ value, label: tOptions(`equipment.${value}`) }))}
             value={data[key]}
             onChange={(value) => updateField(key, value)}
             multiple

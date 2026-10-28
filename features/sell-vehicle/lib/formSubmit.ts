@@ -9,9 +9,9 @@ export const scrollToSection = (id: string) => {
 
 export const validateAndScroll = (
   sections: SectionConfig[],
-  formData: Record<string, any>
+  formData: object
 ) => {
-  const invalidSection = findFirstInvalidSection(sections, formData);
+  const invalidSection = findFirstInvalidSection(sections, formData as Record<string, unknown>);
 
   if (invalidSection) {
     scrollToSection(invalidSection.id);

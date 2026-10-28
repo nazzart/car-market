@@ -2,7 +2,7 @@ import { FieldConfig, validateSection } from "../utils/sectionUtils";
 
 export function useSectionValidation(
   fields: FieldConfig[],
-  data: Record<string, any>
+  data: object
 ) {
-  return validateSection(fields, data);
+  return validateSection(fields, data as Record<string, unknown>);
 }

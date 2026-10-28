@@ -55,10 +55,13 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html
       lang={locale}
-      style={{
-        ["--color-primary" as any]: colors.primary,
-        ["--color-primary-hover" as any]: colors.primaryHover,
-      }}
+      // цвет бренда — CSS-переменные для Tailwind (bg-primary и т. п.)
+      style={
+        {
+          "--color-primary": colors.primary,
+          "--color-primary-hover": colors.primaryHover,
+        } as React.CSSProperties
+      }
     >
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <NextIntlClientProvider>

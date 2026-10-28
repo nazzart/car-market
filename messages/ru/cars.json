@@ -56,7 +56,8 @@
     "morePhotos": "Ещё {count} фото",
     "noAccidents": "Без ДТП",
     "oneOwner": "1 владелец",
-    "negotiable": "Торг"
+    "negotiable": "Торг уместен",
+    "serviceBook": "Сервисная книжка"
   },
   "moreFilters": "Ещё фильтры",
   "metaTitle": "{title} — {results} | bestauto.lv",

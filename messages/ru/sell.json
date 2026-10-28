@@ -49,9 +49,9 @@
     "year": "Год выпуска",
     "mileage": "Пробег",
     "price": "Цена",
-    "negotiable": "Торг",
-    "negotiableYes": "Возможен",
-    "negotiableNo": "Нет",
+    "negotiable": "Торг уместен?",
+    "negotiableYes": "Да, уместен",
+    "negotiableNo": "Нет, цена окончательная",
     "body": "Тип кузова",
     "color": "Цвет"
   },

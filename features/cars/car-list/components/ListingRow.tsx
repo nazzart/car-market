@@ -72,7 +72,7 @@ export default function ListingRow({ listing }: { listing: Listing }) {
           <div className="text-sm text-gray-800 mt-1">{specs.join(" · ")}</div>
           <div className="text-sm text-gray-500 mt-0.5">{details.join(" · ")}</div>
 
-          <div className="flex flex-wrap items-center gap-1.5 mt-3">
+          <div className="flex flex-wrap items-center gap-1.5 mt-3 empty:hidden">
             {listing.condition === "new" && (
               <span className={`${badgeClass} bg-emerald-50 text-emerald-700`}>
                 {t("new")}
@@ -94,27 +94,26 @@ export default function ListingRow({ listing }: { listing: Listing }) {
               <span className={`${badgeClass} bg-sky-50 text-sky-700`}>{t("oneOwner")}</span>
             )}
 
-            {listing.negotiable && (
-              <span className={`${badgeClass} bg-violet-50 text-violet-700`}>{t("negotiable")}</span>
+            {/* единственный «минус», о котором стоит знать до клика */}
+            {listing.overallCondition === "repair" && (
+              <span className={`${badgeClass} bg-amber-50 text-amber-800`}>{tOptions("overallCondition.repair")}</span>
             )}
-
-            <span className={`${badgeClass} bg-gray-100 text-gray-700`}>
-              {listing.sellerType === "dealer"
-                ? t("dealer", { name: listing.sellerName ?? "" })
-                : t("private")}
-            </span>
           </div>
 
+          {/* продавец — обычной строкой, а не чипом: чипы только для важного о самой машине */}
           <div className="text-xs text-gray-500 mt-auto pt-3">
-            {tOptions(`cities.${listing.city}`)} · {formatAgo(listing.postedMinutesAgo, locale)}
+            {tOptions(`cities.${listing.city}`)} ·{" "}
+            {listing.sellerType === "dealer" ? t("dealer", { name: listing.sellerName ?? "" }) : t("private")} ·{" "}
+            {formatAgo(listing.postedMinutesAgo, locale)}
           </div>
         </div>
 
         {/* Price + actions */}
 
         <div className="lg:w-48 shrink-0 flex lg:flex-col items-center lg:items-end justify-between gap-3">
-          <div className="text-2xl font-bold text-gray-900 whitespace-nowrap">
-            {formatNumber(listing.price)} €
+          <div className="lg:text-right">
+            <div className="text-2xl font-bold text-gray-900 whitespace-nowrap">{formatNumber(listing.price)} €</div>
+            {listing.negotiable && <div className="text-xs font-medium text-emerald-700">{t("negotiable")}</div>}
           </div>
 
           <PhoneButton phone={listing.phone} />

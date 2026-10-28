@@ -4,13 +4,14 @@
     "home": "Главная",
     "aria": "Навигация"
   },
-  "negotiable": "Торг возможен",
+  "negotiable": "Торг уместен",
   "sections": {
     "description": "Описание",
     "specs": "Характеристики",
     "body": "Состояние кузова",
     "equipment": "Комплектация",
-    "seller": "Продавец"
+    "seller": "Продавец",
+    "condition": "Состояние и обслуживание"
   },
   "actions": {
     "share": "Поделиться",
@@ -35,7 +36,13 @@
     "condition": "Состояние",
     "conditionNew": "Новый",
     "conditionUsed": "С пробегом",
-    "vin": "VIN"
+    "vin": "VIN",
+    "overallCondition": "Общее состояние",
+    "service": "Обслуживание",
+    "serviceBook": "Сервисная книжка",
+    "mileageLatvia": "Пробег в Латвии",
+    "yes": "Есть",
+    "no": "Нет"
   },
   "keySpecs": {
     "year": "Год",
@@ -50,7 +57,12 @@
     "noAccidents": "Без ДТП",
     "inspection": "Техосмотр до {date}",
     "tuning": "Тюнинг",
-    "negotiable": "Торг возможен"
+    "negotiable": "Торг уместен",
+    "serviceBook": "Сервисная книжка",
+    "excellent": "Отличное состояние",
+    "serviced": "Недавно обслужен",
+    "needsService": "Нужно обслуживание",
+    "imported": "Только что ввезён"
   },
   "description": {
     "empty": "Продавец не добавил описание.",

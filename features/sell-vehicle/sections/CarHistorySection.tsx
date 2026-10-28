@@ -16,14 +16,8 @@ import { useSectionValidation } from "../hooks/useSectionValidation";
 import { validateField } from "../utils/validationRules";
 
 // значение в форме → ключ перевода
-const mileageLvOptions = [
-  ["0", "none"],
-  ["10000", "upTo10k"],
-  ["50000", "from10to50k"],
-  ["100000", "from50to100k"],
-  ["100000+", "over100k"],
-  ["unknown", "unknown"],
-];
+// Значение = ключ, как в объявлении (Listing.mileageLatvia)
+const mileageLvOptions = ["none", "upTo10k", "from10to50k", "from50to100k", "over100k", "unknown"].map((key) => [key, key]);
 
 export function CarHistorySection({
   id,

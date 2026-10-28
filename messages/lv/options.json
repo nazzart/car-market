@@ -228,5 +228,23 @@
     "fri": "Piektdiena",
     "sat": "Sestdiena",
     "sun": "Svētdiena"
+  },
+  "overallCondition": {
+    "excellent": "Teicams",
+    "good": "Labs",
+    "average": "Vidējs",
+    "repair": "Nepieciešams remonts"
+  },
+  "service": {
+    "recent": "Nesen apkopta",
+    "partial": "Daļēji apkopta",
+    "required": "Nepieciešama apkope"
+  },
+  "mileageLatvia": {
+    "none": "Tikko ievests",
+    "upTo10k": "Līdz 10 000 km",
+    "from10to50k": "10 000–50 000 km",
+    "from50to100k": "50 000–100 000 km",
+    "over100k": "Vairāk nekā 100 000 km"
   }
 }

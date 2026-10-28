@@ -12,7 +12,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { useTranslations } from "next-intl";
 
 import { equipmentGroups } from "@/features/cars/config/equipment";
-import { Listing, listings } from "@/features/cars/data/listings";
+import { Listing, OVERALL_CONDITIONS, SERVICE_STATES, listings } from "@/features/cars/data/listings";
 import { dealers } from "@/features/dealers/data/dealers";
 import { useFavorites } from "@/features/favorites/store";
 import { Link } from "@/i18n/navigation";
@@ -175,6 +175,32 @@ export default function CompareView() {
           },
           value: damagedParts,
           best: "min",
+        },
+        {
+          key: "overallCondition",
+          label: tSpecs("overallCondition"),
+          display: (l) => (l.overallCondition ? tOptions(`overallCondition.${l.overallCondition}`) : dash),
+          value: (l) => (l.overallCondition ? OVERALL_CONDITIONS.indexOf(l.overallCondition) : undefined),
+          best: "min",
+        },
+        {
+          key: "service",
+          label: tSpecs("service"),
+          display: (l) => (l.service ? tOptions(`service.${l.service}`) : dash),
+          value: (l) => (l.service ? SERVICE_STATES.indexOf(l.service) : undefined),
+          best: "min",
+        },
+        {
+          key: "serviceBook",
+          label: tSpecs("serviceBook"),
+          display: (l) => (l.serviceBook === undefined ? dash : l.serviceBook ? tSpecs("yes") : tSpecs("no")),
+          value: (l) => (l.serviceBook === undefined ? undefined : String(l.serviceBook)),
+        },
+        {
+          key: "mileageLatvia",
+          label: tSpecs("mileageLatvia"),
+          display: (l) => (l.mileageLatvia ? tOptions(`mileageLatvia.${l.mileageLatvia}`) : dash),
+          value: (l) => l.mileageLatvia,
         },
         {
           key: "inspection",

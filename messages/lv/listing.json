@@ -4,13 +4,14 @@
     "home": "Sākums",
     "aria": "Navigācija"
   },
-  "negotiable": "Iespējama kaulēšanās",
+  "negotiable": "Cena runājama",
   "sections": {
     "description": "Apraksts",
     "specs": "Tehniskie dati",
     "body": "Virsbūves stāvoklis",
     "equipment": "Komplektācija",
-    "seller": "Pārdevējs"
+    "seller": "Pārdevējs",
+    "condition": "Stāvoklis un apkope"
   },
   "actions": {
     "share": "Kopīgot",
@@ -35,7 +36,13 @@
     "condition": "Stāvoklis",
     "conditionNew": "Jauns",
     "conditionUsed": "Lietots",
-    "vin": "VIN"
+    "vin": "VIN",
+    "overallCondition": "Vispārējais stāvoklis",
+    "service": "Apkope",
+    "serviceBook": "Servisa grāmatiņa",
+    "mileageLatvia": "Nobraukums Latvijā",
+    "yes": "Ir",
+    "no": "Nav"
   },
   "keySpecs": {
     "year": "Gads",
@@ -50,7 +57,12 @@
     "noAccidents": "Bez avārijām",
     "inspection": "TA līdz {date}",
     "tuning": "Tūnings",
-    "negotiable": "Iespējama kaulēšanās"
+    "negotiable": "Cena runājama",
+    "serviceBook": "Servisa grāmatiņa",
+    "excellent": "Teicamā stāvoklī",
+    "serviced": "Nesen apkopta",
+    "needsService": "Nepieciešama apkope",
+    "imported": "Tikko ievests"
   },
   "description": {
     "empty": "Pārdevējs nav pievienojis aprakstu.",

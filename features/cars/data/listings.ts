@@ -6,6 +6,14 @@ export type Transmission = "automatic" | "manual";
 export type Drive = "fwd" | "rwd" | "awd";
 export type SellerType = "private" | "dealer";
 
+// Ключи совпадают с формой продажи; подписи — messages → options
+export const OVERALL_CONDITIONS = ["excellent", "good", "average", "repair"] as const;
+export type OverallCondition = (typeof OVERALL_CONDITIONS)[number];
+export const SERVICE_STATES = ["recent", "partial", "required"] as const;
+export type ServiceState = (typeof SERVICE_STATES)[number];
+export const MILEAGE_LATVIA = ["none", "upTo10k", "from10to50k", "from50to100k", "over100k"] as const;
+export type MileageLatvia = (typeof MILEAGE_LATVIA)[number];
+
 export type Listing = {
   id: string;
   brand: string; // slug из features/brands/data/brands.ts
@@ -41,6 +49,12 @@ export type Listing = {
   sellerSince?: number;
   views?: number;
   damages?: DamageMap; // {} — продавец отметил, что повреждений нет
+
+  // Состояние и обслуживание — из раздела «Состояние» формы продажи
+  overallCondition?: OverallCondition;
+  service?: ServiceState;
+  serviceBook?: boolean;
+  mileageLatvia?: MileageLatvia; // пробег в Латвии: 0 — только что ввезён
 };
 
 const bmwGallery = [
@@ -60,6 +74,10 @@ const rotate = (list: string[], start: number) => [
 export const listings: Listing[] = [
   {
     id: "1",
+    overallCondition: "excellent",
+    service: "recent",
+    serviceBook: true,
+    mileageLatvia: "from10to50k",
     brand: "audi",
     title: "Audi RS7 Sportback",
     year: 2019,
@@ -105,6 +123,10 @@ export const listings: Listing[] = [
   },
   {
     id: "2",
+    overallCondition: "excellent",
+    service: "recent",
+    serviceBook: true,
+    mileageLatvia: "upTo10k",
     brand: "bmw",
     title: "BMW M4 Coupe",
     year: 2018,
@@ -147,6 +169,10 @@ export const listings: Listing[] = [
   },
   {
     id: "3",
+    overallCondition: "good",
+    service: "partial",
+    serviceBook: false,
+    mileageLatvia: "over100k",
     brand: "volkswagen",
     title: "Volkswagen Golf VII",
     year: 2016,
@@ -167,6 +193,10 @@ export const listings: Listing[] = [
   },
   {
     id: "4",
+    overallCondition: "excellent",
+    service: "recent",
+    serviceBook: true,
+    mileageLatvia: "from10to50k",
     brand: "bmw",
     title: "BMW 440i Gran Coupe",
     year: 2020,
@@ -208,6 +238,10 @@ export const listings: Listing[] = [
   },
   {
     id: "9",
+    overallCondition: "good",
+    service: "recent",
+    serviceBook: true,
+    mileageLatvia: "from50to100k",
     brand: "bmw",
     title: "BMW 430i Coupe M Sport",
     year: 2019,
@@ -269,6 +303,10 @@ export const listings: Listing[] = [
   },
   {
     id: "5",
+    overallCondition: "good",
+    service: "recent",
+    serviceBook: true,
+    mileageLatvia: "from50to100k",
     brand: "toyota",
     title: "Toyota RAV4 Hybrid",
     year: 2021,
@@ -289,6 +327,10 @@ export const listings: Listing[] = [
   },
   {
     id: "6",
+    overallCondition: "average",
+    service: "required",
+    serviceBook: false,
+    mileageLatvia: "over100k",
     brand: "skoda",
     title: "Skoda Octavia Combi",
     year: 2017,
@@ -309,6 +351,10 @@ export const listings: Listing[] = [
   },
   {
     id: "10",
+    overallCondition: "average",
+    service: "partial",
+    serviceBook: false,
+    mileageLatvia: "none",
     brand: "bmw",
     title: "BMW 420d xDrive Coupe",
     year: 2017,
@@ -342,6 +388,10 @@ export const listings: Listing[] = [
   },
   {
     id: "7",
+    overallCondition: "good",
+    service: "recent",
+    serviceBook: true,
+    mileageLatvia: "from10to50k",
     brand: "volvo",
     title: "Volvo XC60",
     year: 2019,
@@ -362,6 +412,10 @@ export const listings: Listing[] = [
   },
   {
     id: "8",
+    overallCondition: "excellent",
+    service: "recent",
+    serviceBook: true,
+    mileageLatvia: "from10to50k",
     brand: "tesla",
     title: "Tesla Model 3 Long Range",
     year: 2022,
@@ -382,6 +436,10 @@ export const listings: Listing[] = [
   },
   {
     id: "11",
+    overallCondition: "good",
+    service: "partial",
+    serviceBook: true,
+    mileageLatvia: "over100k",
     brand: "bmw",
     title: "BMW 435i Coupe",
     year: 2015,

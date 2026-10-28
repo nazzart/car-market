@@ -19,6 +19,7 @@ import SellerInfo from "@/features/cars/car-view/components/SellerInfo";
 import SimilarListings from "@/features/cars/car-view/components/SimilarListings";
 import CsddCheck from "@/features/cars/car-view/components/CsddCheck";
 import ListingStatusNotice from "@/features/cars/car-view/components/ListingStatusNotice";
+import ConditionSummary from "@/features/cars/car-view/components/ConditionSummary";
 import SectionNav from "@/features/cars/car-view/components/SectionNav";
 import SpecsTable from "@/features/cars/car-view/components/SpecsTable";
 import { Link } from "@/i18n/navigation";
@@ -67,6 +68,7 @@ export default async function ListingPage({ params }: Props) {
   const navItems = [
     { id: "description", label: t("sections.description") },
     { id: "specs", label: t("sections.specs") },
+    (listing.overallCondition || listing.service) && { id: "condition", label: t("sections.condition") },
     listing.damages && { id: "body", label: t("sections.body") },
     listing.equipment?.length && { id: "equipment", label: t("sections.equipment") },
   ].filter((x): x is { id: string; label: string } => Boolean(x));
@@ -140,6 +142,12 @@ export default async function ListingPage({ params }: Props) {
               <CsddCheck />
             </div>
           </Section>
+
+          {(listing.overallCondition || listing.service || listing.serviceBook !== undefined || listing.mileageLatvia) && (
+            <Section id="condition" title={t("sections.condition")}>
+              <ConditionSummary listing={listing} />
+            </Section>
+          )}
 
           {listing.damages && (
             <Section id="body" title={t("sections.body")}>

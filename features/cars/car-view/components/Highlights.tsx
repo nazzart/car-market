@@ -1,4 +1,6 @@
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
+import BuildCircleOutlinedIcon from "@mui/icons-material/BuildCircleOutlined";
+import FlightLandOutlinedIcon from "@mui/icons-material/FlightLandOutlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import NewReleasesOutlinedIcon from "@mui/icons-material/NewReleasesOutlined";
@@ -10,11 +12,13 @@ import { Listing } from "../../data/listings";
 
 const GOOD = "bg-emerald-50 text-emerald-800 border-emerald-100";
 const NEUTRAL = "bg-gray-50 text-gray-800 border-gray-200";
+const WARN = "bg-amber-50 text-amber-800 border-amber-100";
 
 // Короткие «плюсы» автомобиля под характеристиками; «Торг» показан под ценой
 export default function Highlights({ listing }: { listing: Listing }) {
   const t = useTranslations("listing.highlights");
   const tCommon = useTranslations("common");
+  const tOptions = useTranslations("options");
 
   const items = [
     listing.condition === "new" && { icon: NewReleasesOutlinedIcon, text: t("new"), tone: GOOD },
@@ -29,6 +33,9 @@ export default function Highlights({ listing }: { listing: Listing }) {
       text: t("inspection", { date: listing.inspectionUntil }),
       tone: NEUTRAL,
     },
+    listing.service === "required" && { icon: BuildCircleOutlinedIcon, text: t("needsService"), tone: WARN },
+    listing.overallCondition === "repair" && { icon: BuildCircleOutlinedIcon, text: tOptions("overallCondition.repair"), tone: WARN },
+    listing.mileageLatvia === "none" && { icon: FlightLandOutlinedIcon, text: t("imported"), tone: NEUTRAL },
     listing.tuned && { icon: BuildOutlinedIcon, text: t("tuning"), tone: "bg-amber-50 text-amber-800 border-amber-100" },
   ].filter(Boolean) as { icon: typeof VerifiedOutlinedIcon; text: string; tone: string }[];
 

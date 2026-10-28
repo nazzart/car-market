@@ -56,7 +56,8 @@
     "morePhotos": "Vēl {count} foto",
     "noAccidents": "Bez avārijām",
     "oneOwner": "1 īpašnieks",
-    "negotiable": "Kaulēšanās"
+    "negotiable": "Cena runājama",
+    "serviceBook": "Servisa grāmatiņa"
   },
   "moreFilters": "Vairāk filtru",
   "metaTitle": "{title} — {results} | bestauto.lv",

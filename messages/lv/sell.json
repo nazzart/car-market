@@ -49,9 +49,9 @@
     "year": "Izlaiduma gads",
     "mileage": "Nobraukums",
     "price": "Cena",
-    "negotiable": "Kaulēšanās",
-    "negotiableYes": "Iespējama",
-    "negotiableNo": "Nē",
+    "negotiable": "Vai cena ir runājama?",
+    "negotiableYes": "Jā, runājama",
+    "negotiableNo": "Nē, cena galīga",
     "body": "Virsbūves tips",
     "color": "Krāsa"
   },

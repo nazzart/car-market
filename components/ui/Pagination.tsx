@@ -17,19 +17,22 @@ function pageNumbers(page: number, pageCount: number): (number | "gap")[] {
 
 const itemClass = "min-w-10 h-10 px-3 inline-flex items-center justify-center rounded-xl text-sm font-medium transition";
 
-// Обычные ссылки (?page=2), а не кнопки: поисковики проходят по ним ко всем объявлениям
+// Нумерация страниц списка (/cars, /dealers): остальные параметры URL сохраняются, меняется только ?page=.
+// Обычные ссылки, а не кнопки: поисковики проходят по ним ко всем объявлениям и дилерам
 export default function Pagination({
+  path,
   page,
   pageCount,
   total,
   pageSize,
 }: {
+  path: "/cars" | "/dealers";
   page: number;
   pageCount: number;
   total: number;
   pageSize: number;
 }) {
-  const t = useTranslations("cars.pagination");
+  const t = useTranslations("common.pagination");
   const params = useSearchParams();
 
   if (pageCount <= 1) return null;
@@ -39,7 +42,7 @@ export default function Pagination({
     if (p > 1) next.set("page", String(p));
     else next.delete("page");
     const query = next.toString();
-    return query ? `/cars?${query}` : "/cars";
+    return query ? `${path}?${query}` : path;
   };
 
   const from = (page - 1) * pageSize + 1;

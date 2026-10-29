@@ -12,6 +12,7 @@ import { collections } from "@/features/collections/config";
 import { useDealerLookup } from "@/features/dealers/hooks";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
+import Pagination from "@/components/ui/Pagination";
 
 import { SearchTransitionContext, useCarFilters } from "../hooks/useCarFilters";
 import { sortValues } from "../../config/filterOptions";
@@ -20,7 +21,6 @@ import ActiveFilterChips from "./ActiveFilterChips";
 import EmptyResults from "./EmptyResults";
 import FiltersPanel from "./FiltersPanel";
 import ListingRow from "./ListingRow";
-import Pagination from "./Pagination";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import ScrollArea from "./ScrollArea";
 import { useVisibility } from "@/features/moderation/visibility";
@@ -257,7 +257,7 @@ function SearchView({ result, pageSize, empty, pending }: SearchResultProps & { 
               </div>
             )}
 
-            <Pagination page={result.page} pageCount={result.pageCount} total={result.total} pageSize={pageSize} />
+            <Pagination path="/cars" page={result.page} pageCount={result.pageCount} total={result.total} pageSize={pageSize} />
           </div>
         </div>
       </div>

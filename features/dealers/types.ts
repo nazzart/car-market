@@ -35,3 +35,6 @@ export type Dealer = {
   since: number; // на сайте с
   description?: string;
 };
+
+// Метка на карте дилеров: только то, что нужно для значка и всплывающей карточки
+export type DealerPin = Pick<Dealer, "slug" | "name" | "lat" | "lng" | "address" | "city" | "hours" | "carsInStock">;

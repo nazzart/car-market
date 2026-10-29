@@ -57,5 +57,12 @@
   "select": {
     "noResults": "Nekas nav atrasts",
     "clear": "Notīrīt"
+  },
+  "pagination": {
+    "label": "Lapas",
+    "previous": "Iepriekšējā",
+    "next": "Nākamā",
+    "page": "{page}. lapa",
+    "range": "{from}–{to} no {total}"
   }
 }

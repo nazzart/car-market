@@ -57,5 +57,12 @@
   "select": {
     "noResults": "Ничего не найдено",
     "clear": "Очистить"
+  },
+  "pagination": {
+    "label": "Страницы",
+    "previous": "Назад",
+    "next": "Далее",
+    "page": "Страница {page}",
+    "range": "{from}–{to} из {total}"
   }
 }

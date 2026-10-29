@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -11,11 +11,12 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
+import Pagination from "@/components/ui/Pagination";
 import { Segmented, Select, inputClass } from "@/features/cars/car-list/components/ui";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
-import { getOpenStatus, useNow } from "../lib/openStatus";
-import { useDealers } from "../useDealers";
+import type { DealerSearchResult } from "../api";
+import { useDealerOverrides } from "../useDealers";
 import DealerCard from "./DealerCard";
 import type { MapBounds } from "./DealersMap";
 
@@ -27,27 +28,34 @@ const DealersMap = dynamic(() => import("./DealersMap"), {
 
 const dealerTypes = ["official", "used"];
 
-const inBounds = (lat: number, lng: number, b: MapBounds) =>
-  lat <= b.north && lat >= b.south && lng <= b.east && lng >= b.west;
+// Область карты в URL: «south,west,north,east», 4 знака после запятой (~10 м)
+const formatBounds = (b: MapBounds) => [b.south, b.west, b.north, b.east].map((n) => n.toFixed(4)).join(",");
 
-export default function DealersView() {
-  // Фильтры в URL, как на /cars: ссылкой можно поделиться, «Назад» их сохраняет
+type Props = {
+  result: DealerSearchResult; // посчитано сервером: страница карточек + метки для карты
+  options: { cities: string[]; brands: string[] };
+  totalDealers: number;
+  pageSize: number;
+};
+
+export default function DealersView({ result, options, totalDealers, pageSize }: Props) {
+  // Фильтры в URL, как на /cars: ссылкой можно поделиться, «Назад» их сохраняет, сервер по ним ищет
   const t = useTranslations("dealers");
   const tCommon = useTranslations("common");
   const placeName = usePlaceName();
 
   const router = useRouter();
   const pathname = usePathname();
-
-  const dealers = useDealers();
+  // пока сервер готовит новую страницу, старая видна затемнённой
+  const [pending, startTransition] = useTransition();
 
   const typeOptions = dealerTypes.map((value) => ({ value, label: t(`types.${value}`) }));
-  const cityOptions = [...new Set(dealers.map((d) => d.city))]
+  const cityOptions = options.cities
     .map((value) => ({ value, label: placeName(value) }))
     .sort((a, b) => a.label.localeCompare(b.label));
 
   // В фильтре — только марки, у которых есть официальные дилеры
-  const brandOptions = [...new Set(dealers.flatMap((d) => d.brands))]
+  const brandOptions = options.brands
     .map((slug) => ({ label: brands.find((b) => b.slug === slug)?.name ?? slug, value: slug }))
     .sort((a, b) => a.label.localeCompare(b.label));
 
@@ -58,47 +66,65 @@ export default function DealersView() {
   const city = params.get("city") ?? "";
   const brand = params.get("brand") ?? "";
   const openNow = params.get("open") === "1";
-  const now = useNow();
+  // «Искать при перемещении карты» — список показывает только то, что видно на карте
+  const searchOnMove = params.has("bounds");
 
-  const setParam = (key: string) => (value: string | null) => {
+  const setParams = (changes: Record<string, string | null>) => {
     const next = new URLSearchParams(params.toString());
-
-    if (value) next.set(key, value);
-    else next.delete(key);
+    for (const [key, value] of Object.entries(changes)) {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    }
+    // другие фильтры — снова с первой страницы
+    if (!("page" in changes)) next.delete("page");
 
     const qs = next.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false }));
   };
+  const setParam = (key: string) => (value: string | null) => setParams({ [key]: value });
 
-  const setQuery = setParam("q");
   const setType = setParam("type");
   const setCity = setParam("city");
   const setBrand = setParam("brand");
   const setOpenNow = (value: boolean) => setParam("open")(value ? "1" : null);
 
+  // Поиск по тексту — в URL через 300 мс после последней буквы, а не на каждую
+  const [text, setText] = useState(query);
+  const lastQuery = useRef(query);
+  useEffect(() => {
+    if (text.trim() === lastQuery.current) return;
+    const timer = setTimeout(() => {
+      lastQuery.current = text.trim();
+      setParam("q")(text.trim() || null);
+    }, 300);
+    return () => clearTimeout(timer);
+    // setParam меняется на каждом рендере; ждём только изменения текста
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text]);
+
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
-  const [searchOnMove, setSearchOnMove] = useState(false);
-  const [bounds, setBounds] = useState<MapBounds | null>(null);
   const [mobileView, setMobileView] = useState("list");
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+  // Карта двигается → при включённом поиске по карте обновляем область в URL (после остановки, раз в 400 мс)
+  const bounds = useRef<MapBounds | null>(null);
+  const boundsTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const onBoundsChange = (next: MapBounds) => {
+    bounds.current = next;
+    if (!searchOnMove) return;
+    clearTimeout(boundsTimer.current);
+    boundsTimer.current = setTimeout(() => {
+      const value = formatBounds(next);
+      if (value !== params.get("bounds")) setParam("bounds")(value);
+    }, 400);
+  };
+  const setSearchOnMove = (on: boolean) =>
+    setParam("bounds")(on && bounds.current ? formatBounds(bounds.current) : null);
 
-    return dealers.filter(
-      (d) =>
-        (!q || d.name.toLowerCase().includes(q) || d.address.toLowerCase().includes(q)) &&
-        (!type || d.type === type) &&
-        (!city || d.city === city) &&
-        (!brand || d.brands.includes(brand)) &&
-        // «Открыто сейчас» работает после гидратации, когда известно время
-        (!openNow || now === null || getOpenStatus(d.hours, now).open)
-    );
-  }, [dealers, query, type, city, brand, openNow, now]);
-
-  // «Искать при перемещении карты» — список показывает только то, что видно на карте
-  const visible =
-    searchOnMove && bounds ? filtered.filter((d) => inBounds(d.lat, d.lng, bounds)) : filtered;
+  // скрытые модератором — не показываем, свой профиль дилера — с изменениями из настроек
+  const overrides = useDealerOverrides();
+  const visible = overrides(result.items);
+  const pins = overrides(result.pins);
 
   // Клик по метке → прокручиваем список к карточке
   useEffect(() => {
@@ -110,8 +136,9 @@ export default function DealersView() {
   }, [activeSlug]);
 
   const resetFilters = () => {
-    router.replace(pathname, { scroll: false });
-    setSearchOnMove(false);
+    lastQuery.current = "";
+    setText("");
+    startTransition(() => router.replace(pathname, { scroll: false }));
   };
 
   const selectOnMap = (slug: string) => {
@@ -127,7 +154,7 @@ export default function DealersView() {
         <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
           {t("title")}
         </h1>
-        <p className="text-gray-500 mt-1">{t("subtitle", { count: dealers.length })}</p>
+        <p className="text-gray-500 mt-1">{t("subtitle", { count: totalDealers })}</p>
       </div>
 
       {/* Filters */}
@@ -139,8 +166,8 @@ export default function DealersView() {
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
           />
           <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
             placeholder={t("search")}
             aria-label={t("searchAria")}
             className={`${inputClass} pl-9`}
@@ -186,11 +213,14 @@ export default function DealersView() {
       <div className="grid lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)] gap-6 items-start">
         {/* List */}
 
-        <div className={mobileView === "map" ? "hidden lg:block" : ""}>
+        <div
+          className={`${mobileView === "map" ? "hidden lg:block" : ""} transition-opacity ${pending ? "opacity-50 pointer-events-none" : ""}`}
+          aria-busy={pending}
+        >
           <div className="flex items-center justify-between mb-3 text-sm">
             <span className="text-gray-500">
               {t("shown")}{" "}
-              <span className="font-medium text-gray-900">{tCommon("companies", { count: visible.length })}</span>
+              <span className="font-medium text-gray-900">{tCommon("companies", { count: result.total })}</span>
             </span>
 
             {(query || type || city || brand || openNow || searchOnMove) && (
@@ -227,6 +257,8 @@ export default function DealersView() {
               ))}
             </div>
           )}
+
+          <Pagination path="/dealers" page={result.page} pageCount={result.pageCount} total={result.total} pageSize={pageSize} />
         </div>
 
         {/* Map */}
@@ -243,12 +275,12 @@ export default function DealersView() {
           `}
         >
           <DealersMap
-            dealers={filtered}
+            dealers={pins}
             activeSlug={activeSlug}
             hoveredSlug={hoveredSlug}
             fitKey={`${query}|${type}|${city}|${brand}`}
             onSelect={setActiveSlug}
-            onBoundsChange={setBounds}
+            onBoundsChange={onBoundsChange}
           />
 
           <label className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-lg text-sm font-medium cursor-pointer select-none whitespace-nowrap">

@@ -35,7 +35,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const t = await getTranslations({ locale, namespace: "cars" });
   const tOptions = await getTranslations({ locale, namespace: "options" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
-  const tPages = await getTranslations({ locale, namespace: "cars.pagination" });
+  const tPages = await getTranslations({ locale, namespace: "common.pagination" });
 
   const brandName = brands.find((b) => b.slug === get("brand"))?.name;
   const collection = collections.find((c) => c.slug === get("collection"));

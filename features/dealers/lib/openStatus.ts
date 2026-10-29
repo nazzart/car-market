@@ -38,4 +38,3 @@ export function getOpenStatus(hours: OpeningHours, timestamp: number): OpenStatu
   return { open: false };
 }
 
-export { useNow } from "@/lib/useNow";

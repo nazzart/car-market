@@ -85,8 +85,10 @@ Conventions:
 - **SQL lives in `features/{cars,dealers}/api.ts`** (server-only). Server pages call its async functions
   (`getListing`, `searchListings`…); client components use the hooks in `hooks.ts`, which load only what the page
   needs (`useListingsByIds`, `useDealerLookup`…). The browser never receives the whole catalogue.
-- **`/cars` search runs on the server:** filters in the URL become a SQL `WHERE`, results come 20 per page
-  (`?page=2`) with real links, so search engines can reach every listing.
+- **`/cars` and `/dealers` search runs on the server:** filters in the URL become a SQL `WHERE`, results come
+  20 listings / 10 dealers per page (`?page=2`) with real links (`components/ui/Pagination.tsx`), so search
+  engines can reach every page. The dealers map gets light pins for all matches; "search as I move the map"
+  puts the map area in the URL (`?bounds=south,west,north,east`).
   ESLint blocks importing `@/lib/db` or the demo `data/` files anywhere else.
 - **Caching:** query results are cached with the tags `"listings"` / `"dealers"` for up to 5 minutes. Code that
   changes data must call `revalidateTag("listings")` (or `"dealers"`) so pages update at once.

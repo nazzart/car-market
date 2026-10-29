@@ -8,7 +8,7 @@ import { useCatalog } from "@/components/providers/CatalogProvider";
 
 import type { Dealer } from "./types";
 
-// Весь каталог, включая заблокированных (модерация). Для покупателей — useDealers() из ./useDealers
+// Весь каталог, включая заблокированных (модерация)
 export function useDealerCatalog(): Dealer[] {
   return useCatalog().dealers;
 }

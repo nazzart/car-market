@@ -107,12 +107,5 @@
     "area": "Включить окрестности",
     "areaNone": "Нет",
     "areaKm": "+{km} км"
-  },
-  "pagination": {
-    "label": "Страницы",
-    "previous": "Назад",
-    "next": "Далее",
-    "page": "Страница {page}",
-    "range": "{from}–{to} из {total}"
   }
 }

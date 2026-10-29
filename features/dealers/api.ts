@@ -15,9 +15,10 @@ const { dealers, dealerContacts } = schema;
 type Row = typeof dealers.$inferSelect;
 
 function toDealer(row: Row, contacts: DealerContact[]): Dealer {
-  // необязательные поля без значения — undefined, как в типе Dealer; служебные даты наружу не отдаём
+  // необязательные поля без значения — undefined, как в типе Dealer; внутренний номер и даты наружу не отдаём —
+  // снаружи дилер известен по slug
   const fields = Object.fromEntries(
-    Object.entries(row).filter(([key, value]) => value !== null && key !== "createdAt")
+    Object.entries(row).filter(([key, value]) => value !== null && key !== "createdAt" && key !== "id")
   );
   return { ...(fields as Omit<Dealer, "contacts">), ...(contacts.length ? { contacts } : {}) };
 }
@@ -27,13 +28,13 @@ const catalog = unstable_cache(
   async () => {
     const [rows, contacts] = await Promise.all([
       db.select().from(dealers).orderBy(asc(dealers.name)),
-      db.select().from(dealerContacts).orderBy(asc(dealerContacts.dealerSlug), asc(dealerContacts.position)),
+      db.select().from(dealerContacts).orderBy(asc(dealerContacts.dealerId), asc(dealerContacts.position)),
     ]);
     return rows.map((row) =>
       toDealer(
         row,
         contacts
-          .filter((c) => c.dealerSlug === row.slug)
+          .filter((c) => c.dealerId === row.id)
           .map(({ id, name, phone, role }) => ({ id, name, phone, ...(role ? { role } : {}) }))
       )
     );

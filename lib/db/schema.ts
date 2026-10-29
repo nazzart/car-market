@@ -6,6 +6,7 @@ import { sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  check,
   doublePrecision,
   index,
   integer,
@@ -23,14 +24,16 @@ import type {
   Fuel,
   MileageLatvia,
   OverallCondition,
-  SellerType,
   ServiceState,
   Transmission,
 } from "@/features/cars/types";
 import type { Dealer, OpeningHours } from "@/features/dealers/types";
 
 export const dealers = pgTable("dealers", {
-  slug: text().primaryKey(),
+  // числовой ключ: на него ссылаются объявления и контакты. slug — адрес страницы (/dealers/baltic-auto),
+  // его можно поменять при переименовании, не трогая объявления
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
+  slug: text().notNull().unique(),
   name: text().notNull(),
   type: text().$type<Dealer["type"]>().notNull(),
   brands: text().array().notNull().default(sql`'{}'`), // slug марок — для официальных дилеров
@@ -55,15 +58,15 @@ export const dealerContacts = pgTable(
   "dealer_contacts",
   {
     id: text().primaryKey(),
-    dealerSlug: text()
+    dealerId: integer()
       .notNull()
-      .references(() => dealers.slug, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => dealers.id, { onDelete: "cascade" }),
     name: text().notNull(),
     phone: text().notNull(),
     role: text(),
     position: integer().notNull().default(0),
   },
-  (t) => [index().on(t.dealerSlug, t.position)]
+  (t) => [index().on(t.dealerId, t.position)]
 ).enableRLS();
 
 export const listings = pgTable(
@@ -84,14 +87,15 @@ export const listings = pgTable(
     drive: text().$type<Drive>().notNull(),
     bodyType: text().notNull(),
     condition: text().$type<"used" | "new">().notNull(),
-    sellerType: text().$type<SellerType>().notNull(),
-    sellerName: text(),
-    dealerSlug: text().references(() => dealers.slug, { onDelete: "cascade", onUpdate: "cascade" }),
+    // Продавец. Дилер — ссылка: имя и телефон берутся из dealers / dealer_contacts при чтении (JOIN), не копируются.
+    // Частный продавец — имя и телефон хранятся здесь. TODO(auth): брать из профиля пользователя, как у дилеров
+    dealerId: integer().references(() => dealers.id, { onDelete: "cascade" }), // null — частный продавец
+    contactId: text().references(() => dealerContacts.id, { onDelete: "set null" }), // нет — основной телефон дилера
     // TODO(auth): uuid со ссылкой на пользователя Supabase Auth; пока — id демо-аккаунта
     userId: text(),
-    contactId: text(), // dealer_contacts.id; нет — основной телефон компании
-    city: text().notNull(), // ключ места из lib/places.ts
-    phone: text().notNull(),
+    sellerName: text(),
+    phone: text(),
+    city: text().notNull(), // где стоит машина — ключ места из lib/places.ts (у дилера может быть несколько площадок)
     images: text().array().notNull().default(sql`'{}'`),
     review: text().$type<"pending">(), // 'pending' — на проверке, покупателям не видно
     postedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
@@ -121,7 +125,9 @@ export const listings = pgTable(
     index().on(t.price),
     index().on(t.year),
     index().on(t.city),
-    index().on(t.dealerSlug),
+    index().on(t.dealerId),
     index().on(t.userId),
+    // у частного объявления должен быть телефон; у дилерского он берётся из dealers
+    check("listings_private_phone", sql`${t.dealerId} is not null or ${t.phone} is not null`),
   ]
 ).enableRLS();

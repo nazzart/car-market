@@ -4,7 +4,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { type SQL, and, asc, count, desc, eq, gte, inArray, isNotNull, isNull, lte, ne, or, sql } from "drizzle-orm";
+import { type SQL, and, asc, count, desc, eq, getTableColumns, gte, inArray, isNotNull, isNull, lte, ne, or, sql } from "drizzle-orm";
 
 import { EXOTIC_BRANDS, collections } from "@/features/collections/config";
 import { db, schema } from "@/lib/db";
@@ -13,7 +13,7 @@ import { PLACES, placeMatcher } from "@/lib/places";
 import { FILTER_KEYS, postedPeriods } from "./config/filterOptions";
 import type { Listing, ListingStats } from "./types";
 
-const { listings } = schema;
+const { listings, dealers, dealerContacts } = schema;
 
 export type Params = { get: (key: string) => string | null };
 
@@ -21,24 +21,62 @@ export const PAGE_SIZE = 20;
 
 /* ---------- Строка базы → Listing ---------- */
 
+// Объявление вместе с продавцом. У дилерского имя и телефон не хранятся в listings, а берутся при чтении:
+// имя — из dealers, телефон — контактного лица (dealer_contacts) или основной телефон дилера
+const listingColumns = {
+  ...getTableColumns(listings),
+  dealerSlug: dealers.slug,
+  dealerName: dealers.name,
+  dealerPhone: dealers.phone,
+  contactPhone: dealerContacts.phone,
+};
+
+const selectListings = () =>
+  db
+    .select(listingColumns)
+    .from(listings)
+    .leftJoin(dealers, eq(dealers.id, listings.dealerId))
+    .leftJoin(dealerContacts, eq(dealerContacts.id, listings.contactId));
+
 // Минуты с публикации считаются при каждом чтении, а не хранятся в кэше
-type Row = typeof listings.$inferSelect;
+type Row = Awaited<ReturnType<typeof selectListings>>[number];
 type CachedRow = Omit<Row, "postedAt"> & { postedAt: Date | string }; // из кэша дата приходит строкой
 
-function toListing({ id, dealerSlug, postedAt, engine, ...rest }: CachedRow): Listing {
+function toListing({
+  id,
+  dealerId,
+  dealerSlug,
+  dealerName,
+  dealerPhone,
+  contactPhone,
+  sellerName,
+  phone,
+  postedAt,
+  engine,
+  ...rest
+}: CachedRow): Listing {
   // необязательные поля без значения — undefined, как в типе Listing
   const fields = Object.fromEntries(Object.entries(rest).filter(([, value]) => value !== null));
+  const name = dealerName ?? sellerName;
   return {
-    ...(fields as Omit<Listing, "id" | "dealer" | "engine" | "postedMinutesAgo">),
+    ...(fields as Omit<Listing, "id" | "dealer" | "engine" | "postedMinutesAgo" | "sellerType" | "phone">),
     id: String(id),
+    sellerType: dealerId === null ? "private" : "dealer",
     ...(dealerSlug ? { dealer: dealerSlug } : {}),
+    ...(name ? { sellerName: name } : {}),
+    phone: contactPhone ?? dealerPhone ?? phone ?? "",
     engine,
     postedMinutesAgo: Math.max(0, Math.round((Date.now() - new Date(postedAt).getTime()) / 60_000)),
   };
 }
 
+// Объявления дилера по slug из URL — через вложенный запрос, без JOIN в подсчётах
+const ofDealer = (slug: string) =>
+  inArray(listings.dealerId, db.select({ id: dealers.id }).from(dealers).where(eq(dealers.slug, slug)));
+
+// Тег "dealers" тоже: объявления читают имя и телефон дилера (JOIN), изменение дилера должно обновить и их
 const cached = <Args extends unknown[], Result>(fn: (...args: Args) => Promise<Result>, key: string) =>
-  unstable_cache(fn, ["listings", key], { tags: ["listings"], revalidate: 300 });
+  unstable_cache(fn, ["listings", key], { tags: ["listings", "dealers"], revalidate: 300 });
 
 const published = isNull(listings.review); // новое объявление на проверке не видно покупателям
 const newestFirst = [desc(listings.postedAt), desc(listings.id)];
@@ -64,12 +102,17 @@ function searchWhere(params: Params): SQL | undefined {
   const conditions: (SQL | undefined)[] = [published];
 
   const equals = { condition: listings.condition, brand: listings.brand, model: listings.model, bodyType: listings.bodyType,
-    fuel: listings.fuel, transmission: listings.transmission, drive: listings.drive, sellerType: listings.sellerType,
-    dealer: listings.dealerSlug, color: listings.color } as const;
+    fuel: listings.fuel, transmission: listings.transmission, drive: listings.drive, color: listings.color } as const;
   for (const [key, column] of Object.entries(equals)) {
     const value = text(key);
     if (value) conditions.push(eq(column, value));
   }
+
+  const sellerType = text("sellerType");
+  if (sellerType === "dealer") conditions.push(isNotNull(listings.dealerId));
+  if (sellerType === "private") conditions.push(isNull(listings.dealerId));
+  const dealer = text("dealer");
+  if (dealer) conditions.push(ofDealer(dealer));
 
   const ranges = [
     ["priceFrom", gte, listings.price], ["priceTo", lte, listings.price],
@@ -150,9 +193,7 @@ const searchPage = cached(async (key: string, page: number) => {
   const params = paramsFromKey(key);
   const where = searchWhere(params);
   const [rows, [{ total }]] = await Promise.all([
-    db
-      .select()
-      .from(listings)
+    selectListings()
       .where(where)
       .orderBy(...searchOrder(params.get("sort")))
       .limit(PAGE_SIZE)
@@ -238,35 +279,33 @@ export async function getListingStats(): Promise<ListingStats> {
 
 /* ---------- Отдельные объявления и подборки ---------- */
 
-const allRows = cached(() => db.select().from(listings).orderBy(...newestFirst), "all");
+const allRows = cached(() => selectListings().orderBy(...newestFirst), "all");
 const publishedRows = cached(
-  () => db.select().from(listings).where(published).orderBy(...newestFirst),
+  () => selectListings().where(published).orderBy(...newestFirst),
   "published"
 );
 const latestRows = cached(
   (limit: number, withPhotos: boolean) =>
-    db
-      .select()
-      .from(listings)
+    selectListings()
       .where(withPhotos ? and(published, sql`cardinality(${listings.images}) > 0`) : published)
       .orderBy(...newestFirst)
       .limit(limit),
   "latest"
 );
 const rowById = cached(async (id: number) => {
-  const [row] = await db.select().from(listings).where(eq(listings.id, id)).limit(1);
+  const [row] = await selectListings().where(eq(listings.id, id)).limit(1);
   return row ?? null;
 }, "byId");
 const rowsByIds = cached(
-  (ids: number[]) => db.select().from(listings).where(inArray(listings.id, ids)),
+  (ids: number[]) => selectListings().where(inArray(listings.id, ids)),
   "byIds"
 );
 const dealerRows = cached(
-  (slug: string) => db.select().from(listings).where(eq(listings.dealerSlug, slug)).orderBy(...newestFirst),
+  (slug: string) => selectListings().where(ofDealer(slug)).orderBy(...newestFirst),
   "byDealer"
 );
 const userRows = cached(
-  (userId: string) => db.select().from(listings).where(eq(listings.userId, userId)).orderBy(...newestFirst),
+  (userId: string) => selectListings().where(eq(listings.userId, userId)).orderBy(...newestFirst),
   "byUser"
 );
 
@@ -277,9 +316,7 @@ const similarRows = cached(
     const score = sql`(case when ${listings.brand} = ${brand} then 2 else 0 end)
       + (case when ${listings.bodyType} = ${bodyType} then 1 else 0 end)
       + (case when ${hasPhotos} then 1 else 0 end)`;
-    return db
-      .select()
-      .from(listings)
+    return selectListings()
       .where(
         and(
           published,

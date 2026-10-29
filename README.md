@@ -92,8 +92,11 @@ Conventions:
   ESLint blocks importing `@/lib/db` or the demo `data/` files anywhere else.
 - **Caching:** query results are cached with the tags `"listings"` / `"dealers"` for up to 5 minutes. Code that
   changes data must call `revalidateTag("listings")` (or `"dealers"`) so pages update at once.
+- **No copies of related data:** a listing references its dealer (`dealer_id`) and contact person (`contact_id`);
+  the dealer's name and phone are read with a JOIN in `features/cars/api.ts`, so a change in `dealers` shows everywhere.
 - **Schema changes:** edit `lib/db/schema.ts` → `npm run db:generate` → review the SQL → `npm run db:migrate`.
-  Commit the migration files.
+  Commit the migration files. When a change must move existing data (like `0001_dealer_ids.sql`), edit the
+  generated SQL by hand to fill new columns before old ones are dropped.
 - A dealer's own profile (catalogue + saved settings + account) is built in one place: `useOwnDealer()`.
 - Profile changes go through `updateProfile()` in `features/auth/store.ts`, never by rewriting the session.
 - Browser-stored state goes through `lib/localStore.ts`, so each store can later be swapped for an API call.

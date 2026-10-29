@@ -36,19 +36,28 @@ async function main() {
   await db.transaction(async (tx) => {
     await tx.execute(sql`truncate ${schema.listings}, ${schema.dealerContacts}, ${schema.dealers} restart identity`);
 
-    // лишние поля (contacts) Drizzle пропускает: в таблицу попадают только её колонки
-    await tx.insert(schema.dealers).values(demoDealers);
+    // лишние поля (contacts) Drizzle пропускает: в таблицу попадают только её колонки.
+    // База выдаёт дилерам номера (id) — по ним связываем контакты и объявления
+    const inserted = await tx
+      .insert(schema.dealers)
+      .values(demoDealers)
+      .returning({ id: schema.dealers.id, slug: schema.dealers.slug });
+    const dealerId = new Map(inserted.map((d) => [d.slug, d.id]));
 
     const contacts = demoDealers.flatMap((d) =>
-      (d.contacts ?? []).map((c, position) => ({ ...c, dealerSlug: d.slug, position }))
+      (d.contacts ?? []).map((c, position) => ({ ...c, dealerId: dealerId.get(d.slug)!, position }))
     );
     if (contacts.length) await tx.insert(schema.dealerContacts).values(contacts);
 
+    // у дилерских объявлений имя и телефон не храним — они берутся из dealers при чтении;
+    // sellerType тоже не колонка (считается по dealer_id), Drizzle его пропускает
     await tx.insert(schema.listings).values(
-      allListings.map(({ id, dealer, postedMinutesAgo, ...listing }) => ({
+      allListings.map(({ id, dealer, postedMinutesAgo, sellerName, phone, ...listing }) => ({
         ...listing,
         id: Number(id),
-        dealerSlug: dealer ?? null,
+        dealerId: dealer ? dealerId.get(dealer)! : null,
+        sellerName: dealer ? null : sellerName,
+        phone: dealer ? null : phone,
         postedAt: new Date(now - postedMinutesAgo * 60_000),
       }))
     );

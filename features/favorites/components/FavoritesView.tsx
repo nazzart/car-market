@@ -16,12 +16,13 @@ import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { inputClass } from "@/features/cars/car-list/components/ui";
 import { Listing } from "@/features/cars/types";
 import { useLatestListings, useListingsByIds } from "@/features/cars/hooks";
+import { useSpecLine } from "@/features/cars/lib/useSpecLine";
 import { useVisibility } from "@/features/moderation/visibility";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import { Link } from "@/i18n/navigation";
 import { useNow } from "@/lib/useNow";
-import { formatAgo, formatNumber } from "@/lib/utils";
+import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
 import CompareButton from "@/features/compare/components/CompareButton";
 import { usePlaceName } from "@/lib/places";
@@ -207,8 +208,7 @@ function FavoriteCard({
   onRemove: () => void;
 }) {
   const t = useTranslations("favorites");
-  const tCommon = useTranslations("common");
-  const tOptions = useTranslations("options");
+  const specLine = useSpecLine();
   const placeName = usePlaceName();
   const locale = useLocale();
 
@@ -240,9 +240,9 @@ function FavoriteCard({
             </Link>
 
             <div className="flex flex-wrap items-baseline gap-x-2 mt-0.5">
-              <span className="text-lg font-semibold">{formatNumber(listing.price)} €</span>
+              <span className="text-lg font-semibold">{formatPrice(listing.price)}</span>
               {diff < 0 && (
-                <span className="text-sm text-gray-400 line-through">{formatNumber(entry.price)} €</span>
+                <span className="text-sm text-gray-400 line-through">{formatPrice(entry.price)}</span>
               )}
             </div>
           </div>
@@ -261,8 +261,7 @@ function FavoriteCard({
         )}
 
         <div className="text-sm text-gray-500 mt-1 line-clamp-2">
-          {listing.year} · {formatNumber(listing.mileage)} {tCommon("units.km")} · {tOptions(`fuel.${listing.fuel}`)} ·{" "}
-          {tOptions(`transmission.${listing.transmission}`)}
+          {specLine(listing)}
         </div>
 
         <div className="mt-auto pt-2 flex flex-wrap items-end justify-between gap-2">

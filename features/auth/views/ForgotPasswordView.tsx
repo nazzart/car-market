@@ -5,8 +5,10 @@ import { useTranslations } from "next-intl";
 import { Button, TextField } from "@mui/material";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 
+import { isEmail } from "@/lib/validate";
+
 import { requestPasswordReset } from "../actions";
-import { AuthHeader, isEmail, pillSx } from "../ui";
+import { AuthHeader, pillSx } from "../ui";
 
 type Props = {
   onBack: () => void;

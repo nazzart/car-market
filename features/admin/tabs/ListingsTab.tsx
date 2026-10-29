@@ -16,7 +16,7 @@ import { inputClass } from "@/features/cars/car-list/components/ui";
 import { Listing } from "@/features/cars/types";
 import { clearModeration, dismissReports } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
-import { cn, formatAgo, formatNumber } from "@/lib/utils";
+import { cn, formatAgo, formatPrice } from "@/lib/utils";
 
 import { Badge, EmptyBox, StatusKey, Thumb, pillClass, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
@@ -109,7 +109,7 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
                     {l.title}, {l.year}
                   </div>
                   <div className="text-xs text-gray-500 truncate">
-                    <span className="font-medium text-gray-700">{formatNumber(l.price)} €</span> · {sellerOf(l, privateLabel)} ·{" "}
+                    <span className="font-medium text-gray-700">{formatPrice(l.price)}</span> · {sellerOf(l, privateLabel)} ·{" "}
                     {formatAgo(l.postedMinutesAgo, locale)}
                     {reason && ` · ${tReasons(reason)}`}
                   </div>

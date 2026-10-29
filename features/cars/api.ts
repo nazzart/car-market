@@ -10,6 +10,7 @@ import { EXOTIC_BRANDS, collections } from "@/features/collections/config";
 import { db, schema } from "@/lib/db";
 import { CACHE_VERSION } from "@/lib/db/cacheVersion";
 import { PLACES, placeMatcher } from "@/lib/places";
+import { isListingId } from "@/lib/validate";
 
 import { FILTER_KEYS, postedPeriods } from "./config/filterOptions";
 import type { BlockReason } from "@/features/moderation/types";
@@ -366,17 +367,16 @@ const similarRows = cached(
   "similar"
 );
 
-const validId = (id: string) => /^\d{1,15}$/.test(id);
 
 export async function getListing(id: string): Promise<Listing | undefined> {
-  if (!validId(id)) return undefined;
+  if (!isListingId(id)) return undefined;
   const row = await rowById(Number(id));
   return row ? toListing(row) : undefined;
 }
 
 // В порядке ids; удалённые из базы — пропускаются (избранное, сравнение)
 export async function getListingsByIds(ids: string[]): Promise<Listing[]> {
-  const numbers = [...new Set(ids.filter(validId).map(Number))].sort((a, b) => a - b).slice(0, 200);
+  const numbers = [...new Set(ids.filter(isListingId).map(Number))].sort((a, b) => a - b).slice(0, 200);
   if (numbers.length === 0) return [];
   const byId = new Map((await rowsByIds(numbers)).map((row) => [String(row.id), toListing(row)]));
   return ids.map((id) => byId.get(id)).filter((l) => l !== undefined);

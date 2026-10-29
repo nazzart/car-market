@@ -3,7 +3,7 @@ import { useLocale, useTranslations } from "next-intl";
 import FavoriteButton from "@/features/latest-cars/components/FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
 import { Link } from "@/i18n/navigation";
-import { formatAgo, formatNumber } from "@/lib/utils";
+import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 import { isFresh } from "../../lib/isFresh";
@@ -110,7 +110,7 @@ export default function ListingRow({ listing }: { listing: Listing }) {
 
         <div className="lg:w-48 shrink-0 flex lg:flex-col items-center lg:items-end justify-between gap-3">
           <div className="lg:text-right">
-            <div className="text-2xl font-bold text-gray-900 whitespace-nowrap">{formatNumber(listing.price)} €</div>
+            <div className="text-2xl font-bold text-gray-900 whitespace-nowrap">{formatPrice(listing.price)}</div>
             {listing.negotiable && <div className="text-xs font-medium text-emerald-700">{t("negotiable")}</div>}
           </div>
 

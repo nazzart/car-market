@@ -27,7 +27,7 @@ import SectionNav from "@/features/cars/car-view/components/SectionNav";
 import SpecsTable from "@/features/cars/car-view/components/SpecsTable";
 import { Link } from "@/i18n/navigation";
 import { placeName } from "@/lib/places";
-import { formatAgo, formatNumber } from "@/lib/utils";
+import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
@@ -44,13 +44,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: "listing" });
 
   const title = t("metaTitle", { title: listing.title, year: listing.year, price: formatNumber(listing.price) });
-  const description = `${listing.year} · ${formatNumber(listing.mileage)} km · ${listing.power} ZS · ${formatNumber(listing.price)} €`;
+  const description = `${listing.year} · ${formatNumber(listing.mileage)} km · ${listing.power} ZS · ${formatPrice(listing.price)}`;
 
   // картинку-превью добавляет opengraph-image.tsx рядом
   return {
     title,
     description,
-    openGraph: { title: `${listing.title}, ${listing.year} — ${formatNumber(listing.price)} €`, description, type: "article" },
+    openGraph: { title: `${listing.title}, ${listing.year} — ${formatPrice(listing.price)}`, description, type: "article" },
   };
 }
 
@@ -129,7 +129,7 @@ export default async function ListingPage({ params }: Props) {
         <div className="min-w-0 space-y-10">
           {/* Цена на телефоне — в сайдбаре на десктопе */}
           <div className="lg:hidden">
-            <div className="text-3xl font-bold tracking-tight">{formatNumber(listing.price)} €</div>
+            <div className="text-3xl font-bold tracking-tight">{formatPrice(listing.price)}</div>
             {listing.negotiable && (
               <div className="text-sm text-emerald-700 mt-1">{t("negotiable")}</div>
             )}

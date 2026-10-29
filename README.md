@@ -81,7 +81,8 @@ features/          Code grouped by feature: cars, dealers, favorites, compare, a
   */types.ts       Shared types (Listing, Dealer, User)
   */components/    Feature UI
 components/        Shared layout (header, footer) and UI pieces
-lib/               Helpers: formatting, geo, places (all Latvian towns and novadi), local storage store, colors
+lib/               Helpers: formatting (utils.ts), input checks (validate.ts), URL query (url.ts), geo, places
+                   (all Latvian towns and novadi), local storage store, colors
 lib/db/            Database: schema.ts (tables), migrations/ (generated SQL), index.ts (server-only client)
 messages/{lv,ru}/  Translations, one file per feature
 i18n/              next-intl routing and message loading
@@ -103,7 +104,10 @@ Conventions:
 - **Caching:** query results are cached with the tags `"listings"` / `"dealers"` for up to 5 minutes. A Server
   Action that changes data calls `updateTag("listings")` (or `"dealers"`) so pages update at once.
 - **Changing data:** `features/*/actions.ts` (Server Actions: check who is logged in, validate input) →
-  `features/*/api.ts` (SQL). Never trust ids or roles sent from the browser.
+  `features/*/api.ts` (SQL). Never trust ids or roles sent from the browser. Input checks shared by forms and
+  actions (`cleanText`, `isEmail`, `parseListingId`, `isRegNumber`…) are in `lib/validate.ts`.
+- **Shared helpers:** prices via `formatPrice()` (`lib/utils.ts`), query-string changes via `withQuery()`
+  (`lib/url.ts`), the card spec line "year · km · fuel · gearbox" via `useSpecLine()` (`features/cars/lib`).
 - **No copies of related data:** a listing references its dealer (`dealer_id`) and contact person (`contact_id`);
   the dealer's name and phone are read with a JOIN in `features/cars/api.ts`, so a change in `dealers` shows everywhere.
 - **Cache version:** after a schema change (or a change to what a cached query returns), bump `CACHE_VERSION` in

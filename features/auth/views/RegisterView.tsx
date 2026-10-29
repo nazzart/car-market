@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { isEmail, isRegNumber } from "@/lib/validate";
 import {
   Alert,
   Button,
@@ -23,7 +24,7 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import { signUp } from "../actions";
 import { useAuth } from "../store";
 import { AccountType } from "../types/authView";
-import { AuthHeader, TextLinkButton, isEmail, pillSx } from "../ui";
+import { AuthHeader, TextLinkButton, pillSx } from "../ui";
 
 type Props = {
   accountType: AccountType;
@@ -40,7 +41,6 @@ const passwordRules = [
 ];
 
 // Регистрационный номер компании в Латвии — 11 цифр
-const isRegNumber = (value: string) => /^\d{11}$/.test(value.replace(/\s/g, ""));
 
 export default function RegisterView({ accountType, onChangeType, onLogin, onRegistered, onLoggedIn }: Props) {
   const t = useTranslations("auth");

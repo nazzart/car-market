@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { collections } from "@/features/collections/config";
 import { setExcluded, useExcluded } from "@/features/moderation/store";
 import { useCollectionMembership } from "@/features/moderation/visibility";
-import { formatNumber } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 
 import { EmptyBox, Thumb, pillClass, useAdminData } from "../shared";
 
@@ -52,7 +52,7 @@ export default function CollectionsTab() {
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-gray-900 truncate">{l.title}, {l.year}</div>
                     <div className="text-xs text-gray-500">
-                      {formatNumber(l.price)} € · {l.power} ZS
+                      {formatPrice(l.price)} · {l.power} ZS
                       {isExcluded && <span className="text-red-700"> · {t("excluded")}</span>}
                     </div>
                   </div>

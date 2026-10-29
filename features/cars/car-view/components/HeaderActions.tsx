@@ -6,7 +6,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 import CompareButton from "@/features/compare/components/CompareButton";
 import { toggleFavorite, useIsFavorite } from "@/features/favorites/store";
-import { formatNumber } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 
 import ShareMenu from "./ShareMenu";
 
@@ -33,7 +33,7 @@ export default function HeaderActions({ listing }: Props) {
     <div className="flex items-center -mx-4 sm:mx-0">
       <CompareButton id={listing.id} variant="text" />
 
-      <ShareMenu title={`${title}, ${formatNumber(listing.price)} €`} className={buttonClass} />
+      <ShareMenu title={`${title}, ${formatPrice(listing.price)}`} className={buttonClass} />
 
       <button
         type="button"

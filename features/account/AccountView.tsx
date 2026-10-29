@@ -34,7 +34,7 @@ import { useVisibility } from "@/features/moderation/visibility";
 import ListingActions from "./listings/ListingActions";
 import type { ListingStatus } from "./listings/status";
 import { useOwnListings } from "./useOwnListings";
-import { formatAgo, formatNumber, initials } from "@/lib/utils";
+import { formatAgo, formatNumber, formatPrice, initials } from "@/lib/utils";
 
 // Пока статистики нет — считаем примерные значения от просмотров
 const phoneShows = (l: Listing) => Math.round((l.views ?? 0) * 0.12);
@@ -131,7 +131,7 @@ function ListingRow({
           <div className="font-semibold text-gray-900 truncate mt-1">
             {listing.title}, {listing.year}
           </div>
-          <div className="font-bold text-gray-900">{formatNumber(listing.price)} €</div>
+          <div className="font-bold text-gray-900">{formatPrice(listing.price)}</div>
 
           {/* продавцу — причина блокировки */}
           {moderation && (

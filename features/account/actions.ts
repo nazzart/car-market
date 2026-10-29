@@ -12,6 +12,7 @@ import { getDealerUncached } from "@/features/dealers/api";
 import { DAYS, type Dealer, type DealerContact, type OpeningHours } from "@/features/dealers/types";
 import { isPhone } from "@/lib/phone";
 import { findPlace } from "@/lib/places";
+import { cleanText, isListingId, isRegNumber, normalizeRegNumber } from "@/lib/validate";
 import { createSupabase } from "@/lib/supabase/server";
 
 import {
@@ -26,8 +27,7 @@ import {
 } from "./api";
 import { LISTING_STATUSES, type ListingStatus } from "./listings/status";
 
-const text = (value: unknown, max = 200) => (typeof value === "string" ? value.trim().slice(0, max) : "");
-const listingId = (id: unknown) => (typeof id === "string" && /^\d{1,15}$/.test(id) ? Number(id) : null);
+const text = cleanText;
 
 // Объявления вошедшего: у дилера — его компании, у частного лица — свои (включая скрытые и проданные)
 export async function loadOwnListings(): Promise<Listing[]> {
@@ -44,9 +44,8 @@ export async function loadOwnDealer(): Promise<Dealer | null> {
 
 export async function setListingStatus(id: string, status: ListingStatus): Promise<boolean> {
   const user = await requireUser();
-  const numeric = listingId(id);
-  if (numeric === null || !LISTING_STATUSES.includes(status)) return false;
-  const ok = await setOwnListingStatus(user, numeric, status);
+  if (!isListingId(id) || !LISTING_STATUSES.includes(status)) return false;
+  const ok = await setOwnListingStatus(user, Number(id), status);
   if (ok) updateTag("listings");
   return ok;
 }
@@ -54,7 +53,7 @@ export async function setListingStatus(id: string, status: ListingStatus): Promi
 // contactId "company" — основной телефон дилера
 export async function assignContact(ids: string[], contactId: string): Promise<boolean> {
   const user = await requireUser();
-  const numbers = (Array.isArray(ids) ? ids : []).map(listingId).filter((n) => n !== null).slice(0, 500);
+  const numbers = (Array.isArray(ids) ? ids : []).filter(isListingId).map(Number).slice(0, 500);
   if (!numbers.length) return false;
   const ok = await assignOwnContact(user, numbers, contactId === "company" ? null : text(contactId, 80));
   if (ok) updateTag("listings");
@@ -116,7 +115,7 @@ export async function saveDealerProfile(input: DealerFields & { email: string })
     phone: text(input?.phone, 40),
     type: input?.type === "official" ? "official" : "used",
     brands: Array.isArray(input?.brands) ? input.brands.map((b) => text(b, 40)).filter(Boolean).slice(0, 30) : [],
-    regNumber: text(input?.regNumber, 20).replace(/\s/g, ""),
+    regNumber: normalizeRegNumber(text(input?.regNumber, 20)),
     description: text(input?.description, 3000),
     address: text(input?.address, 200),
     city: text(input?.city, 60),
@@ -129,7 +128,7 @@ export async function saveDealerProfile(input: DealerFields & { email: string })
   const valid =
     fields.name &&
     isPhone(fields.phone) &&
-    /^\d{11}$/.test(fields.regNumber) &&
+    isRegNumber(fields.regNumber) &&
     fields.address &&
     findPlace(fields.city) &&
     Number.isFinite(fields.lat) &&

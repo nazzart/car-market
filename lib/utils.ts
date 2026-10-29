@@ -9,6 +9,11 @@ export function formatNumber(n: number) {
   return n.toLocaleString("ru-RU");
 }
 
+// 12500 → «12 500 €»
+export function formatPrice(n: number) {
+  return `${formatNumber(n)} €`;
+}
+
 // "Baltic Auto" → "BA"
 export function initials(name: string) {
   return name

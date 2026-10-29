@@ -11,6 +11,7 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
+import { withQuery } from "@/lib/url";
 import Pagination from "@/components/ui/Pagination";
 import { Segmented, Select, inputClass } from "@/features/cars/car-list/components/ui";
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -69,16 +70,9 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
   const searchOnMove = params.has("bounds");
 
   const setParams = (changes: Record<string, string | null>) => {
-    const next = new URLSearchParams(params.toString());
-    for (const [key, value] of Object.entries(changes)) {
-      if (value) next.set(key, value);
-      else next.delete(key);
-    }
     // другие фильтры — снова с первой страницы
-    if (!("page" in changes)) next.delete("page");
-
-    const qs = next.toString();
-    startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false }));
+    const href = withQuery(pathname, params, { page: null, ...changes });
+    startTransition(() => router.replace(href, { scroll: false }));
   };
   const setParam = (key: string) => (value: string | null) => setParams({ [key]: value });
 

@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 
-import { formatNumber } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 import ListingPhone from "./ListingPhone";
@@ -14,7 +14,7 @@ export default function MobileContactBar({ listing }: { listing: Listing }) {
       <div className="flex items-center gap-3 px-4 py-3">
         <div className="min-w-0">
           <div className="text-lg font-bold text-gray-900 whitespace-nowrap">
-            {formatNumber(listing.price)} €
+            {formatPrice(listing.price)}
           </div>
           {listing.negotiable && (
             <div className="text-xs text-emerald-700">{t("negotiable")}</div>

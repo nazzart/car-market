@@ -17,7 +17,7 @@ import { useListingsByIds } from "@/features/cars/hooks";
 import { useDealerLookup } from "@/features/dealers/hooks";
 import { useFavorites } from "@/features/favorites/store";
 import { Link } from "@/i18n/navigation";
-import { cn, formatNumber } from "@/lib/utils";
+import { cn, formatNumber, formatPrice } from "@/lib/utils";
 import { usePlaceName } from "@/lib/places";
 
 import { MAX_COMPARE, addToCompare, clearCompare, removeFromCompare, useCompare } from "../store";
@@ -97,7 +97,7 @@ export default function CompareView() {
       key: "main",
       title: t("sections.main"),
       rows: [
-        { key: "price", label: t("rows.price"), display: (l) => `${formatNumber(l.price)} €`, value: (l) => l.price, best: "min" },
+        { key: "price", label: t("rows.price"), display: (l) => `${formatPrice(l.price)}`, value: (l) => l.price, best: "min" },
         { key: "year", label: tSpecs("year"), display: (l) => l.year, value: (l) => l.year, best: "max" },
         {
           key: "mileage",
@@ -392,7 +392,7 @@ function CarHeader({ listing }: { listing: Listing }) {
           <span className="block text-sm font-semibold text-gray-900 leading-tight line-clamp-2 group-hover:text-primary transition">
             {listing.title}
           </span>
-          <span className="block text-sm font-semibold mt-0.5">{formatNumber(listing.price)} €</span>
+          <span className="block text-sm font-semibold mt-0.5">{formatPrice(listing.price)}</span>
         </span>
       </Link>
 

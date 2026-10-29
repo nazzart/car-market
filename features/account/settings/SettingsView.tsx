@@ -22,7 +22,6 @@ import { useAuth } from "@/features/auth/store";
 import { useRouter } from "@/i18n/navigation";
 import { deleteAccount, saveDealerProfile, saveProfile } from "@/features/account/actions";
 import { useOwnListings } from "@/features/account/useOwnListings";
-import { isEmail } from "@/features/auth/ui";
 import { brands } from "@/features/brands/data/brands";
 import { ChipGroup } from "@/features/cars/car-list/components/ui";
 import type { Dealer } from "@/features/dealers/types";
@@ -31,6 +30,7 @@ import { Link } from "@/i18n/navigation";
 import PlacePicker from "@/components/ui/PlacePicker";
 import { placeNameLv } from "@/lib/places";
 import { isPhone } from "@/lib/phone";
+import { isEmail, isRegNumber, normalizeRegNumber } from "@/lib/validate";
 
 import { LoggedOut } from "../AccountView";
 import AddressField from "./AddressField";
@@ -46,7 +46,6 @@ const LocationPicker = dynamic(() => import("./LocationPicker"), {
 });
 
 
-const isRegNumber = (value: string) => /^\d{11}$/.test(value.replace(/\s/g, ""));
 // Адрес хранится на латышском: кириллица — признак, что его ввели по-русски
 const hasCyrillic = (value: string) => /[Ѐ-ӿ]/.test(value);
 
@@ -520,7 +519,7 @@ function DealerSettingsForm({ user, dealer }: { user: User; dealer: Dealer }) {
       phone: form.phone.trim(),
       type: form.type,
       brands: form.type === "official" ? form.brands : [],
-      regNumber: form.regNumber.replace(/\s/g, ""),
+      regNumber: normalizeRegNumber(form.regNumber),
       description: form.description.trim(),
       address: parsedAddress!.street,
       city: parsedAddress!.city,

@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
-import { formatNumber } from "@/lib/utils";
+import { formatNumber, formatPrice } from "@/lib/utils";
 
 import { SellFormData } from "../types";
 
@@ -55,7 +55,7 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
           </div>
 
           <div className="text-xl font-bold mt-1">
-            {data.price ? `${formatNumber(Number(data.price))} €` : "— €"}
+            {data.price ? `${formatPrice(Number(data.price))}` : "— €"}
           </div>
 
           <div className="text-sm text-gray-500 mt-1">

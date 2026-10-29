@@ -6,9 +6,11 @@ import { Alert, Button, IconButton, InputAdornment, TextField } from "@mui/mater
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
+import { isEmail } from "@/lib/validate";
+
 import { signIn } from "../actions";
 import { useAuth } from "../store";
-import { AuthHeader, isEmail, pillSx } from "../ui";
+import { AuthHeader, pillSx } from "../ui";
 
 type Props = {
   onForgotPassword: () => void;

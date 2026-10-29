@@ -6,6 +6,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import { Link } from "@/i18n/navigation";
+import { withQuery } from "@/lib/url";
 import { cn, formatNumber } from "@/lib/utils";
 
 // Номера страниц: 1 … 5 [6] 7 … 20 — первая, последняя и соседние с текущей (помещается и на телефоне)
@@ -37,13 +38,7 @@ export default function Pagination({
 
   if (pageCount <= 1) return null;
 
-  const href = (p: number) => {
-    const next = new URLSearchParams(params.toString());
-    if (p > 1) next.set("page", String(p));
-    else next.delete("page");
-    const query = next.toString();
-    return query ? `${path}?${query}` : path;
-  };
+  const href = (p: number) => withQuery(path, params, { page: p > 1 ? String(p) : null });
 
   const from = (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, total);

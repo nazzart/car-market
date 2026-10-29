@@ -31,6 +31,13 @@ async function stockCounts(): Promise<Map<number, number>> {
 // внутренний номер, даты и поля блокировки наружу как есть не отдаём: дилер известен по slug, блокировка — объектом
 const HIDDEN = new Set(["id", "createdAt", "blockedReason", "blockedNote", "blockedAt"]);
 
+const toContact = ({ id, name, phone, role }: typeof dealerContacts.$inferSelect): DealerContact => ({
+  id,
+  name,
+  phone,
+  ...(role ? { role } : {}),
+});
+
 function toDealer(row: Row, contacts: DealerContact[], carsInStock: number): Dealer {
   // необязательные поля без значения — undefined, как в типе Dealer
   const fields = Object.fromEntries(Object.entries(row).filter(([key, value]) => value !== null && !HIDDEN.has(key)));
@@ -55,13 +62,7 @@ const catalog = unstable_cache(
       stockCounts(),
     ]);
     return rows.map((row) =>
-      toDealer(
-        row,
-        contacts
-          .filter((c) => c.dealerId === row.id)
-          .map(({ id, name, phone, role }) => ({ id, name, phone, ...(role ? { role } : {}) })),
-        stock.get(row.id) ?? 0
-      )
+      toDealer(row, contacts.filter((c) => c.dealerId === row.id).map(toContact), stock.get(row.id) ?? 0)
     );
   },
   ["dealers", CACHE_VERSION, "catalog"],
@@ -82,11 +83,7 @@ export async function getDealerUncached(slug: string): Promise<Dealer | undefine
     db.select().from(dealerContacts).where(eq(dealerContacts.dealerId, row.id)).orderBy(asc(dealerContacts.position)),
     db.select({ n: count() }).from(listings).where(and(eq(listings.dealerId, row.id), published)),
   ]);
-  return toDealer(
-    row,
-    contacts.map(({ id, name, phone, role }) => ({ id, name, phone, ...(role ? { role } : {}) })),
-    stock?.n ?? 0
-  );
+  return toDealer(row, contacts.map(toContact), stock?.n ?? 0);
 }
 
 // Весь каталог, включая заблокированных (модерация). Страница /dealers — searchDealers()

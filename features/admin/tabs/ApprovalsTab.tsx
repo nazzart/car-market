@@ -8,7 +8,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { RiskFlag, riskFlags } from "@/features/moderation/riskFlags";
 import { BlockReason, approveListing } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
-import { cn, formatAgo, formatNumber } from "@/lib/utils";
+import { cn, formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
 import { EmptyBox, Thumb, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
@@ -52,7 +52,7 @@ export default function ApprovalsTab() {
                   {l.title}, {l.year}
                 </Link>
                 <div className="text-sm text-gray-600">
-                  <span className="font-medium text-gray-900">{formatNumber(l.price)} €</span> ·{" "}
+                  <span className="font-medium text-gray-900">{formatPrice(l.price)}</span> ·{" "}
                   {formatNumber(l.mileage)} km · {sellerOf(l, t("table.private"))} · {formatAgo(l.postedMinutesAgo, locale)}
                 </div>
 

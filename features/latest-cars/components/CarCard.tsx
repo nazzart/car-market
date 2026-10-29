@@ -3,12 +3,13 @@ import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined
 import { useLocale, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { formatAgo, formatNumber } from "@/lib/utils";
+import { formatAgo, formatPrice } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 
 import FreshBadge from "@/features/cars/car-list/components/FreshBadge";
 import { isFresh } from "@/features/cars/lib/isFresh";
+import { useSpecLine } from "@/features/cars/lib/useSpecLine";
 
 import FavoriteButton from "./FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
@@ -16,11 +17,11 @@ import { usePlaceName } from "@/lib/places";
 
 export default function CarCard({ listing }: { listing: Listing }) {
   const t = useTranslations("common");
-  const tOptions = useTranslations("options");
+  const specLine = useSpecLine();
   const placeName = usePlaceName();
   const locale = useLocale();
 
-  const { id, title, year, price, mileage } = listing;
+  const { id, title, price } = listing;
   const image = listing.images[0];
 
   return (
@@ -45,7 +46,7 @@ export default function CarCard({ listing }: { listing: Listing }) {
 
         <div className="pt-3 space-y-0.5">
           <div className="text-lg font-semibold text-gray-900">
-            {formatNumber(price)} €
+            {formatPrice(price)}
           </div>
 
           <div className="text-gray-900 truncate group-hover:text-primary transition">
@@ -53,8 +54,7 @@ export default function CarCard({ listing }: { listing: Listing }) {
           </div>
 
           <div className="text-sm text-gray-500 truncate">
-            {year} · {formatNumber(mileage)} {t("units.km")} · {tOptions(`fuel.${listing.fuel}`)} ·{" "}
-            {tOptions(`transmission.${listing.transmission}`)}
+            {specLine(listing)}
           </div>
 
           <div className="text-xs text-gray-500 pt-1">

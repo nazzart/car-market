@@ -2,7 +2,7 @@ import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 
 import { useLocale, useTranslations } from "next-intl";
 
-import { formatAgo, formatNumber } from "@/lib/utils";
+import { formatAgo, formatPrice } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 import ListingPhone, { ContactPerson } from "./ListingPhone";
@@ -19,7 +19,7 @@ export default function ContactCard({ listing }: { listing: Listing }) {
     <div>
       <div className="rounded-2xl border border-gray-200 p-6 shadow-xl shadow-black/5">
         <div className="text-3xl font-bold tracking-tight text-gray-900">
-          {formatNumber(listing.price)} €
+          {formatPrice(listing.price)}
         </div>
 
         {listing.negotiable && (

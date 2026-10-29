@@ -6,14 +6,12 @@ import { updateTag } from "next/cache";
 import { headers } from "next/headers";
 
 import { createSupabase } from "@/lib/supabase/server";
+import { cleanText, isEmail, isRegNumber, normalizeRegNumber } from "@/lib/validate";
 
 import { type SignUpMeta, createProfile, getSessionUser, loadUser } from "./api";
 import type { User } from "./types";
 
 export type AuthResult = { user: User } | { error: "invalid" | "exists" | "weak" | "rateLimit" | "failed" };
-
-const isEmail = (value: unknown): value is string =>
-  typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 // Ошибки Supabase → понятные причины для формы
 function reason(code?: string): Exclude<AuthResult, { user: User }>["error"] {
@@ -43,13 +41,13 @@ export type SignUpInput = SignUpMeta & { email: string; password: string };
 // Регистрация. Пока подтверждение email в Supabase выключено — пользователь сразу входит.
 // Когда включим (с почтой через Resend) — вернётся confirmEmail: «проверьте почту»
 export async function signUp(input: SignUpInput): Promise<AuthResult | { confirmEmail: true }> {
-  const name = typeof input?.name === "string" ? input.name.trim().slice(0, 120) : "";
+  const name = cleanText(input?.name, 120);
   const type = input?.type === "dealer" ? "dealer" : "individual";
-  const regNumber = typeof input?.regNumber === "string" ? input.regNumber.replace(/\s/g, "") : undefined;
+  const regNumber = typeof input?.regNumber === "string" ? normalizeRegNumber(input.regNumber) : undefined;
   if (!name || !isEmail(input.email) || typeof input.password !== "string" || input.password.length < 8) {
     return { error: "failed" };
   }
-  if (type === "dealer" && !/^\d{11}$/.test(regNumber ?? "")) return { error: "failed" };
+  if (type === "dealer" && !isRegNumber(regNumber)) return { error: "failed" };
 
   const meta: SignUpMeta = { type, name, ...(type === "dealer" ? { regNumber } : {}) };
   const supabase = await createSupabase();

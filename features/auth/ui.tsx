@@ -1,7 +1,5 @@
 // Общие элементы окон входа и регистрации
 
-export const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-
 // Кнопки-«таблетки» в стиле сайта
 export const pillSx = {
   height: 48,

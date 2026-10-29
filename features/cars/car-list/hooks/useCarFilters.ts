@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { withQuery } from "@/lib/url";
 
 import { FILTER_KEYS } from "../../config/filterOptions";
 
@@ -17,42 +18,25 @@ export function useCarFilters() {
   const params = useSearchParams();
   const startTransition = useContext(SearchTransitionContext);
 
-  const apply = (newParams: URLSearchParams) => {
-    const query = newParams.toString();
-    const base = pathname.startsWith("/cars") ? pathname : "/cars";
-
-    // replace + scroll: false — фильтры не засоряют историю и не прыгают наверх
-    const navigate = () => router.replace(query ? `${base}?${query}` : base, { scroll: false });
+  // replace + scroll: false — фильтры не засоряют историю и не прыгают наверх
+  const apply = (changes: Record<string, string | null>) => {
+    const href = withQuery(pathname.startsWith("/cars") ? pathname : "/cars", params, changes);
+    const navigate = () => router.replace(href, { scroll: false });
     if (startTransition) startTransition(navigate);
     else navigate();
   };
 
-  const updateFilter = (key: string, value: string | null) => {
-    const newParams = new URLSearchParams(params.toString());
+  const updateFilter = (key: string, value: string | null) =>
+    apply({
+      [key]: value,
+      // модель зависит от марки, окрестности — от места
+      ...(key === "brand" ? { model: null } : {}),
+      ...(key === "place" && !value ? { area: null } : {}),
+      // другие фильтры или сортировка — снова с первой страницы (вид списка/плитки страницу не меняет)
+      ...(key !== "view" ? { page: null } : {}),
+    });
 
-    if (!value) {
-      newParams.delete(key);
-    } else {
-      newParams.set(key, value);
-    }
-
-    // модель зависит от марки, окрестности — от места
-    if (key === "brand") newParams.delete("model");
-    if (key === "place" && !value) newParams.delete("area");
-    // другие фильтры или сортировка — снова с первой страницы (вид списка/плитки страницу не меняет)
-    if (key !== "view") newParams.delete("page");
-
-    apply(newParams);
-  };
-
-  const resetFilters = () => {
-    const newParams = new URLSearchParams(params.toString());
-
-    for (const key of FILTER_KEYS) newParams.delete(key);
-    newParams.delete("page");
-
-    apply(newParams);
-  };
+  const resetFilters = () => apply(Object.fromEntries([...FILTER_KEYS, "page"].map((key) => [key, null])));
 
   const activeCount = FILTER_KEYS.filter((key) => key !== "area" && params.get(key)).length;
 

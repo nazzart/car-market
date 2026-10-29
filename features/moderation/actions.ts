@@ -9,6 +9,8 @@ import type { User } from "@/features/auth/types";
 import { getAllListings } from "@/features/cars/api";
 import type { Listing } from "@/features/cars/types";
 import { collections } from "@/features/collections/config";
+import { getDealers } from "@/features/dealers/api";
+import type { Dealer } from "@/features/dealers/types";
 import { cleanText, parseListingId } from "@/lib/validate";
 
 import type { AccountKey } from "./accounts";
@@ -25,18 +27,19 @@ const accountOf = (account: unknown): AccountKey => {
   return account as AccountKey;
 };
 
-export type AdminData = { listings: Listing[]; users: User[]; reports: Report[]; log: LogEntry[] };
+export type AdminData = { listings: Listing[]; users: User[]; dealers: Dealer[]; reports: Report[]; log: LogEntry[] };
 
 // Всё для /admin одним запросом. TODO(admin): постранично и с поиском, когда объявлений станут тысячи
 export async function loadAdminData(): Promise<AdminData> {
   await requireAdmin();
-  const [listings, users, reports, log] = await Promise.all([
+  const [listings, users, dealers, reports, log] = await Promise.all([
     getAllListings(),
     getRegisteredUsers(),
+    getDealers(),
     moderation.getReports(),
     moderation.getModerationLog(),
   ]);
-  return { listings, users, reports, log };
+  return { listings, users, dealers, reports, log };
 }
 
 export async function blockListing(id: string, reason: BlockReason, note?: string) {

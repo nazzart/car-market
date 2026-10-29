@@ -13,6 +13,7 @@ import type { FavoriteEntry } from "./types";
 
 let entries: FavoriteEntry[] = [];
 let loggedIn = false;
+let authKnown = false; // профиль ещё грузится после открытия страницы — пока неизвестно, вошёл ли пользователь
 let ready = false; // список вошедшего пользователя загружен
 const listeners = new Set<() => void>();
 const set = (next: FavoriteEntry[]) => {
@@ -30,8 +31,12 @@ const send = (request: Promise<void>) => request.catch(reload);
 
 // Загружает избранное вошедшего пользователя и очищает при выходе. Один раз — в app/[locale]/layout.tsx
 export function FavoritesSync() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const userId = user?.id;
+
+  useEffect(() => {
+    authKnown = !loading;
+  }, [loading]);
 
   useEffect(() => {
     loggedIn = Boolean(userId);
@@ -54,6 +59,8 @@ export function removeFavorite(id: string) {
 }
 
 export function toggleFavorite(listing: { id: string; price: number }) {
+  // сразу после загрузки страницы сессия ещё не прочитана — не просим вошедшего пользователя войти
+  if (!authKnown) return;
   if (!loggedIn) return openAuthModal();
   if (entries.some((e) => e.id === listing.id)) return removeFavorite(listing.id);
   set([{ id: listing.id, price: listing.price, addedAt: Date.now() }, ...entries]);

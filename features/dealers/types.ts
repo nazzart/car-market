@@ -44,3 +44,7 @@ export type DealerPin = Pick<Dealer, "slug" | "name" | "lat" | "lng" | "address"
 
 // Видимая область карты дилеров (поиск при перемещении карты)
 export type MapBounds = { north: number; south: number; east: number; west: number };
+
+// Дилер в общем каталоге, который получает каждая страница: только то, что видно всем.
+// Полные данные (адрес, контакты, блокировка) — на странице дилера, в кабинете и в модерации
+export type DealerSummary = Pick<Dealer, "slug" | "name"> & { verified: boolean };

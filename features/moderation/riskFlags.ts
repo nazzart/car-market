@@ -3,7 +3,8 @@ import { Listing } from "@/features/cars/types";
 // Автоматические проверки нового объявления — подсказки модератору, не решение
 export type RiskFlag = "contactInText" | "priceLow" | "newSeller" | "noPhotos" | "duplicate";
 
-const CONTACT = /(\+?371[\s-]?)?\b2\d[\s-]?\d{3}[\s-]?\d{3}\b|https?:\/\/|www\.|[\w.-]+@[\w-]+\.\w+|whatsapp|telegram/i;
+// латвийский мобильный — 8 цифр с «2» в начале, с пробелами или дефисами где угодно («2000 1234», «20 001 234»)
+const CONTACT = /(\+?371[\s-]?)?\b2(?:[\s-]?\d){7}\b|https?:\/\/|www\.|[\w.-]+@[\w-]+\.\w+|whatsapp|telegram/i;
 
 const median = (values: number[]) => {
   const sorted = [...values].sort((a, b) => a - b);

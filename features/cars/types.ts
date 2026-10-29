@@ -37,6 +37,7 @@ export type Listing = {
   dealer?: string; // slug дилера
   userId?: string; // владелец — зарегистрированный частный продавец, uuid (у дилерских — dealer)
   contactId?: string; // контактное лицо дилера (DealerContact.id); нет — основной телефон компании
+  contactPerson?: { name: string; role?: string }; // кто отвечает на звонки (для карточки и страницы объявления)
   city: string; // ключ места из lib/places.ts (город или край)
   postedMinutesAgo: number;
   phone: string;

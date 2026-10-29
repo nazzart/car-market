@@ -15,8 +15,7 @@ import Button from "@/components/ui/Button";
 import { ContactForm } from "@/features/account/settings/ContactsEditor";
 import { addContact, completeProfile, saveCompanyPhone } from "@/features/account/actions";
 import { openAuthModal, useAuth } from "@/features/auth/store";
-import { useDealerContacts } from "@/features/dealers/contacts";
-import { useOwnDealer } from "@/features/dealers/useOwnDealer";
+import { refreshOwnDealer, useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { Link } from "@/i18n/navigation";
 import PlacePicker from "@/components/ui/PlacePicker";
 import { usePlaceName } from "@/lib/places";
@@ -41,8 +40,11 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
   const [adding, setAdding] = useState(false); // дилер: новый контакт прямо из формы
 
   const isDealer = user?.type === "dealer";
-  const dealerCity = useOwnDealer()?.city ?? "";
-  const { contacts, phone: companyPhone } = useDealerContacts(user?.dealerSlug);
+  const ownDealer = useOwnDealer();
+  const dealerCity = ownDealer?.city ?? "";
+  const contacts = ownDealer?.contacts ?? [];
+  // пустой телефон — дилер ещё не указал его (форма попросит и сохранит в профиль)
+  const companyPhone = ownDealer?.phone ?? "";
   const selectedContact = contacts.find((c) => c.id === data.contactId);
   // нет ни телефона компании, ни менеджеров — телефон нужно ввести (и он сохранится в профиль)
   const needsCompanyPhone = isDealer && !companyPhone;
@@ -107,7 +109,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
                 onChange={(e) => updateField("sellerPhone", e.target.value)}
                 onBlur={() => {
                   // сохраняем в профиль, чтобы в следующий раз не вводить
-                  if (isPhone(data.sellerPhone)) saveCompanyPhone(data.sellerPhone.trim());
+                  if (isPhone(data.sellerPhone)) saveCompanyPhone(data.sellerPhone.trim()).then((ok) => ok && refreshOwnDealer());
                 }}
                 error={phoneError}
                 helperText={phoneError ? t("phoneError") : t("savedToProfile")}
@@ -145,7 +147,10 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
               onSave={async (contact) => {
                 // сохраняем в профиль дилера сразу — контакт пригодится и для других объявлений
                 const id = await addContact(contact).catch(() => null);
-                if (id) updateField("contactId", id);
+                if (id) {
+                  updateField("contactId", id);
+                  refreshOwnDealer();
+                }
                 setAdding(false);
               }}
             />

@@ -8,7 +8,7 @@ import { useDealerLookup } from "@/features/dealers/hooks";
 import type { AccountBlock, Moderation } from "./types";
 
 // Итоговое состояние объявления: решения модератора важнее статуса от продавца.
-// Всё приходит с сервера в самом объявлении; правило «видно покупателям» — то же, что published в features/cars/api.ts
+// Всё приходит с сервера в самом объявлении; правило «видно покупателям» — то же, что published в features/cars/api
 export type Visibility = {
   seller: ListingStatus;
   moderation?: Moderation;

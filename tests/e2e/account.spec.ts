@@ -1,0 +1,58 @@
+import { expect, test } from "@playwright/test";
+
+import { PASSWORD, firstListingPath, press, qaEmail, register, toggle } from "./helpers";
+
+test("private account: settings, favorites with undo, delete account", async ({ page }) => {
+  const email = qaEmail("private");
+  await register(page, "private", { name: "Qa Privats", email });
+  await expect(page.getByRole("banner")).not.toContainText("Ienākt");
+
+  // настройки: без телефона не сохраняется, с телефоном — сохраняется и остаётся после перезагрузки
+  await page.goto("/account/profile");
+  await page.getByLabel("Uzvārds").fill("Testers");
+  await page.getByRole("button", { name: "Saglabāt", exact: true }).click();
+  await expect(page.locator(".MuiSnackbar-root")).toContainText("Izlabojiet kļūdas");
+  await page.locator('input[type="tel"]').fill("+371 2000 4321");
+  await page.getByRole("button", { name: "Saglabāt", exact: true }).click();
+  await expect(page.locator(".MuiSnackbar-root")).toContainText("Izmaiņas saglabātas");
+  await page.reload();
+  await expect(page.getByLabel("Uzvārds")).toHaveValue("Testers");
+
+  // избранное: добавить, удалить, отменить
+  await page.goto(await firstListingPath(page));
+  await press(toggle(page, /Saglabāt/));
+  // сохранение уходит на сервер (Server Action) — дождаться, иначе переход оборвёт запрос
+  await page.waitForLoadState("networkidle");
+  await page.goto("/favorites");
+  await expect(page.locator("main article")).toHaveCount(1);
+  await page.getByRole("button", { name: "Izņemt no izlases" }).click();
+  await expect(page.getByText("Izlase pagaidām ir tukša")).toBeVisible();
+  await page.getByRole("button", { name: "Atsaukt" }).click();
+  await expect(page.locator("main article")).toHaveCount(1);
+
+  // удаление аккаунта: неверный пароль — ошибка, верный — выход на главную
+  await page.goto("/account/profile");
+  await page.getByRole("button", { name: "Dzēst kontu" }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.locator('input[type="password"]').fill("wrong-password");
+  await dialog.locator('input[type="password"]').press("Enter");
+  await expect(dialog).toContainText("Nepareiza parole");
+  await dialog.locator('input[type="password"]').fill(PASSWORD);
+  await dialog.locator('input[type="password"]').press("Enter");
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("banner")).toContainText("Ienākt");
+});
+
+test("company account: incomplete profile notice and registration number in settings", async ({ page }) => {
+  await register(page, "company", { name: "QA E2E Salons", email: qaEmail("company"), regNumber: "40003999999" });
+
+  await page.goto("/account");
+  await expect(page.getByText("Pabeidziet uzņēmuma profilu")).toBeVisible();
+
+  await page.goto("/account/profile");
+  await expect(page.getByLabel(/Reģistrācijas numurs/)).toHaveValue("40003999999");
+  // без адреса страница дилера не сохраняется
+  await page.locator('input[type="tel"]').fill("+371 2000 9999");
+  await page.getByRole("button", { name: "Saglabāt", exact: true }).click();
+  await expect(page.getByText("Norādiet adresi")).toBeVisible();
+});

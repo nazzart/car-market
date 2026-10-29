@@ -1,5 +1,6 @@
 import type { ListingStats } from "@/features/cars/types";
-import type { Dealer } from "@/features/dealers/types";
+import type { DealerSummary } from "@/features/dealers/types";
 
-// Общие данные из базы для всех страниц (CatalogProvider): каталог дилеров и счётчики объявлений
-export type Catalog = { dealers: Dealer[]; stats: ListingStats };
+// Общие данные из базы для всех страниц (CatalogProvider): названия дилеров и счётчики объявлений.
+// Видны любому посетителю в коде страницы — только публичное
+export type Catalog = { dealers: DealerSummary[]; stats: ListingStats };

@@ -5,7 +5,6 @@ import { useState } from "react";
 import type { BadgeTone } from "@/components/ui/types";
 import CarPhoto from "@/components/ui/CarPhoto";
 import { Listing } from "@/features/cars/types";
-import { useDealerCatalog, useDealerLookup } from "@/features/dealers/hooks";
 import { blockAccount, blockListing, rejectListing, removeListing, useAdminState, useReports } from "@/features/moderation/store";
 import { type BlockReason } from "@/features/moderation/types";
 import { useVisibility } from "@/features/moderation/visibility";
@@ -34,8 +33,9 @@ export function useAdminData() {
   const listings = state?.listings ?? [];
   const byId = new Map(listings.map((l) => [l.id, l]));
   const listingOf = (id: string) => byId.get(id);
-  const dealers = useDealerCatalog();
-  const dealerOf = useDealerLookup();
+  const dealers = state?.dealers ?? [];
+  const dealerBySlug = new Map(dealers.map((d) => [d.slug, d]));
+  const dealerOf = (slug: string) => dealerBySlug.get(slug);
   const users = state?.users ?? [];
 
   return {

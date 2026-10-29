@@ -10,7 +10,7 @@ import type { Listing } from "@/features/cars/types";
 type CollectionConfig = {
   slug: string;
   icon: SvgIconComponent;
-  // правило попадания объявления в подборку. То же правило на SQL — collectionWhere в features/cars/api.ts
+  // правило попадания объявления в подборку. То же правило на SQL — collectionWhere в features/cars/api
   matches: (listing: Listing) => boolean;
 };
 

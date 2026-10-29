@@ -12,7 +12,7 @@ import { CACHE_VERSION } from "@/lib/db/cacheVersion";
 
 import { isListed } from "./lib/listed";
 import { getOpenStatus } from "./lib/openStatus";
-import type { Dealer, DealerContact, DealerPin } from "./types";
+import type { Dealer, DealerContact, DealerPin, DealerSummary } from "./types";
 
 const { dealers, dealerContacts, listings } = schema;
 
@@ -86,9 +86,17 @@ export async function getDealerUncached(slug: string): Promise<Dealer | undefine
   return toDealer(row, contacts.map(toContact), stock?.n ?? 0);
 }
 
-// Весь каталог, включая заблокированных (модерация). Страница /dealers — searchDealers()
+// Весь каталог, включая заблокированных, с заметками модератора — только для модерации (requireAdmin)
 export async function getDealers(): Promise<Dealer[]> {
   return catalog();
+}
+
+// Общий каталог для каждой страницы (CatalogProvider): название и значок «Проверенный» у незаблокированных.
+// Ничего лишнего — эти данные видит любой посетитель в коде страницы
+export async function getDealerSummaries(): Promise<DealerSummary[]> {
+  return (await catalog())
+    .filter((d) => !d.blocked)
+    .map(({ slug, name, verified }) => ({ slug, name, verified: Boolean(verified) }));
 }
 
 // Дилеры, видимые покупателям: с заполненным профилем и не заблокированные (lib/listed.ts)

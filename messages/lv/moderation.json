@@ -193,6 +193,7 @@
       "unverify": "Atcelt pārbaudi",
       "block": "Bloķēt kontu",
       "unblock": "Atbloķēt kontu"
-    }
+    },
+    "actionFailed": "Neizdevās saglabāt — mēģiniet vēlreiz. Dati ir atjaunoti."
   }
 }

@@ -5,10 +5,10 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // База данных — только из features/*/api.ts (там пишутся SQL-запросы); демо-данные — только для npm run db:seed
+  // База данных — только из features/*/api.ts (или папки features/*/api/) (там пишутся SQL-запросы); демо-данные — только для npm run db:seed
   {
     files: ["**/*.{ts,tsx}"],
-    ignores: ["features/*/api.ts", "features/*/data/**", "lib/db/**", "scripts/**"],
+    ignores: ["features/*/api.ts", "features/*/api/**", "features/*/data/**", "lib/db/**", "scripts/**"],
     rules: {
       "no-restricted-imports": [
         "error",

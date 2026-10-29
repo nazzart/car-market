@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 
 import { loadOwnDealer } from "@/features/account/actions";
 import { useAuth } from "@/features/auth/store";
@@ -8,7 +8,6 @@ import type { User } from "@/features/auth/types";
 import { placePointOrRiga } from "@/lib/places";
 import { useServerData } from "@/lib/useServerData";
 
-import { useDealerLookup } from "./hooks";
 import type { Dealer } from "./types";
 
 // Страница дилера вошедшей компании. Недостающие поля — пустые значения вместо undefined
@@ -30,23 +29,35 @@ function resolveDealer(user: User, base: Dealer | undefined): Dealer {
   };
 }
 
-// Своя страница дилера — с сервера, мимо кэша: каталог в layout обновляется не сразу (новый дилер,
-// правка из базы). Пока она грузится — данные из каталога. null — не вошёл или это не дилер
+// Номер версии: после изменения своей страницы (новый контакт, телефон) — перечитать её
+let revision = 0;
+const listeners = new Set<() => void>();
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+};
+
+export function refreshOwnDealer() {
+  revision++;
+  listeners.forEach((l) => l());
+}
+
+// Своя страница дилера — с сервера (контакты, адрес, телефон). null — не вошёл или это не дилер
 export function useOwnDealerState(): { dealer: Dealer | null; loading: boolean } {
   const { user } = useAuth();
-  const cached = useDealerLookup()(user?.dealerSlug);
   const isDealer = user?.type === "dealer";
+  const version = useSyncExternalStore(subscribe, () => revision, () => 0);
   // ttl: 0 — при каждом открытии кабинета или настроек заново
   const fresh = useServerData(
-    isDealer && user ? `own-dealer:${user.id}` : null,
+    isDealer && user ? `own-dealer:${user.id}:${version}` : null,
     () => loadOwnDealer().catch(() => null),
-    { ttl: 0, keepPrevious: false }
+    { ttl: 0 }
   );
 
   return useMemo(() => {
     if (!isDealer || !user) return { dealer: null, loading: false };
-    return { dealer: resolveDealer(user, fresh ?? cached), loading: fresh === undefined };
-  }, [isDealer, user, fresh, cached]);
+    return { dealer: resolveDealer(user, fresh ?? undefined), loading: fresh === undefined };
+  }, [isDealer, user, fresh]);
 }
 
 export function useOwnDealer(): Dealer | null {

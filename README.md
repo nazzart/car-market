@@ -31,6 +31,8 @@ npm run dev          # http://localhost:3000
 | `npm run build` | Production build (also type-checks) |
 | `npm start` | Run the production build |
 | `npm run lint` | ESLint |
+| `npm test` | Unit tests (Vitest) for pure logic: input checks, URLs, places and distances, visibility and collection rules, opening hours, risk flags. Fast, no database |
+| `npm run test:e2e` | Builds the site and runs browser tests (Playwright, your installed Chrome) on port 3100: search, listing, dealers, compare, registration, settings, favorites, delete account. Uses the real database: creates `qa.e2e-…@bestauto-qa.lv` accounts and deletes them afterwards |
 | `npm run db:generate` | After changing `lib/db/schema.ts`: writes a new SQL migration to `lib/db/migrations/` |
 | `npm run db:migrate` | Applies pending migrations to the database |
 | `npm run db:seed` | Loads demo dealers and listings into an empty database (`-- --reset` replaces demo data — never touches registered accounts and their listings; `-- --reset --generate 100` adds 100 random listings for testing search and pagination) |
@@ -94,7 +96,7 @@ Conventions:
 
 - All user-facing text lives in `messages/` — never hard-code strings in components.
 - The brand color is defined once in `lib/colors.ts`.
-- **SQL lives in `features/{cars,dealers}/api.ts`** (server-only). Server pages call its async functions
+- **SQL lives in `features/*/api.ts`** (server-only; `features/cars/api/` is a folder: `rows.ts` shared mapping and the published rule, `search.ts` the /cars search, `index.ts` the rest). Server pages call its async functions
   (`getListing`, `searchListings`…); client components use the hooks in `hooks.ts`, which load only what the page
   needs (`useListingsByIds`, `useDealerLookup`…). The browser never receives the whole catalogue.
 - **`/cars` and `/dealers` search runs on the server:** filters in the URL become a SQL `WHERE`, results come
@@ -113,6 +115,9 @@ Conventions:
   danger, white; sizes sm–xl; `href` makes it a link), `Dialog` / `ConfirmDialog`, and `useToast()` — all in
   `components/ui`. MUI is used only for inputs, selects, menus, popovers, drawers and tooltips, styled once in
   `lib/theme.ts` — no `sx` styling of MUI in feature code beyond icon sizes.
+- **Tests:** a bug fix or new rule in pure logic gets a unit test in `tests/unit/`; a new user flow gets a
+  Playwright test in `tests/e2e/`. In e2e tests, use `press()` for toggle buttons (it waits for hydration) and
+  find listings through `/cars` rather than fixed ids. Run both before pushing.
 - **Shared hooks** (`lib/`): `useServerData` (load via a Server Action after mount, with a shared short cache),
   `useDebouncedValue` / `useDebouncedCallback` (typing, map moves), `useCopyToClipboard`, `useNow`. For effects that
   must re-run only on specific changes but read the latest values, use React's `useEffectEvent` instead of
@@ -129,7 +134,7 @@ Conventions:
   `CarPhoto` (4:3 frame with the "no photo" fallback); "nothing here" → `EmptyState` (`box` or `hero`); loading →
   `Skeleton`; form fields → `components/ui/form.tsx`. All in `components/ui/`.
 - **No copies of related data:** a listing references its dealer (`dealer_id`) and contact person (`contact_id`);
-  the dealer's name and phone are read with a JOIN in `features/cars/api.ts`, so a change in `dealers` shows everywhere.
+  the dealer's name and phone are read with a JOIN in `features/cars/api/rows.ts`, so a change in `dealers` shows everywhere.
 - **Cache version:** after a schema change (or a change to what a cached query returns), bump `CACHE_VERSION` in
   `lib/db/cacheVersion.ts` — cached results survive restarts and deploys and would otherwise have the old shape.
 - **Schema changes:** edit `lib/db/schema.ts` → `npm run db:generate` → review the SQL → `npm run db:migrate`.

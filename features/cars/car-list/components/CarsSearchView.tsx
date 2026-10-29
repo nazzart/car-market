@@ -72,7 +72,7 @@ const views = [
   { value: "grid", label: "viewGrid", icon: GridViewOutlinedIcon },
 ];
 
-// Одна страница результатов, посчитанная сервером (searchListings в features/cars/api.ts)
+// Одна страница результатов, посчитанная сервером (searchListings в features/cars/api)
 export type SearchResultProps = {
   result: { items: Listing[]; total: number; page: number; pageCount: number };
   pageSize: number;
@@ -102,7 +102,7 @@ function SearchView({ result, pageSize, empty, pending }: SearchViewProps) {
   const sidebarRef = useFitToViewport<HTMLElement>();
 
   const dealerOf = useDealerLookup();
-  // только опубликованные — сервер уже отфильтровал (published в features/cars/api.ts)
+  // только опубликованные — сервер уже отфильтровал (published в features/cars/api)
   const results = result.items;
   const view = params.get("view") === "grid" ? "grid" : "list";
 

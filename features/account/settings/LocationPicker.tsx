@@ -5,7 +5,7 @@ import L from "leaflet";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-type Props = {
+type LocationPickerProps = {
   lat: number;
   lng: number;
   onChange: (lat: number, lng: number) => void;
@@ -22,7 +22,7 @@ const pin = L.divIcon({
 
 const round = (n: number) => Math.round(n * 1e5) / 1e5;
 
-function ClickToMove({ onChange }: Pick<Props, "onChange">) {
+function ClickToMove({ onChange }: Pick<LocationPickerProps, "onChange">) {
   useMapEvents({
     click: (e) => onChange(round(e.latlng.lat), round(e.latlng.lng)),
   });
@@ -30,7 +30,7 @@ function ClickToMove({ onChange }: Pick<Props, "onChange">) {
 }
 
 // Карта следует за меткой, если координаты поменялись снаружи (например, «Отменить»)
-function FollowMarker({ lat, lng }: Pick<Props, "lat" | "lng">) {
+function FollowMarker({ lat, lng }: Pick<LocationPickerProps, "lat" | "lng">) {
   const map = useMap();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function FollowMarker({ lat, lng }: Pick<Props, "lat" | "lng">) {
   return null;
 }
 
-function FlyToMarker({ lat, lng, focus }: Pick<Props, "lat" | "lng" | "focus">) {
+function FlyToMarker({ lat, lng, focus }: Pick<LocationPickerProps, "lat" | "lng" | "focus">) {
   const map = useMap();
   const lastFocus = useRef(focus);
 
@@ -54,7 +54,7 @@ function FlyToMarker({ lat, lng, focus }: Pick<Props, "lat" | "lng" | "focus">) 
 }
 
 // Точка дилера на карте: перетаскивание метки или клик по карте
-export default function LocationPicker({ lat, lng, onChange, focus }: Props) {
+export default function LocationPicker({ lat, lng, onChange, focus }: LocationPickerProps) {
   return (
     <MapContainer center={[lat, lng]} zoom={15} scrollWheelZoom={false} className="w-full h-full">
       <TileLayer

@@ -6,6 +6,14 @@ import { cn } from "@/lib/utils";
 // Заголовок страницы (h1) — тот же размер везде, где нет PageHeader (объявление, дилер, кабинет)
 export const pageTitleClass = "text-2xl sm:text-3xl font-semibold tracking-tight";
 
+type PageHeaderProps = {
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  back?: { href: string; label: string };
+  actions?: React.ReactNode;
+  className?: string;
+};
+
 // Шапка страницы: «← назад», заголовок, подзаголовок и, справа, элементы управления (сортировка, «Очистить»)
 export default function PageHeader({
   title,
@@ -13,13 +21,7 @@ export default function PageHeader({
   back,
   actions,
   className,
-}: {
-  title: React.ReactNode;
-  subtitle?: React.ReactNode;
-  back?: { href: string; label: string };
-  actions?: React.ReactNode;
-  className?: string;
-}) {
+}: PageHeaderProps) {
   return (
     <header className={cn("mb-6", className)}>
       {back && (

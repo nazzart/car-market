@@ -19,7 +19,7 @@ import { hasRating } from "@/features/dealers/lib/rating";
 import OpenStatus from "./OpenStatus";
 import VerifiedBadge from "./VerifiedBadge";
 
-type Props = {
+type DealerCardProps = {
   dealer: Dealer;
   active: boolean;
   onSelect: () => void;
@@ -28,7 +28,7 @@ type Props = {
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
-export default function DealerCard({ dealer, active, onSelect, onHover }: Props) {
+export default function DealerCard({ dealer, active, onSelect, onHover }: DealerCardProps) {
   const t = useTranslations("dealers");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");

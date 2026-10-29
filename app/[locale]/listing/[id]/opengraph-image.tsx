@@ -14,7 +14,9 @@ const CARMINE = "#A4343A";
 // TODO: подключить шрифт с латышскими буквами, когда будет свой статический хостинг шрифтов
 const group = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
-export default async function Image({ params }: { params: Promise<{ id: string }> }) {
+type ImageProps = { params: Promise<{ id: string }> };
+
+export default async function Image({ params }: ImageProps) {
   const { id } = await params;
   const listing = await getListing(id);
 

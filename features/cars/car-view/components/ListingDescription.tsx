@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useTranslations } from "next-intl";
 
-export default function ListingDescription({ text }: { text?: string }) {
+type ListingDescriptionProps = { text?: string };
+
+export default function ListingDescription({ text }: ListingDescriptionProps) {
   const t = useTranslations("listing.description");
   const ref = useRef<HTMLParagraphElement>(null);
   const [expanded, setExpanded] = useState(false);

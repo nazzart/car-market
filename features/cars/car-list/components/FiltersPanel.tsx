@@ -32,6 +32,13 @@ import LocationFilter from "./LocationFilter";
 
 const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
 
+type RangeInputsProps = {
+  fromKey?: string;
+  toKey: string;
+  unit: string;
+  grouped?: boolean;
+};
+
 // Поле «от–до». Неуправляемые input + key: значение применяется по blur/Enter,
 // а при сбросе фильтров поле пересоздаётся с новым значением из URL
 // grouped — цену и пробег показываем с разрядами: «40 000», год — как есть
@@ -40,12 +47,7 @@ function RangeInputs({
   toKey,
   unit,
   grouped = true,
-}: {
-  fromKey?: string;
-  toKey: string;
-  unit: string;
-  grouped?: boolean;
-}) {
+}: RangeInputsProps) {
   const t = useTranslations("cars.panel");
   const { params, updateFilter } = useCarFilters();
 
@@ -85,8 +87,10 @@ function RangeInputs({
   );
 }
 
+type FlagChipProps = { name: string };
+
 // Флажок-чип «да/нет» (в URL — "1")
-function FlagChip({ name }: { name: string }) {
+function FlagChip({ name }: FlagChipProps) {
   const tChips = useTranslations("cars.chips");
   const { params, updateFilter } = useCarFilters();
   const on = params.get(name) === "1";

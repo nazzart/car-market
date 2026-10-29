@@ -6,9 +6,11 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 
 import { youtubeId } from "@/lib/youtube";
 
+type ListingVideoProps = { url: string; title: string };
+
 // Видео продавца с YouTube. До клика — только превью: страница не тормозит,
 // а YouTube ничего не загружает, пока посетитель сам не нажмёт «смотреть»
-export default function ListingVideo({ url, title }: { url: string; title: string }) {
+export default function ListingVideo({ url, title }: ListingVideoProps) {
   const t = useTranslations("listing.video");
   const [playing, setPlaying] = useState(false);
   const id = youtubeId(url);

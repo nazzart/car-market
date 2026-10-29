@@ -5,7 +5,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import { cn } from "@/lib/utils";
 
-type Props = {
+type ScrollAreaProps = {
   children: React.ReactNode;
   className?: string;
   moreLabel: string; // подпись кнопки «Ещё фильтры»
@@ -13,7 +13,7 @@ type Props = {
 
 // Прокручиваемая область с подсказками: тень сверху, затемнение снизу и кнопка «ещё»,
 // пока ниже есть скрытое содержимое
-export default function ScrollArea({ children, className, moreLabel }: Props) {
+export default function ScrollArea({ children, className, moreLabel }: ScrollAreaProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ top: false, bottom: false });
 

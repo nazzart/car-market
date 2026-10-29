@@ -11,16 +11,8 @@ import { useDealerLookup } from "@/features/dealers/hooks";
 import { usePlaceName } from "@/lib/places";
 import { formatNumber, formatPrice } from "@/lib/utils";
 
-export type Row = {
-  key: string;
-  label: string;
-  display: (l: Listing) => React.ReactNode;
-  // значение для поиска лучшего и сравнения «есть ли отличия»
-  value: (l: Listing) => string | number | undefined;
-  best?: "min" | "max";
-};
+import type { CompareRow, CompareSection } from "../types";
 
-export type Section = { key: string; title: string; rows: Row[] };
 
 // «06.2027» → 202706, чтобы сравнивать даты техосмотра
 const monthValue = (date?: string) => {
@@ -32,14 +24,14 @@ const monthValue = (date?: string) => {
 const damagedParts = (l: Listing) => (l.damages ? Object.keys(l.damages).length : undefined);
 
 // лучшее значение в строке; нет лучшего, если все равны или данных мало
-export function bestValue(row: Row, cars: Listing[]) {
+export function bestValue(row: CompareRow, cars: Listing[]) {
   if (!row.best || cars.length < 2) return undefined;
   const values = cars.map(row.value).filter((v): v is number => typeof v === "number");
   if (values.length < 2 || new Set(values).size < 2) return undefined;
   return row.best === "min" ? Math.min(...values) : Math.max(...values);
 }
 
-export function useCompareSections(cars: Listing[]): Section[] {
+export function useCompareSections(cars: Listing[]): CompareSection[] {
   const t = useTranslations("compare");
   const tSpecs = useTranslations("listing.specs");
   const tCommon = useTranslations("common");
@@ -50,7 +42,7 @@ export function useCompareSections(cars: Listing[]): Section[] {
   const dash = <span className="text-gray-300">—</span>;
   const yesNo = (v?: boolean) => (v === undefined ? dash : v ? t("yes") : t("no"));
 
-  const sections: Section[] = [
+  const sections: CompareSection[] = [
     {
       key: "main",
       title: t("sections.main"),
@@ -191,7 +183,7 @@ export function useCompareSections(cars: Listing[]): Section[] {
         ...Object.values(equipmentGroups)
           .flat()
           .filter((key) => cars.some((l) => l.equipment?.includes(key)))
-          .map<Row>((key) => ({
+          .map<CompareRow>((key) => ({
             key: `eq-${key}`,
             label: tOptions(`equipment.${key}`),
             display: (l) =>

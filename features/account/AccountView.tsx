@@ -24,6 +24,7 @@ import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { useVisibility } from "@/features/moderation/visibility";
 import { cn, formatNumber, initials } from "@/lib/utils";
 
+import { ACCOUNT_TABS, type AccountTab } from "./types";
 import AccountNotices from "./AccountNotices";
 import AccountSidebar from "./AccountSidebar";
 import AccountListingRow, { favoritesOf, phoneShows } from "./listings/AccountListingRow";
@@ -31,14 +32,10 @@ import type { ListingStatus } from "./listings/status";
 import LoggedOut from "./LoggedOut";
 import { useOwnListings } from "./useOwnListings";
 
-// Вкладки = статусы объявлений (удалённые не показываем); «pending» и «blocked» — только если есть такие
-const tabs = ["active", "pending", "paused", "sold", "blocked"] as const;
-type Tab = (typeof tabs)[number];
-
 export default function AccountView() {
   const t = useTranslations("account");
   const { user } = useAuth();
-  const [tab, setTab] = useState<Tab>("active");
+  const [tab, setTab] = useState<AccountTab>("active");
   const { of } = useVisibility();
   const toast = useToast();
   const dealer = useOwnDealer();
@@ -52,14 +49,14 @@ export default function AccountView() {
 
   const isDealer = user.type === "dealer";
   const all = (ownListings ?? []).filter((l) => l.status !== "deleted");
-  const tabOf = (listing: Listing): Tab => {
+  const tabOf = (listing: Listing): AccountTab => {
     const v = of(listing);
     if (v.moderation) return "blocked";
     if (v.pending) return "pending";
-    return listing.status as Tab;
+    return listing.status as AccountTab;
   };
-  const byStatus = (s: Tab) => all.filter((l) => tabOf(l) === s);
-  const visibleTabs = tabs.filter((item) => !["pending", "blocked"].includes(item) || byStatus(item).length > 0);
+  const byStatus = (s: AccountTab) => all.filter((l) => tabOf(l) === s);
+  const visibleTabs = ACCOUNT_TABS.filter((item) => !["pending", "blocked"].includes(item) || byStatus(item).length > 0);
   // статистика — только по активным
   const own = byStatus("active");
   const shown = byStatus(tab);
@@ -159,7 +156,7 @@ export default function AccountView() {
                     tab === item ? "bg-white text-gray-900 font-medium shadow-sm" : "text-gray-600 hover:text-black"
                   }`}
                 >
-                  {t(`tabs.${item}`)}
+                  {t(`ACCOUNT_TABS.${item}`)}
                   <span className="ml-1 text-gray-400">{byStatus(item).length}</span>
                 </button>
               ))}

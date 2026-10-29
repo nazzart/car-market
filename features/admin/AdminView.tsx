@@ -18,7 +18,8 @@ import { useAdminData, useListingAdmin } from "./shared";
 import ApprovalsTab from "./tabs/ApprovalsTab";
 import CollectionsTab from "./tabs/CollectionsTab";
 import ListingsTab from "./tabs/ListingsTab";
-import OverviewTab, { AdminTab } from "./tabs/OverviewTab";
+import OverviewTab from "./tabs/OverviewTab";
+import type { AdminTab } from "./types";
 import ReportsTab from "./tabs/ReportsTab";
 import UsersTab from "./tabs/UsersTab";
 

@@ -13,8 +13,10 @@ const GOOD = "bg-success-soft text-success-strong border-success-muted";
 const NEUTRAL = "bg-gray-50 text-gray-800 border-gray-200";
 const WARN = "bg-warning-soft text-warning border-warning-muted";
 
+type HighlightsProps = { listing: Listing };
+
 // Короткие «плюсы» автомобиля под характеристиками; «Торг» показан под ценой
-export default function Highlights({ listing }: { listing: Listing }) {
+export default function Highlights({ listing }: HighlightsProps) {
   const t = useTranslations("listing.highlights");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");

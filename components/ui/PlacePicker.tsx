@@ -10,7 +10,7 @@ import { PLACES, Place, findPlace, foldText } from "@/lib/places";
 
 import { GroupHeader, popupSlotProps } from "./SearchSelect";
 
-type Props = {
+type PlacePickerProps = {
   value: string; // ключ места или ""
   onChange: (key: string) => void;
   label: string;
@@ -23,7 +23,7 @@ type Props = {
 };
 
 // Выбор города или края с поиском: «sig» → Sigulda, «кекав» → Ķekava; без диакритики тоже находит
-export default function PlacePicker({ value, onChange, label, placeholder, required, error, helperText, variant = "field" }: Props) {
+export default function PlacePicker({ value, onChange, label, placeholder, required, error, helperText, variant = "field" }: PlacePickerProps) {
   const t = useTranslations("common.places");
   const locale = useLocale();
   const name = (p: Place) => (locale === "ru" ? p.ru : p.lv);

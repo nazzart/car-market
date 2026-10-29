@@ -15,7 +15,7 @@ import { useRouter } from "@/i18n/navigation";
 
 import { AccountType, AuthView } from "../types/authView";
 
-type Props = {
+type AuthModalProps = {
   open: boolean;
   onClose: () => void;
   initialView?: AuthView;
@@ -32,7 +32,7 @@ const iconButtonClass =
   "w-10 h-10 flex items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition cursor-pointer";
 
 // MUI Dialog: фокус внутри окна, блокировка прокрутки, Esc; на телефоне — на весь экран
-export default function AuthModal({ open, onClose, initialView = "login" }: Props) {
+export default function AuthModal({ open, onClose, initialView = "login" }: AuthModalProps) {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
   const router = useRouter();

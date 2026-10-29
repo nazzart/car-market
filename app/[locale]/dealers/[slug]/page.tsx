@@ -30,14 +30,14 @@ import CarCard from "@/features/latest-cars/components/CarCard";
 import { Link } from "@/i18n/navigation";
 import { formatNumber, initials } from "@/lib/utils";
 
-type Props = { params: Promise<{ locale: string; slug: string }> };
+type DealerPageProps = { params: Promise<{ locale: string; slug: string }> };
 
-const findDealer = async (params: Props["params"]) => {
+const findDealer = async (params: DealerPageProps["params"]) => {
   const { slug } = await params;
   return getDealer(slug);
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: DealerPageProps): Promise<Metadata> {
   const { locale } = await params;
   const dealer = await findDealer(params);
   if (!dealer) return {};
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
-export default async function DealerPage({ params }: Props) {
+export default async function DealerPage({ params }: DealerPageProps) {
   const dealer = await findDealer(params);
   // заблокированный модератором или ещё не заполнивший профиль дилер — без публичной страницы
   if (!dealer || !isListed(dealer)) notFound();

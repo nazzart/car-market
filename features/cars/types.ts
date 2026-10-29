@@ -76,3 +76,7 @@ export type ListingStats = {
   byModel: Record<string, Record<string, number>>;
   byCollection: Record<string, number>;
 };
+
+// Страница объявления: тон строки в сводке состояния и пункт навигации по разделам
+export type ConditionTone = "good" | "warn" | "bad" | "neutral";
+export type SectionNavItem = { id: string; label: string };

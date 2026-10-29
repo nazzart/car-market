@@ -13,11 +13,11 @@ import { usePlaceName } from "@/lib/places";
 import { initials } from "@/lib/utils";
 
 import type { DealerPin } from "@/features/dealers/types";
+import type { MapBounds } from "../types";
 import OpenStatus from "./OpenStatus";
 
-export type MapBounds = { north: number; south: number; east: number; west: number };
 
-type Props = {
+type DealersMapProps = {
   dealers: DealerPin[]; // все подходящие под фильтры, а не только текущая страница списка
   activeSlug: string | null;
   hoveredSlug: string | null;
@@ -49,7 +49,9 @@ const clusterIcon = (cluster: L.MarkerCluster) =>
     html: `<div class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-900/90 text-white text-sm font-bold border-4 border-white/70 shadow-lg">${cluster.getChildCount()}</div>`,
   });
 
-function FitToDealers({ dealers, fitKey }: { dealers: DealerPin[]; fitKey: string }) {
+type FitToDealersProps = { dealers: DealerPin[]; fitKey: string };
+
+function FitToDealers({ dealers, fitKey }: FitToDealersProps) {
   const map = useMap();
   const dealersRef = useRef(dealers);
 
@@ -95,7 +97,9 @@ function FitToDealers({ dealers, fitKey }: { dealers: DealerPin[]; fitKey: strin
   return null;
 }
 
-function FlyToActive({ dealer }: { dealer?: DealerPin }) {
+type FlyToActiveProps = { dealer?: DealerPin };
+
+function FlyToActive({ dealer }: FlyToActiveProps) {
   const map = useMap();
 
   useEffect(() => {
@@ -106,7 +110,9 @@ function FlyToActive({ dealer }: { dealer?: DealerPin }) {
   return null;
 }
 
-function BoundsWatcher({ onChange }: { onChange: Props["onBoundsChange"] }) {
+type BoundsWatcherProps = { onChange: DealersMapProps["onBoundsChange"] };
+
+function BoundsWatcher({ onChange }: BoundsWatcherProps) {
   const map = useMapEvents({
     moveend: () => report(),
   });
@@ -126,7 +132,7 @@ export default function DealersMap({
   fitKey,
   onSelect,
   onBoundsChange,
-}: Props) {
+}: DealersMapProps) {
   const t = useTranslations("dealers");
   const placeName = usePlaceName();
   const active = dealers.find((d) => d.slug === activeSlug);

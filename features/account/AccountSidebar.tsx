@@ -16,16 +16,18 @@ import type { Dealer } from "@/features/dealers/types";
 import { usePlaceName } from "@/lib/places";
 
 
+type AccountSidebarProps = {
+  user: User;
+  dealer: Dealer | null;
+  shownCity: string | undefined;
+};
+
 // Боковая колонка кабинета: данные профиля, автосалон дилера, подсказка частному лицу
 export default function AccountSidebar({
   user,
   dealer,
   shownCity,
-}: {
-  user: User;
-  dealer: Dealer | null;
-  shownCity: string | undefined;
-}) {
+}: AccountSidebarProps) {
   const t = useTranslations("account");
   const tOptions = useTranslations("options");
   const placeName = usePlaceName();

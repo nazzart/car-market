@@ -1,7 +1,9 @@
+type CarsLayoutProps = {
+  children: React.ReactNode;
+};
+
 export default function CarsLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: CarsLayoutProps) {
   return <>{children}</>;
 }

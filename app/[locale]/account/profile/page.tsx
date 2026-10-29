@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
+import type { LocaleParams } from "@/i18n/types";
 import Container from "@/components/layout/Container";
 import SettingsView from "@/features/account/settings/SettingsView";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: LocaleParams): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "account.settings" });
 

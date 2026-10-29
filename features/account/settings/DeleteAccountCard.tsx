@@ -12,8 +12,10 @@ import { useRouter } from "@/i18n/navigation";
 
 import SettingsCard from "./SettingsCard";
 
+type DeleteAccountCardProps = { isDealer: boolean };
+
 // Удаление аккаунта — навсегда, с подтверждением паролем
-export default function DeleteAccountCard({ isDealer }: { isDealer: boolean }) {
+export default function DeleteAccountCard({ isDealer }: DeleteAccountCardProps) {
   const t = useTranslations("account.settings.delete");
   const { setUser } = useAuth();
   const router = useRouter();

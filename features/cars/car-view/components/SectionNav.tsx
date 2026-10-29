@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-type Item = { id: string; label: string };
+import type { SectionNavItem } from "../../types";
+
+type SectionNavProps = { items: SectionNavItem[] };
 
 // Липкое меню разделов объявления; подсвечивает раздел, который сейчас на экране
-export default function SectionNav({ items }: { items: Item[] }) {
+export default function SectionNav({ items }: SectionNavProps) {
   const [active, setActive] = useState(items[0]?.id);
 
   useEffect(() => {

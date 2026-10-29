@@ -11,11 +11,11 @@ import { isEmail } from "@/lib/validate";
 import { requestPasswordReset } from "../actions";
 import { AuthHeader } from "../ui";
 
-type Props = {
+type ForgotPasswordViewProps = {
   onBack: () => void;
 };
 
-export default function ForgotPasswordView({ onBack }: Props) {
+export default function ForgotPasswordView({ onBack }: ForgotPasswordViewProps) {
   const t = useTranslations("auth");
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);

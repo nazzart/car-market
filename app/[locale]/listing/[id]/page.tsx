@@ -31,14 +31,14 @@ import { Link } from "@/i18n/navigation";
 import { placeName } from "@/lib/places";
 import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
-type Props = { params: Promise<{ locale: string; id: string }> };
+type ListingPageProps = { params: Promise<{ locale: string; id: string }> };
 
-const findListing = async (params: Props["params"]) => {
+const findListing = async (params: ListingPageProps["params"]) => {
   const { id } = await params;
   return getListing(id);
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: ListingPageProps): Promise<Metadata> {
   const { locale } = await params;
   const listing = await findListing(params);
   if (!listing) return {};
@@ -56,7 +56,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+type SectionProps = { id: string; title: string; children: React.ReactNode };
+
+function Section({ id, title, children }: SectionProps) {
   return (
     <section id={id} className="scroll-mt-32">
       <h2 className="text-xl sm:text-2xl font-semibold tracking-tight mb-5">{title}</h2>
@@ -65,7 +67,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-export default async function ListingPage({ params }: Props) {
+export default async function ListingPage({ params }: ListingPageProps) {
   const { locale } = await params;
   const listing = await findListing(params);
   if (!listing) notFound();

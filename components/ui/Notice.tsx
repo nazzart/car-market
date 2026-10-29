@@ -3,10 +3,21 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 import { cn } from "@/lib/utils";
 
+import type { NoticeTone } from "./types";
+
 // Заметная плашка с пояснением и, если нужно, кнопкой: решение модератора, «объявление скрыто», «заполните профиль»
-const tones = {
+const tones: Record<NoticeTone, { box: string; Icon: typeof BlockIcon }> = {
   danger: { box: "bg-danger-soft border-danger-muted text-danger-strong", Icon: BlockIcon },
   warning: { box: "bg-warning-soft border-warning-muted text-warning-strong", Icon: InfoOutlinedIcon },
+};
+
+type NoticeProps = {
+  tone: NoticeTone;
+  icon?: React.ReactNode; // по умолчанию — значок тона
+  title: React.ReactNode;
+  children?: React.ReactNode;
+  action?: React.ReactNode;
+  className?: string;
 };
 
 // Белая кнопка-«таблетка» для action: <Button variant="outline" size="sm"> или эти классы на ссылке
@@ -18,14 +29,7 @@ export default function Notice({
   children,
   action,
   className,
-}: {
-  tone: keyof typeof tones;
-  icon?: React.ReactNode; // по умолчанию — значок тона
-  title: React.ReactNode;
-  children?: React.ReactNode;
-  action?: React.ReactNode;
-  className?: string;
-}) {
+}: NoticeProps) {
   const { box, Icon } = tones[tone];
 
   return (

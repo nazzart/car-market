@@ -8,9 +8,9 @@ import Button from "@/components/ui/Button";
 import Dialog, { DialogActions, DialogHeader } from "@/components/ui/Dialog";
 import { BLOCK_REASONS, BlockReason } from "@/features/moderation/store";
 
-export type DialogMode = "block" | "remove" | "reject" | "blockAccount";
+import type { DialogMode } from "./types";
 
-type Props = {
+type ModerationDialogProps = {
   mode: DialogMode | null;
   name: string; // название объявления или аккаунта
   defaultReason?: BlockReason; // например, причина жалобы или найденный риск
@@ -19,7 +19,7 @@ type Props = {
 };
 
 // Блокировка / удаление / отклонение: причина обязательна (её увидит продавец), пояснение — по желанию
-export default function ModerationDialog({ mode, name, defaultReason, onClose, onConfirm }: Props) {
+export default function ModerationDialog({ mode, name, defaultReason, onClose, onConfirm }: ModerationDialogProps) {
   return (
     <Dialog open={mode !== null} onClose={onClose}>
       {/* key: при каждом открытии — свежие поля */}
@@ -37,7 +37,9 @@ export default function ModerationDialog({ mode, name, defaultReason, onClose, o
   );
 }
 
-function DialogBody({ mode, name, defaultReason, onClose, onConfirm }: Omit<Props, "mode"> & { mode: DialogMode }) {
+type DialogBodyProps = Omit<ModerationDialogProps, "mode"> & { mode: DialogMode };
+
+function DialogBody({ mode, name, defaultReason, onClose, onConfirm }: DialogBodyProps) {
   const t = useTranslations("moderation.admin.dialog");
   const tReasons = useTranslations("moderation.reasons");
   const [reason, setReason] = useState<BlockReason>(defaultReason ?? "wrongInfo");

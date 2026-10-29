@@ -7,14 +7,16 @@ import { ChipGroup } from "@/components/ui/form";
 import { brands } from "@/features/brands/data/brands";
 import type { Dealer } from "@/features/dealers/types";
 
-import type { DealerSettingsForm } from "./DealerSettings";
+import type { DealerSettingsForm } from "../types";
 import SettingsCard from "./SettingsCard";
 
 const brandOptions = [...brands].sort((a, b) => a.name.localeCompare(b.name)).map((b) => b.slug);
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
+type CompanyCardProps = { settings: DealerSettingsForm };
+
 // Компания: название, регистрационный номер, тип (официальный дилер — с марками), описание
-export default function CompanyCard({ settings }: { settings: DealerSettingsForm }) {
+export default function CompanyCard({ settings }: CompanyCardProps) {
   const t = useTranslations("account.settings");
   const { form, set, show } = settings;
 

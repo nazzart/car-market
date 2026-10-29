@@ -227,17 +227,19 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
   );
 }
 
+type SummaryRowProps = {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+  action?: React.ReactNode;
+};
+
 function SummaryRow({
   icon,
   title,
   text,
   action,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-  action?: React.ReactNode;
-}) {
+}: SummaryRowProps) {
   return (
     <div className="flex items-center gap-3 p-3 rounded-card bg-gray-50">
       <span className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-white text-gray-600">{icon}</span>

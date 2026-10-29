@@ -23,21 +23,22 @@ import { clearModeration, dismissReports } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatAgo, formatPrice } from "@/lib/utils";
 
-import { StatusKey, Thumb, pillClass, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
+import type { ListingsFilter, StatusKey } from "../types";
+import { Thumb, pillClass, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
-type Filter = "all" | "public" | "pending" | "hidden" | "blocked" | "removed" | "reported";
+type ListingsTabProps = { query: string; onQueryChange: (q: string) => void };
 
-export default function ListingsTab({ query, onQueryChange }: { query: string; onQueryChange: (q: string) => void }) {
+export default function ListingsTab({ query, onQueryChange }: ListingsTabProps) {
   const t = useTranslations("moderation.admin");
   const tReasons = useTranslations("moderation.reasons");
   const { listings, sellerOf } = useAdminData();
   const locale = useLocale();
   const { statusKey, openReports, of } = useListingAdmin();
   const { dialog, block, remove } = useModerationDialog();
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<ListingsFilter>("all");
 
-  const filters: Filter[] = ["all", "public", "pending", "hidden", "blocked", "removed", "reported"];
-  const groups: Record<Exclude<Filter, "all" | "reported">, StatusKey[]> = {
+  const filters: ListingsFilter[] = ["all", "public", "pending", "hidden", "blocked", "removed", "reported"];
+  const groups: Record<Exclude<ListingsFilter, "all" | "reported">, StatusKey[]> = {
     public: ["active"],
     pending: ["pending"],
     hidden: ["paused", "sold", "deleted"],
@@ -141,19 +142,21 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
   );
 }
 
+type ActionsMenuProps = {
+  listing: Listing;
+  status: StatusKey;
+  hasReports: boolean;
+  onBlock: () => void;
+  onRemove: () => void;
+};
+
 function ActionsMenu({
   listing,
   status,
   hasReports,
   onBlock,
   onRemove,
-}: {
-  listing: Listing;
-  status: StatusKey;
-  hasReports: boolean;
-  onBlock: () => void;
-  onRemove: () => void;
-}) {
+}: ActionsMenuProps) {
   const t = useTranslations("moderation.admin.actions");
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const moderated = status === "blocked" || status === "removed";

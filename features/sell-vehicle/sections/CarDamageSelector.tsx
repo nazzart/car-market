@@ -21,18 +21,20 @@ import {
   damagePoints as points,
 } from "@/features/cars/config/damage";
 
-type Props = {
+type CarDamageSelectorProps = {
   value?: DamageMap;
   onChange: (value: DamageMap) => void;
+};
+
+type DamagePointProps = {
+  damageCount?: number;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 function DamagePoint({
   damageCount,
   onClick,
-}: {
-  damageCount?: number;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-}) {
+}: DamagePointProps) {
   const hasDamage = !!damageCount;
 
   return (
@@ -69,7 +71,7 @@ function DamagePoint({
   );
 }
 
-export function CarDamageSelector({ value, onChange }: Props) {
+export function CarDamageSelector({ value, onChange }: CarDamageSelectorProps) {
   const t = useTranslations("sell.damage");
   const tOptions = useTranslations("options");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);

@@ -3,17 +3,19 @@ import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined
 
 import { cn } from "@/lib/utils";
 
+type NoPhotoProps = {
+  iconSize?: number;
+  label?: string;
+  dark?: boolean; // на тёмном фоне (панель сравнения)
+};
+
 // Заглушка вместо фото: значок машины и, если нужно, подпись «Nav foto».
 // Заполняет родителя — у него должны быть position: relative и размеры
 export function NoPhoto({
   iconSize = 36,
   label,
   dark,
-}: {
-  iconSize?: number;
-  label?: string;
-  dark?: boolean; // на тёмном фоне (панель сравнения)
-}) {
+}: NoPhotoProps) {
   return (
     <span
       className={cn(
@@ -27,6 +29,16 @@ export function NoPhoto({
   );
 }
 
+type CarPhotoProps = {
+  src: string | undefined;
+  alt: string;
+  sizes: string;
+  className?: string;
+  imageClassName?: string; // например, grayscale у скрытых
+  unoptimized?: boolean; // локальный blob: при подаче объявления
+  children?: React.ReactNode;
+} & React.ComponentProps<typeof NoPhoto>;
+
 // Фото объявления в рамке 4:3 или заглушка. Размер, скругление и отступы — через className;
 // children — поверх фото (значки, кнопки)
 export default function CarPhoto({
@@ -38,15 +50,7 @@ export default function CarPhoto({
   unoptimized,
   children,
   ...placeholder
-}: {
-  src: string | undefined;
-  alt: string;
-  sizes: string;
-  className?: string;
-  imageClassName?: string; // например, grayscale у скрытых
-  unoptimized?: boolean; // локальный blob: при подаче объявления
-  children?: React.ReactNode;
-} & React.ComponentProps<typeof NoPhoto>) {
+}: CarPhotoProps) {
   return (
     <div className={cn("relative aspect-[4/3] overflow-hidden bg-gray-100", className)}>
       {src ? (

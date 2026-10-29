@@ -10,8 +10,10 @@ import { formatPrice } from "@/lib/utils";
 
 import { removeFromCompare } from "../store";
 
+type CarHeaderProps = { listing: Listing };
+
 // Колонка машины в шапке сравнения: фото, название, цена, «убрать»
-export default function CarHeader({ listing }: { listing: Listing }) {
+export default function CarHeader({ listing }: CarHeaderProps) {
   const t = useTranslations("compare");
   const image = listing.images[0];
 

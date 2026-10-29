@@ -11,8 +11,10 @@ import ListingPhone, { ContactPerson } from "./ListingPhone";
 import SellerInfo from "./SellerInfo";
 import ReportButton from "@/features/moderation/ReportButton";
 
+type ContactCardProps = { listing: Listing };
+
 // Цена + контакт продавца, «прилипает» к экрану на десктопе
-export default function ContactCard({ listing }: { listing: Listing }) {
+export default function ContactCard({ listing }: ContactCardProps) {
   const t = useTranslations("listing");
   const tCommon = useTranslations("common");
   const locale = useLocale();

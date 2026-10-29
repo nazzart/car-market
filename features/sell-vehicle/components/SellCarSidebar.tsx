@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 import Card from "@/components/ui/Card";
 
-type Props = {
+type SellCarSidebarProps = {
   sections: {
     id: string;
     required?: boolean;
@@ -27,7 +27,9 @@ const scrollToSection = (id: string) => {
   });
 };
 
-function Progress({ done, total }: { done: number; total: number }) {
+type ProgressProps = { done: number; total: number };
+
+function Progress({ done, total }: ProgressProps) {
   const t = useTranslations("sell.form");
 
   return (
@@ -55,7 +57,7 @@ export function SellCarSidebar({
   visibleSections,
   requiredDone,
   requiredTotal,
-}: Props) {
+}: SellCarSidebarProps) {
   const t = useTranslations("sell");
 
   return (

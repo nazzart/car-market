@@ -10,7 +10,9 @@ import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { Listing } from "@/features/cars/types";
 import { usePlaceName } from "@/lib/places";
 
-export default function SellerInfo({ listing }: { listing: Listing }) {
+type SellerInfoProps = { listing: Listing };
+
+export default function SellerInfo({ listing }: SellerInfoProps) {
   const t = useTranslations("listing.seller");
   const tCommon = useTranslations("common");
   const placeName = usePlaceName();

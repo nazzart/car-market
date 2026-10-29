@@ -10,9 +10,11 @@ import Badge from "@/components/ui/Badge";
 
 import { DamageMap, damagePoints } from "../../config/damage";
 
+type DamageReportProps = { damages: DamageMap };
+
 // Схема кузова «только для просмотра»: те же точки, что и в форме продажи.
 // Маркеры пронумерованы и продублированы списком — на телефоне подсказки не работают
-export default function DamageReport({ damages }: { damages: DamageMap }) {
+export default function DamageReport({ damages }: DamageReportProps) {
   const t = useTranslations("listing.damage");
   const tOptions = useTranslations("options");
 

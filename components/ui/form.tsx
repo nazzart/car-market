@@ -2,10 +2,10 @@
 
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import type { Option } from "./types";
+
 // Элементы форм в стиле сайта: поле ввода (inputClass), выпадающий список, чипы, сегментированный переключатель.
 // Используются в фильтрах, настройках, избранном, на странице дилеров и в модерации
-
-export type Option = { label: string; value: string };
 
 export const inputClass = `
   w-full
@@ -23,6 +23,16 @@ export const inputClass = `
   transition
 `;
 
+type SelectProps = {
+  value: string;
+  onChange: (value: string) => void;
+  options: Option[];
+  placeholder: string;
+  disabled?: boolean;
+  label: string;
+  className?: string;
+};
+
 export function Select({
   value,
   onChange,
@@ -31,15 +41,7 @@ export function Select({
   disabled,
   label,
   className,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  options: Option[];
-  placeholder: string;
-  disabled?: boolean;
-  label: string;
-  className?: string;
-}) {
+}: SelectProps) {
   return (
     <div className={`relative ${className ?? ""}`}>
       <select
@@ -68,16 +70,18 @@ export function Select({
   );
 }
 
+type ChipGroupProps = {
+  options: Option[];
+  value: string;
+  onChange: (value: string | null) => void;
+};
+
 // Одиночный выбор чипами; повторный клик снимает выбор
 export function ChipGroup({
   options,
   value,
   onChange,
-}: {
-  options: Option[];
-  value: string;
-  onChange: (value: string | null) => void;
-}) {
+}: ChipGroupProps) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {options.map((o) => {
@@ -111,18 +115,20 @@ export function ChipGroup({
   );
 }
 
+type SegmentedProps = {
+  options: Option[];
+  value: string;
+  onChange: (value: string | null) => void;
+  anyLabel: string;
+};
+
 // Сегментированный переключатель с вариантом «любой»
 export function Segmented({
   options,
   value,
   onChange,
   anyLabel,
-}: {
-  options: Option[];
-  value: string;
-  onChange: (value: string | null) => void;
-  anyLabel: string;
-}) {
+}: SegmentedProps) {
   const all = [{ label: anyLabel, value: "" }, ...options];
 
   return (

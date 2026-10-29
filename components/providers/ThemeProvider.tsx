@@ -5,11 +5,13 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { theme } from "@/lib/theme";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 
+type AppThemeProviderProps = {
+  children: React.ReactNode;
+};
+
 export default function AppThemeProvider({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: AppThemeProviderProps) {
   return (
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>

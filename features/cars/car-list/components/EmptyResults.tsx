@@ -15,15 +15,17 @@ import type { Listing } from "../../types";
 import { useVisibility } from "@/features/moderation/visibility";
 import { useCarFilters } from "../hooks/useCarFilters";
 
+type EmptyResultsProps = {
+  suggestions: { key: string; count: number }[];
+  fresh: Listing[];
+};
+
 // Ничего не нашлось: подсказываем, какой один фильтр убрать и сколько тогда будет авто,
 // а ниже — свежие объявления, чтобы страница не была тупиком. Числа и объявления считает сервер (/cars/page.tsx)
 export default function EmptyResults({
   suggestions,
   fresh,
-}: {
-  suggestions: { key: string; count: number }[];
-  fresh: Listing[];
-}) {
+}: EmptyResultsProps) {
   const t = useTranslations("cars.empty");
   const tChips = useTranslations("cars.chips");
   const tCommon = useTranslations("common");

@@ -26,7 +26,9 @@ const groupByLetter =(list: Brand[]) => {
   return Object.entries(groups);
 };
 
-function BrandLink({ brand }: { brand: Brand }) {
+type BrandLinkProps = { brand: Brand };
+
+function BrandLink({ brand }: BrandLinkProps) {
   const count = useListingStats().byBrand[brand.slug] ?? 0;
 
   return (

@@ -6,7 +6,8 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useLocale, useTranslations } from "next-intl";
 
 import Button from "@/components/ui/Button";
-import Badge, { type BadgeTone } from "@/components/ui/Badge";
+import Badge from "@/components/ui/Badge";
+import type { BadgeTone } from "@/components/ui/types";
 import CarPhoto from "@/components/ui/CarPhoto";
 import type { Listing } from "@/features/cars/types";
 import type { Moderation } from "@/features/moderation/types";
@@ -27,6 +28,14 @@ const statusBadge: Record<string, BadgeTone> = {
   blocked: "danger",
 };
 
+type AccountListingRowProps = {
+  listing: Listing;
+  status: ListingStatus;
+  moderation?: Moderation;
+  pending?: boolean;
+  onStatusChange: (status: ListingStatus) => void;
+};
+
 // Объявление в кабинете: статус, цена, статистика и действия продавца
 export default function AccountListingRow({
   listing,
@@ -34,13 +43,7 @@ export default function AccountListingRow({
   moderation,
   pending,
   onStatusChange,
-}: {
-  listing: Listing;
-  status: ListingStatus;
-  moderation?: Moderation;
-  pending?: boolean;
-  onStatusChange: (status: ListingStatus) => void;
-}) {
+}: AccountListingRowProps) {
   const t = useTranslations("account.row");
   const tReasons = useTranslations("moderation.reasons");
   const locale = useLocale();

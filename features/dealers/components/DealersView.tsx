@@ -22,7 +22,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 
 import type { DealerSearchResult } from "../api";
 import DealerCard from "./DealerCard";
-import type { MapBounds } from "./DealersMap";
+import type { MapBounds } from "../types";
 
 // Leaflet работает только в браузере
 const DealersMap = dynamic(() => import("./DealersMap"), {
@@ -35,14 +35,14 @@ const dealerTypes = ["official", "used"];
 // Область карты в URL: «south,west,north,east», 4 знака после запятой (~10 м)
 const formatBounds = (b: MapBounds) => [b.south, b.west, b.north, b.east].map((n) => n.toFixed(4)).join(",");
 
-type Props = {
+type DealersViewProps = {
   result: DealerSearchResult; // посчитано сервером: страница карточек + метки для карты
   options: { cities: string[]; brands: string[] };
   totalDealers: number;
   pageSize: number;
 };
 
-export default function DealersView({ result, options, totalDealers, pageSize }: Props) {
+export default function DealersView({ result, options, totalDealers, pageSize }: DealersViewProps) {
   // Фильтры в URL, как на /cars: ссылкой можно поделиться, «Назад» их сохраняет, сервер по ним ищет
   const t = useTranslations("dealers");
   const tCommon = useTranslations("common");

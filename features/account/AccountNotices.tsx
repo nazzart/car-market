@@ -8,6 +8,14 @@ import Notice from "@/components/ui/Notice";
 import type { User } from "@/features/auth/types";
 import { useRouter } from "@/i18n/navigation";
 
+type AccountNoticesProps = {
+  user: User;
+  dealerIncomplete: boolean;
+  blockedCount: number;
+  pendingCount: number;
+  onShow: (tab: "blocked" | "pending") => void;
+};
+
 // Что продавцу важно знать сразу: профиль дилера не заполнен, решения модератора, объявления на проверке
 export default function AccountNotices({
   user,
@@ -15,13 +23,7 @@ export default function AccountNotices({
   blockedCount,
   pendingCount,
   onShow,
-}: {
-  user: User;
-  dealerIncomplete: boolean;
-  blockedCount: number;
-  pendingCount: number;
-  onShow: (tab: "blocked" | "pending") => void;
-}) {
+}: AccountNoticesProps) {
   const t = useTranslations("account.notices");
   const tReasons = useTranslations("moderation.reasons");
   const router = useRouter();

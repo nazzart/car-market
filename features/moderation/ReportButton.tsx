@@ -12,8 +12,10 @@ import { cn } from "@/lib/utils";
 
 import { BLOCK_REASONS, BlockReason, addReport } from "./store";
 
+type ReportButtonProps = { listingId: string; className?: string };
+
 // «Пожаловаться на объявление»: причина + комментарий → очередь модератора
-export default function ReportButton({ listingId, className }: { listingId: string; className?: string }) {
+export default function ReportButton({ listingId, className }: ReportButtonProps) {
   const t = useTranslations("moderation.report");
   const tReasons = useTranslations("moderation.reasons");
   const [open, setOpen] = useState(false);

@@ -18,7 +18,7 @@ import { useAuth } from "../store";
 import { AccountType } from "../types/authView";
 import { AuthHeader, TextLinkButton } from "../ui";
 
-type Props = {
+type RegisterViewProps = {
   accountType: AccountType;
   onChangeType: () => void;
   onLogin: () => void;
@@ -34,7 +34,7 @@ const passwordRules = [
 
 // Регистрационный номер компании в Латвии — 11 цифр
 
-export default function RegisterView({ accountType, onChangeType, onLogin, onRegistered, onLoggedIn }: Props) {
+export default function RegisterView({ accountType, onChangeType, onLogin, onRegistered, onLoggedIn }: RegisterViewProps) {
   const t = useTranslations("auth");
   const isCompany = accountType === "company";
 

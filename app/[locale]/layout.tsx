@@ -30,7 +30,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin", "latin-ext", "cyrillic"],
 });
 
-type Props = Readonly<{
+type LocaleLayoutProps = Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }>;
@@ -42,7 +42,7 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: Omit<Props, "children">): Promise<Metadata> {
+export async function generateMetadata({ params }: Omit<LocaleLayoutProps, "children">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "common.meta" });
 
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Omit<Props, "children">): Pro
   };
 }
 
-export default async function LocaleLayout({ children, params }: Props) {
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 

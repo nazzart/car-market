@@ -7,7 +7,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useTranslations } from "next-intl";
 
-type Props = {
+type PhotoLightboxProps = {
   images: string[];
   title: string;
   index: number | null;
@@ -28,7 +28,7 @@ const navButtonClass = `
 `;
 
 // Полноэкранный просмотр фото: стрелки, клавиатура, миниатюры
-export default function PhotoLightbox({ images, title, index, onChange, onClose }: Props) {
+export default function PhotoLightbox({ images, title, index, onChange, onClose }: PhotoLightboxProps) {
   const t = useTranslations("listing.gallery");
   const tCommon = useTranslations("common");
   const open = index !== null;

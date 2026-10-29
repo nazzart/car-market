@@ -1,8 +1,10 @@
 "use client";
 
+type GlobalErrorProps = { error: Error & { digest?: string }; reset: () => void };
+
 // Ошибка в самом каркасе сайта (layout) — переводы и стили могут быть недоступны,
 // поэтому простая страница со встроенными стилями и текстом на обоих языках
-export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function GlobalError({ reset }: GlobalErrorProps) {
   return (
     <html lang="lv">
       <body

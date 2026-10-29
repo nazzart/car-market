@@ -5,22 +5,16 @@ import { Alert, Snackbar } from "@mui/material";
 
 import { Link } from "@/i18n/navigation";
 
+import type { ToastOptions } from "./types";
+
 // Короткие уведомления внизу (или вверху) экрана: «Сохранено», «Удалено — Отменить».
 // Одно за раз: новое заменяет предыдущее. Вызов — useToast()({ message, ... })
 
-type ToastAction = { label: string; onClick?: () => void; href?: string };
-
-export type ToastOptions = {
-  message: React.ReactNode;
-  tone?: "default" | "success" | "error";
-  action?: ToastAction;
-  position?: "top" | "bottom";
-  duration?: number;
-};
-
 const ToastContext = createContext<((options: ToastOptions) => void) | null>(null);
 
-export function ToastProvider({ children }: { children: React.ReactNode }) {
+type ToastProviderProps = { children: React.ReactNode };
+
+export function ToastProvider({ children }: ToastProviderProps) {
   const [toast, setToast] = useState<(ToastOptions & { id: number }) | null>(null);
   const show = useCallback((options: ToastOptions) => setToast({ ...options, id: Date.now() }), []);
   const close = () => setToast(null);

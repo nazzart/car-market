@@ -7,14 +7,14 @@ import { cn } from "@/lib/utils";
 
 import { toggleCompare, useCompare } from "../store";
 
-type Props = {
+type CompareButtonProps = {
   id: string;
   variant?: "icon" | "soft" | "text";
   className?: string;
 };
 
 // «Сравнить»: круглая кнопка на фото карточки или текстовая — в шапке объявления
-export default function CompareButton({ id, variant = "icon", className }: Props) {
+export default function CompareButton({ id, variant = "icon", className }: CompareButtonProps) {
   const t = useTranslations("compare");
   const active = useCompare().includes(id);
 

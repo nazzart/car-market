@@ -12,7 +12,7 @@ import { formatNumber, formatPrice } from "@/lib/utils";
 
 import { SellFormData } from "../types";
 
-type Props = {
+type PublishSectionProps = {
   data: SellFormData;
   requiredDone: number;
   requiredTotal: number;
@@ -20,7 +20,7 @@ type Props = {
 };
 
 // Итог перед публикацией: как объявление будет выглядеть в списке
-export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: Props) {
+export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: PublishSectionProps) {
   const t = useTranslations("sell.publish");
   const tCommon = useTranslations("common");
   const placeName = usePlaceName();

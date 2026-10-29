@@ -9,7 +9,16 @@ import { cn } from "@/lib/utils";
 import { MAX_COMPARE } from "../store";
 import AddSlot from "./AddSlot";
 import CarHeader from "./CarHeader";
-import { type Section, bestValue } from "./rows";
+import type { CompareSection } from "../types";
+import { bestValue } from "./rows";
+
+type CompareTableProps = {
+  cars: Listing[];
+  sections: CompareSection[];
+  onlyDiff: boolean;
+  favoritesCount: number;
+  onAddFavorites: () => void;
+};
 
 // Таблица сравнения: машины в шапке (прилипает к верху), ниже — разделы со строками; лучшее значение выделено
 export default function CompareTable({
@@ -18,13 +27,7 @@ export default function CompareTable({
   onlyDiff,
   favoritesCount,
   onAddFavorites,
-}: {
-  cars: Listing[];
-  sections: Section[];
-  onlyDiff: boolean;
-  favoritesCount: number;
-  onAddFavorites: () => void;
-}) {
+}: CompareTableProps) {
   const t = useTranslations("compare");
 
   const header = useRef<HTMLDivElement>(null);

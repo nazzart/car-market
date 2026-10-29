@@ -11,7 +11,7 @@ import Button from "@/components/ui/Button";
 import { AccountType } from "../types/authView";
 import { AuthHeader, TextLinkButton } from "../ui";
 
-type Props = {
+type AccountTypeViewProps = {
   initial?: AccountType;
   onSelect: (type: AccountType) => void;
   onLogin: () => void;
@@ -32,7 +32,7 @@ const options = [
   },
 ];
 
-export default function AccountTypeView({ initial, onSelect, onLogin }: Props) {
+export default function AccountTypeView({ initial, onSelect, onLogin }: AccountTypeViewProps) {
   const t = useTranslations("auth");
   const [selected, setSelected] = useState<AccountType | null>(initial ?? null);
 

@@ -4,6 +4,14 @@ import { cn } from "@/lib/utils";
 // card — обычная карточка, panel — крупный раздел (форма подачи, настройки) с бо́льшим скруглением и отступами
 const paddings = { none: "", sm: "p-4", md: "p-5", lg: "p-5 sm:p-8" };
 
+type CardProps = {
+  as?: "div" | "section" | "aside" | "article" | "ul";
+  size?: "card" | "panel";
+  padding?: keyof typeof paddings;
+  className?: string;
+  children: React.ReactNode;
+} & Omit<React.HTMLAttributes<HTMLElement>, "className">;
+
 export default function Card({
   as: Tag = "div",
   size = "card",
@@ -11,13 +19,7 @@ export default function Card({
   className,
   children,
   ...rest
-}: {
-  as?: "div" | "section" | "aside" | "article" | "ul";
-  size?: "card" | "panel";
-  padding?: keyof typeof paddings;
-  className?: string;
-  children: React.ReactNode;
-} & Omit<React.HTMLAttributes<HTMLElement>, "className">) {
+}: CardProps) {
   return (
     <Tag
       {...rest}
@@ -33,7 +35,9 @@ export default function Card({
   );
 }
 
+type CardTitleProps = { as?: "h2" | "h3"; className?: string; children: React.ReactNode };
+
 // Заголовок небольшой карточки (боковые блоки, разделы модерации)
-export function CardTitle({ as: Tag = "h3", className, children }: { as?: "h2" | "h3"; className?: string; children: React.ReactNode }) {
+export function CardTitle({ as: Tag = "h3", className, children }: CardTitleProps) {
   return <Tag className={cn("font-semibold mb-3", className)}>{children}</Tag>;
 }

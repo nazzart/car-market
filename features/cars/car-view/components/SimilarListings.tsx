@@ -10,8 +10,10 @@ import { getSimilarListings } from "../../api";
 
 const LIMIT = 3;
 
+type SimilarListingsProps = { listing: Listing };
+
 // Сначала та же марка, потом тот же кузов; с фото — в приоритете
-export default async function SimilarListings({ listing }: { listing: Listing }) {
+export default async function SimilarListings({ listing }: SimilarListingsProps) {
   const t = await getTranslations("listing.similar");
   const similar = await getSimilarListings(listing, LIMIT);
 

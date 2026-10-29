@@ -3,8 +3,10 @@ import BoltIcon from "@mui/icons-material/Bolt";
 
 import { cn } from "@/lib/utils";
 
+type FreshBadgeProps = { className?: string };
+
 // «Новое объявление» — размещено за последние 24 часа
-export default function FreshBadge({ className }: { className?: string }) {
+export default function FreshBadge({ className }: FreshBadgeProps) {
   const t = useTranslations("cars.row");
 
   return (

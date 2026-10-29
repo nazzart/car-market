@@ -113,6 +113,9 @@ Conventions:
   danger, white; sizes sm–xl; `href` makes it a link), `Dialog` / `ConfirmDialog`, and `useToast()` — all in
   `components/ui`. MUI is used only for inputs, selects, menus, popovers, drawers and tooltips, styled once in
   `lib/theme.ts` — no `sx` styling of MUI in feature code beyond icon sizes.
+- **Types:** a component file declares only its own props — `type XxxProps = { … }` right above the component,
+  never inline in the signature. Everything else (data shapes, unions, option lists) lives in the feature's
+  `types.ts` (`components/ui/types.ts` for the UI kit, `i18n/types.ts` for route params). ESLint enforces both.
 - **Design tokens** (`app/globals.css`): state colours by meaning — `bg-success-soft`, `text-danger`,
   `border-warning-muted`, `bg-info-soft`… — and radii `rounded-control` / `rounded-card` / `rounded-panel`.
   ESLint rejects raw `emerald/amber/red/sky` classes and `rounded-2xl/3xl`, so a palette change is one file.

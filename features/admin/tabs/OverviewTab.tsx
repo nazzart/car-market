@@ -11,14 +11,15 @@ import { LogEntry, useModerationLog, useReports } from "@/features/moderation/st
 import { useDealerVerified } from "@/features/moderation/visibility";
 import { cn, formatAgo, formatNumber } from "@/lib/utils";
 
+import type { AdminTab } from "../types";
 import { minutesSince, useAdminData, useListingAdmin } from "../shared";
-
-export type AdminTab = "overview" | "approvals" | "listings" | "reports" | "collections" | "users";
 
 const isNegative = (a: LogEntry["action"]) => ["block", "remove", "reject", "exclude", "blockAccount", "unverify"].includes(a);
 
+type OverviewTabProps = { onOpen: (tab: AdminTab) => void };
+
 // Обзор: цифры + «что требует внимания» (каждая задача ведёт на свою вкладку) + журнал действий
-export default function OverviewTab({ onOpen }: { onOpen: (tab: AdminTab) => void }) {
+export default function OverviewTab({ onOpen }: OverviewTabProps) {
   const t = useTranslations("moderation.admin");
   const locale = useLocale();
   const { statusKey, isPublic } = useListingAdmin();

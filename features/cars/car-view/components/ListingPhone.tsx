@@ -9,20 +9,22 @@ import { cn } from "@/lib/utils";
 
 import type { Listing } from "@/features/cars/types";
 
-type Props = {
+type ListingPhoneProps = {
   listing: Listing;
   variant?: "primary" | "outline";
   className?: string;
 };
 
 // «Показать телефон» с номером ответственного менеджера (если дилер его указал)
-export default function ListingPhone({ listing, variant, className }: Props) {
+export default function ListingPhone({ listing, variant, className }: ListingPhoneProps) {
   const { phone } = useListingContact(listing);
   return <PhoneButton phone={phone} variant={variant} className={className} />;
 }
 
+type ContactPersonProps = { listing: Listing; className?: string };
+
 // «Контактное лицо: Jānis Kalniņš, Pārdošanas konsultants»
-export function ContactPerson({ listing, className }: { listing: Listing; className?: string }) {
+export function ContactPerson({ listing, className }: ContactPersonProps) {
   const t = useTranslations("listing.seller");
   const { person } = useListingContact(listing);
 

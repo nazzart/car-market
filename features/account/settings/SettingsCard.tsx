@@ -1,12 +1,12 @@
 import Card from "@/components/ui/Card";
 
-type Props = {
+type SettingsCardProps = {
   title: string;
   description?: string;
   children: React.ReactNode;
 };
 
-export default function SettingsCard({ title, description, children }: Props) {
+export default function SettingsCard({ title, description, children }: SettingsCardProps) {
   return (
     <Card as="section" size="panel">
       <div className="mb-6">

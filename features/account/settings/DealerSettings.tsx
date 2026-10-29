@@ -14,6 +14,7 @@ import { isPhone } from "@/lib/phone";
 import { placeNameLv } from "@/lib/places";
 import { isEmail, isRegNumber, normalizeRegNumber } from "@/lib/validate";
 
+import type { DealerForm, DealerFormField } from "../types";
 import AddressCard, { hasCyrillic } from "./AddressCard";
 import CompanyCard from "./CompanyCard";
 import ContactDetailsCard from "./ContactDetailsCard";
@@ -25,9 +26,9 @@ import PasswordCard from "./PasswordCard";
 import { SaveBar } from "./SaveBar";
 import SettingsCard from "./SettingsCard";
 import SettingsHeader from "./SettingsHeader";
-import { type SettingsForm, useSettingsForm } from "./useSettingsForm";
+import { useSettingsForm } from "./useSettingsForm";
 
-const initialForm = (user: User, dealer: Dealer) => ({
+const initialForm = (user: User, dealer: Dealer): DealerForm => ({
   name: user.name,
   regNumber: dealer.regNumber ?? "",
   type: dealer.type,
@@ -35,19 +36,15 @@ const initialForm = (user: User, dealer: Dealer) => ({
   description: dealer.description ?? "",
   email: user.email,
   phone: user.phone,
-  // одно поле «улица, город» — как в подсказках геокодера
   address: dealer.address ? `${dealer.address}, ${placeNameLv(dealer.city)}` : "",
   lat: dealer.lat,
   lng: dealer.lng,
   hours: dealer.hours,
   contacts: dealer.contacts ?? [],
-  // «контакт → кому передать его объявления» — применяется при сохранении
-  reassign: {} as Record<string, string>,
+  reassign: {},
 });
 
-type DealerForm = ReturnType<typeof initialForm>;
-
-const validate = (f: DealerForm) => ({
+const validate = (f: DealerForm): Record<DealerFormField, boolean> => ({
   name: !f.name.trim(),
   regNumber: !isRegNumber(f.regNumber),
   email: !isEmail(f.email),
@@ -56,10 +53,10 @@ const validate = (f: DealerForm) => ({
   hours: hoursInvalid(f.hours),
 });
 
-export type DealerSettingsForm = SettingsForm<DealerForm, keyof ReturnType<typeof validate>>;
+type DealerSettingsProps = { user: User };
 
 // Форма заполняется один раз при открытии — поэтому ждём свежую страницу дилера из базы
-export default function DealerSettings({ user }: { user: User }) {
+export default function DealerSettings({ user }: DealerSettingsProps) {
   const { dealer, loading } = useOwnDealerState();
   if (loading || !dealer) return <SettingsSkeleton />;
   return <DealerSettingsForm user={user} dealer={dealer} />;
@@ -76,7 +73,9 @@ function SettingsSkeleton() {
   );
 }
 
-function DealerSettingsForm({ user, dealer }: { user: User; dealer: Dealer }) {
+type DealerSettingsFormProps = { user: User; dealer: Dealer };
+
+function DealerSettingsForm({ user, dealer }: DealerSettingsFormProps) {
   const t = useTranslations("account.settings");
   const { setUser } = useAuth();
   const settings = useSettingsForm(initialForm(user, dealer), validate);

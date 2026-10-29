@@ -54,7 +54,9 @@ function useFitToViewport<T extends HTMLElement>(top = 80, gap = 16) {
   return ref;
 }
 
-function CountBadge({ count, inverted }: { count: number; inverted?: boolean }) {
+type CountBadgeProps = { count: number; inverted?: boolean };
+
+function CountBadge({ count, inverted }: CountBadgeProps) {
   return (
     <span
       className={`min-w-5 h-5 px-1.5 rounded-full text-xs font-semibold flex items-center justify-center ${
@@ -90,7 +92,9 @@ export default function CarsSearchView(props: SearchResultProps) {
   );
 }
 
-function SearchView({ result, pageSize, empty, pending }: SearchResultProps & { pending: boolean }) {
+type SearchViewProps = SearchResultProps & { pending: boolean };
+
+function SearchView({ result, pageSize, empty, pending }: SearchViewProps) {
   const t = useTranslations("cars");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");

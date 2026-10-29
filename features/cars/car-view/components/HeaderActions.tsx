@@ -21,11 +21,11 @@ const buttonClass = `
 `;
 
 // «Сохранить» и «Поделиться» в шапке объявления
-type Props = {
+type HeaderActionsProps = {
   listing: { id: string; title: string; price: number };
 };
 
-export default function HeaderActions({ listing }: Props) {
+export default function HeaderActions({ listing }: HeaderActionsProps) {
   const { title } = listing;
   const t = useTranslations("listing.actions");
   const saved = useIsFavorite(listing.id);

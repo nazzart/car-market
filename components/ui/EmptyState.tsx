@@ -1,5 +1,15 @@
 import { cn } from "@/lib/utils";
 
+type EmptyStateProps = {
+  icon?: React.ElementType<{ sx?: object; className?: string }>;
+  iconClassName?: string; // цвет значка в hero
+  title?: React.ReactNode;
+  text?: React.ReactNode;
+  variant?: "box" | "hero";
+  className?: string;
+  children?: React.ReactNode;
+};
+
 // «Ничего нет»: значок, заголовок, пояснение и, если нужно, действия (children).
 // box — пунктирная рамка внутри страницы (пустой список, нет результатов);
 // hero — крупный блок на всю страницу, когда раздел пуст целиком (избранное, сравнение)
@@ -11,15 +21,7 @@ export default function EmptyState({
   variant = "box",
   className,
   children,
-}: {
-  icon?: React.ElementType<{ sx?: object; className?: string }>;
-  iconClassName?: string; // цвет значка в hero
-  title?: React.ReactNode;
-  text?: React.ReactNode;
-  variant?: "box" | "hero";
-  className?: string;
-  children?: React.ReactNode;
-}) {
+}: EmptyStateProps) {
   const hero = variant === "hero";
 
   return (

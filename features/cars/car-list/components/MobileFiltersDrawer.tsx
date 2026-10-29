@@ -10,14 +10,14 @@ import FiltersPanel from "./FiltersPanel";
 import ScrollArea from "./ScrollArea";
 import Button from "@/components/ui/Button";
 
-type Props = {
+type MobileFiltersDrawerProps = {
   open: boolean;
   onClose: () => void;
   resultsLabel: string;
 };
 
 // Фильтры на мобильных — нижняя шторка с той же панелью, что и в сайдбаре
-export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: Props) {
+export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: MobileFiltersDrawerProps) {
   const t = useTranslations("cars");
   const tCommon = useTranslations("common");
   const { resetFilters, activeCount } = useCarFilters();

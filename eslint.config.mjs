@@ -43,6 +43,16 @@ const eslintConfig = defineConfig([
             message: "Скругления — через токены: rounded-card (карточки), rounded-panel (крупные блоки), rounded-control (поля).",
           },
         ]),
+        // Типы: в компоненте — только его пропсы (type XxxProps над функцией), остальное — в types.ts фичи
+        {
+          selector: "TSTypeAliasDeclaration[id.name!=/Props$/], TSInterfaceDeclaration[id.name!=/Props$/]",
+          message: "В .tsx объявляются только пропсы (type XxxProps). Остальные типы — в types.ts фичи.",
+        },
+        {
+          selector:
+            "FunctionDeclaration[id.name=/^[A-Z]/] > ObjectPattern > TSTypeAnnotation > :matches(TSTypeLiteral, TSIntersectionType:has(> TSTypeLiteral))",
+          message: "Пропсы — отдельным типом над компонентом: type XxxProps = { … }.",
+        },
       ],
     },
   },

@@ -4,16 +4,15 @@ import { pageTitleClass } from "@/components/ui/PageHeader";
 import Container from "@/components/layout/Container";
 import { Link } from "@/i18n/navigation";
 
-export const INFO_PAGES = ["about", "rules", "privacy", "contacts"] as const;
-export type InfoPageKey = (typeof INFO_PAGES)[number];
+import { INFO_PAGES, type InfoPageKey, type InfoSection } from "./types";
 
-type Section = { title: string; text: string[] };
+type InfoPageProps = { page: InfoPageKey };
 
 // Простые текстовые страницы: «О нас», правила, конфиденциальность, контакты.
 // Тексты — в messages/{locale}/info.json
-export default async function InfoPage({ page }: { page: InfoPageKey }) {
+export default async function InfoPage({ page }: InfoPageProps) {
   const t = await getTranslations("info");
-  const sections = t.raw(`${page}.sections`) as Section[];
+  const sections = t.raw(`${page}.sections`) as InfoSection[];
 
   return (
     <Container>

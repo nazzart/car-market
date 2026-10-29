@@ -12,7 +12,7 @@ import FreshBadge from "./FreshBadge";
 
 const MAX_PREVIEW = 5;
 
-type Props = {
+type ListingGalleryProps = {
   href: string;
   title: string;
   images: string[];
@@ -20,7 +20,7 @@ type Props = {
 };
 
 // Листание фото движением курсора по превью
-export default function ListingGallery({ href, title, images, fresh }: Props) {
+export default function ListingGallery({ href, title, images, fresh }: ListingGalleryProps) {
   const t = useTranslations("cars.row");
   const tCommon = useTranslations("common");
   const [active, setActive] = useState(0);

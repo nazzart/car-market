@@ -4,7 +4,9 @@ import { useTranslations } from "next-intl";
 
 import PageHeader from "@/components/ui/PageHeader";
 
-export default function SettingsHeader({ dealer }: { dealer?: boolean }) {
+type SettingsHeaderProps = { dealer?: boolean };
+
+export default function SettingsHeader({ dealer }: SettingsHeaderProps) {
   const t = useTranslations("account.settings");
 
   return (

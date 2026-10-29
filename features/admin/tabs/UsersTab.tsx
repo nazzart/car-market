@@ -22,22 +22,14 @@ import { useDealerVerified } from "@/features/moderation/visibility";
 import { Link } from "@/i18n/navigation";
 import { cn, initials } from "@/lib/utils";
 
+import type { AdminAccount, UsersFilter } from "../types";
 import { pillClass, useAdminData, useModerationDialog } from "../shared";
 
 // Реестр предприятий Латвии — модератор сверяет название и рег. номер дилера
 const REGISTER_URL = "https://info.ur.gov.lv/";
 
-type Account = {
-  key: string; // «dealer:baltic-auto» / «user:<uuid>»
-  name: string;
-  kind: "dealer" | "individual";
-  contact: string;
-  regNumber?: string;
-  dealerSlug?: string;
-};
-
 // Зарегистрированные продавцы: частные пользователи + дилеры (демо-дилер = дилер Baltic Auto)
-function useAccounts(): Account[] {
+function useAccounts(): AdminAccount[] {
   const { users, dealers } = useAdminData();
   return [
     ...users
@@ -54,9 +46,9 @@ function useAccounts(): Account[] {
   ];
 }
 
-type Filter = "all" | "dealers" | "individuals" | "unverified" | "blocked";
+type UsersTabProps = { onShowListings: (query: string) => void };
 
-export default function UsersTab({ onShowListings }: { onShowListings: (query: string) => void }) {
+export default function UsersTab({ onShowListings }: UsersTabProps) {
   const t = useTranslations("moderation.admin.users");
   const tReasons = useTranslations("moderation.reasons");
   const accounts = useAccounts();
@@ -65,7 +57,7 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
   const reports = useReports();
   const isVerified = useDealerVerified();
   const { dialog, blockAccount } = useModerationDialog();
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<UsersFilter>("all");
 
   const listingsOf = (key: string) => listings.filter((l) => ownerOf(l) === key);
   const reportsOf = (key: string) => {
@@ -73,7 +65,7 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
     return reports.filter((r) => ids.has(r.listingId) && !r.resolved).length;
   };
 
-  const filters: Filter[] = ["all", "dealers", "individuals", "unverified", "blocked"];
+  const filters: UsersFilter[] = ["all", "dealers", "individuals", "unverified", "blocked"];
   const shown = accounts.filter((a) => {
     switch (filter) {
       case "dealers":
@@ -159,19 +151,21 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
   );
 }
 
+type AccountMenuProps = {
+  account: AdminAccount;
+  verified: boolean;
+  blocked: boolean;
+  onBlock: () => void;
+  onShowListings: () => void;
+};
+
 function AccountMenu({
   account,
   verified,
   blocked,
   onBlock,
   onShowListings,
-}: {
-  account: Account;
-  verified: boolean;
-  blocked: boolean;
-  onBlock: () => void;
-  onShowListings: () => void;
-}) {
+}: AccountMenuProps) {
   const t = useTranslations("moderation.admin.users");
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const close = () => setAnchor(null);

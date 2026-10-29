@@ -11,7 +11,9 @@ import { formatNumber } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 
-export default function KeySpecs({ listing }: { listing: Listing }) {
+type KeySpecsProps = { listing: Listing };
+
+export default function KeySpecs({ listing }: KeySpecsProps) {
   const t = useTranslations("listing.keySpecs");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");

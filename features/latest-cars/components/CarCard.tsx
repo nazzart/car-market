@@ -15,7 +15,9 @@ import FavoriteButton from "./FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
 import { usePlaceName } from "@/lib/places";
 
-export default function CarCard({ listing }: { listing: Listing }) {
+type CarCardProps = { listing: Listing };
+
+export default function CarCard({ listing }: CarCardProps) {
   const t = useTranslations("common");
   const specLine = useSpecLine();
   const placeName = usePlaceName();

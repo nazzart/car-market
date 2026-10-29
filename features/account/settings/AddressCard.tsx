@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import Skeleton from "@/components/ui/Skeleton";
 
 import AddressField from "./AddressField";
-import type { DealerSettingsForm } from "./DealerSettings";
+import type { DealerSettingsForm } from "../types";
 import { type AddressResult, reverseGeocode } from "./geocoding";
 import SettingsCard from "./SettingsCard";
 
@@ -22,8 +22,10 @@ const LocationPicker = dynamic(() => import("./LocationPicker"), {
 // Адрес хранится на латышском: кириллица — признак, что его ввели по-русски
 export const hasCyrillic = (value: string) => /[Ѐ-ӿ]/.test(value);
 
+type AddressCardProps = { settings: DealerSettingsForm };
+
 // Адрес дилера и метка на карте: выбор подсказки переносит метку, перенос метки предлагает адрес этой точки
-export default function AddressCard({ settings }: { settings: DealerSettingsForm }) {
+export default function AddressCard({ settings }: AddressCardProps) {
   const t = useTranslations("account.settings.address");
   const { form, set, show } = settings;
 

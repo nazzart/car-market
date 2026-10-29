@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 
+import type { PageSearchParams } from "@/i18n/types";
 import Container from "@/components/layout/Container";
 import DealersView from "@/features/dealers/components/DealersView";
 import { DEALERS_PAGE_SIZE, countDealers, getDealerFilterOptions, searchDealers } from "@/features/dealers/api";
 
-type Props = {
+type DealersPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: PageSearchParams;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: DealersPageProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "dealers" });
 
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Фильтры в URL (?city=riga&type=official&page=2): сервер фильтрует и отдаёт одну страницу карточек
 // и лёгкие метки для карты, Google видит список дилеров
-export default async function DealersPage({ searchParams }: Props) {
+export default async function DealersPage({ searchParams }: DealersPageProps) {
   const query = await searchParams;
   const get = (key: string) => {
     const value = query[key];

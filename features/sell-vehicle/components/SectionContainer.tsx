@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 
-type Props = {
+type SectionContainerProps = {
   id: string;
   title: string;
   description?: string;
@@ -28,7 +28,7 @@ export function SectionContainer({
   isValid,
   onNext,
   onSkip,
-}: Props) {
+}: SectionContainerProps) {
   const t = useTranslations("sell.form");
   const [completed, setCompleted] = useState(false);
 

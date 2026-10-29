@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 import CategoryCard from "../components/CategoryCard";
 
-type Props = {
+type CategoryViewProps = {
   onSelect: (category: string) => void;
 };
 
@@ -28,7 +28,7 @@ const items = [
 
 const benefits = ["free", "fast", "buyers"];
 
-export default function CategoryView({ onSelect }: Props) {
+export default function CategoryView({ onSelect }: CategoryViewProps) {
   const t = useTranslations("sell.category");
 
   return (

@@ -4,8 +4,10 @@ import { useTranslations } from "next-intl";
 
 import Button from "@/components/ui/Button";
 
+type SaveBarProps = { visible: boolean; onDiscard: () => void; onSave: () => void };
+
 // Панель «Есть несохранённые изменения» внизу экрана
-export function SaveBar({ visible, onDiscard, onSave }: { visible: boolean; onDiscard: () => void; onSave: () => void }) {
+export function SaveBar({ visible, onDiscard, onSave }: SaveBarProps) {
   const t = useTranslations("account.settings.saveBar");
 
   return (

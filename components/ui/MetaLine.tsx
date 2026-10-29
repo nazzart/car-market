@@ -2,14 +2,16 @@ import { Fragment } from "react";
 
 import { cn } from "@/lib/utils";
 
+type MetaLineProps = {
+  items: React.ReactNode[];
+  className?: string;
+};
+
 // Строка «Rīga · Dīleris · pirms 2 dienām»: пустые части (false, null, "") пропускаются, точки — между остальными
 export default function MetaLine({
   items,
   className,
-}: {
-  items: React.ReactNode[];
-  className?: string;
-}) {
+}: MetaLineProps) {
   const shown = items.filter((item) => item !== null && item !== undefined && item !== false && item !== "");
 
   return (

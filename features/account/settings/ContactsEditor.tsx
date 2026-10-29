@@ -15,13 +15,13 @@ import { isPhone } from "@/lib/phone";
 
 /* ---------- Форма одного контакта (и в настройках, и в форме продажи) ---------- */
 
-type FormProps = {
+type ContactFormProps = {
   initial?: DealerContact;
   onSave: (contact: DealerContact) => void;
   onCancel: () => void;
 };
 
-export function ContactForm({ initial, onSave, onCancel }: FormProps) {
+export function ContactForm({ initial, onSave, onCancel }: ContactFormProps) {
   const t = useTranslations("account.settings.contacts.persons");
   const [name, setName] = useState(initial?.name ?? "");
   const [phone, setPhone] = useState(initial?.phone ?? "");
@@ -93,7 +93,7 @@ export function ContactForm({ initial, onSave, onCancel }: FormProps) {
 
 /* ---------- Список контактов в настройках дилера ---------- */
 
-type Props = {
+type ContactsEditorProps = {
   contacts: DealerContact[];
   companyPhone: string;
   onChange: (contacts: DealerContact[]) => void;
@@ -102,7 +102,7 @@ type Props = {
   onReassign: (fromId: string, toId: string) => void;
 };
 
-export default function ContactsEditor({ contacts, companyPhone, onChange, usage, onReassign }: Props) {
+export default function ContactsEditor({ contacts, companyPhone, onChange, usage, onReassign }: ContactsEditorProps) {
   const t = useTranslations("account.settings.contacts.persons");
   const [editing, setEditing] = useState<string | "new" | null>(null);
   const [removing, setRemoving] = useState<DealerContact | null>(null);

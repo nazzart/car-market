@@ -6,12 +6,12 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 import { toggleFavorite, useIsFavorite } from "@/features/favorites/store";
 
-type Props = {
+type FavoriteButtonProps = {
   listing: { id: string; price: number };
   className?: string;
 };
 
-export default function FavoriteButton({ listing, className }: Props) {
+export default function FavoriteButton({ listing, className }: FavoriteButtonProps) {
   const t = useTranslations("common");
   const active = useIsFavorite(listing.id);
 

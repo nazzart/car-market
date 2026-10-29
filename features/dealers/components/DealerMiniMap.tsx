@@ -13,8 +13,10 @@ const DealersMap = dynamic(() => import("./DealersMap"), {
 
 const noop = () => {};
 
+type DealerMiniMapProps = { dealer: Dealer };
+
 // Небольшая карта с одним дилером для его страницы
-export default function DealerMiniMap({ dealer }: { dealer: Dealer }) {
+export default function DealerMiniMap({ dealer }: DealerMiniMapProps) {
   return (
     <div className="relative isolate h-56 rounded-card overflow-hidden border border-gray-200">
       <DealersMap

@@ -1,10 +1,12 @@
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
+import type { ButtonSize, ButtonVariant } from "./types";
+
 // Кнопки сайта — «таблетки» в нескольких вариантах. С href — ссылка (Link с текущим языком), без — <button>.
 // Служит и серверным, и клиентским компонентам
 
-const variants = {
+const variants: Record<ButtonVariant, string> = {
   primary: "bg-primary hover:bg-primary-hover text-white font-semibold",
   dark: "bg-gray-900 hover:bg-black text-white font-semibold",
   outline: "border border-gray-200 bg-white hover:border-gray-900 text-gray-900 font-medium",
@@ -14,20 +16,17 @@ const variants = {
   white: "bg-white hover:bg-gray-100 text-gray-900 font-semibold", // на тёмном фоне
 };
 
-const sizes = {
+const sizes: Record<ButtonSize, string> = {
   sm: "h-9 px-4 text-sm",
   md: "h-11 px-5 text-sm",
   lg: "h-12 px-6 text-base",
   xl: "h-14 px-8 text-base",
 };
 
-export type ButtonVariant = keyof typeof variants;
-export type ButtonSize = keyof typeof sizes;
-
-type StyleProps = { variant?: ButtonVariant; size?: ButtonSize; fullWidth?: boolean; className?: string };
+type ButtonStyleProps = { variant?: ButtonVariant; size?: ButtonSize; fullWidth?: boolean; className?: string };
 
 // Классы кнопки — для элементов, которые не могут быть <Button> (например, кнопка внутри чужого компонента)
-export function buttonClass({ variant = "primary", size = "md", fullWidth, className }: StyleProps = {}) {
+export function buttonClass({ variant = "primary", size = "md", fullWidth, className }: ButtonStyleProps = {}) {
   return cn(
     "inline-flex items-center justify-center gap-1.5 shrink-0 rounded-full whitespace-nowrap transition cursor-pointer",
     "disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none",
@@ -39,23 +38,23 @@ export function buttonClass({ variant = "primary", size = "md", fullWidth, class
   );
 }
 
-type Common = StyleProps & { icon?: React.ReactNode; children?: React.ReactNode };
-type AsButton = Common & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "className"> & { href?: undefined };
-type AsLink = Common & Omit<React.ComponentProps<typeof Link>, "className"> & { href: React.ComponentProps<typeof Link>["href"] };
+type ButtonBaseProps = ButtonStyleProps & { icon?: React.ReactNode; children?: React.ReactNode };
+type ButtonAsButtonProps = ButtonBaseProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "className"> & { href?: undefined };
+type ButtonAsLinkProps = ButtonBaseProps & Omit<React.ComponentProps<typeof Link>, "className"> & { href: React.ComponentProps<typeof Link>["href"] };
 
-export default function Button(props: AsButton | AsLink) {
+export default function Button(props: ButtonAsButtonProps | ButtonAsLinkProps) {
   const { variant, size, fullWidth, className, icon, children, ...rest } = props;
   const classes = buttonClass({ variant, size, fullWidth, className });
 
   if (rest.href !== undefined) {
     return (
-      <Link {...(rest as Omit<AsLink, keyof Common>)} className={classes}>
+      <Link {...(rest as Omit<ButtonAsLinkProps, keyof ButtonBaseProps>)} className={classes}>
         {icon}
         {children}
       </Link>
     );
   }
-  const { type = "button", ...buttonProps } = rest as Omit<AsButton, keyof Common>;
+  const { type = "button", ...buttonProps } = rest as Omit<ButtonAsButtonProps, keyof ButtonBaseProps>;
   return (
     <button type={type} {...buttonProps} className={classes}>
       {icon}
@@ -64,13 +63,15 @@ export default function Button(props: AsButton | AsLink) {
   );
 }
 
+type IconButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "aria-label"> & { label: string };
+
 // Круглая кнопка со значком (меню «⋯», закрыть). label обязателен — его прочитает экранный диктор
 export function IconButton({
   label,
   className,
   children,
   ...rest
-}: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "aria-label"> & { label: string }) {
+}: IconButtonProps) {
   return (
     <button
       type="button"

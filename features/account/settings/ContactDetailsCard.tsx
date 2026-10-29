@@ -5,6 +5,15 @@ import { useTranslations } from "next-intl";
 
 import SettingsCard from "./SettingsCard";
 
+type ContactDetailsCardProps = {
+  email: string;
+  phone: string;
+  onEmailChange: (value: string) => void;
+  onPhoneChange: (value: string) => void;
+  emailError: boolean;
+  phoneError: boolean;
+};
+
 // Email и телефон аккаунта — одинаковые у частного лица и дилера
 export default function ContactDetailsCard({
   email,
@@ -13,14 +22,7 @@ export default function ContactDetailsCard({
   onPhoneChange,
   emailError,
   phoneError,
-}: {
-  email: string;
-  phone: string;
-  onEmailChange: (value: string) => void;
-  onPhoneChange: (value: string) => void;
-  emailError: boolean;
-  phoneError: boolean;
-}) {
+}: ContactDetailsCardProps) {
   const t = useTranslations("account.settings.contacts");
 
   return (

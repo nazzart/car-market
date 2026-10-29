@@ -4,7 +4,9 @@ import { useTranslations } from "next-intl";
 import { Listing } from "@/features/cars/types";
 import VinReveal from "./VinReveal";
 
-export default function SpecsTable({ listing }: { listing: Listing }) {
+type SpecsTableProps = { listing: Listing };
+
+export default function SpecsTable({ listing }: SpecsTableProps) {
   const t = useTranslations("listing.specs");
   const tOptions = useTranslations("options");
 

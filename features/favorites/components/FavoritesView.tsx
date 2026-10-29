@@ -31,10 +31,8 @@ import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 import CompareButton from "@/features/compare/components/CompareButton";
 import { usePlaceName } from "@/lib/places";
 
+import { FAVORITE_SORTS, type FavoriteSort } from "../types";
 import { FavoriteEntry, addFavorite, clearFavorites, removeFavorite, useFavorites } from "../store";
-
-const SORTS = ["added", "price_asc", "price_desc"] as const;
-type Sort = (typeof SORTS)[number];
 
 // true только в браузере после гидратации — до этого избранное ещё не прочитано
 const noop = () => () => {};
@@ -52,7 +50,7 @@ export default function FavoritesView() {
   const loaded = useListingsByIds(entries.map((e) => e.id));
   const listingOf = (id: string) => loaded?.find((l) => l.id === id);
 
-  const [sort, setSort] = useState<Sort>("added");
+  const [sort, setSort] = useState<FavoriteSort>("added");
   const toast = useToast();
 
   const items = entries.map((entry) => ({ entry, listing: listingOf(entry.id) }));
@@ -92,10 +90,10 @@ export default function FavoritesView() {
                   <select
                     aria-label={t("sort.label")}
                     value={sort}
-                    onChange={(e) => setSort(e.target.value as Sort)}
+                    onChange={(e) => setSort(e.target.value as FavoriteSort)}
                     className={`${inputClass} appearance-none pr-9 cursor-pointer w-auto`}
                   >
-                    {SORTS.map((value) => (
+                    {FAVORITE_SORTS.map((value) => (
                       <option key={value} value={value}>
                         {t(`sort.${value}`)}
                       </option>
@@ -153,7 +151,9 @@ export default function FavoritesView() {
 
 const cardClass = "relative min-w-0 flex gap-3 sm:gap-4 p-3 rounded-card border border-gray-200 bg-white";
 
-function RemoveButton({ onClick }: { onClick: () => void }) {
+type RemoveButtonProps = { onClick: () => void };
+
+function RemoveButton({ onClick }: RemoveButtonProps) {
   const t = useTranslations("favorites");
 
   return (
@@ -169,17 +169,19 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
   );
 }
 
+type FavoriteCardProps = {
+  listing: Listing;
+  entry: FavoriteEntry;
+  now: number | null;
+  onRemove: () => void;
+};
+
 function FavoriteCard({
   listing,
   entry,
   now,
   onRemove,
-}: {
-  listing: Listing;
-  entry: FavoriteEntry;
-  now: number | null;
-  onRemove: () => void;
-}) {
+}: FavoriteCardProps) {
   const t = useTranslations("favorites");
   const specLine = useSpecLine();
   const placeName = usePlaceName();
@@ -245,7 +247,9 @@ function FavoriteCard({
   );
 }
 
-function UnavailableCard({ onRemove }: { onRemove: () => void }) {
+type UnavailableCardProps = { onRemove: () => void };
+
+function UnavailableCard({ onRemove }: UnavailableCardProps) {
   const t = useTranslations("favorites");
 
   return (

@@ -16,12 +16,12 @@ const WEEKDAYS: Day[] = ["tue", "wed", "thu", "fri"];
 export const hoursInvalid = (hours: OpeningHours) =>
   DAYS.some((d) => hours[d] && hours[d]!.close <= hours[d]!.open);
 
-type Props = {
+type HoursEditorProps = {
   value: OpeningHours;
   onChange: (value: OpeningHours) => void;
 };
 
-export default function HoursEditor({ value, onChange }: Props) {
+export default function HoursEditor({ value, onChange }: HoursEditorProps) {
   const t = useTranslations("account.settings.hours");
   const tOptions = useTranslations("options");
 

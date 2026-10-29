@@ -14,7 +14,8 @@ import { useFavorites } from "@/features/favorites/store";
 import { MAX_COMPARE, addToCompare, clearCompare, useCompare } from "../store";
 import CompareEmpty from "./CompareEmpty";
 import CompareTable from "./CompareTable";
-import { type Row, useCompareSections } from "./rows";
+import type { CompareRow } from "../types";
+import { useCompareSections } from "./rows";
 
 // true только в браузере после гидратации — до этого список сравнения ещё не прочитан
 const noop = () => () => {};
@@ -43,7 +44,7 @@ export default function CompareView() {
 
   if (cars.length === 0) return <CompareEmpty favoritesCount={favoritesToAdd.length} onAddFavorites={addFromFavorites} />;
 
-  const differs = (row: Row) => new Set(cars.map((l) => String(row.value(l)))).size > 1;
+  const differs = (row: CompareRow) => new Set(cars.map((l) => String(row.value(l)))).size > 1;
   const visibleSections = sections
     .map((s) => ({ ...s, rows: onlyDiff && cars.length > 1 ? s.rows.filter(differs) : s.rows }))
     .filter((s) => s.rows.length > 0);

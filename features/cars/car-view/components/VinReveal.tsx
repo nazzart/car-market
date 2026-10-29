@@ -9,9 +9,11 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 // «WBS4Y9107JAC81248» → «WBS4Y910•••••••48»
 const mask = (vin: string) => vin.slice(0, 8) + "•".repeat(Math.max(vin.length - 10, 0)) + vin.slice(-2);
 
+type VinRevealProps = { vin: string };
+
 // VIN скрыт до клика, как телефон: меньше достаётся ботам, а позже можно считать просмотры.
 // После показа — полный VIN и кнопка «Копировать» (для проверки в CSDD)
-export default function VinReveal({ vin }: { vin: string }) {
+export default function VinReveal({ vin }: VinRevealProps) {
   const t = useTranslations("listing.vin");
   const [shown, setShown] = useState(false);
   const [copied, setCopied] = useState(false);

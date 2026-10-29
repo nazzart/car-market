@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 
-type Tone = "good" | "warn" | "bad" | "neutral";
+import type { ConditionTone } from "../../types";
 
-const toneClass: Record<Tone, string> = {
+const toneClass: Record<ConditionTone, string> = {
   good: "bg-success-solid",
   warn: "bg-warning-solid",
   bad: "bg-danger-solid",
@@ -20,8 +20,10 @@ const toneClass: Record<Tone, string> = {
 const conditionTone = { excellent: "good", good: "good", average: "warn", repair: "bad" } as const;
 const serviceTone = { recent: "good", partial: "warn", required: "bad" } as const;
 
+type ConditionSummaryProps = { listing: Listing };
+
 // «Состояние и обслуживание»: то, что продавец указал в форме, — плитками с цветной отметкой
-export default function ConditionSummary({ listing }: { listing: Listing }) {
+export default function ConditionSummary({ listing }: ConditionSummaryProps) {
   const t = useTranslations("listing.specs");
   const tOptions = useTranslations("options");
 
@@ -50,7 +52,7 @@ export default function ConditionSummary({ listing }: { listing: Listing }) {
       value: tOptions(`mileageLatvia.${listing.mileageLatvia}`),
       tone: "neutral",
     },
-  ].filter(Boolean) as { icon: typeof PlaceOutlinedIcon; label: string; value: string; tone: Tone }[];
+  ].filter(Boolean) as { icon: typeof PlaceOutlinedIcon; label: string; value: string; tone: ConditionTone }[];
 
   if (tiles.length === 0) return null;
 

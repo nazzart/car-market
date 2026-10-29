@@ -13,7 +13,9 @@ import ListingGallery from "./ListingGallery";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { usePlaceName } from "@/lib/places";
 
-export default function ListingRow({ listing }: { listing: Listing }) {
+type ListingRowProps = { listing: Listing };
+
+export default function ListingRow({ listing }: ListingRowProps) {
   const t = useTranslations("cars.row");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");

@@ -3,8 +3,10 @@ import { useTranslations } from "next-intl";
 
 import { equipmentGroups } from "../../config/equipment";
 
+type EquipmentListProps = { items: string[] };
+
 // Опции по группам (Комфорт, Безопасность…), чтобы длинный список легко читался
-export default function EquipmentList({ items }: { items: string[] }) {
+export default function EquipmentList({ items }: EquipmentListProps) {
   const t = useTranslations("options");
 
   const groups = Object.entries(equipmentGroups)

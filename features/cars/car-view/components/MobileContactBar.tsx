@@ -5,8 +5,10 @@ import { formatPrice } from "@/lib/utils";
 import { Listing } from "@/features/cars/types";
 import ListingPhone from "./ListingPhone";
 
+type MobileContactBarProps = { listing: Listing };
+
 // Фиксированная панель внизу экрана на телефоне — цена и звонок всегда под рукой
-export default function MobileContactBar({ listing }: { listing: Listing }) {
+export default function MobileContactBar({ listing }: MobileContactBarProps) {
   const t = useTranslations("listing");
 
   return (

@@ -9,8 +9,10 @@ import EmptyState from "@/components/ui/EmptyState";
 
 import { MAX_COMPARE } from "../store";
 
+type CompareEmptyProps = { favoritesCount: number; onAddFavorites: () => void };
+
 // Сравнение пусто: как добавить машины
-export default function CompareEmpty({ favoritesCount, onAddFavorites }: { favoritesCount: number; onAddFavorites: () => void }) {
+export default function CompareEmpty({ favoritesCount, onAddFavorites }: CompareEmptyProps) {
   const t = useTranslations("compare");
 
   return (

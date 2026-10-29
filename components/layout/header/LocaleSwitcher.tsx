@@ -6,8 +6,10 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
+type LocaleSwitcherProps = { className?: string };
+
 // LV / RU — остаёмся на той же странице и с теми же фильтрами
-export default function LocaleSwitcher({ className }: { className?: string }) {
+export default function LocaleSwitcher({ className }: LocaleSwitcherProps) {
   const t = useTranslations("nav");
   const locale = useLocale();
   const pathname = usePathname();

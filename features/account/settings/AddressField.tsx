@@ -9,7 +9,7 @@ import { AddressResult, searchAddress } from "./geocoding";
 const MIN_QUERY = 3;
 const DEBOUNCE_MS = 300;
 
-type Props = {
+type AddressFieldProps = {
   value: string;
   onChange: (value: string) => void;
   onSelect: (result: AddressResult) => void;
@@ -21,7 +21,7 @@ type Props = {
 };
 
 // Поле адреса с подсказками геокодера; можно и просто ввести адрес руками
-export default function AddressField({ value, onChange, onSelect, near, label, placeholder, error, helperText }: Props) {
+export default function AddressField({ value, onChange, onSelect, near, label, placeholder, error, helperText }: AddressFieldProps) {
   const [options, setOptions] = useState<AddressResult[]>([]);
   const [loading, setLoading] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);

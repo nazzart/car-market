@@ -13,13 +13,13 @@ import { signIn } from "../actions";
 import { useAuth } from "../store";
 import { AuthHeader } from "../ui";
 
-type Props = {
+type LoginViewProps = {
   onForgotPassword: () => void;
   onCreateAccount: () => void;
   onLoggedIn: () => void;
 };
 
-export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedIn }: Props) {
+export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedIn }: LoginViewProps) {
   const t = useTranslations("auth");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

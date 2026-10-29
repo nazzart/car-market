@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 
+import type { LocaleParams } from "@/i18n/types";
 import Container from "@/components/layout/Container";
 import NewPasswordView from "@/features/auth/views/NewPasswordView";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: LocaleParams): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "auth.newPassword" });
   return { title: t("title"), robots: { index: false } };

@@ -9,12 +9,12 @@ import Button from "@/components/ui/Button";
 
 import { AuthHeader } from "../ui";
 
-type Props = {
+type RegisterSuccessViewProps = {
   email: string;
   onClose: () => void;
 };
 
-export default function RegisterSuccessView({ email, onClose }: Props) {
+export default function RegisterSuccessView({ email, onClose }: RegisterSuccessViewProps) {
   const t = useTranslations("auth.success");
   const [resent, setResent] = useState(false);
 

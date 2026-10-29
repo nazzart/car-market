@@ -2,7 +2,15 @@
 
 import { Dialog as MuiDialog } from "@mui/material";
 
-import Button, { type ButtonVariant } from "./Button";
+import Button from "./Button";
+import type { ButtonVariant } from "./types";
+
+type DialogProps = {
+  open: boolean;
+  onClose: () => void;
+  maxWidth?: number;
+  children: React.ReactNode;
+};
 
 // Окно поверх страницы в стиле сайта: скруглённая белая панель с отступами.
 // Внутри — DialogHeader, содержимое и DialogActions (на телефоне кнопки друг под другом)
@@ -11,12 +19,7 @@ export default function Dialog({
   onClose,
   maxWidth = 460,
   children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  maxWidth?: number;
-  children: React.ReactNode;
-}) {
+}: DialogProps) {
   return (
     <MuiDialog open={open} onClose={onClose} slotProps={{ paper: { sx: { borderRadius: "var(--radius-panel)", m: 2, width: "100%", maxWidth } } }}>
       <div className="p-6">{children}</div>
@@ -24,7 +27,9 @@ export default function Dialog({
   );
 }
 
-export function DialogHeader({ title, text }: { title: React.ReactNode; text?: React.ReactNode }) {
+type DialogHeaderProps = { title: React.ReactNode; text?: React.ReactNode };
+
+export function DialogHeader({ title, text }: DialogHeaderProps) {
   return (
     <>
       <h2 className="text-lg font-semibold">{title}</h2>
@@ -33,9 +38,25 @@ export function DialogHeader({ title, text }: { title: React.ReactNode; text?: R
   );
 }
 
-export function DialogActions({ children }: { children: React.ReactNode }) {
+type DialogActionsProps = { children: React.ReactNode };
+
+export function DialogActions({ children }: DialogActionsProps) {
   return <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-6">{children}</div>;
 }
+
+type ConfirmDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: React.ReactNode;
+  text?: React.ReactNode;
+  confirmLabel: string;
+  cancelLabel: string;
+  tone?: Extract<ButtonVariant, "danger" | "primary" | "dark">;
+  confirmDisabled?: boolean;
+  maxWidth?: number;
+  children?: React.ReactNode;
+};
 
 // «Вы уверены?»: заголовок, пояснение, дополнительные поля (children) и две кнопки. Enter подтверждает
 export function ConfirmDialog({
@@ -50,19 +71,7 @@ export function ConfirmDialog({
   confirmDisabled,
   maxWidth,
   children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: React.ReactNode;
-  text?: React.ReactNode;
-  confirmLabel: string;
-  cancelLabel: string;
-  tone?: Extract<ButtonVariant, "danger" | "primary" | "dark">;
-  confirmDisabled?: boolean;
-  maxWidth?: number;
-  children?: React.ReactNode;
-}) {
+}: ConfirmDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth={maxWidth}>
       <form

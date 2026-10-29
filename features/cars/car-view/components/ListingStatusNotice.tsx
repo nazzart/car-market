@@ -6,8 +6,10 @@ import Button from "@/components/ui/Button";
 import Notice from "@/components/ui/Notice";
 import { VisibilitySubject, useVisibility } from "@/features/moderation/visibility";
 
+type ListingStatusNoticeProps = { listing: VisibilitySubject; brand: string };
+
 // Плашка над объявлением: продавец скрыл / продал / удалил или модератор заблокировал
-export default function ListingStatusNotice({ listing, brand }: { listing: VisibilitySubject; brand: string }) {
+export default function ListingStatusNotice({ listing, brand }: ListingStatusNoticeProps) {
   const t = useTranslations("listing.status");
   const { of } = useVisibility();
   const { seller, moderation, pending, accountBlock } = of(listing);

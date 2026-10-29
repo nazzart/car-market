@@ -18,8 +18,10 @@ import SettingsCard from "./SettingsCard";
 import SettingsHeader from "./SettingsHeader";
 import { useSettingsForm } from "./useSettingsForm";
 
+type IndividualSettingsProps = { user: User };
+
 // Настройки частного лица: имя, контакты, город, пароль, удаление аккаунта
-export default function IndividualSettings({ user }: { user: User }) {
+export default function IndividualSettings({ user }: IndividualSettingsProps) {
   const t = useTranslations("account.settings");
   const { setUser } = useAuth();
 

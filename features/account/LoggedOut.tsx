@@ -8,9 +8,11 @@ import Skeleton from "@/components/ui/Skeleton";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 
 
+type LoggedOutProps = { title?: string };
+
 // title — заголовок страницы, на которую пытались попасть (например, «Настройки профиля»)
 // Не вошёл — просим войти. Пока профиль загружается, вместо этого — заглушка (чтобы не мигало «Войдите»)
-export default function LoggedOut({ title }: { title?: string }) {
+export default function LoggedOut({ title }: LoggedOutProps) {
   const t = useTranslations("account.loggedOut");
   const { loading } = useAuth();
 

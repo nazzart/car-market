@@ -15,14 +15,14 @@ import { ConfirmDialog } from "@/components/ui/Dialog";
 
 import type { ListingStatus } from "./status";
 
-type Props = {
+type ListingActionsProps = {
   title: string;
   status: ListingStatus;
   onChange: (status: ListingStatus) => void;
 };
 
 // Меню «⋯» у объявления в кабинете: скрыть / активировать, продано, удалить (с подтверждением)
-export default function ListingActions({ title, status, onChange }: Props) {
+export default function ListingActions({ title, status, onChange }: ListingActionsProps) {
   const t = useTranslations("account.actions");
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);

@@ -9,13 +9,13 @@ import { NoPhoto } from "@/components/ui/CarPhoto";
 
 import PhotoLightbox from "./PhotoLightbox";
 
-type Props = {
+type PhotoGalleryProps = {
   images: string[];
   title: string;
 };
 
 // Десктоп: мозаика (1 большое + до 4 маленьких). Телефон: свайп-карусель
-export default function PhotoGallery({ images, title }: Props) {
+export default function PhotoGallery({ images, title }: PhotoGalleryProps) {
   const t = useTranslations("listing.gallery");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [slide, setSlide] = useState(0);

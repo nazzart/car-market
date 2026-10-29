@@ -18,7 +18,9 @@ const pricePresets = [3000, 5000, 10000, 15000, 20000, 30000];
 
 const panelInputClass = "w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-gray-900 transition";
 
-function OptionButton({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
+type OptionButtonProps = { selected: boolean; onClick: () => void; children: React.ReactNode };
+
+function OptionButton({ selected, onClick, children }: OptionButtonProps) {
   return (
     <button
       type="button"
@@ -32,7 +34,9 @@ function OptionButton({ selected, onClick, children }: { selected: boolean; onCl
   );
 }
 
-export function BrandPanel({ search }: { search: QuickSearchState }) {
+type BrandPanelProps = { search: QuickSearchState };
+
+export function BrandPanel({ search }: BrandPanelProps) {
   const t = useTranslations("search");
   const { byBrand } = useListingStats();
   const { filters, brandQuery, setBrandQuery, selectBrand } = search;
@@ -68,7 +72,9 @@ export function BrandPanel({ search }: { search: QuickSearchState }) {
   );
 }
 
-export function ModelPanel({ search, brandName }: { search: QuickSearchState; brandName: string }) {
+type ModelPanelProps = { search: QuickSearchState; brandName: string };
+
+export function ModelPanel({ search, brandName }: ModelPanelProps) {
   const t = useTranslations("search");
   const { filters, models, pick } = search;
 
@@ -90,7 +96,9 @@ export function ModelPanel({ search, brandName }: { search: QuickSearchState; br
   );
 }
 
-export function PricePanel({ search }: { search: QuickSearchState }) {
+type PricePanelProps = { search: QuickSearchState };
+
+export function PricePanel({ search }: PricePanelProps) {
   const t = useTranslations("search");
   const { filters, set, closePanel } = search;
 
@@ -140,7 +148,9 @@ export function PricePanel({ search }: { search: QuickSearchState }) {
   );
 }
 
-export function YearPanel({ search }: { search: QuickSearchState }) {
+type YearPanelProps = { search: QuickSearchState };
+
+export function YearPanel({ search }: YearPanelProps) {
   const t = useTranslations("search");
   const { filters, pick } = search;
 

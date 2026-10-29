@@ -11,13 +11,13 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { useTranslations } from "next-intl";
 
-type Props = {
+type ShareMenuProps = {
   title: string; // «BMW M4 Coupe, 2018 — 47 500 €»
   className: string;
 };
 
 // «Поделиться»: мессенджеры, ссылка и системное меню телефона (если есть)
-export default function ShareMenu({ title, className }: Props) {
+export default function ShareMenu({ title, className }: ShareMenuProps) {
   const t = useTranslations("listing.actions");
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [copied, setCopied] = useState(false);

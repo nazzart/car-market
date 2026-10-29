@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 
 import { foldText } from "@/lib/places";
 
+import type { GroupedOption, SelectOption } from "./types";
+
 // Общий вид выпадающих списков с поиском (марка, модель, город): скруглённое окно, мягкая подсветка,
 // заголовки групп и галочка у выбранного
 export const popupSlotProps = {
@@ -37,20 +39,13 @@ export const popupSlotProps = {
   },
 } as const;
 
-export function GroupHeader({ children }: { children: React.ReactNode }) {
+type GroupHeaderProps = { children: React.ReactNode };
+
+export function GroupHeader({ children }: GroupHeaderProps) {
   return <div className="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400">{children}</div>;
 }
 
-export type SelectOption = {
-  value: string;
-  label: string;
-  count?: number; // число объявлений — справа серым
-  keywords?: string; // дополнительные слова для поиска
-};
-
-type Option = SelectOption & { group?: string };
-
-type Props = {
+type SearchSelectProps = {
   options: SelectOption[];
   featured?: SelectOption[]; // показываются сверху отдельной группой, пока ничего не введено
   featuredLabel?: string;
@@ -69,7 +64,7 @@ type Props = {
 
 // Каждое введённое слово — начало слова в названии: «to» → Toyota (а не Aston Martin), «rover» → Land Rover
 const words = (text: string) => foldText(text).split(/[\s\-./]+/).filter(Boolean);
-const matches = (option: Option, query: string) => {
+const matches = (option: GroupedOption, query: string) => {
   const optionWords = words(`${option.label} ${option.keywords ?? ""}`);
   return words(query).every((q) => optionWords.some((w) => w.startsWith(q)));
 };
@@ -88,17 +83,17 @@ export default function SearchSelect({
   error,
   helperText,
   variant = "field",
-}: Props) {
+}: SearchSelectProps) {
   const t = useTranslations("common.select");
   const grouped = Boolean(featured?.length);
-  const all: Option[] = [
+  const all: GroupedOption[] = [
     ...(featured ?? []).map((o) => ({ ...o, group: featuredLabel })),
     ...options.map((o) => ({ ...o, group: grouped ? allLabel : undefined })),
   ];
   const selected = options.find((o) => o.value === value) ?? null;
 
   return (
-    <Autocomplete<Option, false, false, false>
+    <Autocomplete<GroupedOption, false, false, false>
       options={all}
       value={selected}
       onChange={(_, option) => onChange(option?.value ?? "")}

@@ -11,8 +11,10 @@ import { getOpenStatus, rigaNow } from "../lib/openStatus";
 
 const trim = (time: string) => time.replace(/^0(\d)/, "$1");
 
+type OpenStatusProps = { hours: OpeningHours; className?: string };
+
 // «● Открыто до 19:00» / «● Закрыто · откроется завтра в 9:00»
-export default function OpenStatus({ hours, className }: { hours: OpeningHours; className?: string }) {
+export default function OpenStatus({ hours, className }: OpenStatusProps) {
   const t = useTranslations("dealers.status");
   const tOptions = useTranslations("options");
   const now = useNow();
@@ -44,8 +46,10 @@ export default function OpenStatus({ hours, className }: { hours: OpeningHours; 
   );
 }
 
+type WeekHoursProps = { hours: OpeningHours };
+
 // Расписание на неделю, сегодняшний день выделен
-export function WeekHours({ hours }: { hours: OpeningHours }) {
+export function WeekHours({ hours }: WeekHoursProps) {
   const t = useTranslations("dealers.status");
   const tOptions = useTranslations("options");
   const now = useNow();

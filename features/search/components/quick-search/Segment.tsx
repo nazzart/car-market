@@ -3,6 +3,17 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslations } from "next-intl";
 
+type SegmentProps = {
+  label: string;
+  value: string;
+  placeholder: string;
+  active: boolean;
+  disabled?: boolean;
+  onOpen: (el: HTMLElement) => void;
+  onClear: () => void;
+  segmentRef?: React.Ref<HTMLDivElement>;
+};
+
 // Часть строки поиска («Марка», «Цена»…): по клику открывает панель выбора, крестик очищает значение
 export function Segment({
   label,
@@ -13,16 +24,7 @@ export function Segment({
   onOpen,
   onClear,
   segmentRef,
-}: {
-  label: string;
-  value: string;
-  placeholder: string;
-  active: boolean;
-  disabled?: boolean;
-  onOpen: (el: HTMLElement) => void;
-  onClear: () => void;
-  segmentRef?: React.Ref<HTMLDivElement>;
-}) {
+}: SegmentProps) {
   const t = useTranslations("search");
 
   return (

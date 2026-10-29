@@ -19,12 +19,12 @@ import { User, isAdmin } from "@/features/auth/types";
 import { useLogout } from "@/features/auth/store";
 import { initials } from "@/lib/utils";
 
-type Props = {
+type UserMenuProps = {
   user: User | null;
   onLoginClick: () => void;
 };
 
-export default function UserMenu({ user, onLoginClick }: Props) {
+export default function UserMenu({ user, onLoginClick }: UserMenuProps) {
   const t = useTranslations("nav");
   const router = useRouter();
   const logout = useLogout();

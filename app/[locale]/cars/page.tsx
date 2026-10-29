@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
+import type { PageSearchParams } from "@/i18n/types";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import CarsSearchView from "@/features/cars/car-list/components/CarsSearchView";
@@ -9,15 +10,13 @@ import { PAGE_SIZE, type Params, countListings, getLatestListings, relaxSuggesti
 import { collections } from "@/features/collections/config";
 import { getDealer } from "@/features/dealers/api";
 
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-
-type Props = {
+type CarsPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: SearchParams;
+  searchParams: PageSearchParams;
 };
 
 // Фильтры — в URL (?brand=bmw&priceTo=30000&page=2): страница рендерится на сервере, Google видит результаты
-const toParams = async (searchParams: SearchParams): Promise<Params> => {
+const toParams = async (searchParams: PageSearchParams): Promise<Params> => {
   const query = await searchParams;
   return {
     get: (key) => {
@@ -28,7 +27,7 @@ const toParams = async (searchParams: SearchParams): Promise<Params> => {
 };
 
 // Заголовок вкладки повторяет заголовок поиска: «BMW M4 — 3 sludinājumi | bestauto.lv»
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: CarsPageProps): Promise<Metadata> {
   const { locale } = await params;
   const { get } = await toParams(searchParams);
 
@@ -59,7 +58,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
-export default async function CarsPage({ searchParams }: Props) {
+export default async function CarsPage({ searchParams }: CarsPageProps) {
   const params = await toParams(searchParams);
   const result = await searchListings(params);
 

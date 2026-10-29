@@ -9,8 +9,10 @@ import { pageTitleClass } from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import Container from "@/components/layout/Container";
 
+type ErrorProps = { error: Error & { digest?: string }; reset: () => void };
+
 // Неожиданная ошибка на странице: шапка и подвал остаются, предлагаем повторить
-export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function Error({ error, reset }: ErrorProps) {
   const t = useTranslations("common.error");
 
   useEffect(() => {

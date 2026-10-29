@@ -5,8 +5,10 @@ import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 
+type AddSlotProps = { favoritesCount: number; onAddFavorites: () => void };
+
 // Свободная колонка в шапке сравнения: добавить машину из поиска или избранного
-export default function AddSlot({ favoritesCount, onAddFavorites }: { favoritesCount: number; onAddFavorites: () => void }) {
+export default function AddSlot({ favoritesCount, onAddFavorites }: AddSlotProps) {
   const t = useTranslations("compare");
 
   return (

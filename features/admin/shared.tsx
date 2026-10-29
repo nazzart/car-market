@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { BadgeTone } from "@/components/ui/Badge";
+import type { BadgeTone } from "@/components/ui/types";
 import CarPhoto from "@/components/ui/CarPhoto";
 import { Listing } from "@/features/cars/types";
 import { useDealerCatalog, useDealerLookup } from "@/features/dealers/hooks";
@@ -18,17 +18,8 @@ import {
 import { useVisibility } from "@/features/moderation/visibility";
 import { cn } from "@/lib/utils";
 
-import ModerationDialog, { DialogMode } from "./ModerationDialog";
-
-export type StatusKey =
-  | "active"
-  | "paused"
-  | "sold"
-  | "deleted"
-  | "blocked"
-  | "removed"
-  | "pending"
-  | "accountBlocked";
+import ModerationDialog from "./ModerationDialog";
+import type { DialogMode, StatusKey } from "./types";
 
 export const statusTone: Record<StatusKey, BadgeTone> = {
   active: "success",
@@ -138,7 +129,9 @@ export function useModerationDialog() {
   };
 }
 
-export function Thumb({ listing, muted }: { listing: Listing; muted?: boolean }) {
+type ThumbProps = { listing: Listing; muted?: boolean };
+
+export function Thumb({ listing, muted }: ThumbProps) {
   return (
     <CarPhoto
       src={listing.images[0]}

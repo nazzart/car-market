@@ -13,14 +13,14 @@ const variants = {
   outline: "h-10 px-4 border border-gray-200 hover:border-gray-900 text-sm font-medium text-gray-900",
 };
 
-type Props = {
+type PhoneButtonProps = {
   phone: string;
   variant?: keyof typeof variants;
   className?: string;
 };
 
 // Номер скрыт до клика — позже здесь будет учёт просмотров телефона
-export default function PhoneButton({ phone, variant = "outline", className }: Props) {
+export default function PhoneButton({ phone, variant = "outline", className }: PhoneButtonProps) {
   const t = useTranslations("common");
   const [shown, setShown] = useState(false);
 

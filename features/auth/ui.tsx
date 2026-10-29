@@ -1,6 +1,8 @@
+type AuthHeaderProps = { title: string; subtitle?: string };
+
 // Общие элементы окон входа и регистрации
 
-export function AuthHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+export function AuthHeader({ title, subtitle }: AuthHeaderProps) {
   return (
     <header className="text-center mb-7">
       <h2 className="text-2xl font-semibold tracking-tight text-gray-900">{title}</h2>
@@ -9,13 +11,15 @@ export function AuthHeader({ title, subtitle }: { title: string; subtitle?: stri
   );
 }
 
+type TextLinkButtonProps = {
+  onClick: () => void;
+  children: React.ReactNode;
+};
+
 export function TextLinkButton({
   onClick,
   children,
-}: {
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
+}: TextLinkButtonProps) {
   return (
     <button
       type="button"

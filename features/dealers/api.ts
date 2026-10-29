@@ -3,7 +3,9 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { type SQL, and, arrayContains, asc, desc, eq, ilike, isNull, ne, or, sql } from "drizzle-orm";
+import { type SQL, and, arrayContains, asc, count, desc, eq, ilike, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
+
+import { published } from "@/features/cars/api";
 
 import { db, schema } from "@/lib/db";
 import { CACHE_VERSION } from "@/lib/db/cacheVersion";
@@ -12,19 +14,30 @@ import { isListed } from "./lib/listed";
 import { getOpenStatus } from "./lib/openStatus";
 import type { Dealer, DealerContact, DealerPin } from "./types";
 
-const { dealers, dealerContacts } = schema;
+const { dealers, dealerContacts, listings } = schema;
 
 type Row = typeof dealers.$inferSelect;
+
+// «Машин в наличии» — опубликованные объявления дилера, по тому же правилу, что и /cars
+async function stockCounts(): Promise<Map<number, number>> {
+  const rows = await db
+    .select({ dealerId: listings.dealerId, n: count() })
+    .from(listings)
+    .where(and(isNotNull(listings.dealerId), published))
+    .groupBy(listings.dealerId);
+  return new Map(rows.map((r) => [r.dealerId!, r.n]));
+}
 
 // внутренний номер, даты и поля блокировки наружу как есть не отдаём: дилер известен по slug, блокировка — объектом
 const HIDDEN = new Set(["id", "createdAt", "blockedReason", "blockedNote", "blockedAt"]);
 
-function toDealer(row: Row, contacts: DealerContact[]): Dealer {
+function toDealer(row: Row, contacts: DealerContact[], carsInStock: number): Dealer {
   // необязательные поля без значения — undefined, как в типе Dealer
   const fields = Object.fromEntries(Object.entries(row).filter(([key, value]) => value !== null && !HIDDEN.has(key)));
   const { blockedReason, blockedNote, blockedAt } = row;
   return {
-    ...(fields as Omit<Dealer, "contacts" | "blocked">),
+    ...(fields as Omit<Dealer, "contacts" | "blocked" | "carsInStock">),
+    carsInStock,
     ...(contacts.length ? { contacts } : {}),
     // из кэша дата приходит строкой
     ...(blockedReason && blockedAt
@@ -36,21 +49,24 @@ function toDealer(row: Row, contacts: DealerContact[]): Dealer {
 // Дилеров немного (сотни), поэтому каталог читается целиком двумя запросами и кэшируется
 const catalog = unstable_cache(
   async () => {
-    const [rows, contacts] = await Promise.all([
+    const [rows, contacts, stock] = await Promise.all([
       db.select().from(dealers).orderBy(asc(dealers.name)),
       db.select().from(dealerContacts).orderBy(asc(dealerContacts.dealerId), asc(dealerContacts.position)),
+      stockCounts(),
     ]);
     return rows.map((row) =>
       toDealer(
         row,
         contacts
           .filter((c) => c.dealerId === row.id)
-          .map(({ id, name, phone, role }) => ({ id, name, phone, ...(role ? { role } : {}) }))
+          .map(({ id, name, phone, role }) => ({ id, name, phone, ...(role ? { role } : {}) })),
+        stock.get(row.id) ?? 0
       )
     );
   },
   ["dealers", CACHE_VERSION, "catalog"],
-  { tags: ["dealers"], revalidate: 300 }
+  // "listings" — число машин меняется вместе с объявлениями
+  { tags: ["dealers", "listings"], revalidate: 300 }
 );
 
 export async function getDealer(slug: string): Promise<Dealer | undefined> {
@@ -62,14 +78,14 @@ export async function getDealer(slug: string): Promise<Dealer | undefined> {
 export async function getDealerUncached(slug: string): Promise<Dealer | undefined> {
   const [row] = await db.select().from(dealers).where(eq(dealers.slug, slug));
   if (!row) return undefined;
-  const contacts = await db
-    .select()
-    .from(dealerContacts)
-    .where(eq(dealerContacts.dealerId, row.id))
-    .orderBy(asc(dealerContacts.position));
+  const [contacts, [stock]] = await Promise.all([
+    db.select().from(dealerContacts).where(eq(dealerContacts.dealerId, row.id)).orderBy(asc(dealerContacts.position)),
+    db.select({ n: count() }).from(listings).where(and(eq(listings.dealerId, row.id), published)),
+  ]);
   return toDealer(
     row,
-    contacts.map(({ id, name, phone, role }) => ({ id, name, phone, ...(role ? { role } : {}) }))
+    contacts.map(({ id, name, phone, role }) => ({ id, name, phone, ...(role ? { role } : {}) })),
+    stock?.n ?? 0
   );
 }
 
@@ -124,14 +140,18 @@ const matchingRows = unstable_cache(
     if (city) conditions.push(eq(dealers.city, city));
     if (brand) conditions.push(arrayContains(dealers.brands, [brand]));
     // проверенные — выше, дальше по алфавиту
-    return db
-      .select()
-      .from(dealers)
-      .where(and(...conditions))
-      .orderBy(desc(dealers.verified), asc(dealers.name));
+    const [rows, stock] = await Promise.all([
+      db
+        .select()
+        .from(dealers)
+        .where(and(...conditions))
+        .orderBy(desc(dealers.verified), asc(dealers.name)),
+      stockCounts(),
+    ]);
+    return rows.map((row) => toDealer(row, [], stock.get(row.id) ?? 0));
   },
   ["dealers", CACHE_VERSION, "search"],
-  { tags: ["dealers"], revalidate: 300 }
+  { tags: ["dealers", "listings"], revalidate: 300 }
 );
 
 // «south,west,north,east» из URL (поиск при перемещении карты)
@@ -157,7 +177,6 @@ export async function searchDealers(params: Params): Promise<DealerSearchResult>
   // часы работы — в jsonb, «открыто сейчас» считаем по времени Риги здесь, а не в SQL
   const now = Date.now();
   const filtered = rows
-    .map((row) => toDealer(row, []))
     .filter((d) => params.get("open") !== "1" || getOpenStatus(d.hours, now).open);
 
   // список — только видимые на карте, если включён «Искать при перемещении карты»

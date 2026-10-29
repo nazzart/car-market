@@ -102,7 +102,7 @@ function random(seed: number) {
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
-export function generateListings(count: number, firstId: number, dealers: Dealer[]): DemoListing[] {
+export function generateListings(count: number, firstId: number, dealers: Omit<Dealer, "carsInStock">[]): DemoListing[] {
   for (const [brand, model] of MODELS) {
     if (!modelsByBrand[brand]?.includes(model)) throw new Error(`Нет модели в каталоге: ${brand} ${model}`);
   }

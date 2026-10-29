@@ -1,7 +1,7 @@
 // Демо-дилеры (компании вымышленные) — загружаются в базу командой npm run db:seed; приложение читает их из базы
 import type { Dealer } from "../types";
 
-export const dealers: Dealer[] = [
+export const dealers: Omit<Dealer, "carsInStock">[] = [
   {
     slug: "baltic-auto",
     contacts: [
@@ -26,7 +26,6 @@ export const dealers: Dealer[] = [
       fri: { open: "09:00", close: "19:00" },
       sat: { open: "10:00", close: "16:00" },
     },
-    carsInStock: 126,
     since: 2016,
     description:
       "Официальный дилер BMW и MINI в Риге. Продажа новых автомобилей и автомобилей с пробегом BMW Premium Selection, сервисный центр, кузовной ремонт и шиномонтаж. Возможен лизинг и трейд-ин — оценка вашего автомобиля за 30 минут.",
@@ -51,7 +50,6 @@ export const dealers: Dealer[] = [
       fri: { open: "09:00", close: "19:00" },
       sat: { open: "10:00", close: "15:00" },
     },
-    carsInStock: 84,
     since: 2018,
     description:
       "Официальный дилер Kia: весь модельный ряд в наличии и под заказ, тест-драйв в день обращения, гарантия до 7 лет. Собственный сервис и склад запчастей.",
@@ -76,7 +74,6 @@ export const dealers: Dealer[] = [
       fri: { open: "08:30", close: "19:00" },
       sat: { open: "10:00", close: "16:00" },
     },
-    carsInStock: 172,
     since: 2015,
   },
   {
@@ -99,7 +96,6 @@ export const dealers: Dealer[] = [
       fri: { open: "09:00", close: "19:00" },
       sat: { open: "10:00", close: "16:00" },
     },
-    carsInStock: 203,
     since: 2015,
   },
   {
@@ -121,7 +117,6 @@ export const dealers: Dealer[] = [
       thu: { open: "09:00", close: "18:00" },
       fri: { open: "09:00", close: "18:00" },
     },
-    carsInStock: 58,
     since: 2019,
   },
   {
@@ -144,7 +139,6 @@ export const dealers: Dealer[] = [
       fri: { open: "10:00", close: "19:00" },
       sat: { open: "10:00", close: "19:00" },
     },
-    carsInStock: 47,
     since: 2019,
     description:
       "Автосалон премиальных автомобилей с пробегом. Каждый автомобиль проходит диагностику по 120 пунктам и проверку истории. Помогаем с лизингом и регистрацией в CSDD.",
@@ -168,7 +162,6 @@ export const dealers: Dealer[] = [
       thu: { open: "10:00", close: "18:00" },
       fri: { open: "10:00", close: "18:00" },
     },
-    carsInStock: 32,
     since: 2021,
   },
   {
@@ -191,7 +184,6 @@ export const dealers: Dealer[] = [
       fri: { open: "10:00", close: "18:00" },
       sat: { open: "10:00", close: "18:00" },
     },
-    carsInStock: 29,
     since: 2020,
   },
   {
@@ -213,7 +205,6 @@ export const dealers: Dealer[] = [
       thu: { open: "09:00", close: "18:00" },
       fri: { open: "09:00", close: "18:00" },
     },
-    carsInStock: 18,
     since: 2022,
   },
   {
@@ -236,7 +227,6 @@ export const dealers: Dealer[] = [
       fri: { open: "09:00", close: "18:00" },
       sat: { open: "10:00", close: "14:00" },
     },
-    carsInStock: 64,
     since: 2017,
   },
   {
@@ -258,7 +248,6 @@ export const dealers: Dealer[] = [
       thu: { open: "09:00", close: "18:00" },
       fri: { open: "09:00", close: "18:00" },
     },
-    carsInStock: 41,
     since: 2018,
   },
   {
@@ -281,7 +270,6 @@ export const dealers: Dealer[] = [
       fri: { open: "09:00", close: "18:00" },
       sat: { open: "09:00", close: "18:00" },
     },
-    carsInStock: 36,
     since: 2019,
   },
   {
@@ -303,7 +291,6 @@ export const dealers: Dealer[] = [
       thu: { open: "09:00", close: "18:00" },
       fri: { open: "09:00", close: "18:00" },
     },
-    carsInStock: 22,
     since: 2021,
   },
   {
@@ -326,7 +313,6 @@ export const dealers: Dealer[] = [
       fri: { open: "09:00", close: "18:00" },
       sat: { open: "10:00", close: "14:00" },
     },
-    carsInStock: 27,
     since: 2017,
   },
 ];

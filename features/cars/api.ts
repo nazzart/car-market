@@ -101,9 +101,11 @@ const ofDealer = (slug: string) =>
 const cached = <Args extends unknown[], Result>(fn: (...args: Args) => Promise<Result>, key: string) =>
   unstable_cache(fn, ["listings", CACHE_VERSION, key], { tags: ["listings", "dealers"], revalidate: 300 });
 
+
 // Видно покупателям: не на проверке, продавец не скрыл/не продал, модератор не заблокировал,
-// аккаунт продавца не заблокирован. Должно совпадать с isPublic() в features/moderation/visibility.ts
-const published = and(
+// аккаунт продавца не заблокирован. Должно совпадать с isPublic() в features/moderation/visibility.ts.
+// Счётчик «машин в наличии» у дилера (features/dealers/api) считается по нему же
+export const published = and(
   isNull(listings.review),
   eq(listings.status, "active"),
   isNull(listings.moderationStatus),

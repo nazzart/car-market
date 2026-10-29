@@ -59,7 +59,6 @@ export const dealers = pgTable("dealers", {
   hours: jsonb().$type<OpeningHours>().notNull().default({}),
   rating: real(),
   reviews: integer(),
-  carsInStock: integer().notNull().default(0),
   since: integer().notNull(),
   description: text(),
   ...blockColumns(),

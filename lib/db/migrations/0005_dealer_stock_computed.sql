@@ -1,0 +1,1 @@
+ALTER TABLE "dealers" DROP COLUMN "cars_in_stock";

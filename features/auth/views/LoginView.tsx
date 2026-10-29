@@ -6,13 +6,12 @@ import { Alert, Button, IconButton, InputAdornment, TextField } from "@mui/mater
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import { DEMO_PASSWORD, demoAccounts, signInWithPassword } from "../api";
 import type { User } from "../types";
 import { login } from "../store";
-import { AuthHeader, TextLinkButton, isEmail, pillSx } from "../ui";
+import { AuthHeader, isEmail, pillSx } from "../ui";
 
 type Props = {
   onForgotPassword: () => void;
@@ -23,7 +22,6 @@ type Props = {
 const demoButtons = [
   { id: "demo-individual", label: "types.individual", icon: PersonOutlineIcon },
   { id: "demo-dealer", label: "types.dealer", icon: StorefrontOutlinedIcon },
-  { id: "demo-admin", label: "login.demoAdmin", icon: AdminPanelSettingsOutlinedIcon },
 ] as const;
 
 export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedIn }: Props) {
@@ -123,6 +121,17 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
         </Button>
       </form>
 
+      {/* Регистрация — отдельной заметной кнопкой, а не ссылкой внизу */}
+      <div className="flex items-center gap-3 my-5 text-sm text-gray-500">
+        <span className="h-px flex-1 bg-gray-200" />
+        {t("login.newHere")}
+        <span className="h-px flex-1 bg-gray-200" />
+      </div>
+
+      <Button variant="outlined" size="large" fullWidth onClick={onCreateAccount} sx={{ ...pillSx, borderColor: "grey.300", color: "grey.900", "&:hover": { borderColor: "grey.900", bgcolor: "transparent" } }}>
+        {t("login.createAccount")}
+      </Button>
+
       {/* Демо-доступ — пока нет настоящих аккаунтов */}
 
       <div className="mt-6 p-4 rounded-2xl bg-gray-50">
@@ -131,13 +140,13 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
           {t("login.demoText", { email: demoAccounts[0].email, password: DEMO_PASSWORD })}
         </p>
 
-        <div className="grid grid-cols-3 gap-2 mt-3">
+        <div className="grid grid-cols-2 gap-2 mt-3">
           {demoButtons.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
               onClick={() => signIn(demoAccounts.find((u) => u.id === id)!)}
-              className="inline-flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 min-h-10 py-1.5 px-2 rounded-2xl sm:rounded-full border border-gray-200 bg-white text-xs sm:text-sm font-medium text-gray-900 hover:border-gray-900 transition cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 min-h-10 py-1.5 px-2 rounded-full border border-gray-200 bg-white text-xs sm:text-sm font-medium text-gray-900 hover:border-gray-900 transition cursor-pointer"
             >
               <Icon sx={{ fontSize: 18 }} />
               {t(label)}
@@ -145,11 +154,6 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
           ))}
         </div>
       </div>
-
-      <p className="text-sm text-gray-600 text-center mt-6">
-        {t("login.noAccount")}{" "}
-        <TextLinkButton onClick={onCreateAccount}>{t("login.register")}</TextLinkButton>
-      </p>
     </>
   );
 }

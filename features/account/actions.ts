@@ -17,6 +17,7 @@ import {
   type DealerFields,
   addOwnContact,
   assignOwnContact,
+  deleteOwnAccount,
   saveDealerPhone,
   saveOwnDealer,
   saveOwnProfile,
@@ -173,4 +174,20 @@ export async function completeProfile(input: { phone?: string; city?: string }):
   if (next.phone === user.phone && (next.city ?? undefined) === user.city) return user;
   await saveOwnProfile(user, next);
   return { ...user, phone: next.phone, city: next.city ?? undefined };
+}
+
+// «Удалить аккаунт» в настройках: подтверждение паролем, затем удаление и выход
+export async function deleteAccount(password: string): Promise<{ ok: true } | { error: "invalid" }> {
+  const user = await requireUser();
+  if (typeof password !== "string" || !password) return { error: "invalid" };
+  const supabase = await createSupabase();
+  const { error } = await supabase.auth.signInWithPassword({ email: user.email, password });
+  if (error) return { error: "invalid" };
+
+  await deleteOwnAccount(user);
+  // сессия уже недействительна — только убираем cookie в браузере
+  await supabase.auth.signOut({ scope: "local" });
+  updateTag("listings");
+  updateTag("dealers");
+  return { ok: true };
 }

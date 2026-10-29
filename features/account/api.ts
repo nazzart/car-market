@@ -153,3 +153,14 @@ export async function addOwnContact(user: User, contact: DealerContact) {
     .returning({ id: dealerContacts.id });
   return row.id;
 }
+
+// Удаление аккаунта. Вход (auth.users) удаляется — вместе с ним база удаляет профиль, избранное и объявления
+// частного лица (ON DELETE CASCADE). У компании — ещё и страница дилера с её объявлениями и контактами.
+// Жалобы и журнал модерации остаются без ссылки на автора (SET NULL)
+export async function deleteOwnAccount(user: User) {
+  const dealerId = await dealerIdOf(user);
+  await db.transaction(async (tx) => {
+    if (dealerId !== null) await tx.delete(dealers).where(eq(dealers.id, dealerId));
+    await tx.execute(sql`delete from auth.users where id = ${user.id}`);
+  });
+}

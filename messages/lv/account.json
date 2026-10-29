@@ -165,6 +165,18 @@
       "saved": "Izmaiņas saglabātas",
       "fixErrors": "Izlabojiet kļūdas formā",
       "demoNote": "Demo režīms: izmaiņas tiek saglabātas tikai šajā pārlūkā"
+    },
+    "delete": {
+      "title": "Dzēst kontu",
+      "description": "Konts tiks dzēsts neatgriezeniski — to nevarēs atjaunot.",
+      "button": "Dzēst kontu",
+      "dialogTitle": "Dzēst kontu neatgriezeniski?",
+      "dialogText": "Tiks dzēsts jūsu profils, izlase un visi jūsu sludinājumi. Šo darbību nevar atsaukt.",
+      "dialogTextDealer": "Tiks dzēsts uzņēmuma konts, dīlera lapa, kontaktpersonas un visi uzņēmuma sludinājumi. Šo darbību nevar atsaukt.",
+      "password": "Apstipriniet ar paroli",
+      "wrongPassword": "Nepareiza parole",
+      "cancel": "Atcelt",
+      "confirm": "Dzēst"
     }
   },
   "actions": {

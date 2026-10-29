@@ -27,6 +27,25 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  // Дизайн-токены (app/globals.css): цвета состояний и скругления — по именам, а не напрямую из палитры
+  {
+    files: ["**/*.tsx"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        ...["Literal", "TemplateElement"].flatMap((node) => [
+          {
+            selector: `${node}[value${node === "Literal" ? "" : ".raw"}=/(^|[\\s:])(bg|text|border|ring)-(emerald|amber|red|sky)-\\d/]`,
+            message: "Цвета состояний — через токены: bg-success-soft, text-danger, border-warning-muted… (app/globals.css).",
+          },
+          {
+            selector: `${node}[value${node === "Literal" ? "" : ".raw"}=/(^|[\\s:])rounded-(2xl|3xl)(\\s|$)/]`,
+            message: "Скругления — через токены: rounded-card (карточки), rounded-panel (крупные блоки), rounded-control (поля).",
+          },
+        ]),
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

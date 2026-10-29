@@ -51,7 +51,7 @@ export default function ReportButton({ listingId, className }: { listingId: stri
       <Dialog open={open} onClose={close}>
         {sent ? (
           <div className="text-center">
-            <CheckCircleOutlineIcon sx={{ fontSize: 48 }} className="text-emerald-600" />
+            <CheckCircleOutlineIcon sx={{ fontSize: 48 }} className="text-success-accent" />
             <h2 className="text-lg font-semibold mt-3">{t("thanksTitle")}</h2>
             <p className="text-gray-600 mt-1">{t("thanksText")}</p>
             <Button variant="dark" onClick={close} className="mt-6">

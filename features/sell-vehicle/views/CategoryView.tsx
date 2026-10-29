@@ -47,7 +47,7 @@ export default function CategoryView({ onSelect }: Props) {
         <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-5 text-sm text-gray-600">
           {benefits.map((b) => (
             <li key={b} className="inline-flex items-center gap-1.5">
-              <CheckIcon sx={{ fontSize: 16 }} className="text-emerald-600" />
+              <CheckIcon sx={{ fontSize: 16 }} className="text-success-accent" />
               {t(`benefits.${b}`)}
             </li>
           ))}

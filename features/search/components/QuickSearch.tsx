@@ -41,7 +41,7 @@ export default function QuickSearch() {
 
   return (
     <section className="pt-6 pb-4">
-      <div className="relative rounded-3xl overflow-hidden bg-gray-900">
+      <div className="relative rounded-panel overflow-hidden bg-gray-900">
         {/* Background */}
 
         <Image
@@ -103,7 +103,7 @@ export default function QuickSearch() {
               gap-1 md:gap-0
               p-2
               bg-white
-              rounded-3xl md:rounded-full
+              rounded-panel md:rounded-full
               shadow-2xl shadow-black/30
             "
           >
@@ -158,7 +158,7 @@ export default function QuickSearch() {
                 h-12 md:h-14
                 px-6
                 flex items-center justify-center gap-2
-                rounded-2xl md:rounded-full
+                rounded-card md:rounded-full
                 bg-primary hover:bg-primary-hover
                 text-white font-semibold
                 shadow-lg shadow-primary/30

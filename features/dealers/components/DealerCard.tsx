@@ -44,7 +44,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
       className={`
         scroll-mt-20
         p-4
-        rounded-2xl
+        rounded-card
         border
         bg-white
         cursor-pointer
@@ -59,7 +59,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
       <div className="flex gap-4">
         {/* Logo */}
 
-        <span className="w-12 h-12 shrink-0 flex items-center justify-center rounded-2xl bg-gray-900 text-white font-bold">
+        <span className="w-12 h-12 shrink-0 flex items-center justify-center rounded-card bg-gray-900 text-white font-bold">
           {initials(dealer.name)}
         </span>
 
@@ -84,7 +84,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
             {hasRating(dealer) && (
               <>
                 <span className="inline-flex items-center gap-0.5 text-gray-900">
-                  <StarIcon sx={{ fontSize: 15 }} className="text-amber-500" />
+                  <StarIcon sx={{ fontSize: 15 }} className="text-warning-solid" />
                   {dealer.rating!.toFixed(1)}
                 </span>
                 <span>

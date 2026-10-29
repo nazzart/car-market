@@ -87,7 +87,7 @@ export default function AddressCard({ settings }: { settings: DealerSettingsForm
         }
       />
 
-      <div className="relative isolate h-72 mt-4 rounded-2xl overflow-hidden border border-gray-200">
+      <div className="relative isolate h-72 mt-4 rounded-card overflow-hidden border border-gray-200">
         <LocationPicker lat={form.lat} lng={form.lng} onChange={movePin} focus={mapFocus} />
       </div>
       <p className="text-xs text-gray-500 mt-2">
@@ -96,7 +96,7 @@ export default function AddressCard({ settings }: { settings: DealerSettingsForm
 
       {/* Адрес по точке на карте — предлагаем, но не перезаписываем введённый вручную */}
       {pinAddress && pinAddress.label !== form.address && (
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl bg-gray-50 px-4 py-3 text-sm">
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-card bg-gray-50 px-4 py-3 text-sm">
           <PlaceOutlinedIcon className="text-gray-400" sx={{ fontSize: 20 }} />
           <span className="text-gray-500">{t("pinAddress")}</span>
           <span className="font-medium text-gray-900">{pinAddress.label}</span>

@@ -12,6 +12,8 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocale, useTranslations } from "next-intl";
 
+import MetaLine from "@/components/ui/MetaLine";
+import Card from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
@@ -86,7 +88,7 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
       {rows.length === 0 ? (
         <EmptyState text={t("table.empty")} />
       ) : (
-        <ul className="rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+        <Card as="ul" padding="none" className="divide-y divide-gray-100 overflow-hidden">
           {rows.map((l) => {
             const status = statusKey(l.id);
             const reportsCount = openReports(l.id).length;
@@ -94,7 +96,7 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
             const reason = v.moderation?.reason ?? v.accountBlock?.reason;
 
             return (
-              <li key={l.id} className={cn("flex items-center gap-3 sm:gap-4 p-3", reportsCount > 0 && "bg-red-50/40")}>
+              <li key={l.id} className={cn("flex items-center gap-3 sm:gap-4 p-3", reportsCount > 0 && "bg-danger-soft/40")}>
                 <Thumb listing={l} muted={status !== "active"} />
 
                 <div className="flex-1 min-w-0">
@@ -110,11 +112,15 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
                   <div className="font-semibold text-gray-900 truncate mt-1">
                     {l.title}, {l.year}
                   </div>
-                  <div className="text-xs text-gray-500 truncate">
-                    <span className="font-medium text-gray-700">{formatPrice(l.price)}</span> · {sellerOf(l, privateLabel)} ·{" "}
-                    {formatAgo(l.postedMinutesAgo, locale)}
-                    {reason && ` · ${tReasons(reason)}`}
-                  </div>
+                  <MetaLine
+                    className="truncate"
+                    items={[
+                      <span key="price" className="font-medium text-gray-700">{formatPrice(l.price)}</span>,
+                      sellerOf(l, privateLabel),
+                      formatAgo(l.postedMinutesAgo, locale),
+                      reason && tReasons(reason),
+                    ]}
+                  />
                 </div>
 
                 <ActionsMenu
@@ -127,7 +133,7 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
               </li>
             );
           })}
-        </ul>
+        </Card>
       )}
 
       {dialog}

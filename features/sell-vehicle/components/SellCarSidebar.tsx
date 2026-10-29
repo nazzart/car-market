@@ -3,6 +3,8 @@
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslations } from "next-intl";
 
+import Card from "@/components/ui/Card";
+
 type Props = {
   sections: {
     id: string;
@@ -39,7 +41,7 @@ function Progress({ done, total }: { done: number; total: number }) {
 
       <div className="h-1.5 mt-2 rounded-full bg-gray-100 overflow-hidden">
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+          className="h-full rounded-full bg-success-solid transition-all duration-500"
           style={{ width: `${(done / total) * 100}%` }}
         />
       </div>
@@ -60,14 +62,14 @@ export function SellCarSidebar({
     <>
       {/* Mobile: только прогресс */}
 
-      <div className="lg:hidden p-4 rounded-2xl border border-gray-200">
+      <Card padding="sm" className="lg:hidden">
         <Progress done={requiredDone} total={requiredTotal} />
-      </div>
+      </Card>
 
       {/* Desktop */}
 
       <aside className="hidden lg:block sticky top-24">
-        <div className="p-5 rounded-2xl border border-gray-200">
+        <Card>
           <Progress done={requiredDone} total={requiredTotal} />
 
           <ol className="mt-5 space-y-1 -mx-2">
@@ -92,7 +94,7 @@ export function SellCarSidebar({
                         transition
                         ${
                           valid
-                            ? "bg-emerald-500 text-white"
+                            ? "bg-success-solid text-white"
                             : reached
                             ? "bg-gray-900 text-white"
                             : "bg-gray-100 text-gray-400"
@@ -115,7 +117,7 @@ export function SellCarSidebar({
               );
             })}
           </ol>
-        </div>
+        </Card>
       </aside>
     </>
   );

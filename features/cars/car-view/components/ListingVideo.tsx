@@ -16,7 +16,7 @@ export default function ListingVideo({ url, title }: { url: string; title: strin
   if (!id) return null;
 
   return (
-    <div className="relative aspect-video rounded-2xl overflow-hidden bg-gray-900">
+    <div className="relative aspect-video rounded-card overflow-hidden bg-gray-900">
       {playing ? (
         <iframe
           src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`}
@@ -34,7 +34,7 @@ export default function ListingVideo({ url, title }: { url: string; title: strin
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition"
           />
-          <span className="absolute inset-0 m-auto w-20 h-14 flex items-center justify-center rounded-2xl bg-primary text-white shadow-xl group-hover:scale-105 transition">
+          <span className="absolute inset-0 m-auto w-20 h-14 flex items-center justify-center rounded-card bg-primary text-white shadow-xl group-hover:scale-105 transition">
             <PlayArrowRoundedIcon sx={{ fontSize: 44 }} />
           </span>
           <span className="absolute left-4 bottom-4 px-3 py-1 rounded-full bg-black/60 text-white text-sm font-medium">

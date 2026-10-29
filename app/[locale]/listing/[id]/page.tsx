@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { getTranslations } from "next-intl/server";
 
+import MetaLine from "@/components/ui/MetaLine";
+import { pageTitleClass } from "@/components/ui/PageHeader";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import { getListing } from "@/features/cars/api";
@@ -101,14 +103,18 @@ export default async function ListingPage({ params }: Props) {
 
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-3 mt-3">
         <div className="min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+          <h1 className={pageTitleClass}>
             {listing.title}, {listing.year}
           </h1>
 
-          <p className="text-gray-600 mt-1">
-            {formatNumber(listing.mileage)} {tCommon("units.km")} · {placeName(listing.city, locale)} ·{" "}
-            {formatAgo(listing.postedMinutesAgo, locale)}
-          </p>
+          <MetaLine
+            className="text-base text-gray-600 mt-1"
+            items={[
+              `${formatNumber(listing.mileage)} ${tCommon("units.km")}`,
+              placeName(listing.city, locale),
+              formatAgo(listing.postedMinutesAgo, locale),
+            ]}
+          />
         </div>
 
         <HeaderActions listing={{ id: listing.id, title: listing.title, price: listing.price }} />
@@ -131,7 +137,7 @@ export default async function ListingPage({ params }: Props) {
           <div className="lg:hidden">
             <div className="text-3xl font-bold tracking-tight">{formatPrice(listing.price)}</div>
             {listing.negotiable && (
-              <div className="text-sm text-emerald-700 mt-1">{t("negotiable")}</div>
+              <div className="text-sm text-success mt-1">{t("negotiable")}</div>
             )}
           </div>
 

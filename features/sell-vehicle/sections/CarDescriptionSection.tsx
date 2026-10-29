@@ -66,7 +66,7 @@ export function CarDescriptionSection({
           placeholder="https://www.youtube.com/watch?v=…"
           inputMode="url"
           fullWidth
-          slotProps={{ input: { startAdornment: <YouTubeIcon className="text-red-600 mr-2" /> } }}
+          slotProps={{ input: { startAdornment: <YouTubeIcon className="text-danger-accent mr-2" /> } }}
         />
       </div>
     </SectionContainer>

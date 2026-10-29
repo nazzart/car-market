@@ -1,6 +1,8 @@
 import { useTranslations } from "next-intl";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 
+import { cn } from "@/lib/utils";
+import { pageTitleClass } from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
@@ -18,7 +20,7 @@ export default function NotFound() {
         </span>
 
         <p className="mt-6 text-sm font-semibold tracking-widest text-gray-400">404</p>
-        <h1 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">{t("title")}</h1>
+        <h1 className={cn("mt-2", pageTitleClass)}>{t("title")}</h1>
         <p className="mt-3 text-gray-500">{t("text")}</p>
 
         <div className="flex flex-wrap justify-center gap-3 mt-8">

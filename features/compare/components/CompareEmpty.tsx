@@ -3,6 +3,7 @@
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useTranslations } from "next-intl";
 
+import PageHeader from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 
@@ -14,7 +15,7 @@ export default function CompareEmpty({ favoritesCount, onAddFavorites }: { favor
 
   return (
     <div className="pt-6 pb-16">
-      <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-6">{t("title")}</h1>
+      <PageHeader title={t("title")} />
 
       <EmptyState variant="hero" icon={CompareArrowsIcon} title={t("empty.title")} text={t("empty.text", { max: MAX_COMPARE })}>
         <div className="flex flex-wrap justify-center gap-3 mt-6">

@@ -80,8 +80,8 @@ features/          Code grouped by feature: cars, dealers, favorites, compare, a
   */data/          Demo data, loaded into the database by npm run db:seed
   */types.ts       Shared types (Listing, Dealer, User)
   */components/    Feature UI
-components/        Shared layout (header, footer) and UI pieces (components/ui: Badge, CarPhoto, EmptyState,
-                   Skeleton, Pagination, form.tsx with inputs, selects, chips)
+components/        Shared layout (header, footer) and the UI kit in components/ui: Button, Card, PageHeader, Dialog,
+                   Toast, Badge, Notice, StatTile, MetaLine, CarPhoto, EmptyState, Skeleton, Pagination, form.tsx
 lib/               Helpers: formatting (utils.ts), input checks (validate.ts), URL query (url.ts), geo, places
                    (all Latvian towns and novadi), local storage store, colors
 lib/db/            Database: schema.ts (tables), migrations/ (generated SQL), index.ts (server-only client)
@@ -113,6 +113,11 @@ Conventions:
   danger, white; sizes sm–xl; `href` makes it a link), `Dialog` / `ConfirmDialog`, and `useToast()` — all in
   `components/ui`. MUI is used only for inputs, selects, menus, popovers, drawers and tooltips, styled once in
   `lib/theme.ts` — no `sx` styling of MUI in feature code beyond icon sizes.
+- **Design tokens** (`app/globals.css`): state colours by meaning — `bg-success-soft`, `text-danger`,
+  `border-warning-muted`, `bg-info-soft`… — and radii `rounded-control` / `rounded-card` / `rounded-panel`.
+  ESLint rejects raw `emerald/amber/red/sky` classes and `rounded-2xl/3xl`, so a palette change is one file.
+- **Layout pieces:** `Card` (+ `CardTitle`) for bordered boxes, `PageHeader` (title, subtitle, back link, actions)
+  for page tops, `MetaLine` for "Rīga · Dīleris · pirms 2 dienām" lines.
 - **Shared UI before new markup:** a status or label → `Badge` (fixed tones, no ad-hoc colours); a listing photo →
   `CarPhoto` (4:3 frame with the "no photo" fallback); "nothing here" → `EmptyState` (`box` or `hero`); loading →
   `Skeleton`; form fields → `components/ui/form.tsx`. All in `components/ui/`.

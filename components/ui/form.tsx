@@ -11,7 +11,7 @@ export const inputClass = `
   w-full
   h-11
   px-3
-  rounded-xl
+  rounded-control
   border border-gray-200
   bg-white
   text-sm text-gray-900

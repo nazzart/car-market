@@ -18,7 +18,7 @@ export default function Dialog({
   children: React.ReactNode;
 }) {
   return (
-    <MuiDialog open={open} onClose={onClose} slotProps={{ paper: { sx: { borderRadius: "24px", m: 2, width: "100%", maxWidth } } }}>
+    <MuiDialog open={open} onClose={onClose} slotProps={{ paper: { sx: { borderRadius: "var(--radius-panel)", m: 2, width: "100%", maxWidth } } }}>
       <div className="p-6">{children}</div>
     </MuiDialog>
   );

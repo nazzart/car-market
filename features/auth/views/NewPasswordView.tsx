@@ -21,7 +21,7 @@ export default function NewPasswordView() {
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState("");
 
-  if (loading) return <Skeleton className="h-64 rounded-3xl bg-gray-50" />;
+  if (loading) return <Skeleton className="h-64 rounded-panel bg-gray-50" />;
 
   if (expired || !user) {
     return (

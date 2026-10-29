@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useTranslations } from "next-intl";
+import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 
 type Props = {
@@ -45,10 +46,7 @@ export function SectionContainer({
   const showSkip = !required;
 
   return (
-    <section
-      id={id}
-      className="scroll-mt-24 bg-white rounded-3xl border border-gray-200 p-5 sm:p-8 animate-[fadeIn_.3s_ease-out]"
-    >
+    <Card as="section" size="panel" id={id} className="scroll-mt-24 animate-[fadeIn_.3s_ease-out]">
       {/* Header */}
 
       <div className="mb-6">
@@ -98,6 +96,6 @@ export function SectionContainer({
           </div>
         )}
       </div>
-    </section>
+    </Card>
   );
 }

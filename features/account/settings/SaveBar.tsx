@@ -14,7 +14,7 @@ export function SaveBar({ visible, onDiscard, onSave }: { visible: boolean; onDi
         fixed bottom-4 inset-x-4 z-40 mx-auto max-w-xl
         flex items-center justify-between gap-3
         pl-5 pr-2 py-2
-        rounded-2xl bg-gray-900 text-white shadow-2xl
+        rounded-card bg-gray-900 text-white shadow-2xl
         transition duration-200
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}
       `}

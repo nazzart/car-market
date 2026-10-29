@@ -39,7 +39,7 @@ export default function KeySpecs({ listing }: { listing: Listing }) {
       {specs.map(({ icon: Icon, label, value }) => (
         <div
           key={label}
-          className="flex items-center gap-3 px-3.5 py-3 sm:p-4 rounded-2xl border border-gray-200"
+          className="flex items-center gap-3 px-3.5 py-3 sm:p-4 rounded-card border border-gray-200"
         >
           <span className="hidden sm:flex w-10 h-10 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-700">
             <Icon fontSize="small" />

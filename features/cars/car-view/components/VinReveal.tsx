@@ -48,7 +48,7 @@ export default function VinReveal({ vin }: { vin: string }) {
         type="button"
         onClick={copy}
         aria-label={t("copy")}
-        className={`${buttonClass} ${copied ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 hover:bg-gray-200 text-gray-900"}`}
+        className={`${buttonClass} ${copied ? "bg-success-soft text-success" : "bg-gray-100 hover:bg-gray-200 text-gray-900"}`}
       >
         {copied ? <CheckIcon sx={{ fontSize: 15 }} /> : <ContentCopyOutlinedIcon sx={{ fontSize: 15 }} />}
         {copied ? t("copied") : t("copy")}

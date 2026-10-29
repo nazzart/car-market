@@ -10,6 +10,7 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useTranslations } from "next-intl";
 
+import { pageTitleClass } from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import Skeleton from "@/components/ui/Skeleton";
@@ -21,7 +22,7 @@ import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { isProfileComplete } from "@/features/dealers/lib/listed";
 import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { useVisibility } from "@/features/moderation/visibility";
-import { formatNumber, initials } from "@/lib/utils";
+import { cn, formatNumber, initials } from "@/lib/utils";
 
 import AccountNotices from "./AccountNotices";
 import AccountSidebar from "./AccountSidebar";
@@ -92,7 +93,7 @@ export default function AccountView() {
         <div className="flex items-center gap-4">
           <span
             className={`w-16 h-16 shrink-0 flex items-center justify-center bg-gray-900 text-white text-xl font-bold ${
-              isDealer ? "rounded-2xl" : "rounded-full"
+              isDealer ? "rounded-card" : "rounded-full"
             }`}
           >
             {initials(user.name)}
@@ -100,7 +101,7 @@ export default function AccountView() {
 
           <div className="min-w-0">
             <p className="text-sm text-gray-500">{isDealer ? t("header.dealerCabinet") : t("header.cabinet")}</p>
-            <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-semibold tracking-tight">
+            <h1 className={cn("flex items-center gap-2", pageTitleClass)}>
               {isDealer ? user.name : t("header.hello", { name: user.name.split(" ")[0] })}
               {isDealer && user.dealerSlug && <VerifiedBadge slug={user.dealerSlug} size={24} />}
             </h1>
@@ -168,7 +169,7 @@ export default function AccountView() {
           {ownListings === undefined ? (
             <div className="space-y-3">
               {[0, 1].map((i) => (
-                <Skeleton key={i} className="h-28 rounded-2xl bg-gray-50" />
+                <Skeleton key={i} className="h-28 rounded-card bg-gray-50" />
               ))}
             </div>
           ) : shown.length > 0 ? (

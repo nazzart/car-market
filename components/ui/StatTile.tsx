@@ -13,7 +13,7 @@ export default function StatTile({
   className?: string;
 }) {
   return (
-    <div className={cn("p-4 rounded-2xl bg-gray-50", className)}>
+    <div className={cn("p-4 rounded-card bg-gray-50", className)}>
       {Icon && <Icon fontSize="small" className="text-gray-500 mb-2" />}
       <div className="text-2xl font-semibold tracking-tight">{value}</div>
       <div className="text-sm text-gray-500">{label}</div>

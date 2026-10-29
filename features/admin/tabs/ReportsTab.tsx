@@ -5,6 +5,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import { useLocale, useTranslations } from "next-intl";
 
+import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
@@ -64,7 +65,7 @@ export default function ReportsTab() {
             const status = statusKey(listing.id);
 
             return (
-              <article key={listing.id} className="rounded-2xl border border-gray-200 p-4">
+              <Card as="article" padding="sm" key={listing.id}>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -102,7 +103,7 @@ export default function ReportsTab() {
                 <ul className="mt-3 space-y-2">
                   {group.map((r) => (
                     <li key={r.id} className="flex gap-2.5 p-3 rounded-xl bg-gray-50 text-sm">
-                      <FlagOutlinedIcon sx={{ fontSize: 18 }} className="text-red-600 shrink-0 mt-px" />
+                      <FlagOutlinedIcon sx={{ fontSize: 18 }} className="text-danger-accent shrink-0 mt-px" />
                       <div className="min-w-0">
                         <div className="font-medium text-gray-900">
                           {tReasons(r.reason)}
@@ -114,7 +115,7 @@ export default function ReportsTab() {
                     </li>
                   ))}
                 </ul>
-              </article>
+              </Card>
             );
           })}
         </div>

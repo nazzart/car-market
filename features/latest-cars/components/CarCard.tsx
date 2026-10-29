@@ -1,5 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 
+import MetaLine from "@/components/ui/MetaLine";
 import CarPhoto from "@/components/ui/CarPhoto";
 import { Link } from "@/i18n/navigation";
 import { formatAgo, formatPrice } from "@/lib/utils";
@@ -49,10 +50,7 @@ export default function CarCard({ listing }: { listing: Listing }) {
             {specLine(listing)}
           </div>
 
-          <div className="text-xs text-gray-500 pt-1">
-            {placeName(listing.city)} ·{" "}
-            {formatAgo(listing.postedMinutesAgo, locale)}
-          </div>
+          <MetaLine className="pt-1" items={[placeName(listing.city), formatAgo(listing.postedMinutesAgo, locale)]} />
         </div>
       </Link>
 

@@ -65,7 +65,7 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
         className={`
           flex flex-col items-center justify-center gap-2
           px-6 py-10
-          rounded-2xl
+          rounded-card
           border-2 border-dashed
           text-center
           cursor-pointer
@@ -85,7 +85,7 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
           }}
         />
 
-        <span className="w-14 h-14 flex items-center justify-center rounded-2xl bg-gray-100 text-gray-700">
+        <span className="w-14 h-14 flex items-center justify-center rounded-card bg-gray-100 text-gray-700">
           <AddPhotoAlternateOutlinedIcon />
         </span>
 
@@ -148,8 +148,8 @@ export function PhotosSection({ id, title, data, required, updateField }: FormSt
 
       {/* Tips */}
 
-      <div className="flex gap-3 mt-5 p-4 rounded-2xl bg-amber-50 text-sm text-amber-900">
-        <LightbulbOutlinedIcon fontSize="small" className="text-amber-600 shrink-0" />
+      <div className="flex gap-3 mt-5 p-4 rounded-card bg-warning-soft text-sm text-warning-strong">
+        <LightbulbOutlinedIcon fontSize="small" className="text-warning-accent shrink-0" />
         <p>
           {t("tips")}
         </p>

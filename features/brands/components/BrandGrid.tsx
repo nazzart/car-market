@@ -40,7 +40,7 @@ export default async function BrandGrid() {
                 flex flex-col items-center justify-center gap-2
                 bg-white
                 border border-gray-200
-                rounded-2xl
+                rounded-card
                 snap-start
                 hover:border-gray-300
                 hover:shadow-lg hover:shadow-black/5

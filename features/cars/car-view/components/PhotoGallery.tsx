@@ -22,7 +22,7 @@ export default function PhotoGallery({ images, title }: Props) {
 
   if (images.length === 0) {
     return (
-      <div className="relative h-64 md:h-[420px] rounded-2xl bg-gray-100">
+      <div className="relative h-64 md:h-[420px] rounded-card bg-gray-100">
         <NoPhoto iconSize={64} label={t("noPhotos")} />
       </div>
     );
@@ -60,7 +60,7 @@ export default function PhotoGallery({ images, title }: Props) {
           type="button"
           onClick={() => setLightboxIndex(0)}
           aria-label={t("open", { n: 1 })}
-          className="hidden md:block relative w-full h-[420px] lg:h-[480px] rounded-2xl overflow-hidden bg-gray-900 cursor-zoom-in group"
+          className="hidden md:block relative w-full h-[420px] lg:h-[480px] rounded-card overflow-hidden bg-gray-900 cursor-zoom-in group"
         >
           <Image
             src={images[0]}
@@ -86,7 +86,7 @@ export default function PhotoGallery({ images, title }: Props) {
       {/* Desktop mosaic */}
 
       <div
-        className={`${images.length === 1 ? "hidden" : "hidden md:grid"} relative grid-cols-4 grid-rows-2 gap-2 rounded-2xl overflow-hidden h-[440px] lg:h-[500px]`}
+        className={`${images.length === 1 ? "hidden" : "hidden md:grid"} relative grid-cols-4 grid-rows-2 gap-2 rounded-card overflow-hidden h-[440px] lg:h-[500px]`}
       >
         {tile(
           images[0],

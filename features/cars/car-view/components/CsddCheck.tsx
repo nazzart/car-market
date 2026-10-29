@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
+import Card from "@/components/ui/Card";
 import { buttonClass } from "@/components/ui/Button";
 
 // Официальная бесплатная проверка: пробег на каждом техосмотре в Латвии (e-CSDD, нужен вход).
@@ -12,7 +13,7 @@ export default function CsddCheck() {
   const t = useTranslations("listing.csdd");
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 rounded-2xl border border-gray-200">
+    <Card className="flex flex-col sm:flex-row sm:items-center gap-4">
       <span className="w-11 h-11 shrink-0 flex items-center justify-center rounded-xl bg-gray-100 text-gray-700">
         <FactCheckOutlinedIcon />
       </span>
@@ -31,6 +32,6 @@ export default function CsddCheck() {
         {t("button")}
         <OpenInNewIcon sx={{ fontSize: 16 }} />
       </a>
-    </div>
+    </Card>
   );
 }

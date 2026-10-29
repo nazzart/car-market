@@ -42,7 +42,7 @@ export default function CompareBar() {
           visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"
         }`}
       >
-        <div className="flex items-center gap-3 p-2 pl-3 rounded-2xl bg-gray-900 text-white shadow-2xl shadow-black/30">
+        <div className="flex items-center gap-3 p-2 pl-3 rounded-card bg-gray-900 text-white shadow-2xl shadow-black/30">
           {/* Миниатюры и пустые места */}
           <div className="hidden sm:flex items-center gap-1.5">
             {Array.from({ length: MAX_COMPARE }, (_, i) => {

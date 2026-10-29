@@ -2,6 +2,8 @@ import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 
 import { useLocale, useTranslations } from "next-intl";
 
+import MetaLine from "@/components/ui/MetaLine";
+import Card from "@/components/ui/Card";
 import { formatAgo, formatPrice } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
@@ -17,13 +19,13 @@ export default function ContactCard({ listing }: { listing: Listing }) {
 
   return (
     <div>
-      <div className="rounded-2xl border border-gray-200 p-6 shadow-xl shadow-black/5">
+      <Card padding="none" className="p-6 shadow-xl shadow-black/5">
         <div className="text-3xl font-bold tracking-tight text-gray-900">
           {formatPrice(listing.price)}
         </div>
 
         {listing.negotiable && (
-          <div className="text-sm text-emerald-700 mt-1">{t("negotiable")}</div>
+          <div className="text-sm text-success mt-1">{t("negotiable")}</div>
         )}
 
         <ListingPhone listing={listing} variant="primary" className="w-full mt-5" />
@@ -37,12 +39,16 @@ export default function ContactCard({ listing }: { listing: Listing }) {
           <ShieldOutlinedIcon sx={{ fontSize: 18 }} className="text-gray-500 shrink-0" />
           {t("contact.safety")}
         </div>
-      </div>
+      </Card>
 
-      <p className="text-xs text-gray-500 mt-3 px-2">
-        {t("contact.listingNo", { id: listing.id })} · {formatAgo(listing.postedMinutesAgo, locale)}
-        {listing.views && ` · ${tCommon("views", { count: listing.views })}`}
-      </p>
+      <MetaLine
+        className="mt-3 px-2"
+        items={[
+          t("contact.listingNo", { id: listing.id }),
+          formatAgo(listing.postedMinutesAgo, locale),
+          listing.views ? tCommon("views", { count: listing.views }) : null,
+        ]}
+      />
 
       <ReportButton listingId={listing.id} className="mt-2 px-2" />
     </div>

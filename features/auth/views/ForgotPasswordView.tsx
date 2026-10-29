@@ -41,7 +41,7 @@ export default function ForgotPasswordView({ onBack }: Props) {
   if (sent) {
     return (
       <div className="text-center">
-        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 mb-5">
+        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-success-soft text-success-accent mb-5">
           <MarkEmailReadOutlinedIcon sx={{ fontSize: 32 }} />
         </span>
 

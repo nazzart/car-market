@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
+import { pageTitleClass } from "@/components/ui/PageHeader";
 import Container from "@/components/layout/Container";
 import { Link } from "@/i18n/navigation";
 
@@ -34,7 +35,7 @@ export default async function InfoPage({ page }: { page: InfoPageKey }) {
         </nav>
 
         <article className="max-w-2xl">
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{t(`${page}.title`)}</h1>
+          <h1 className={pageTitleClass}>{t(`${page}.title`)}</h1>
           <p className="mt-3 text-lg text-gray-600">{t(`${page}.lead`)}</p>
 
           <div className="mt-10 space-y-8">

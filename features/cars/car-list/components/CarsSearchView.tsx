@@ -7,6 +7,7 @@ import ViewAgendaOutlinedIcon from "@mui/icons-material/ViewAgendaOutlined";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import PageHeader from "@/components/ui/PageHeader";
 import { brands } from "@/features/brands/data/brands";
 import { collections } from "@/features/collections/config";
 import { useDealerLookup } from "@/features/dealers/hooks";
@@ -124,10 +125,7 @@ function SearchView({ result, pageSize, empty, pending }: SearchResultProps & { 
     <div className="pt-6 pb-12">
       {/* Header */}
 
-      <div className="mb-5">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{title}</h1>
-        <p className="text-gray-500 mt-1">{t("resultsIn", { count: result.total })}</p>
-      </div>
+      <PageHeader title={title} subtitle={t("resultsIn", { count: result.total })} className="mb-5" />
 
       <div className="mb-8">
         <CollectionPills />
@@ -138,7 +136,7 @@ function SearchView({ result, pageSize, empty, pending }: SearchResultProps & { 
 
         <aside
           ref={sidebarRef}
-          className="hidden lg:flex flex-col sticky top-20 max-h-[calc(100vh-6rem)] rounded-3xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          className="hidden lg:flex flex-col sticky top-20 max-h-[calc(100vh-6rem)] rounded-panel border border-gray-200 bg-white shadow-sm overflow-hidden">
           <div className="shrink-0 flex items-center justify-between gap-3 px-5 h-14 border-b border-gray-100">
             <h2 className="flex items-center gap-2 text-base font-semibold">
               <TuneIcon fontSize="small" />

@@ -26,7 +26,7 @@ export const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: "var(--radius-control)",
         },
       },
     },

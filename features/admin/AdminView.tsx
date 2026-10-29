@@ -5,6 +5,7 @@ import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettin
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useTranslations } from "next-intl";
 
+import { pageTitleClass } from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import Skeleton from "@/components/ui/Skeleton";
 import { isAdmin } from "@/features/auth/types";
@@ -26,7 +27,7 @@ const TABS: AdminTab[] = ["overview", "approvals", "listings", "reports", "colle
 export default function AdminView() {
   const { user, loading } = useAuth();
   // данные модерации загружаются только для модератора
-  if (loading) return <Skeleton className="max-w-3xl mx-auto my-10 h-80 rounded-3xl bg-gray-50" />;
+  if (loading) return <Skeleton className="max-w-3xl mx-auto my-10 h-80 rounded-panel bg-gray-50" />;
   return isAdmin(user) ? (
     <AdminDataProvider>
       <AdminPanel />
@@ -46,11 +47,11 @@ function AdminPanel() {
   return (
     <div className="pt-8 pb-16">
       <header className="flex items-center gap-4">
-        <span className="w-14 h-14 shrink-0 flex items-center justify-center rounded-2xl bg-gray-900 text-white">
+        <span className="w-14 h-14 shrink-0 flex items-center justify-center rounded-card bg-gray-900 text-white">
           <AdminPanelSettingsOutlinedIcon />
         </span>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{t("title")}</h1>
+          <h1 className={pageTitleClass}>{t("title")}</h1>
           <p className="text-gray-500">{t("subtitle")}</p>
         </div>
       </header>
@@ -81,7 +82,7 @@ function AdminPanel() {
       </div>
 
       <div className="mt-6">
-        {loading && <Skeleton className="h-64 rounded-2xl bg-gray-50" />}
+        {loading && <Skeleton className="h-64 rounded-card bg-gray-50" />}
         {!loading && tab === "overview" && <OverviewTab onOpen={setTab} />}
         {!loading && tab === "approvals" && <ApprovalsTab />}
         {!loading && tab === "listings" && <ListingsTab query={listingsQuery} onQueryChange={setListingsQuery} />}

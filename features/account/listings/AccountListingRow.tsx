@@ -47,7 +47,7 @@ export default function AccountListingRow({
   const badge = moderation ? "blocked" : pending ? "pending" : status;
 
   return (
-    <div className={`flex gap-4 p-3 rounded-2xl border border-gray-200 ${status === "active" ? "" : "bg-gray-50/60"}`}>
+    <div className={`flex gap-4 p-3 rounded-card border border-gray-200 ${status === "active" ? "" : "bg-gray-50/60"}`}>
       <CarPhoto
         src={listing.images[0]}
         alt={listing.title}
@@ -71,7 +71,7 @@ export default function AccountListingRow({
 
           {/* продавцу — причина блокировки */}
           {moderation && (
-            <p className="mt-1.5 text-xs text-red-700">
+            <p className="mt-1.5 text-xs text-danger">
               {t("blockedReason", { reason: tReasons(moderation.reason) })}
               {moderation.note && ` — ${moderation.note}`}
             </p>

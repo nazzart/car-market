@@ -12,6 +12,7 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 
+import Card from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
@@ -103,7 +104,7 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
       {shown.length === 0 ? (
         <EmptyState text={t("empty")} />
       ) : (
-        <ul className="rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+        <Card as="ul" padding="none" className="divide-y divide-gray-100 overflow-hidden">
           {shown.map((a) => {
             const block = blocked[a.key];
             const verified = a.kind === "dealer" && isVerified(a.dealerSlug!);
@@ -111,7 +112,7 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
             const reportsCount = reportsOf(a.key);
 
             return (
-              <li key={a.key} className={cn("flex items-center gap-3 sm:gap-4 p-3", block && "bg-red-50/40")}>
+              <li key={a.key} className={cn("flex items-center gap-3 sm:gap-4 p-3", block && "bg-danger-soft/40")}>
                 <span
                   className={cn(
                     "w-11 h-11 shrink-0 flex items-center justify-center bg-gray-900 text-white text-sm font-bold",
@@ -124,7 +125,7 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span className="font-semibold text-gray-900">{a.name}</span>
-                    {verified && <VerifiedIcon sx={{ fontSize: 16 }} className="text-sky-600" titleAccess={t("verified")} />}
+                    {verified && <VerifiedIcon sx={{ fontSize: 16 }} className="text-info-accent" titleAccess={t("verified")} />}
                     <Badge tone="muted">{t(`kind.${a.kind}`)}</Badge>
                     {a.kind === "dealer" && !verified && <Badge tone="warning">{t("unverified")}</Badge>}
                     {block && <Badge tone="danger">{t("blocked")}</Badge>}
@@ -135,8 +136,8 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
                   </div>
                   <div className="text-xs text-gray-500">
                     {t("listings", { count })}
-                    {reportsCount > 0 && <span className="text-red-700"> · {t("reports", { count: reportsCount })}</span>}
-                    {block && <span className="text-red-700"> · {tReasons(block.reason)}</span>}
+                    {reportsCount > 0 && <span className="text-danger"> · {t("reports", { count: reportsCount })}</span>}
+                    {block && <span className="text-danger"> · {tReasons(block.reason)}</span>}
                   </div>
                 </div>
 
@@ -150,7 +151,7 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
               </li>
             );
           })}
-        </ul>
+        </Card>
       )}
 
       {dialog}

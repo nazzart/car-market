@@ -26,7 +26,7 @@ export default function EmptyState({
     <div
       className={cn(
         "text-center px-6",
-        hero ? "py-12 sm:py-14 rounded-3xl bg-gray-50" : "py-14 rounded-2xl border border-dashed border-gray-200",
+        hero ? "py-12 sm:py-14 rounded-panel bg-gray-50" : "py-14 rounded-card border border-dashed border-gray-200",
         className
       )}
     >

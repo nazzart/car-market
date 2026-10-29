@@ -63,7 +63,7 @@ export default function ShareMenu({ title, className }: Props) {
   return (
     <>
       <button type="button" onClick={(e) => setAnchor(e.currentTarget)} aria-haspopup="menu" className={className}>
-        {copied ? <CheckIcon fontSize="small" className="text-emerald-600" /> : <IosShareIcon fontSize="small" />}
+        {copied ? <CheckIcon fontSize="small" className="text-success-accent" /> : <IosShareIcon fontSize="small" />}
         {copied ? t("copied") : t("share")}
       </button>
 

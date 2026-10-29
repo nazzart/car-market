@@ -5,6 +5,8 @@ import { useState, useSyncExternalStore } from "react";
 import { Switch } from "@mui/material";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
+import PageHeader from "@/components/ui/PageHeader";
 import Skeleton from "@/components/ui/Skeleton";
 import { useListingsByIds } from "@/features/cars/hooks";
 import { useFavorites } from "@/features/favorites/store";
@@ -31,7 +33,7 @@ export default function CompareView() {
   const cars = ids.map(listingOf).filter((l) => l !== undefined);
   const sections = useCompareSections(cars);
 
-  if (!hydrated || loaded === undefined) return <Skeleton className="h-96 my-6 rounded-3xl bg-gray-50" />;
+  if (!hydrated || loaded === undefined) return <Skeleton className="h-96 my-6 rounded-panel bg-gray-50" />;
 
   const favoritesToAdd = favorites.filter((f) => !ids.includes(f.id) && listingOf(f.id) !== undefined);
 
@@ -50,29 +52,25 @@ export default function CompareView() {
     <div className="pt-6 pb-16">
       {/* Header */}
 
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{t("title")}</h1>
-          <p className="text-gray-500 mt-1">{t("subtitle", { count: cars.length, max: MAX_COMPARE })}</p>
-        </div>
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle", { count: cars.length, max: MAX_COMPARE })}
+        actions={
+          <>
+              {cars.length > 1 && (
+                <label className="inline-flex items-center gap-1 pr-3 rounded-xl text-sm font-medium cursor-pointer select-none">
+                  <Switch checked={onlyDiff} onChange={(e) => setOnlyDiff(e.target.checked)} />
+                  {t("onlyDiff")}
+                </label>
+              )}
 
-        <div className="flex items-center gap-2">
-          {cars.length > 1 && (
-            <label className="inline-flex items-center gap-1 pr-3 rounded-xl text-sm font-medium cursor-pointer select-none">
-              <Switch checked={onlyDiff} onChange={(e) => setOnlyDiff(e.target.checked)} />
-              {t("onlyDiff")}
-            </label>
-          )}
-
-          <button
-            type="button"
-            onClick={clearCompare}
-            className="h-11 px-4 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 transition cursor-pointer"
-          >
-            {t("clear")}
-          </button>
-        </div>
-      </div>
+              <Button variant="ghost" onClick={clearCompare}>
+                {t("clear")}
+              </Button>
+        
+          </>
+        }
+      />
 
       <CompareTable
         cars={cars}

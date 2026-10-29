@@ -101,7 +101,7 @@ export default function HoursEditor({ value, onChange }: Props) {
       </ul>
 
       {/* Превью — так часы покажутся на странице дилера */}
-      <div className="mt-4 p-4 rounded-2xl bg-gray-50 text-sm">
+      <div className="mt-4 p-4 rounded-card bg-gray-50 text-sm">
         <span className="text-gray-500">{t("preview")} </span>
         <span className="font-medium text-gray-900">{preview || t("allClosed")}</span>
       </div>

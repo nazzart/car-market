@@ -17,7 +17,7 @@ export default function MobileContactBar({ listing }: { listing: Listing }) {
             {formatPrice(listing.price)}
           </div>
           {listing.negotiable && (
-            <div className="text-xs text-emerald-700">{t("negotiable")}</div>
+            <div className="text-xs text-success">{t("negotiable")}</div>
           )}
         </div>
 

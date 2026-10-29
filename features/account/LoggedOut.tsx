@@ -14,7 +14,7 @@ export default function LoggedOut({ title }: { title?: string }) {
   const t = useTranslations("account.loggedOut");
   const { loading } = useAuth();
 
-  if (loading) return <Skeleton className="max-w-3xl mx-auto my-10 h-80 rounded-3xl bg-gray-50" />;
+  if (loading) return <Skeleton className="max-w-3xl mx-auto my-10 h-80 rounded-panel bg-gray-50" />;
 
   return (
     <div className="max-w-md mx-auto text-center py-20">

@@ -5,6 +5,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
+import MetaLine from "@/components/ui/MetaLine";
+import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
@@ -42,7 +44,7 @@ export default function ApprovalsTab() {
         const flags = riskFlags(l, listings);
 
         return (
-          <article key={l.id} className="rounded-2xl border border-gray-200 p-4">
+          <Card as="article" padding="sm" key={l.id}>
             <div className="flex gap-3 sm:gap-4">
               <Thumb listing={l} />
 
@@ -54,10 +56,15 @@ export default function ApprovalsTab() {
                 >
                   {l.title}, {l.year}
                 </Link>
-                <div className="text-sm text-gray-600">
-                  <span className="font-medium text-gray-900">{formatPrice(l.price)}</span> ·{" "}
-                  {formatNumber(l.mileage)} km · {sellerOf(l, t("table.private"))} · {formatAgo(l.postedMinutesAgo, locale)}
-                </div>
+                <MetaLine
+                  className="text-sm text-gray-600"
+                  items={[
+                    <span key="price" className="font-medium text-gray-900">{formatPrice(l.price)}</span>,
+                    `${formatNumber(l.mileage)} km`,
+                    sellerOf(l, t("table.private")),
+                    formatAgo(l.postedMinutesAgo, locale),
+                  ]}
+                />
 
                 {/* автоматические проверки */}
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -92,7 +99,7 @@ export default function ApprovalsTab() {
                 {t("actions.approve")}
               </Button>
             </div>
-          </article>
+          </Card>
         );
       })}
 

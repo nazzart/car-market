@@ -9,6 +9,8 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import { getTranslations } from "next-intl/server";
 
+import { pageTitleClass } from "@/components/ui/PageHeader";
+import Card from "@/components/ui/Card";
 import { buttonClass } from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import StatTile from "@/components/ui/StatTile";
@@ -97,13 +99,13 @@ export default async function DealerPage({ params }: Props) {
       {/* Header */}
 
       <header className="flex flex-col sm:flex-row sm:items-center gap-5 mt-4">
-        <span className="w-20 h-20 shrink-0 flex items-center justify-center rounded-3xl bg-gray-900 text-white text-2xl font-bold">
+        <span className="w-20 h-20 shrink-0 flex items-center justify-center rounded-panel bg-gray-900 text-white text-2xl font-bold">
           {initials(dealer.name)}
         </span>
 
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{dealer.name}</h1>
+            <h1 className={pageTitleClass}>{dealer.name}</h1>
             <VerifiedBadge slug={dealer.slug} size={24} />
           </div>
 
@@ -112,7 +114,7 @@ export default async function DealerPage({ params }: Props) {
             {rated && (
               <>
                 <span className="inline-flex items-center gap-0.5 text-gray-900 font-medium">
-                  <StarIcon sx={{ fontSize: 18 }} className="text-amber-500" />
+                  <StarIcon sx={{ fontSize: 18 }} className="text-warning-solid" />
                   {dealer.rating!.toFixed(1)}
                 </span>
                 <span>
@@ -186,7 +188,7 @@ export default async function DealerPage({ params }: Props) {
         {/* Sidebar */}
 
         <aside className="lg:sticky lg:top-20 space-y-4">
-          <div className="rounded-2xl border border-gray-200 p-5 shadow-xl shadow-black/5">
+          <Card className="shadow-xl shadow-black/5">
             <ContactPhoneButton phone={dealer.phone} className="w-full" />
 
             <div className="mt-5 space-y-3 text-sm text-gray-800">
@@ -227,10 +229,10 @@ export default async function DealerPage({ params }: Props) {
               <DirectionsOutlinedIcon fontSize="small" />
               {t("page.directions")}
             </a>
-          </div>
+          </Card>
 
           {neighbours.length > 0 && (
-            <div className="rounded-2xl border border-gray-200 p-5">
+            <Card>
               <h3 className="text-sm font-semibold mb-3">{t("page.others", { city: cityName })}</h3>
 
               <ul className="space-y-1 -mx-2">
@@ -254,7 +256,7 @@ export default async function DealerPage({ params }: Props) {
                   </li>
                 ))}
               </ul>
-            </div>
+            </Card>
           )}
         </aside>
       </div>

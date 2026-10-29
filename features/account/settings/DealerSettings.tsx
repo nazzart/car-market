@@ -70,7 +70,7 @@ function SettingsSkeleton() {
     <div className="space-y-4" aria-busy="true">
       <Skeleton className="h-8 w-48 rounded-lg" />
       {[0, 1, 2].map((i) => (
-        <Skeleton key={i} className="h-48 rounded-2xl" />
+        <Skeleton key={i} className="h-48 rounded-card" />
       ))}
     </div>
   );

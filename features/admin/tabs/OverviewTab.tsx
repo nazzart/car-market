@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
+import Card, { CardTitle } from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import StatTile from "@/components/ui/StatTile";
 import { isFresh } from "@/features/cars/lib/isFresh";
@@ -52,8 +53,8 @@ export default function OverviewTab({ onOpen }: { onOpen: (tab: AdminTab) => voi
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <section className="rounded-2xl border border-gray-200 p-5">
-          <h2 className="font-semibold mb-3">{t("queue.title")}</h2>
+        <Card as="section">
+          <CardTitle as="h2">{t("queue.title")}</CardTitle>
           <ul className="space-y-2">
             {tasks.map(({ key, count, tab }) => (
               <li key={key}>
@@ -62,10 +63,10 @@ export default function OverviewTab({ onOpen }: { onOpen: (tab: AdminTab) => voi
                   onClick={() => onOpen(tab)}
                   className={cn(
                     "w-full flex items-center gap-3 p-3 rounded-xl text-left transition cursor-pointer",
-                    count > 0 ? "bg-red-50 hover:bg-red-100" : "bg-gray-50 hover:bg-gray-100"
+                    count > 0 ? "bg-danger-soft hover:bg-danger-muted" : "bg-gray-50 hover:bg-gray-100"
                   )}
                 >
-                  <span className={cn("text-2xl font-semibold w-10 text-center", count > 0 ? "text-red-700" : "text-gray-400")}>
+                  <span className={cn("text-2xl font-semibold w-10 text-center", count > 0 ? "text-danger" : "text-gray-400")}>
                     {count}
                   </span>
                   <span className="flex-1 text-sm font-medium text-gray-900">{t(`tasks.${key}`)}</span>
@@ -74,10 +75,10 @@ export default function OverviewTab({ onOpen }: { onOpen: (tab: AdminTab) => voi
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
 
-        <section className="rounded-2xl border border-gray-200 p-5">
-          <h2 className="font-semibold mb-3">{t("log.title")}</h2>
+        <Card as="section">
+          <CardTitle as="h2">{t("log.title")}</CardTitle>
           {log.length === 0 ? (
             <p className="text-sm text-gray-500 py-6 text-center">{t("log.empty")}</p>
           ) : (
@@ -95,7 +96,7 @@ export default function OverviewTab({ onOpen }: { onOpen: (tab: AdminTab) => voi
               ))}
             </ul>
           )}
-        </section>
+        </Card>
       </div>
     </div>
   );

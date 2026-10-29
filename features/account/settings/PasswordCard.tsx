@@ -64,7 +64,7 @@ export default function PasswordCard() {
           <Button type="submit" variant="outline">
             {t("change")}
           </Button>
-          {done && <span className="text-sm text-emerald-700">{t("changed")}</span>}
+          {done && <span className="text-sm text-success">{t("changed")}</span>}
         </div>
       </form>
     </SettingsCard>

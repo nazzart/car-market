@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import { collections } from "@/features/collections/config";
@@ -45,7 +46,7 @@ export default function CollectionsTab() {
         {members.length === 0 ? (
           <EmptyState text={t("contentEmpty")} />
         ) : (
-          <ul className="rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+          <Card as="ul" padding="none" className="divide-y divide-gray-100 overflow-hidden">
             {members.map((l) => {
               const isExcluded = excluded[l.id]?.includes(slug);
               return (
@@ -55,7 +56,7 @@ export default function CollectionsTab() {
                     <div className="font-semibold text-gray-900 truncate">{l.title}, {l.year}</div>
                     <div className="text-xs text-gray-500">
                       {formatPrice(l.price)} · {l.power} ZS
-                      {isExcluded && <span className="text-red-700"> · {t("excluded")}</span>}
+                      {isExcluded && <span className="text-danger"> · {t("excluded")}</span>}
                     </div>
                   </div>
                   <Button variant="outline" size="sm" onClick={() => setExcluded(l.id, slug, !isExcluded)}>
@@ -64,7 +65,7 @@ export default function CollectionsTab() {
                 </li>
               );
             })}
-          </ul>
+          </Card>
         )}
       </section>
     </div>

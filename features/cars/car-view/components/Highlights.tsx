@@ -9,9 +9,9 @@ import { useTranslations } from "next-intl";
 
 import { Listing } from "@/features/cars/types";
 
-const GOOD = "bg-emerald-50 text-emerald-800 border-emerald-100";
+const GOOD = "bg-success-soft text-success-strong border-success-muted";
 const NEUTRAL = "bg-gray-50 text-gray-800 border-gray-200";
-const WARN = "bg-amber-50 text-amber-800 border-amber-100";
+const WARN = "bg-warning-soft text-warning border-warning-muted";
 
 // Короткие «плюсы» автомобиля под характеристиками; «Торг» показан под ценой
 export default function Highlights({ listing }: { listing: Listing }) {

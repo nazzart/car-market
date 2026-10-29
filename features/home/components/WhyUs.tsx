@@ -9,9 +9,9 @@ import { Link } from "@/i18n/navigation";
 // Чем сайт отличается от досок объявлений — каждая плитка ведёт к функции
 const features = [
   { key: "damages", icon: CarCrashOutlinedIcon, href: "/listing/9", tint: "bg-rose-100 text-rose-600" },
-  { key: "compare", icon: CompareArrowsIcon, href: "/compare", tint: "bg-sky-100 text-sky-700" },
-  { key: "priceDrop", icon: TrendingDownIcon, href: "/favorites", tint: "bg-emerald-100 text-emerald-700" },
-  { key: "dealers", icon: StorefrontOutlinedIcon, href: "/dealers", tint: "bg-amber-100 text-amber-700" },
+  { key: "compare", icon: CompareArrowsIcon, href: "/compare", tint: "bg-info-muted text-info" },
+  { key: "priceDrop", icon: TrendingDownIcon, href: "/favorites", tint: "bg-success-muted text-success" },
+  { key: "dealers", icon: StorefrontOutlinedIcon, href: "/dealers", tint: "bg-warning-muted text-warning" },
 ] as const;
 
 export default function WhyUs() {
@@ -27,7 +27,7 @@ export default function WhyUs() {
           <Link
             key={key}
             href={href}
-            className="group snap-start shrink-0 w-64 sm:w-auto p-5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition"
+            className="group snap-start shrink-0 w-64 sm:w-auto p-5 rounded-card bg-gray-50 hover:bg-gray-100 transition"
           >
             <span className={`inline-flex w-11 h-11 items-center justify-center rounded-xl ${tint} transition group-hover:scale-105`}>
               <Icon />

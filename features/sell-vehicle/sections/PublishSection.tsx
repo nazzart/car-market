@@ -3,6 +3,7 @@
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import { useTranslations } from "next-intl";
 
+import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import CarPhoto from "@/components/ui/CarPhoto";
 import { brands } from "@/features/brands/data/brands";
@@ -30,16 +31,13 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
   const complete = requiredDone === requiredTotal;
 
   return (
-    <section
-      id="publish"
-      className="scroll-mt-24 bg-white rounded-3xl border border-gray-200 p-5 sm:p-8"
-    >
+    <Card as="section" size="panel" id="publish" className="scroll-mt-24">
       <h2 className="text-xl font-semibold tracking-tight">{t("title")}</h2>
       <p className="text-gray-500 text-sm mt-1">{t("subtitle")}</p>
 
       {/* Preview */}
 
-      <div className="flex gap-4 mt-6 p-3 rounded-2xl border border-gray-200">
+      <div className="flex gap-4 mt-6 p-3 rounded-card border border-gray-200">
         <CarPhoto src={photos[0]} alt="" sizes="160px" unoptimized className="w-32 sm:w-40 shrink-0 rounded-xl" />
 
         <div className="min-w-0 py-1">
@@ -65,8 +63,8 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
       </div>
 
       {!complete && (
-        <div className="flex gap-3 mt-4 p-4 rounded-2xl bg-amber-50 text-sm text-amber-900">
-          <WarningAmberOutlinedIcon fontSize="small" className="text-amber-600 shrink-0" />
+        <div className="flex gap-3 mt-4 p-4 rounded-card bg-warning-soft text-sm text-warning-strong">
+          <WarningAmberOutlinedIcon fontSize="small" className="text-warning-accent shrink-0" />
           {t("missing", { done: requiredDone, total: requiredTotal })}
         </div>
       )}
@@ -78,6 +76,6 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
       <p className="text-xs text-gray-500 text-center mt-3">
         {t("terms")}
       </p>
-    </section>
+    </Card>
   );
 }

@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import { Link } from "@/i18n/navigation";
+import PageHeader from "@/components/ui/PageHeader";
 
 import { SellCarSidebar } from "../components/SellCarSidebar";
 import { useProgressiveSections } from "../hooks/useProgressiveSections";
@@ -50,23 +49,12 @@ export function SellCarView() {
     <div className="max-w-6xl mx-auto pt-6 pb-16">
       {/* Header */}
 
-      <div className="mb-8">
-        <Link
-          href="/sell"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-black transition"
-        >
-          <ArrowBackIcon sx={{ fontSize: 16 }} />
-          {t("form.back")}
-        </Link>
-
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mt-3">
-          {t("form.title")}
-        </h1>
-
-        <p className="text-gray-500 mt-1">
-          {t("form.subtitle")}
-        </p>
-      </div>
+      <PageHeader
+        back={{ href: "/sell", label: t("form.back") }}
+        title={t("form.title")}
+        subtitle={t("form.subtitle")}
+        className="mb-8"
+      />
 
       <div className="grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8 xl:gap-12 items-start">
         <SellCarSidebar

@@ -54,7 +54,7 @@ export default function AccountTypeView({ initial, onSelect, onLogin }: Props) {
               className={`
                 flex items-center gap-4
                 p-4
-                rounded-2xl
+                rounded-card
                 border
                 text-left
                 transition

@@ -196,7 +196,7 @@ export function useCompareSections(cars: Listing[]): Section[] {
             label: tOptions(`equipment.${key}`),
             display: (l) =>
               l.equipment?.includes(key) ? (
-                <CheckIcon fontSize="small" className="text-emerald-600" aria-label={t("yes")} />
+                <CheckIcon fontSize="small" className="text-success-accent" aria-label={t("yes")} />
               ) : (
                 <RemoveIcon fontSize="small" className="text-gray-300" aria-label={t("no")} />
               ),

@@ -7,6 +7,45 @@
   --mui-error: #d32f2f;
 }
 
+/* Дизайн-токены: доступны и как классы Tailwind (bg-success-soft, rounded-card), и как CSS-переменные
+   (var(--radius-panel) — например, в теме MUI) */
+@theme {
+  /* Цвета состояний — только через эти имена, не emerald/amber/red/sky напрямую (сменить оттенок — здесь).
+     soft — фон плашки, muted — фон посильнее и рамки, solid — заливка (точки, значки),
+     accent — значки и ссылки, без суффикса — текст, strong — текст на soft-фоне */
+  --color-success-soft: var(--color-emerald-50);
+  --color-success-muted: var(--color-emerald-100);
+  --color-success-solid: var(--color-emerald-500);
+  --color-success-accent: var(--color-emerald-600);
+  --color-success: var(--color-emerald-700);
+  --color-success-strong: var(--color-emerald-800);
+
+  --color-warning-soft: var(--color-amber-50);
+  --color-warning-muted: var(--color-amber-100);
+  --color-warning-solid: var(--color-amber-500);
+  --color-warning-accent: var(--color-amber-600);
+  --color-warning: var(--color-amber-800);
+  --color-warning-strong: var(--color-amber-900);
+
+  --color-danger-soft: var(--color-red-50);
+  --color-danger-muted: var(--color-red-100);
+  --color-danger-solid: var(--mui-error); /* тот же красный, что у ошибок в полях MUI */
+  --color-danger-accent: var(--color-red-600);
+  --color-danger: var(--color-red-700);
+  --color-danger-strong: var(--color-red-800);
+
+  --color-info-soft: var(--color-sky-50);
+  --color-info-muted: var(--color-sky-100);
+  --color-info-accent: var(--color-sky-600);
+  --color-info: var(--color-sky-700);
+
+  /* Скругления: control — поля ввода и мелкие элементы, card — карточки и плашки, panel — крупные блоки и окна */
+  --radius-control: 0.75rem;
+  --radius-card: 1rem;
+  --radius-panel: 1.5rem;
+
+}
+
 @theme inline {
   --color-primary: var(--color-primary);
   --color-primary-hover: var(--color-primary-hover);
@@ -15,6 +54,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-error: var(--mui-error);
+
 }
 
 /* Тёмной темы пока нет — фиксируем светлую, иначе при тёмной теме ОС фон

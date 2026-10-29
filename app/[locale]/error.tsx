@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
+import { cn } from "@/lib/utils";
+import { pageTitleClass } from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import Container from "@/components/layout/Container";
 
@@ -19,11 +21,11 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <Container>
       <div className="py-16 sm:py-24 text-center max-w-xl mx-auto">
-        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-red-50">
+        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-danger-soft">
           <ErrorOutlineIcon sx={{ fontSize: 30 }} className="text-primary" />
         </span>
 
-        <h1 className="mt-6 text-2xl sm:text-3xl font-semibold tracking-tight">{t("title")}</h1>
+        <h1 className={cn("mt-6", pageTitleClass)}>{t("title")}</h1>
         <p className="mt-3 text-gray-500">{t("text")}</p>
 
         <div className="flex flex-wrap justify-center gap-3 mt-8">

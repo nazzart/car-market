@@ -29,7 +29,7 @@ export default function CategoryCard({
       className="
         group relative
         text-left
-        rounded-3xl
+        rounded-panel
         border border-gray-200
         bg-white
         overflow-hidden

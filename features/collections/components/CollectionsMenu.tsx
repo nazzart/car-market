@@ -51,7 +51,7 @@ export default function CollectionsMenu() {
           ${open ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"}
         `}
       >
-        <div className="w-80 p-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-black/10">
+        <div className="w-80 p-2 bg-white rounded-card border border-gray-100 shadow-xl shadow-black/10">
           {collections.map((c) => {
             const Icon = c.icon;
 

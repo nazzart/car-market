@@ -5,6 +5,7 @@ import { Tooltip } from "@mui/material";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 import { useTranslations } from "next-intl";
 
+import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 
 import { DamageMap, damagePoints } from "../../config/damage";
@@ -22,11 +23,11 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
 
   if (damaged.length === 0) {
     return (
-      <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 text-emerald-900">
-        <VerifiedOutlinedIcon className="text-emerald-600" />
+      <div className="flex items-center gap-3 p-4 rounded-card bg-success-soft text-success-strong">
+        <VerifiedOutlinedIcon className="text-success-accent" />
         <div>
           <div className="font-medium">{t("none")}</div>
-          <div className="text-sm text-emerald-800/80">
+          <div className="text-sm text-success-strong/80">
             {t("noneText")}
           </div>
         </div>
@@ -35,7 +36,7 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-200 p-4 sm:p-6">
+    <Card padding="sm" className="sm:p-6">
       {/* Diagram */}
 
       <div className="max-w-xl mx-auto">
@@ -71,9 +72,9 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
                   w-7 h-7
                   flex items-center justify-center
                   rounded-full
-                  bg-red-600 text-white
+                  bg-danger-solid text-white
                   text-xs font-bold
-                  ring-4 ring-red-600/20
+                  ring-4 ring-danger-solid/20
                   shadow-md
                   cursor-default
                 "
@@ -91,7 +92,7 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
       <ol className="grid sm:grid-cols-2 gap-x-8 gap-y-4 mt-6 pt-6 border-t border-gray-100">
         {damaged.map((point, i) => (
           <li key={point.id} className="flex items-start gap-3">
-            <span className="w-6 h-6 shrink-0 flex items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold">
+            <span className="w-6 h-6 shrink-0 flex items-center justify-center rounded-full bg-danger-solid text-white text-xs font-bold">
               {i + 1}
             </span>
 
@@ -109,6 +110,6 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
           </li>
         ))}
       </ol>
-    </div>
+    </Card>
   );
 }

@@ -16,7 +16,7 @@ const noop = () => {};
 // Небольшая карта с одним дилером для его страницы
 export default function DealerMiniMap({ dealer }: { dealer: Dealer }) {
   return (
-    <div className="relative isolate h-56 rounded-2xl overflow-hidden border border-gray-200">
+    <div className="relative isolate h-56 rounded-card overflow-hidden border border-gray-200">
       <DealersMap
         dealers={[dealer]}
         activeSlug={dealer.slug}

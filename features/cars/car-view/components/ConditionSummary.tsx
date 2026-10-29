@@ -11,9 +11,9 @@ import { Listing } from "@/features/cars/types";
 type Tone = "good" | "warn" | "bad" | "neutral";
 
 const toneClass: Record<Tone, string> = {
-  good: "bg-emerald-500",
-  warn: "bg-amber-500",
-  bad: "bg-red-500",
+  good: "bg-success-solid",
+  warn: "bg-warning-solid",
+  bad: "bg-danger-solid",
   neutral: "bg-gray-300",
 };
 
@@ -57,7 +57,7 @@ export default function ConditionSummary({ listing }: { listing: Listing }) {
   return (
     <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-3">
       {tiles.map(({ icon: Icon, label, value, tone }) => (
-        <div key={label} className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50">
+        <div key={label} className="flex items-center gap-3 p-4 rounded-card bg-gray-50">
           <span className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-white text-gray-600">
             <Icon fontSize="small" />
           </span>

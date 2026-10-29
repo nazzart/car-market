@@ -8,6 +8,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useLocale, useTranslations } from "next-intl";
 
+import MetaLine from "@/components/ui/MetaLine";
+import PageHeader from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import CarPhoto from "@/components/ui/CarPhoto";
@@ -80,53 +82,45 @@ export default function FavoritesView() {
     <div className="pt-6 pb-16">
       {/* Header */}
 
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{t("title")}</h1>
-          {hydrated && entries.length > 0 && (
-            <p className="text-gray-500 mt-1">{tCommon("listings", { count: entries.length })}</p>
-          )}
-        </div>
+      <PageHeader
+        title={t("title")}
+        subtitle={hydrated && entries.length > 0 && tCommon("listings", { count: entries.length })}
+        actions={
+          entries.length > 1 && (
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <select
+                    aria-label={t("sort.label")}
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as Sort)}
+                    className={`${inputClass} appearance-none pr-9 cursor-pointer w-auto`}
+                  >
+                    {SORTS.map((value) => (
+                      <option key={value} value={value}>
+                        {t(`sort.${value}`)}
+                      </option>
+                    ))}
+                  </select>
+                  <KeyboardArrowDownIcon
+                    fontSize="small"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                  />
+                </div>
 
-        {entries.length > 1 && (
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <select
-                aria-label={t("sort.label")}
-                value={sort}
-                onChange={(e) => setSort(e.target.value as Sort)}
-                className={`${inputClass} appearance-none pr-9 cursor-pointer w-auto`}
-              >
-                {SORTS.map((value) => (
-                  <option key={value} value={value}>
-                    {t(`sort.${value}`)}
-                  </option>
-                ))}
-              </select>
-              <KeyboardArrowDownIcon
-                fontSize="small"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={clear}
-              className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 transition cursor-pointer"
-            >
-              <DeleteOutlineIcon fontSize="small" />
-              {t("clear")}
-            </button>
-          </div>
-        )}
-      </div>
+                <Button variant="ghost" onClick={clear} icon={<DeleteOutlineIcon fontSize="small" />}>
+                  {t("clear")}
+                </Button>
+              </div>
+          )
+        }
+      />
 
       {!hydrated || loading || !ready || (entries.length > 0 && loaded === undefined) ? (
         <FavoritesSkeleton />
       ) : !isLoggedIn ? (
         <>
           {/* Избранное хранится в аккаунте — гостю предлагаем войти */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 p-4 rounded-2xl bg-gray-50 text-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 p-4 rounded-card bg-gray-50 text-sm">
             <LockOutlinedIcon className="text-gray-400 shrink-0" />
             <p className="flex-1 text-gray-700">{t("guest.text")}</p>
             <Button variant="dark" onClick={openAuthModal} className="self-start sm:self-auto">
@@ -157,7 +151,7 @@ export default function FavoritesView() {
 
 /* ---------- Карточки ---------- */
 
-const cardClass = "relative min-w-0 flex gap-3 sm:gap-4 p-3 rounded-2xl border border-gray-200 bg-white";
+const cardClass = "relative min-w-0 flex gap-3 sm:gap-4 p-3 rounded-card border border-gray-200 bg-white";
 
 function RemoveButton({ onClick }: { onClick: () => void }) {
   const t = useTranslations("favorites");
@@ -204,7 +198,7 @@ function FavoriteCard({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             {/* ссылка растянута на всю карточку через after: */}
-            <Link href={href} className="after:absolute after:inset-0 after:rounded-2xl">
+            <Link href={href} className="after:absolute after:inset-0 after:rounded-card">
               <h3 className="font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-primary transition">
                 {listing.title}
               </h3>
@@ -235,12 +229,12 @@ function FavoriteCard({
         </div>
 
         <div className="mt-auto pt-2 flex flex-wrap items-end justify-between gap-2">
-          <div className="text-xs text-gray-500">
-            {placeName(listing.city)}
-            {added !== null && (
-              <> · {added < 1 ? t("addedJustNow") : t("added", { ago: formatAgo(added, locale) })}</>
-            )}
-          </div>
+          <MetaLine
+            items={[
+              placeName(listing.city),
+              added !== null && (added < 1 ? t("addedJustNow") : t("added", { ago: formatAgo(added, locale) })),
+            ]}
+          />
 
           <div className="hidden sm:block">
             <ListingPhone listing={listing} />

@@ -1,5 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 
+import MetaLine from "@/components/ui/MetaLine";
 import Badge from "@/components/ui/Badge";
 import FavoriteButton from "@/features/latest-cars/components/FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
@@ -41,7 +42,7 @@ export default function ListingRow({ listing }: { listing: Listing }) {
         group relative
         flex flex-col md:flex-row gap-4 md:gap-5
         p-3
-        rounded-2xl
+        rounded-card
         border border-gray-200
         bg-white
         hover:border-gray-300
@@ -64,7 +65,7 @@ export default function ListingRow({ listing }: { listing: Listing }) {
           {/* ссылка растянута на всю карточку через after: */}
           <Link
             href={href}
-            className="after:absolute after:inset-0 after:rounded-2xl"
+            className="after:absolute after:inset-0 after:rounded-card"
           >
             <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary transition truncate">
               {listing.title}
@@ -96,11 +97,14 @@ export default function ListingRow({ listing }: { listing: Listing }) {
           </div>
 
           {/* продавец — обычной строкой, а не чипом: чипы только для важного о самой машине */}
-          <div className="text-xs text-gray-500 mt-auto pt-3">
-            {placeName(listing.city)} ·{" "}
-            {listing.sellerType === "dealer" ? t("dealer", { name: listing.sellerName ?? "" }) : t("private")} ·{" "}
-            {formatAgo(listing.postedMinutesAgo, locale)}
-          </div>
+          <MetaLine
+            className="mt-auto pt-3"
+            items={[
+              placeName(listing.city),
+              listing.sellerType === "dealer" ? t("dealer", { name: listing.sellerName ?? "" }) : t("private"),
+              formatAgo(listing.postedMinutesAgo, locale),
+            ]}
+          />
         </div>
 
         {/* Price + actions */}
@@ -108,7 +112,7 @@ export default function ListingRow({ listing }: { listing: Listing }) {
         <div className="lg:w-48 shrink-0 flex lg:flex-col items-center lg:items-end justify-between gap-3">
           <div className="lg:text-right">
             <div className="text-2xl font-bold text-gray-900 whitespace-nowrap">{formatPrice(listing.price)}</div>
-            {listing.negotiable && <div className="text-xs font-medium text-emerald-700">{t("negotiable")}</div>}
+            {listing.negotiable && <div className="text-xs font-medium text-success">{t("negotiable")}</div>}
           </div>
 
           <ListingPhone listing={listing} />

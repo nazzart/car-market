@@ -12,7 +12,7 @@ export default function SellBanner() {
 
   return (
     <section className="py-8 sm:py-10">
-      <div className="relative overflow-hidden rounded-3xl bg-gray-900">
+      <div className="relative overflow-hidden rounded-panel bg-gray-900">
         <Image
           src="/cars/bmw5.jpg"
           alt=""
@@ -35,7 +35,7 @@ export default function SellBanner() {
           <ul className="mt-6 space-y-2.5">
             {benefits.map((b) => (
               <li key={b} className="flex items-center gap-2.5 text-white/90">
-                <span className="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                <span className="w-5 h-5 flex items-center justify-center rounded-full bg-success-solid/20 text-success-solid">
                   <CheckIcon sx={{ fontSize: 14 }} />
                 </span>
                 {t(`benefits.${b}`)}

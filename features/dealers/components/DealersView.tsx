@@ -9,6 +9,7 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import ViewListIcon from "@mui/icons-material/ViewList";
 
+import PageHeader from "@/components/ui/PageHeader";
 import Skeleton from "@/components/ui/Skeleton";
 import EmptyState from "@/components/ui/EmptyState";
 import { brands } from "@/features/brands/data/brands";
@@ -144,12 +145,7 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
     <div className="pt-6 pb-12">
       {/* Header */}
 
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-          {t("title")}
-        </h1>
-        <p className="text-gray-500 mt-1">{t("subtitle", { count: totalDealers })}</p>
-      </div>
+      <PageHeader title={t("title")} subtitle={t("subtitle", { count: totalDealers })} />
 
       {/* Filters */}
 
@@ -194,11 +190,11 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
             onClick={() => setOpenNow(!openNow)}
             className={`shrink-0 inline-flex items-center gap-2 h-11 px-4 rounded-xl border text-sm font-medium whitespace-nowrap transition cursor-pointer ${
               openNow
-                ? "bg-emerald-50 border-emerald-600 text-emerald-800"
+                ? "bg-success-soft border-success-accent text-success-strong"
                 : "border-gray-200 text-gray-700 hover:border-gray-900"
             }`}
           >
-            <span className={`w-2 h-2 rounded-full ${openNow ? "bg-emerald-500" : "bg-gray-300"}`} />
+            <span className={`w-2 h-2 rounded-full ${openNow ? "bg-success-solid" : "bg-gray-300"}`} />
             {t("openNow")}
           </button>
         </div>
@@ -260,7 +256,7 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
             relative isolate
             h-[calc(100svh-8rem)] lg:h-[calc(100vh-6rem)]
             lg:sticky lg:top-20
-            rounded-3xl overflow-hidden
+            rounded-panel overflow-hidden
             border border-gray-200
           `}
         >

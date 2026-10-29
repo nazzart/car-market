@@ -48,7 +48,7 @@ function DamagePoint({
 
         ${
           hasDamage
-            ? "w-8 h-8 bg-red-600 text-white ring-2 ring-red-300 shadow-lg"
+            ? "w-8 h-8 bg-danger-solid text-white ring-2 ring-danger-solid/40 shadow-lg"
             : "w-7 h-7 bg-black text-white hover:bg-gray-800"
         }
       `}

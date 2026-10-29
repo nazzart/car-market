@@ -13,5 +13,5 @@ export default function VerifiedBadge({ slug, size = 16, className }: { slug: st
 
   if (!isVerified(slug)) return null;
 
-  return <VerifiedIcon sx={{ fontSize: size }} className={cn("text-sky-600 shrink-0", className)} titleAccess={t("verified")} />;
+  return <VerifiedIcon sx={{ fontSize: size }} className={cn("text-info-accent shrink-0", className)} titleAccess={t("verified")} />;
 }

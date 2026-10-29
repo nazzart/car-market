@@ -38,8 +38,8 @@ export default function OpenStatus({ hours, className }: { hours: OpeningHours; 
 
   return (
     <span className={cn("inline-flex items-baseline gap-1.5 text-sm", className)}>
-      <span className={cn("w-2 h-2 rounded-full shrink-0 self-start mt-[0.4em]", status.open ? "bg-emerald-500" : "bg-gray-300")} />
-      <span className={status.open ? "text-emerald-700 font-medium" : "text-gray-600"}>{text}</span>
+      <span className={cn("w-2 h-2 rounded-full shrink-0 self-start mt-[0.4em]", status.open ? "bg-success-solid" : "bg-gray-300")} />
+      <span className={status.open ? "text-success font-medium" : "text-gray-600"}>{text}</span>
     </span>
   );
 }

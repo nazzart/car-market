@@ -5,6 +5,7 @@ import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import { useTranslations } from "next-intl";
 
+import Card, { CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import type { User } from "@/features/auth/types";
@@ -32,8 +33,8 @@ export default function AccountSidebar({
 
   return (
     <aside className="space-y-4">
-      <div className="rounded-2xl border border-gray-200 p-5">
-        <h3 className="font-semibold mb-3">{isDealer ? t("profile.company") : t("profile.title")}</h3>
+      <Card>
+        <CardTitle>{isDealer ? t("profile.company") : t("profile.title")}</CardTitle>
 
         <dl className="space-y-2 text-sm">
           {!isDealer && (
@@ -63,11 +64,11 @@ export default function AccountSidebar({
         <Button variant="outline" href="/account/profile" fullWidth className="mt-5">
           {t("profile.edit")}
         </Button>
-      </div>
+      </Card>
 
       {dealer?.address && (
-        <div className="rounded-2xl border border-gray-200 p-5">
-          <h3 className="font-semibold mb-3">{t("profile.dealerCenter")}</h3>
+        <Card>
+          <CardTitle>{t("profile.dealerCenter")}</CardTitle>
 
           <div className="space-y-2 text-sm text-gray-800">
             <div className="flex items-start gap-2">
@@ -88,11 +89,11 @@ export default function AccountSidebar({
               <Badge key={b}>{brands.find((brand) => brand.slug === b)?.name ?? b}</Badge>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
       {!isDealer && (
-        <div className="flex gap-3 rounded-2xl bg-gray-50 p-5 text-sm text-gray-700">
+        <div className="flex gap-3 rounded-card bg-gray-50 p-5 text-sm text-gray-700">
           <MailOutlineIcon fontSize="small" className="text-gray-500 shrink-0" />
           {t("profile.tip")}
         </div>

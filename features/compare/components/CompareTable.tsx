@@ -96,12 +96,12 @@ export default function CompareTable({
                             key={l.id}
                             className={cn(
                               "pt-1 pb-3 sm:py-3 px-2 sm:px-3 text-sm flex flex-wrap items-center gap-y-1",
-                              isBest ? "font-semibold text-emerald-700" : "text-gray-900"
+                              isBest ? "font-semibold text-success" : "text-gray-900"
                             )}
                           >
                             {row.display(l)}
                             {isBest && (
-                              <span className="hidden sm:inline ml-2 px-1.5 py-0.5 rounded-md bg-emerald-50 text-[11px] font-medium">
+                              <span className="hidden sm:inline ml-2 px-1.5 py-0.5 rounded-md bg-success-soft text-[11px] font-medium">
                                 {t("best")}
                               </span>
                             )}

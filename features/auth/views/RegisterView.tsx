@@ -90,7 +90,7 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
 
       {/* Выбранный тип аккаунта */}
 
-      <div className="flex items-center justify-between gap-3 mb-5 px-4 py-3 rounded-2xl bg-gray-50 text-sm">
+      <div className="flex items-center justify-between gap-3 mb-5 px-4 py-3 rounded-card bg-gray-50 text-sm">
         <span className="inline-flex items-center gap-2 font-medium text-gray-900">
           {isCompany ? (
             <StorefrontOutlinedIcon fontSize="small" />
@@ -173,7 +173,7 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
                 <li
                   key={rule.label}
                   className={`inline-flex items-center gap-1 text-xs transition ${
-                    ok ? "text-emerald-700" : show("password") ? "text-error" : "text-gray-500"
+                    ok ? "text-success" : show("password") ? "text-error" : "text-gray-500"
                   }`}
                 >
                   <CheckIcon sx={{ fontSize: 14 }} className={ok ? "" : "opacity-40"} />

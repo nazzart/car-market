@@ -39,10 +39,10 @@ export default async function DealersTeaser() {
           <Link
             key={d.slug}
             href={`/dealers/${d.slug}`}
-            className="group snap-start shrink-0 w-64 sm:w-auto flex flex-col gap-4 p-4 rounded-2xl border border-gray-200 bg-white hover:border-gray-900 hover:shadow-lg hover:shadow-black/5 transition"
+            className="group snap-start shrink-0 w-64 sm:w-auto flex flex-col gap-4 p-4 rounded-card border border-gray-200 bg-white hover:border-gray-900 hover:shadow-lg hover:shadow-black/5 transition"
           >
             <div className="flex items-center gap-3">
-              <span className="w-12 h-12 shrink-0 flex items-center justify-center rounded-2xl bg-gray-900 text-white font-bold">
+              <span className="w-12 h-12 shrink-0 flex items-center justify-center rounded-card bg-gray-900 text-white font-bold">
                 {initials(d.name)}
               </span>
               <div className="min-w-0">

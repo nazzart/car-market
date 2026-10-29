@@ -42,7 +42,7 @@ export function ContactForm({ initial, onSave, onCancel }: FormProps) {
   };
 
   return (
-    <div className="p-4 rounded-2xl bg-gray-50 space-y-3">
+    <div className="p-4 rounded-card bg-gray-50 space-y-3">
       <div className="grid sm:grid-cols-2 gap-3">
         <TextField
           label={t("name")}
@@ -127,7 +127,7 @@ export default function ContactsEditor({ contacts, companyPhone, onChange, usage
   return (
     <div className="space-y-3">
       {/* основной телефон компании — всегда есть, редактируется выше в «Контактах» */}
-      <div className="flex items-center gap-3 p-3 rounded-2xl border border-gray-200">
+      <div className="flex items-center gap-3 p-3 rounded-card border border-gray-200">
         <span className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600">
           <PhoneOutlinedIcon fontSize="small" />
         </span>
@@ -150,7 +150,7 @@ export default function ContactsEditor({ contacts, companyPhone, onChange, usage
             }}
           />
         ) : (
-          <div key={c.id} className="flex items-center gap-3 p-3 rounded-2xl border border-gray-200">
+          <div key={c.id} className="flex items-center gap-3 p-3 rounded-card border border-gray-200">
             <span className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-gray-900 text-white text-sm font-semibold">
               {c.name.slice(0, 1)}
             </span>
@@ -177,7 +177,7 @@ export default function ContactsEditor({ contacts, companyPhone, onChange, usage
               onClick={() => remove(c)}
               aria-label={t("remove")}
               title={t("remove")}
-              className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full hover:bg-red-50 text-gray-600 hover:text-red-700 transition cursor-pointer"
+              className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full hover:bg-danger-soft text-gray-600 hover:text-danger transition cursor-pointer"
             >
               <DeleteOutlineIcon fontSize="small" />
             </button>
@@ -197,7 +197,7 @@ export default function ContactsEditor({ contacts, companyPhone, onChange, usage
         <button
           type="button"
           onClick={() => setEditing("new")}
-          className="w-full inline-flex items-center justify-center gap-1.5 h-11 rounded-2xl border border-dashed border-gray-300 hover:border-gray-900 text-sm font-medium text-gray-900 transition cursor-pointer"
+          className="w-full inline-flex items-center justify-center gap-1.5 h-11 rounded-card border border-dashed border-gray-300 hover:border-gray-900 text-sm font-medium text-gray-900 transition cursor-pointer"
         >
           <AddIcon fontSize="small" />
           {t("addPerson")}

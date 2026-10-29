@@ -34,7 +34,7 @@ export function Segment({
         className={`
           w-full text-left
           px-5 py-2.5
-          rounded-2xl md:rounded-full
+          rounded-card md:rounded-full
           transition
           cursor-pointer
           disabled:cursor-not-allowed disabled:opacity-60

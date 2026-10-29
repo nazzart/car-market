@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 const tones = {
   neutral: "bg-gray-100 text-gray-700",
   muted: "bg-gray-100 text-gray-600",
-  success: "bg-emerald-50 text-emerald-700",
-  info: "bg-sky-50 text-sky-700",
-  warning: "bg-amber-50 text-amber-800",
-  danger: "bg-red-50 text-red-700",
-  dangerStrong: "bg-red-100 text-red-800",
-  solid: "bg-red-600 text-white", // требует внимания модератора (жалобы)
+  success: "bg-success-soft text-success",
+  info: "bg-info-soft text-info",
+  warning: "bg-warning-soft text-warning",
+  danger: "bg-danger-soft text-danger",
+  dangerStrong: "bg-danger-muted text-danger-strong",
+  solid: "bg-danger-solid text-white", // требует внимания модератора (жалобы)
 };
 
 export type BadgeTone = keyof typeof tones;

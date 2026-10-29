@@ -78,7 +78,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
     <SectionContainer id={id} title={title} required={required} isValid={isValid} onNext={handleNext}>
       {!user ? (
         /* Гость: публиковать можно только из аккаунта — так объявлением можно управлять */
-        <div className="text-center py-6 px-4 rounded-2xl bg-gray-50">
+        <div className="text-center py-6 px-4 rounded-card bg-gray-50">
           <span className="inline-flex w-12 h-12 items-center justify-center rounded-full bg-white shadow-sm">
             <LockOutlinedIcon className="text-gray-700" />
           </span>
@@ -239,7 +239,7 @@ function SummaryRow({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50">
+    <div className="flex items-center gap-3 p-3 rounded-card bg-gray-50">
       <span className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-white text-gray-600">{icon}</span>
       <div className="min-w-0 flex-1">
         <div className="font-medium text-gray-900 truncate">{title}</div>

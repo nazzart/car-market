@@ -35,6 +35,7 @@ export type Listing = {
   sellerType: SellerType;
   sellerName?: string;
   dealer?: string; // slug дилера
+  dealerVerified?: boolean; // значок «Проверенный дилер» (модератор сверил компанию с регистром)
   userId?: string; // владелец — зарегистрированный частный продавец, uuid (у дилерских — dealer)
   contactId?: string; // контактное лицо дилера (DealerContact.id); нет — основной телефон компании
   contactPerson?: { name: string; role?: string }; // кто отвечает на звонки (для карточки и страницы объявления)

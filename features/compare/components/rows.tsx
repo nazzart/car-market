@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 
 import { equipmentGroups } from "@/features/cars/config/equipment";
 import { type Listing, OVERALL_CONDITIONS, SERVICE_STATES } from "@/features/cars/types";
-import { useDealerLookup } from "@/features/dealers/hooks";
 import { usePlaceName } from "@/lib/places";
 import { formatNumber, formatPrice } from "@/lib/utils";
 
@@ -37,7 +36,6 @@ export function useCompareSections(cars: Listing[]): CompareSection[] {
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
   const placeName = usePlaceName();
-  const dealerOf = useDealerLookup();
 
   const dash = <span className="text-gray-300">—</span>;
   const yesNo = (v?: boolean) => (v === undefined ? dash : v ? t("yes") : t("no"));
@@ -67,7 +65,7 @@ export function useCompareSections(cars: Listing[]): CompareSection[] {
           key: "seller",
           label: t("rows.seller"),
           display: (l) =>
-            l.dealer ? (dealerOf(l.dealer)?.name ?? l.sellerName) : t("privateSeller"),
+            l.dealer ? l.sellerName : t("privateSeller"),
           value: (l) => l.dealer ?? "private",
         },
       ],

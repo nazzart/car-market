@@ -98,7 +98,7 @@ Conventions:
 - The brand color is defined once in `lib/colors.ts`.
 - **SQL lives in `features/*/api.ts`** (server-only; `features/cars/api/` is a folder: `rows.ts` shared mapping and the published rule, `search.ts` the /cars search, `index.ts` the rest). Server pages call its async functions
   (`getListing`, `searchListings`…); client components use the hooks in `hooks.ts`, which load only what the page
-  needs (`useListingsByIds`, `useDealerLookup`…). The browser never receives the whole catalogue.
+  needs (`useListingsByIds`…). The browser never receives the whole catalogue; dealer data reaches only pages that show it (the layout shares just the listing counts).
 - **`/cars` and `/dealers` search runs on the server:** filters in the URL become a SQL `WHERE`, results come
   20 listings / 10 dealers per page (`?page=2`) with real links (`components/ui/Pagination.tsx`), so search
   engines can reach every page. The dealers map gets light pins for all matches; "search as I move the map"

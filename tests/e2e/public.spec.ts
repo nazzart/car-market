@@ -58,9 +58,31 @@ test("compare two cars and toggle only differences", async ({ page }) => {
   await expect(page.getByText("Cena", { exact: true }).last()).toBeVisible(); // цены разные — строка остаётся
 });
 
-test("dealer page data does not leak private dealer fields", async ({ page }) => {
-  const response = await page.goto("/about");
-  const html = (await response!.text()) as string;
+test("pages without dealers carry no dealer data", async ({ page }) => {
+  // название дилера берём с /dealers, затем проверяем, что на /about его нет даже в данных страницы
+  await page.goto("/dealers");
+  const name = (await page.locator("main article h3, main article a").first().innerText()).trim();
+  expect(name.length).toBeGreaterThan(2);
+  const html = await (await page.request.get("/about")).text();
+  expect(html).not.toContain(name);
   expect(html).not.toContain("blockedNote");
-  expect(html).not.toMatch(/\\"regNumber\\":\\"\d{11}/);
+});
+
+test("verified badge shows on dealer cards, the dealer page and the listing page", async ({ page }) => {
+  await page.goto("/dealers");
+  const badge = page.getByRole("img", { name: "Pārbaudīts dīleris" });
+  await expect(badge.first()).toBeVisible();
+
+  // карточка с значком → её страница дилера → объявление этого дилера: значок везде
+  const card = page.locator("main article").filter({ has: badge }).first();
+  await card.locator('a[href*="/dealers/"]').first().click();
+  await expect(page).toHaveURL(/\/dealers\/[\w-]+$/);
+  await expect(badge.first()).toBeVisible();
+
+  const listing = page.locator('main a[href*="/listing/"]').first();
+  if (await listing.count()) {
+    await listing.click();
+    await expect(page).toHaveURL(/\/listing\//);
+    await expect(badge.first()).toBeVisible();
+  }
 });

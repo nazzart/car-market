@@ -76,7 +76,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Dealer
                 {dealer.name}
               </Link>
             </h3>
-            <VerifiedBadge slug={dealer.slug} />
+            <VerifiedBadge verified={dealer.verified} />
           </div>
 
           <div className="flex flex-wrap items-center gap-x-2 text-sm text-gray-500">

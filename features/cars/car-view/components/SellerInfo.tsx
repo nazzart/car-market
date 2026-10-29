@@ -34,7 +34,7 @@ export default function SellerInfo({ listing }: SellerInfoProps) {
           ) : (
             <span className="truncate">{name}</span>
           )}
-          {listing.dealer && <VerifiedBadge slug={listing.dealer} />}
+          <VerifiedBadge verified={listing.dealerVerified} />
         </div>
 
         <div className="text-sm text-gray-500">

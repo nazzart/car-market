@@ -8,7 +8,6 @@ import EmptyState from "@/components/ui/EmptyState";
 import CarCard from "@/features/latest-cars/components/CarCard";
 
 import { FilterKey, chipLabel } from "../../config/filterOptions";
-import { useDealerLookup } from "@/features/dealers/hooks";
 import { usePlaceName } from "@/lib/places";
 
 import type { Listing } from "../../types";
@@ -17,23 +16,20 @@ import { useCarFilters } from "../hooks/useCarFilters";
 type EmptyResultsProps = {
   suggestions: { key: string; count: number }[];
   fresh: Listing[];
+  dealerName?: string; // фильтр ?dealer= — название для подсказки «без дилера»
 };
 
 // Ничего не нашлось: подсказываем, какой один фильтр убрать и сколько тогда будет авто,
 // а ниже — свежие объявления, чтобы страница не была тупиком. Числа и объявления считает сервер (/cars/page.tsx)
-export default function EmptyResults({
-  suggestions,
-  fresh,
-}: EmptyResultsProps) {
+export default function EmptyResults({ suggestions, fresh, dealerName }: EmptyResultsProps) {
   const t = useTranslations("cars.empty");
   const tChips = useTranslations("cars.chips");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
   const { params, updateFilter, resetFilters } = useCarFilters();
-  const dealerOf = useDealerLookup();
   const placeName = usePlaceName();
 
-  const names = { dealer: (slug: string) => dealerOf(slug)?.name, place: placeName };
+  const names = { dealer: () => dealerName, place: placeName };
   const relax = suggestions
     .filter((s) => params.get(s.key))
     .map((s) => ({

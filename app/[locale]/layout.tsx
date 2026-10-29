@@ -16,7 +16,6 @@ import Footer from "@/components/layout/footer/Footer";
 import NavigationProgress from "@/components/layout/NavigationProgress";
 import CompareBar from "@/features/compare/components/CompareBar";
 import { getListingStats } from "@/features/cars/api";
-import { getDealerSummaries } from "@/features/dealers/api";
 import { routing } from "@/i18n/routing";
 
 // latin-ext — латышские ā, ē, ļ, š…; cyrillic — русский
@@ -60,7 +59,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   if (!hasLocale(routing.locales, locale)) notFound();
 
   setRequestLocale(locale);
-  const [stats, dealers] = await Promise.all([getListingStats(), getDealerSummaries()]);
+  const stats = await getListingStats();
 
   return (
     <html
@@ -77,7 +76,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <NextIntlClientProvider>
           <AppThemeProvider>
             <ToastProvider>
-              <CatalogProvider dealers={dealers} stats={stats}>
+              <CatalogProvider stats={stats}>
                 <AuthProvider>
                   <FavoritesSync />
                   <Header />

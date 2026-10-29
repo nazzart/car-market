@@ -106,7 +106,7 @@ export default async function DealerPage({ params }: DealerPageProps) {
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <h1 className={pageTitleClass}>{dealer.name}</h1>
-            <VerifiedBadge slug={dealer.slug} size={24} />
+            <VerifiedBadge verified={dealer.verified} size={24} />
           </div>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-gray-600">

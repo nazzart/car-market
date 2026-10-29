@@ -18,7 +18,6 @@ import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
 import { dealerAccount, ownerOf, userAccount } from "@/features/moderation/accounts";
 import { setDealerVerified, unblockAccount, useBlockedAccounts, useReports } from "@/features/moderation/store";
-import { useDealerVerified } from "@/features/moderation/visibility";
 import { Link } from "@/i18n/navigation";
 import { cn, initials } from "@/lib/utils";
 
@@ -41,6 +40,7 @@ function useAccounts(): AdminAccount[] {
       kind: "dealer" as const,
       contact: d.phone,
       regNumber: d.regNumber,
+      verified: d.verified,
       dealerSlug: d.slug,
     })),
   ];
@@ -55,7 +55,6 @@ export default function UsersTab({ onShowListings }: UsersTabProps) {
   const { listings } = useAdminData();
   const blocked = useBlockedAccounts();
   const reports = useReports();
-  const isVerified = useDealerVerified();
   const { dialog, blockAccount } = useModerationDialog();
   const [filter, setFilter] = useState<UsersFilter>("all");
 
@@ -73,7 +72,7 @@ export default function UsersTab({ onShowListings }: UsersTabProps) {
       case "individuals":
         return a.kind === "individual";
       case "unverified":
-        return a.kind === "dealer" && !isVerified(a.dealerSlug!);
+        return a.kind === "dealer" && !a.verified;
       case "blocked":
         return Boolean(blocked[a.key]);
       default:
@@ -99,7 +98,7 @@ export default function UsersTab({ onShowListings }: UsersTabProps) {
         <Card as="ul" padding="none" className="divide-y divide-gray-100 overflow-hidden">
           {shown.map((a) => {
             const block = blocked[a.key];
-            const verified = a.kind === "dealer" && isVerified(a.dealerSlug!);
+            const verified = a.kind === "dealer" && Boolean(a.verified);
             const count = listingsOf(a.key).length;
             const reportsCount = reportsOf(a.key);
 

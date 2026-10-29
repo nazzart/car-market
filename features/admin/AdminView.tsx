@@ -11,7 +11,6 @@ import Skeleton from "@/components/ui/Skeleton";
 import { isAdmin } from "@/features/auth/types";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import { AdminDataProvider, useReports } from "@/features/moderation/store";
-import { useDealerVerified } from "@/features/moderation/visibility";
 import { cn } from "@/lib/utils";
 
 import { useAdminData, useListingAdmin } from "./shared";
@@ -107,7 +106,6 @@ function AdminPanel() {
 function useTabCounts(): Record<AdminTab, number> {
   const { statusKey } = useListingAdmin();
   const reports = useReports();
-  const isVerified = useDealerVerified();
   const { listings, dealers } = useAdminData();
 
   return {
@@ -116,7 +114,7 @@ function useTabCounts(): Record<AdminTab, number> {
     approvals: listings.filter((l) => statusKey(l.id) === "pending").length,
     reports: reports.filter((r) => !r.resolved).length,
     collections: 0,
-    users: dealers.filter((d) => !isVerified(d.slug)).length,
+    users: dealers.filter((d) => !d.verified).length,
   };
 }
 

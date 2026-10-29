@@ -19,4 +19,5 @@ export type AdminAccount = {
   contact: string;
   regNumber?: string;
   dealerSlug?: string;
+  verified?: boolean;
 };

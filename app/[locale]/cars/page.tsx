@@ -60,7 +60,8 @@ export async function generateMetadata({ params, searchParams }: CarsPageProps):
 
 export default async function CarsPage({ searchParams }: CarsPageProps) {
   const params = await toParams(searchParams);
-  const result = await searchListings(params);
+  const dealerSlug = params.get("dealer");
+  const [result, dealer] = await Promise.all([searchListings(params), dealerSlug ? getDealer(dealerSlug) : undefined]);
 
   // ничего не нашлось — подсказки, какой фильтр убрать, и свежие объявления
   const empty =
@@ -72,7 +73,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
     <Container>
       {/* Suspense нужен для useSearchParams в клиентском компоненте */}
       <Suspense>
-        <CarsSearchView result={result} pageSize={PAGE_SIZE} empty={empty} />
+        <CarsSearchView result={result} pageSize={PAGE_SIZE} empty={empty} dealerName={dealer?.name} />
       </Suspense>
     </Container>
   );

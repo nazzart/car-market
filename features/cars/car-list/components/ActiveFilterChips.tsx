@@ -4,23 +4,23 @@ import { useTranslations } from "next-intl";
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import { useDealerLookup } from "@/features/dealers/hooks";
 import { usePlaceName } from "@/lib/places";
 
 import { useCarFilters } from "../hooks/useCarFilters";
 import { FILTER_KEYS, chipLabel } from "../../config/filterOptions";
 
-export default function ActiveFilterChips() {
+type ActiveFilterChipsProps = { dealerName?: string };
+
+export default function ActiveFilterChips({ dealerName }: ActiveFilterChipsProps) {
   const t = useTranslations("cars.chips");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
   const { params, updateFilter, resetFilters } = useCarFilters();
-  const dealerOf = useDealerLookup();
   const placeName = usePlaceName();
 
   // подборку показывают пилюли над поиском — здесь её не дублируем
   // окрестности входят в чип места: «Rīga + 20 km»
-  const names = { dealer: (slug: string) => dealerOf(slug)?.name, place: placeName };
+  const names = { dealer: () => dealerName, place: placeName };
   const chips = FILTER_KEYS.filter((key) => key !== "collection" && key !== "area").flatMap(
     (key) => {
       const value = params.get(key);

@@ -9,7 +9,6 @@ import StatTile from "@/components/ui/StatTile";
 import { isFresh } from "@/features/cars/lib/isFresh";
 import { useModerationLog, useReports } from "@/features/moderation/store";
 import { type LogEntry } from "@/features/moderation/types";
-import { useDealerVerified } from "@/features/moderation/visibility";
 import { cn, formatAgo, formatNumber } from "@/lib/utils";
 
 import type { AdminTab } from "../types";
@@ -26,12 +25,11 @@ export default function OverviewTab({ onOpen }: OverviewTabProps) {
   const { statusKey, isPublic } = useListingAdmin();
   const reports = useReports();
   const log = useModerationLog();
-  const isVerified = useDealerVerified();
   const { listings, dealers, listingTitle, accountName } = useAdminData();
 
   const pending = listings.filter((l) => statusKey(l.id) === "pending").length;
   const openReports = reports.filter((r) => !r.resolved).length;
-  const unverified = dealers.filter((d) => !isVerified(d.slug)).length;
+  const unverified = dealers.filter((d) => !d.verified).length;
 
   const stats = [
     { label: t("stats.total"), value: listings.length },

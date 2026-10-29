@@ -100,7 +100,7 @@ export default function AccountView() {
             <p className="text-sm text-gray-500">{isDealer ? t("header.dealerCabinet") : t("header.cabinet")}</p>
             <h1 className={cn("flex items-center gap-2", pageTitleClass)}>
               {isDealer ? user.name : t("header.hello", { name: user.name.split(" ")[0] })}
-              {isDealer && user.dealerSlug && <VerifiedBadge slug={user.dealerSlug} size={24} />}
+              {dealer && <VerifiedBadge verified={dealer.verified} size={24} />}
             </h1>
           </div>
         </div>

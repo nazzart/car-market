@@ -10,7 +10,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import PageHeader from "@/components/ui/PageHeader";
 import { brands } from "@/features/brands/data/brands";
 import { collections } from "@/features/collections/config";
-import { useDealerLookup } from "@/features/dealers/hooks";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import Pagination from "@/components/ui/Pagination";
@@ -76,6 +75,7 @@ const views = [
 export type SearchResultProps = {
   result: { items: Listing[]; total: number; page: number; pageCount: number };
   pageSize: number;
+  dealerName?: string; // фильтр ?dealer= — название дилера для заголовка и чипа (сервер)
   // ничего не нашлось: какой фильтр убрать (и сколько тогда будет) и свежие объявления
   empty?: { suggestions: { key: string; count: number }[]; fresh: Listing[] };
 };
@@ -93,7 +93,7 @@ export default function CarsSearchView(props: SearchResultProps) {
 
 type SearchViewProps = SearchResultProps & { pending: boolean };
 
-function SearchView({ result, pageSize, empty, pending }: SearchViewProps) {
+function SearchView({ result, pageSize, empty, pending, dealerName }: SearchViewProps) {
   const t = useTranslations("cars");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
@@ -101,7 +101,6 @@ function SearchView({ result, pageSize, empty, pending }: SearchViewProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const sidebarRef = useFitToViewport<HTMLElement>();
 
-  const dealerOf = useDealerLookup();
   // только опубликованные — сервер уже отфильтровал (published в features/cars/api)
   const results = result.items;
   const view = params.get("view") === "grid" ? "grid" : "list";
@@ -111,8 +110,6 @@ function SearchView({ result, pageSize, empty, pending }: SearchViewProps) {
   // Заголовок отражает поиск: «BMW M4», «Электромобили» или общий
   const brandName = brands.find((b) => b.slug === params.get("brand"))?.name;
   const collection = collections.find((c) => c.slug === params.get("collection"));
-
-  const dealerName = dealerOf(params.get("dealer"))?.name;
 
   const title = dealerName
     ? t("dealerCars", { dealer: dealerName })
@@ -183,7 +180,7 @@ function SearchView({ result, pageSize, empty, pending }: SearchViewProps) {
 
             {/* Число объявлений уже под заголовком — здесь активные фильтры */}
             <div className="hidden lg:block flex-1 min-w-0">
-              <ActiveFilterChips />
+              <ActiveFilterChips dealerName={dealerName} />
             </div>
 
             <div className="flex items-center gap-2">
@@ -234,14 +231,14 @@ function SearchView({ result, pageSize, empty, pending }: SearchViewProps) {
           {/* Active filters */}
 
           <div className="mt-4 empty:hidden lg:hidden">
-            <ActiveFilterChips />
+            <ActiveFilterChips dealerName={dealerName} />
           </div>
 
           {/* List */}
 
           <div className={`mt-5 transition-opacity ${pending ? "opacity-50 pointer-events-none" : ""}`} aria-busy={pending}>
             {results.length === 0 ? (
-              <EmptyResults suggestions={empty?.suggestions ?? []} fresh={empty?.fresh ?? []} />
+              <EmptyResults suggestions={empty?.suggestions ?? []} fresh={empty?.fresh ?? []} dealerName={dealerName} />
             ) : view === "grid" ? (
               <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-8">
                 {results.map((listing) => (

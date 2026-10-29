@@ -3,7 +3,6 @@
 import type { ListingStatus } from "@/features/account/listings/status";
 import type { Listing } from "@/features/cars/types";
 import type { Collection } from "@/features/collections/config";
-import { useDealerLookup } from "@/features/dealers/hooks";
 
 import type { AccountBlock, Moderation } from "./types";
 
@@ -39,10 +38,4 @@ export const inCollection = (listing: Listing, collection: Collection) =>
 
 export function useCollectionMembership() {
   return inCollection;
-}
-
-// Значок «Проверенный дилер» — поле verified в базе (меняет модератор)
-export function useDealerVerified() {
-  const dealerOf = useDealerLookup();
-  return (slug: string) => dealerOf(slug)?.verified ?? false;
 }

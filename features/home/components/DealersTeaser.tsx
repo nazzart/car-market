@@ -48,7 +48,7 @@ export default async function DealersTeaser() {
               <div className="min-w-0">
                 <div className="flex items-center gap-1">
                   <span className="font-semibold text-gray-900 truncate">{d.name}</span>
-                  <VerifiedBadge slug={d.slug} />
+                  <VerifiedBadge verified={d.verified} />
                 </div>
                 <div className="text-sm text-gray-500 truncate">
                   {placeName(d.city, locale)} · {d.type === "official" ? tDealers("official") : tDealers("used")}

@@ -29,8 +29,9 @@ export function useCarFilters() {
       newParams.set(key, value);
     }
 
-    // модель зависит от марки
+    // модель зависит от марки, окрестности — от места
     if (key === "brand") newParams.delete("model");
+    if (key === "place" && !value) newParams.delete("area");
 
     apply(newParams);
   };
@@ -43,7 +44,7 @@ export function useCarFilters() {
     apply(newParams);
   };
 
-  const activeCount = FILTER_KEYS.filter((key) => params.get(key)).length;
+  const activeCount = FILTER_KEYS.filter((key) => key !== "area" && params.get(key)).length;
 
   return {
     params,

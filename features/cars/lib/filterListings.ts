@@ -1,19 +1,19 @@
 import { Collection, collections } from "@/features/collections/config";
 
+import { placeMatcher } from "@/lib/places";
+
 import type { Listing } from "../types";
 import { postedPeriods } from "../config/filterOptions";
 
 export type Params = { get: (key: string) => string | null };
 
 type Options = {
-  // расстояние до объявления в км (если посетитель указал, где он); иначе радиус игнорируется
-  distanceTo?: (listing: Listing) => number | null;
   // попадание в подборку с учётом модерации; по умолчанию — правило подборки
   inCollection?: (listing: Listing, collection: Collection) => boolean;
 };
 
 // Временная фильтрация на клиенте — позже это будет запрос к API
-export function filterListings(listings: Listing[], params: Params, { distanceTo, inCollection }: Options = {}) {
+export function filterListings(listings: Listing[], params: Params, { inCollection }: Options = {}) {
   const num = (key: string) => {
     const value = params.get(key);
     return value ? Number(value) : null;
@@ -36,7 +36,9 @@ export function filterListings(listings: Listing[], params: Params, { distanceTo
   const model = params.get("model")?.toLowerCase();
   const posted = postedPeriods[params.get("posted") as keyof typeof postedPeriods];
   const flag = (key: string) => params.get(key) === "1";
-  const radius = distanceTo ? num("radius") : null;
+  // место: город или край (край — со своими городами), area — плюс окрестности в км
+  const place = params.get("place");
+  const inPlace = place ? placeMatcher(place, num("area") ?? 0) : null;
   const powerFrom = num("powerFrom");
   const powerTo = num("powerTo");
   const latvia = params.get("latvia");
@@ -48,11 +50,6 @@ export function filterListings(listings: Listing[], params: Params, { distanceTo
     if (!date) return false;
     const [month, year] = date.split(".").map(Number);
     return year * 100 + month >= thisMonth;
-  };
-  const within = (l: Listing) => {
-    if (radius === null) return true;
-    const km = distanceTo!(l);
-    return km !== null && km <= radius;
   };
 
   const result = listings.filter(
@@ -84,7 +81,7 @@ export function filterListings(listings: Listing[], params: Params, { distanceTo
       (!latvia || (latvia === "imported" ? l.mileageLatvia === "none" : Boolean(l.mileageLatvia) && l.mileageLatvia !== "none")) &&
       (powerFrom === null || l.power >= powerFrom) &&
       (powerTo === null || l.power <= powerTo) &&
-      within(l)
+      (!inPlace || inPlace(l.city))
   );
 
   switch (params.get("sort")) {
@@ -96,8 +93,6 @@ export function filterListings(listings: Listing[], params: Params, { distanceTo
       return result.sort((a, b) => a.mileage - b.mileage);
     case "year_desc":
       return result.sort((a, b) => b.year - a.year);
-    case "distance":
-      return distanceTo ? result.sort((a, b) => (distanceTo(a) ?? 1e9) - (distanceTo(b) ?? 1e9)) : result;
     default:
       return result;
   }

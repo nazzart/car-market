@@ -11,7 +11,7 @@ export const sellerTypes = ["private", "dealer"];
 export const conditions = ["used", "new"];
 
 // "" — сортировка по умолчанию (переводится как options.sort.newest)
-export const sortValues = ["", "price_asc", "price_desc", "mileage_asc", "year_desc", "distance"];
+export const sortValues = ["", "price_asc", "price_desc", "mileage_asc", "year_desc"];
 
 // Ключи URL, которые считаются фильтрами (sort и view — нет)
 export const FILTER_KEYS = [
@@ -36,7 +36,8 @@ export const FILTER_KEYS = [
   "noAccidents",
   "oneOwner",
   "serviceBook",
-  "radius",
+  "place",
+  "area", // окрестности места; отдельным чипом не показываем — входит в чип места
   "powerFrom",
   "powerTo",
   "recentService",
@@ -51,8 +52,8 @@ export const latviaOptions = ["imported", "local"];
 // Фильтры, спрятанные в «Дополнительные» (раскрываются сами, если какой-то выбран)
 export const advancedKeys = ["powerFrom", "powerTo", "drive", "color", "sellerType", "posted", "withPhotos"];
 
-// Радиус поиска от посетителя, км
-export const radiusOptions = ["25", "50", "100", "200"];
+// «Место + окрестности», км: Rīga + 20 → Jūrmala, Mārupe, Ķekava…; + 50 → Jelgava, Ogre, Sigulda…
+export const areaOptions = ["20", "50"];
 
 // «Размещено за…»: значение в URL → минуты
 export const postedPeriods = { "1d": 24 * 60, "3d": 3 * 24 * 60, "7d": 7 * 24 * 60 } as const;
@@ -70,7 +71,8 @@ export const chipLabel = (
   value: string,
   tOptions: Translate,
   tChips: Translate,
-  dealerName: (slug: string) => string | undefined
+  names: { dealer: (slug: string) => string | undefined; place: (key: string) => string },
+  area?: string | null // для чипа места: «Rīga + 20 km»
 ): string => {
   switch (key) {
     case "collection":
@@ -102,13 +104,15 @@ export const chipLabel = (
     case "sellerType":
       return tOptions(`sellerType.${value}`);
     case "dealer":
-      return dealerName(value) ?? value;
+      return names.dealer(value) ?? value;
     case "color":
       return tOptions(`colors.${value}`);
     case "posted":
       return tChips(`posted.${value}`);
-    case "radius":
-      return tChips("radius", { value });
+    case "place":
+      return area ? tChips("placeArea", { place: names.place(value), km: area }) : names.place(value);
+    case "area":
+      return tChips("area", { km: value });
     case "powerFrom":
       return tChips("powerFrom", { value });
     case "powerTo":

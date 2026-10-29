@@ -9,17 +9,15 @@ import { Listing } from "@/features/cars/types";
 
 import FreshBadge from "@/features/cars/car-list/components/FreshBadge";
 import { isFresh } from "@/features/cars/lib/isFresh";
-import { roundKm } from "@/features/cars/lib/location";
 
 import FavoriteButton from "./FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
 import { usePlaceName } from "@/lib/places";
 
-export default function CarCard({ listing, distance }: { listing: Listing; distance?: number | null }) {
+export default function CarCard({ listing }: { listing: Listing }) {
   const t = useTranslations("common");
   const tOptions = useTranslations("options");
   const placeName = usePlaceName();
-  const tRow = useTranslations("cars.row");
   const locale = useLocale();
 
   const { id, title, year, price, mileage } = listing;
@@ -60,8 +58,7 @@ export default function CarCard({ listing, distance }: { listing: Listing; dista
           </div>
 
           <div className="text-xs text-gray-500 pt-1">
-            {placeName(listing.city)}
-            {distance != null && ` · ${tRow("distance", { km: roundKm(distance) })}`} ·{" "}
+            {placeName(listing.city)} ·{" "}
             {formatAgo(listing.postedMinutesAgo, locale)}
           </div>
         </div>

@@ -45,8 +45,7 @@
     "price_asc": "Lētākie vispirms",
     "price_desc": "Dārgākie vispirms",
     "mileage_asc": "Mazākais nobraukums",
-    "year_desc": "Jaunākie pēc gada",
-    "distance": "Tuvākie vispirms"
+    "year_desc": "Jaunākie pēc gada"
   },
   "colors": {
     "black": "Melna",

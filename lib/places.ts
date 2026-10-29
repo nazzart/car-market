@@ -1,6 +1,6 @@
 import { useLocale } from "next-intl";
 
-import type { Point } from "./geo";
+import { Point, distanceKm } from "./geo";
 
 // Все города Латвии (10 республиканских + 72 других) и 35 краёв (novadi, реформа 2021; Varakļāni — в Madonas
 // novads с 01.07.2025). Деревни и хутора продавец указывает краем: «Ogres novads».
@@ -11,6 +11,7 @@ export type Place = {
   lv: string;
   ru: string;
   kind: "city" | "municipality";
+  municipality?: string; // край, в который входит город (ключ); у 7 городов с собственным самоуправлением — нет
   lat: number;
   lng: number;
 };
@@ -24,81 +25,81 @@ export const PLACES: Place[] = [
   { key: "jurmala", lv: "Jūrmala", ru: "Юрмала", kind: "city", lat: 56.9727, lng: 23.7887 },
   { key: "ventspils", lv: "Ventspils", ru: "Вентспилс", kind: "city", lat: 57.3904, lng: 21.5636 },
   { key: "rezekne", lv: "Rēzekne", ru: "Резекне", kind: "city", lat: 56.5063, lng: 27.3307 },
-  { key: "valmiera", lv: "Valmiera", ru: "Валмиера", kind: "city", lat: 57.5389, lng: 25.4262 },
-  { key: "ogre", lv: "Ogre", ru: "Огре", kind: "city", lat: 56.8192, lng: 24.6074 },
-  { key: "jekabpils", lv: "Jēkabpils", ru: "Екабпилс", kind: "city", lat: 56.4959, lng: 25.8688 },
-  { key: "adazi", lv: "Ādaži", ru: "Адажи", kind: "city", lat: 57.082, lng: 24.3243 },
-  { key: "ainazi", lv: "Ainaži", ru: "Айнажи", kind: "city", lat: 57.8637, lng: 24.3586 },
-  { key: "aizkraukle", lv: "Aizkraukle", ru: "Айзкраукле", kind: "city", lat: 56.6011, lng: 25.2543 },
-  { key: "aizpute", lv: "Aizpute", ru: "Айзпуте", kind: "city", lat: 56.7226, lng: 21.6067 },
-  { key: "akniste", lv: "Aknīste", ru: "Акнисте", kind: "city", lat: 56.1615, lng: 25.7484 },
-  { key: "aloja", lv: "Aloja", ru: "Алоя", kind: "city", lat: 57.7702, lng: 24.8761 },
-  { key: "aluksne", lv: "Alūksne", ru: "Алуксне", kind: "city", lat: 57.4205, lng: 27.0505 },
-  { key: "ape", lv: "Ape", ru: "Апе", kind: "city", lat: 57.5404, lng: 26.6905 },
-  { key: "auce", lv: "Auce", ru: "Ауце", kind: "city", lat: 56.4653, lng: 22.896 },
-  { key: "baldone", lv: "Baldone", ru: "Балдоне", kind: "city", lat: 56.7403, lng: 24.394 },
-  { key: "balozi", lv: "Baloži", ru: "Баложи", kind: "city", lat: 56.8763, lng: 24.1179 },
-  { key: "balvi", lv: "Balvi", ru: "Балви", kind: "city", lat: 57.133, lng: 27.265 },
-  { key: "bauska", lv: "Bauska", ru: "Бауска", kind: "city", lat: 56.4083, lng: 24.1877 },
-  { key: "broceni", lv: "Brocēni", ru: "Броцены", kind: "city", lat: 56.6845, lng: 22.5665 },
-  { key: "carnikava", lv: "Carnikava", ru: "Царникава", kind: "city", lat: 57.1297, lng: 24.2708 },
-  { key: "cesis", lv: "Cēsis", ru: "Цесис", kind: "city", lat: 57.3132, lng: 25.2749 },
-  { key: "cesvaine", lv: "Cesvaine", ru: "Цесвайне", kind: "city", lat: 56.9658, lng: 26.309 },
-  { key: "dagda", lv: "Dagda", ru: "Дагда", kind: "city", lat: 56.0949, lng: 27.5374 },
-  { key: "dobele", lv: "Dobele", ru: "Добеле", kind: "city", lat: 56.6257, lng: 23.2773 },
-  { key: "durbe", lv: "Durbe", ru: "Дурбе", kind: "city", lat: 56.586, lng: 21.3727 },
-  { key: "grobina", lv: "Grobiņa", ru: "Гробиня", kind: "city", lat: 56.5369, lng: 21.1676 },
-  { key: "gulbene", lv: "Gulbene", ru: "Гулбене", kind: "city", lat: 57.176, lng: 26.7515 },
-  { key: "iecava", lv: "Iecava", ru: "Иецава", kind: "city", lat: 56.5976, lng: 24.1987 },
-  { key: "ikskile", lv: "Ikšķile", ru: "Икшкиле", kind: "city", lat: 56.8375, lng: 24.4975 },
-  { key: "ilukste", lv: "Ilūkste", ru: "Илуксте", kind: "city", lat: 55.9767, lng: 26.2973 },
-  { key: "jaunjelgava", lv: "Jaunjelgava", ru: "Яунелгава", kind: "city", lat: 56.616, lng: 25.0797 },
-  { key: "kandava", lv: "Kandava", ru: "Кандава", kind: "city", lat: 57.0375, lng: 22.7771 },
-  { key: "karsava", lv: "Kārsava", ru: "Карсава", kind: "city", lat: 56.7875, lng: 27.6734 },
-  { key: "koknese", lv: "Koknese", ru: "Кокнесе", kind: "city", lat: 56.6494, lng: 25.4369 },
-  { key: "kraslava", lv: "Krāslava", ru: "Краслава", kind: "city", lat: 55.8952, lng: 27.1619 },
-  { key: "kuldiga", lv: "Kuldīga", ru: "Кулдига", kind: "city", lat: 56.9686, lng: 21.9608 },
-  { key: "kegums", lv: "Ķegums", ru: "Кегумс", kind: "city", lat: 56.7471, lng: 24.7249 },
-  { key: "kekava", lv: "Ķekava", ru: "Кекава", kind: "city", lat: 56.8262, lng: 24.2337 },
-  { key: "lielvarde", lv: "Lielvārde", ru: "Лиелварде", kind: "city", lat: 56.7264, lng: 24.7959 },
-  { key: "ligatne", lv: "Līgatne", ru: "Лигатне", kind: "city", lat: 57.2331, lng: 25.0398 },
-  { key: "limbazi", lv: "Limbaži", ru: "Лимбажи", kind: "city", lat: 57.5147, lng: 24.7132 },
-  { key: "livani", lv: "Līvāni", ru: "Ливаны", kind: "city", lat: 56.3532, lng: 26.1777 },
-  { key: "lubana", lv: "Lubāna", ru: "Лубана", kind: "city", lat: 56.9041, lng: 26.7181 },
-  { key: "ludza", lv: "Ludza", ru: "Лудза", kind: "city", lat: 56.5477, lng: 27.7242 },
-  { key: "madona", lv: "Madona", ru: "Мадона", kind: "city", lat: 56.8517, lng: 26.2185 },
-  { key: "mazsalaca", lv: "Mazsalaca", ru: "Мазсалаца", kind: "city", lat: 57.8661, lng: 25.0511 },
-  { key: "marupe", lv: "Mārupe", ru: "Марупе", kind: "city", lat: 56.9049, lng: 24.0438 },
-  { key: "olaine", lv: "Olaine", ru: "Олайне", kind: "city", lat: 56.7906, lng: 23.9332 },
-  { key: "pavilosta", lv: "Pāvilosta", ru: "Павилоста", kind: "city", lat: 56.8889, lng: 21.1825 },
-  { key: "piltene", lv: "Piltene", ru: "Пилтене", kind: "city", lat: 57.226, lng: 21.6728 },
-  { key: "plavinas", lv: "Pļaviņas", ru: "Плявиняс", kind: "city", lat: 56.6194, lng: 25.7403 },
-  { key: "preili", lv: "Preiļi", ru: "Прейли", kind: "city", lat: 56.2937, lng: 26.7267 },
-  { key: "priekule", lv: "Priekule", ru: "Приекуле", kind: "city", lat: 56.4495, lng: 21.6007 },
-  { key: "rujiena", lv: "Rūjiena", ru: "Руйиена", kind: "city", lat: 57.8974, lng: 25.3261 },
-  { key: "sabile", lv: "Sabile", ru: "Сабиле", kind: "city", lat: 57.0483, lng: 22.5711 },
-  { key: "salacgriva", lv: "Salacgrīva", ru: "Салацгрива", kind: "city", lat: 57.7568, lng: 24.357 },
-  { key: "salaspils", lv: "Salaspils", ru: "Саласпилс", kind: "city", lat: 56.8635, lng: 24.3545 },
-  { key: "saldus", lv: "Saldus", ru: "Салдус", kind: "city", lat: 56.6659, lng: 22.4936 },
-  { key: "saulkrasti", lv: "Saulkrasti", ru: "Саулкрасты", kind: "city", lat: 57.2634, lng: 24.4152 },
-  { key: "seda", lv: "Seda", ru: "Седа", kind: "city", lat: 57.6503, lng: 25.751 },
-  { key: "sigulda", lv: "Sigulda", ru: "Сигулда", kind: "city", lat: 57.1541, lng: 24.8567 },
-  { key: "skrunda", lv: "Skrunda", ru: "Скрунда", kind: "city", lat: 56.6768, lng: 22.0156 },
-  { key: "smiltene", lv: "Smiltene", ru: "Смилтене", kind: "city", lat: 57.4243, lng: 25.9045 },
-  { key: "staicele", lv: "Staicele", ru: "Стайцеле", kind: "city", lat: 57.8341, lng: 24.7477 },
-  { key: "stende", lv: "Stende", ru: "Стенде", kind: "city", lat: 57.1429, lng: 22.5337 },
-  { key: "strenci", lv: "Strenči", ru: "Стренчи", kind: "city", lat: 57.6278, lng: 25.6859 },
-  { key: "subate", lv: "Subate", ru: "Субате", kind: "city", lat: 56.0055, lng: 25.9063 },
-  { key: "talsi", lv: "Talsi", ru: "Талси", kind: "city", lat: 57.2452, lng: 22.5903 },
-  { key: "tukums", lv: "Tukums", ru: "Тукумс", kind: "city", lat: 56.967, lng: 23.1525 },
-  { key: "valdemarpils", lv: "Valdemārpils", ru: "Валдемарпилс", kind: "city", lat: 57.3693, lng: 22.5895 },
-  { key: "valka", lv: "Valka", ru: "Валка", kind: "city", lat: 57.7729, lng: 26.016 },
-  { key: "vangazi", lv: "Vangaži", ru: "Вангажи", kind: "city", lat: 57.0922, lng: 24.5446 },
-  { key: "varaklani", lv: "Varakļāni", ru: "Вараклани", kind: "city", lat: 56.6089, lng: 26.7539 },
-  { key: "viesite", lv: "Viesīte", ru: "Виесите", kind: "city", lat: 56.3457, lng: 25.5572 },
-  { key: "vilaka", lv: "Viļaka", ru: "Виляка", kind: "city", lat: 57.1849, lng: 27.6742 },
-  { key: "vilani", lv: "Viļāni", ru: "Виляны", kind: "city", lat: 56.555, lng: 26.9289 },
-  { key: "zilupe", lv: "Zilupe", ru: "Зилупе", kind: "city", lat: 56.3864, lng: 28.1215 },
+  { key: "valmiera", lv: "Valmiera", ru: "Валмиера", kind: "city", municipality: "valmieras-novads", lat: 57.5389, lng: 25.4262 },
+  { key: "ogre", lv: "Ogre", ru: "Огре", kind: "city", municipality: "ogres-novads", lat: 56.8192, lng: 24.6074 },
+  { key: "jekabpils", lv: "Jēkabpils", ru: "Екабпилс", kind: "city", municipality: "jekabpils-novads", lat: 56.4959, lng: 25.8688 },
+  { key: "adazi", lv: "Ādaži", ru: "Адажи", kind: "city", municipality: "adazu-novads", lat: 57.082, lng: 24.3243 },
+  { key: "ainazi", lv: "Ainaži", ru: "Айнажи", kind: "city", municipality: "limbazu-novads", lat: 57.8637, lng: 24.3586 },
+  { key: "aizkraukle", lv: "Aizkraukle", ru: "Айзкраукле", kind: "city", municipality: "aizkraukles-novads", lat: 56.6011, lng: 25.2543 },
+  { key: "aizpute", lv: "Aizpute", ru: "Айзпуте", kind: "city", municipality: "dienvidkurzemes-novads", lat: 56.7226, lng: 21.6067 },
+  { key: "akniste", lv: "Aknīste", ru: "Акнисте", kind: "city", municipality: "jekabpils-novads", lat: 56.1615, lng: 25.7484 },
+  { key: "aloja", lv: "Aloja", ru: "Алоя", kind: "city", municipality: "limbazu-novads", lat: 57.7702, lng: 24.8761 },
+  { key: "aluksne", lv: "Alūksne", ru: "Алуксне", kind: "city", municipality: "aluksnes-novads", lat: 57.4205, lng: 27.0505 },
+  { key: "ape", lv: "Ape", ru: "Апе", kind: "city", municipality: "smiltenes-novads", lat: 57.5404, lng: 26.6905 },
+  { key: "auce", lv: "Auce", ru: "Ауце", kind: "city", municipality: "dobeles-novads", lat: 56.4653, lng: 22.896 },
+  { key: "baldone", lv: "Baldone", ru: "Балдоне", kind: "city", municipality: "kekavas-novads", lat: 56.7403, lng: 24.394 },
+  { key: "balozi", lv: "Baloži", ru: "Баложи", kind: "city", municipality: "kekavas-novads", lat: 56.8763, lng: 24.1179 },
+  { key: "balvi", lv: "Balvi", ru: "Балви", kind: "city", municipality: "balvu-novads", lat: 57.133, lng: 27.265 },
+  { key: "bauska", lv: "Bauska", ru: "Бауска", kind: "city", municipality: "bauskas-novads", lat: 56.4083, lng: 24.1877 },
+  { key: "broceni", lv: "Brocēni", ru: "Броцены", kind: "city", municipality: "saldus-novads", lat: 56.6845, lng: 22.5665 },
+  { key: "carnikava", lv: "Carnikava", ru: "Царникава", kind: "city", municipality: "adazu-novads", lat: 57.1297, lng: 24.2708 },
+  { key: "cesis", lv: "Cēsis", ru: "Цесис", kind: "city", municipality: "cesu-novads", lat: 57.3132, lng: 25.2749 },
+  { key: "cesvaine", lv: "Cesvaine", ru: "Цесвайне", kind: "city", municipality: "madonas-novads", lat: 56.9658, lng: 26.309 },
+  { key: "dagda", lv: "Dagda", ru: "Дагда", kind: "city", municipality: "kraslavas-novads", lat: 56.0949, lng: 27.5374 },
+  { key: "dobele", lv: "Dobele", ru: "Добеле", kind: "city", municipality: "dobeles-novads", lat: 56.6257, lng: 23.2773 },
+  { key: "durbe", lv: "Durbe", ru: "Дурбе", kind: "city", municipality: "dienvidkurzemes-novads", lat: 56.586, lng: 21.3727 },
+  { key: "grobina", lv: "Grobiņa", ru: "Гробиня", kind: "city", municipality: "dienvidkurzemes-novads", lat: 56.5369, lng: 21.1676 },
+  { key: "gulbene", lv: "Gulbene", ru: "Гулбене", kind: "city", municipality: "gulbenes-novads", lat: 57.176, lng: 26.7515 },
+  { key: "iecava", lv: "Iecava", ru: "Иецава", kind: "city", municipality: "bauskas-novads", lat: 56.5976, lng: 24.1987 },
+  { key: "ikskile", lv: "Ikšķile", ru: "Икшкиле", kind: "city", municipality: "ogres-novads", lat: 56.8375, lng: 24.4975 },
+  { key: "ilukste", lv: "Ilūkste", ru: "Илуксте", kind: "city", municipality: "augsdaugavas-novads", lat: 55.9767, lng: 26.2973 },
+  { key: "jaunjelgava", lv: "Jaunjelgava", ru: "Яунелгава", kind: "city", municipality: "aizkraukles-novads", lat: 56.616, lng: 25.0797 },
+  { key: "kandava", lv: "Kandava", ru: "Кандава", kind: "city", municipality: "tukuma-novads", lat: 57.0375, lng: 22.7771 },
+  { key: "karsava", lv: "Kārsava", ru: "Карсава", kind: "city", municipality: "ludzas-novads", lat: 56.7875, lng: 27.6734 },
+  { key: "koknese", lv: "Koknese", ru: "Кокнесе", kind: "city", municipality: "aizkraukles-novads", lat: 56.6494, lng: 25.4369 },
+  { key: "kraslava", lv: "Krāslava", ru: "Краслава", kind: "city", municipality: "kraslavas-novads", lat: 55.8952, lng: 27.1619 },
+  { key: "kuldiga", lv: "Kuldīga", ru: "Кулдига", kind: "city", municipality: "kuldigas-novads", lat: 56.9686, lng: 21.9608 },
+  { key: "kegums", lv: "Ķegums", ru: "Кегумс", kind: "city", municipality: "ogres-novads", lat: 56.7471, lng: 24.7249 },
+  { key: "kekava", lv: "Ķekava", ru: "Кекава", kind: "city", municipality: "kekavas-novads", lat: 56.8262, lng: 24.2337 },
+  { key: "lielvarde", lv: "Lielvārde", ru: "Лиелварде", kind: "city", municipality: "ogres-novads", lat: 56.7264, lng: 24.7959 },
+  { key: "ligatne", lv: "Līgatne", ru: "Лигатне", kind: "city", municipality: "cesu-novads", lat: 57.2331, lng: 25.0398 },
+  { key: "limbazi", lv: "Limbaži", ru: "Лимбажи", kind: "city", municipality: "limbazu-novads", lat: 57.5147, lng: 24.7132 },
+  { key: "livani", lv: "Līvāni", ru: "Ливаны", kind: "city", municipality: "livanu-novads", lat: 56.3532, lng: 26.1777 },
+  { key: "lubana", lv: "Lubāna", ru: "Лубана", kind: "city", municipality: "madonas-novads", lat: 56.9041, lng: 26.7181 },
+  { key: "ludza", lv: "Ludza", ru: "Лудза", kind: "city", municipality: "ludzas-novads", lat: 56.5477, lng: 27.7242 },
+  { key: "madona", lv: "Madona", ru: "Мадона", kind: "city", municipality: "madonas-novads", lat: 56.8517, lng: 26.2185 },
+  { key: "mazsalaca", lv: "Mazsalaca", ru: "Мазсалаца", kind: "city", municipality: "valmieras-novads", lat: 57.8661, lng: 25.0511 },
+  { key: "marupe", lv: "Mārupe", ru: "Марупе", kind: "city", municipality: "marupes-novads", lat: 56.9049, lng: 24.0438 },
+  { key: "olaine", lv: "Olaine", ru: "Олайне", kind: "city", municipality: "olaines-novads", lat: 56.7906, lng: 23.9332 },
+  { key: "pavilosta", lv: "Pāvilosta", ru: "Павилоста", kind: "city", municipality: "dienvidkurzemes-novads", lat: 56.8889, lng: 21.1825 },
+  { key: "piltene", lv: "Piltene", ru: "Пилтене", kind: "city", municipality: "ventspils-novads", lat: 57.226, lng: 21.6728 },
+  { key: "plavinas", lv: "Pļaviņas", ru: "Плявиняс", kind: "city", municipality: "aizkraukles-novads", lat: 56.6194, lng: 25.7403 },
+  { key: "preili", lv: "Preiļi", ru: "Прейли", kind: "city", municipality: "preilu-novads", lat: 56.2937, lng: 26.7267 },
+  { key: "priekule", lv: "Priekule", ru: "Приекуле", kind: "city", municipality: "dienvidkurzemes-novads", lat: 56.4495, lng: 21.6007 },
+  { key: "rujiena", lv: "Rūjiena", ru: "Руйиена", kind: "city", municipality: "valmieras-novads", lat: 57.8974, lng: 25.3261 },
+  { key: "sabile", lv: "Sabile", ru: "Сабиле", kind: "city", municipality: "talsu-novads", lat: 57.0483, lng: 22.5711 },
+  { key: "salacgriva", lv: "Salacgrīva", ru: "Салацгрива", kind: "city", municipality: "limbazu-novads", lat: 57.7568, lng: 24.357 },
+  { key: "salaspils", lv: "Salaspils", ru: "Саласпилс", kind: "city", municipality: "salaspils-novads", lat: 56.8635, lng: 24.3545 },
+  { key: "saldus", lv: "Saldus", ru: "Салдус", kind: "city", municipality: "saldus-novads", lat: 56.6659, lng: 22.4936 },
+  { key: "saulkrasti", lv: "Saulkrasti", ru: "Саулкрасты", kind: "city", municipality: "saulkrastu-novads", lat: 57.2634, lng: 24.4152 },
+  { key: "seda", lv: "Seda", ru: "Седа", kind: "city", municipality: "valmieras-novads", lat: 57.6503, lng: 25.751 },
+  { key: "sigulda", lv: "Sigulda", ru: "Сигулда", kind: "city", municipality: "siguldas-novads", lat: 57.1541, lng: 24.8567 },
+  { key: "skrunda", lv: "Skrunda", ru: "Скрунда", kind: "city", municipality: "kuldigas-novads", lat: 56.6768, lng: 22.0156 },
+  { key: "smiltene", lv: "Smiltene", ru: "Смилтене", kind: "city", municipality: "smiltenes-novads", lat: 57.4243, lng: 25.9045 },
+  { key: "staicele", lv: "Staicele", ru: "Стайцеле", kind: "city", municipality: "limbazu-novads", lat: 57.8341, lng: 24.7477 },
+  { key: "stende", lv: "Stende", ru: "Стенде", kind: "city", municipality: "talsu-novads", lat: 57.1429, lng: 22.5337 },
+  { key: "strenci", lv: "Strenči", ru: "Стренчи", kind: "city", municipality: "valmieras-novads", lat: 57.6278, lng: 25.6859 },
+  { key: "subate", lv: "Subate", ru: "Субате", kind: "city", municipality: "augsdaugavas-novads", lat: 56.0055, lng: 25.9063 },
+  { key: "talsi", lv: "Talsi", ru: "Талси", kind: "city", municipality: "talsu-novads", lat: 57.2452, lng: 22.5903 },
+  { key: "tukums", lv: "Tukums", ru: "Тукумс", kind: "city", municipality: "tukuma-novads", lat: 56.967, lng: 23.1525 },
+  { key: "valdemarpils", lv: "Valdemārpils", ru: "Валдемарпилс", kind: "city", municipality: "talsu-novads", lat: 57.3693, lng: 22.5895 },
+  { key: "valka", lv: "Valka", ru: "Валка", kind: "city", municipality: "valkas-novads", lat: 57.7729, lng: 26.016 },
+  { key: "vangazi", lv: "Vangaži", ru: "Вангажи", kind: "city", municipality: "ropazu-novads", lat: 57.0922, lng: 24.5446 },
+  { key: "varaklani", lv: "Varakļāni", ru: "Вараклани", kind: "city", municipality: "madonas-novads", lat: 56.6089, lng: 26.7539 },
+  { key: "viesite", lv: "Viesīte", ru: "Виесите", kind: "city", municipality: "jekabpils-novads", lat: 56.3457, lng: 25.5572 },
+  { key: "vilaka", lv: "Viļaka", ru: "Виляка", kind: "city", municipality: "balvu-novads", lat: 57.1849, lng: 27.6742 },
+  { key: "vilani", lv: "Viļāni", ru: "Виляны", kind: "city", municipality: "rezeknes-novads", lat: 56.555, lng: 26.9289 },
+  { key: "zilupe", lv: "Zilupe", ru: "Зилупе", kind: "city", municipality: "ludzas-novads", lat: 56.3864, lng: 28.1215 },
   // Края — для тех, кто живёт вне города
   { key: "adazu-novads", lv: "Ādažu novads", ru: "Адажский край", kind: "municipality", lat: 57.1114, lng: 24.3455 },
   { key: "aizkraukles-novads", lv: "Aizkraukles novads", ru: "Айзкраукльский край", kind: "municipality", lat: 56.4875, lng: 25.2618 },
@@ -166,6 +167,25 @@ export const placePoint = (key: string): Point | null => {
 
 const RIGA: Point = { lat: 56.9496, lng: 24.1052 };
 export const placePointOrRiga = (key: string) => placePoint(key) ?? RIGA;
+
+// Фильтр поиска по месту: попадает ли место объявления в выбранное.
+//  — сам город или край; край включает свои города («Ogres novads» → Ogre, Ikšķile, Ķegums, Lielvārde);
+//  — areaKm > 0: плюс окрестности — места, чьи центры не дальше areaKm от центра выбранного
+//    («Rīga + 20 km» → Jūrmala, Mārupe, Ķekava…), а для города — и весь его край.
+// Считаем по центрам городов и краёв, а не по точным адресам: люди ориентируются по названиям мест
+export function placeMatcher(selected: string, areaKm = 0): (placeKey: string) => boolean {
+  const target = byKey.get(selected);
+  if (!target) return (key) => key === selected;
+
+  const inside = (key: string) => key === target.key || byKey.get(key)?.municipality === target.key;
+  if (areaKm <= 0) return inside;
+
+  return (key) => {
+    if (inside(key) || key === target.municipality) return true;
+    const place = byKey.get(key);
+    return place ? distanceKm(target, place) <= areaKm : false;
+  };
+}
 
 // Для поиска без диакритики и регистра: «kekava», «Ķekava» и «кекава» находят одно и то же
 export const foldText = (text: string) =>

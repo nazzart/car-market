@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { useDealerLookup } from "@/features/dealers/api";
+import { usePlaceName } from "@/lib/places";
 
 import { useCarFilters } from "../hooks/useCarFilters";
 import { FILTER_KEYS, chipLabel } from "../../config/filterOptions";
@@ -15,12 +16,15 @@ export default function ActiveFilterChips() {
   const tOptions = useTranslations("options");
   const { params, updateFilter, resetFilters } = useCarFilters();
   const dealerOf = useDealerLookup();
+  const placeName = usePlaceName();
 
   // подборку показывают пилюли над поиском — здесь её не дублируем
-  const chips = FILTER_KEYS.filter((key) => key !== "collection").flatMap(
+  // окрестности входят в чип места: «Rīga + 20 km»
+  const names = { dealer: (slug: string) => dealerOf(slug)?.name, place: placeName };
+  const chips = FILTER_KEYS.filter((key) => key !== "collection" && key !== "area").flatMap(
     (key) => {
       const value = params.get(key);
-      return value ? [{ key, label: chipLabel(key, value, tOptions, t, (slug) => dealerOf(slug)?.name) }] : [];
+      return value ? [{ key, label: chipLabel(key, value, tOptions, t, names, params.get("area")) }] : [];
     }
   );
 

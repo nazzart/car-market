@@ -1,6 +1,7 @@
 "use client";
 
 import { Autocomplete, TextField, createFilterOptions } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -59,10 +60,22 @@ export default function PlacePicker({ value, onChange, label, placeholder, requi
               placeholder={placeholder ?? t("search")}
               className="w-full h-11 pl-3 pr-9 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-500 outline-none hover:border-gray-300 focus:border-gray-900 transition"
             />
-            <KeyboardArrowDownIcon
-              fontSize="small"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-            />
+            {value ? (
+              <button
+                type="button"
+                onClick={() => onChange("")}
+                aria-label={t("clear")}
+                title={t("clear")}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition cursor-pointer"
+              >
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </button>
+            ) : (
+              <KeyboardArrowDownIcon
+                fontSize="small"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+              />
+            )}
           </div>
         ) : (
           <TextField

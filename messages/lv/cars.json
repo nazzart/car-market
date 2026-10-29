@@ -37,7 +37,6 @@
       "3d": "3 d.",
       "7d": "7 d."
     },
-    "radius": "līdz {value} km",
     "powerFrom": "no {value} ZS",
     "powerTo": "līdz {value} ZS",
     "recentService": "Nesen apkopta",
@@ -46,7 +45,9 @@
     "latvia": {
       "imported": "Tikko ievests",
       "local": "Lietots Latvijā"
-    }
+    },
+    "placeArea": "{place} + {km} km",
+    "area": "+{km} km"
   },
   "panel": {
     "condition": "Stāvoklis",
@@ -90,21 +91,19 @@
     "oneOwner": "1 īpašnieks",
     "negotiable": "Cena runājama",
     "serviceBook": "Servisa grāmatiņa",
-    "fresh": "Tikko ievietots",
-    "distance": "{km} km no jums"
+    "fresh": "Tikko ievietots"
   },
   "moreFilters": "Vairāk filtru",
   "metaTitle": "{title} — {results} | bestauto.lv",
   "metaDescription": "{title}: automašīnu pārdošanas sludinājumi Latvijā no privātpersonām un dīleriem.",
   "location": {
-    "useMine": "Noteikt manu atrašanās vietu",
+    "place": "Pilsēta vai novads",
+    "choose": "Visa Latvija",
+    "useMine": "Noteikt pēc manas atrašanās vietas",
     "locating": "Nosaka atrašanās vietu…",
-    "error": "Neizdevās noteikt atrašanās vietu. Izvēlieties pilsētu.",
-    "orCity": "vai izvēlieties pilsētu",
-    "myLocation": "Mana atrašanās vieta",
-    "near": "netālu no: {city}",
-    "change": "Mainīt atrašanās vietu",
-    "anywhere": "Visur",
-    "radius": "Rādiuss, km"
+    "error": "Neizdevās noteikt atrašanās vietu. Izvēlieties pilsētu sarakstā.",
+    "area": "Iekļaut apkārtni",
+    "areaNone": "Nē",
+    "areaKm": "+{km} km"
   }
 }

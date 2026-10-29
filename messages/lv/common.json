@@ -50,6 +50,7 @@
     "municipalities": "Novadi",
     "search": "Sāciet rakstīt, piem., Sigulda",
     "hint": "Ārpus pilsētas? Izvēlieties savu novadu",
-    "noResults": "Nekas nav atrasts"
+    "noResults": "Nekas nav atrasts",
+    "clear": "Notīrīt"
   }
 }

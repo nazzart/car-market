@@ -317,7 +317,7 @@ export const listings: Listing[] = [
     sellerType: "dealer",
     sellerName: "Baltic Auto",
     dealer: "baltic-auto",
-    city: "ogre",
+    city: "riga",
     postedMinutesAgo: 420,
     phone: "+371 2000 1010",
     color: "white",

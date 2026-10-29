@@ -15,7 +15,6 @@ import CarCard from "@/features/latest-cars/components/CarCard";
 
 import { useCarFilters } from "../hooks/useCarFilters";
 import { useListings } from "../../api";
-import { useDistanceTo, useOrigin } from "../../lib/location";
 import { filterListings } from "../../lib/filterListings";
 import { sortValues } from "../../config/filterOptions";
 import ActiveFilterChips from "./ActiveFilterChips";
@@ -83,10 +82,8 @@ export default function CarsSearchView() {
   const { isPublic } = useVisibility();
   const listings = useListings();
   const dealerOf = useDealerLookup();
-  const origin = useOrigin();
-  const distanceTo = useDistanceTo(origin);
   const inCollection = useCollectionMembership();
-  const results = filterListings(listings, params, { distanceTo, inCollection }).filter(
+  const results = filterListings(listings, params, { inCollection }).filter(
     (l) => isPublic(l.id)
   );
   const view = params.get("view") === "grid" ? "grid" : "list";
@@ -182,7 +179,7 @@ export default function CarsSearchView() {
                   onChange={(e) => updateFilter("sort", e.target.value || null)}
                   className={`${inputClass} appearance-none pr-9 cursor-pointer w-auto max-w-[200px] sm:max-w-none`}
                 >
-                  {sortValues.filter((value) => value !== "distance" || origin).map((value) => (
+                  {sortValues.map((value) => (
                     <option key={value} value={value}>
                       {tOptions(`sort.${value || "newest"}`)}
                     </option>
@@ -233,13 +230,13 @@ export default function CarsSearchView() {
             ) : view === "grid" ? (
               <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-8">
                 {results.map((listing) => (
-                  <CarCard key={listing.id} listing={listing} distance={distanceTo?.(listing)} />
+                  <CarCard key={listing.id} listing={listing} />
                 ))}
               </div>
             ) : (
               <div className="space-y-4">
                 {results.map((listing) => (
-                  <ListingRow key={listing.id} listing={listing} distance={distanceTo?.(listing)} />
+                  <ListingRow key={listing.id} listing={listing} />
                 ))}
               </div>
             )}

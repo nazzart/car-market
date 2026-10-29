@@ -7,14 +7,13 @@ import { formatAgo, formatNumber } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 import { isFresh } from "../../lib/isFresh";
-import { roundKm } from "../../lib/location";
 import ListingGallery from "./ListingGallery";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { usePlaceName } from "@/lib/places";
 
 const badgeClass = "px-2 py-0.5 rounded-md text-xs font-medium";
 
-export default function ListingRow({ listing, distance }: { listing: Listing; distance?: number | null }) {
+export default function ListingRow({ listing }: { listing: Listing }) {
   const t = useTranslations("cars.row");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
@@ -101,11 +100,7 @@ export default function ListingRow({ listing, distance }: { listing: Listing; di
 
           {/* продавец — обычной строкой, а не чипом: чипы только для важного о самой машине */}
           <div className="text-xs text-gray-500 mt-auto pt-3">
-            {placeName(listing.city)}
-            {distance != null && (
-              <span className="font-medium text-gray-700"> · {t("distance", { km: roundKm(distance) })}</span>
-            )}{" "}
-            ·{" "}
+            {placeName(listing.city)} ·{" "}
             {listing.sellerType === "dealer" ? t("dealer", { name: listing.sellerName ?? "" }) : t("private")} ·{" "}
             {formatAgo(listing.postedMinutesAgo, locale)}
           </div>

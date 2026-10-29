@@ -201,7 +201,7 @@ export default function FiltersPanel() {
         />
       </FilterSection>
 
-      <FilterSection title={t("location")} active={isActive(["radius"])}>
+      <FilterSection title={t("location")} active={isActive(["place"])}>
         <LocationFilter />
       </FilterSection>
 

@@ -7,9 +7,9 @@ import CarCard from "@/features/latest-cars/components/CarCard";
 
 import { FILTER_KEYS, FilterKey, chipLabel } from "../../config/filterOptions";
 import { useDealerLookup } from "@/features/dealers/api";
+import { usePlaceName } from "@/lib/places";
 
 import { useListings } from "../../api";
-import { useDistanceTo, useOrigin } from "../../lib/location";
 import { useCollectionMembership, useVisibility } from "@/features/moderation/visibility";
 import { filterListings } from "../../lib/filterListings";
 import { useCarFilters } from "../hooks/useCarFilters";
@@ -24,21 +24,23 @@ export default function EmptyResults() {
   const { params, updateFilter, resetFilters } = useCarFilters();
   const listings = useListings();
   const dealerOf = useDealerLookup();
-  const distanceTo = useDistanceTo(useOrigin());
+  const placeName = usePlaceName();
   const inCollection = useCollectionMembership();
   // как в поиске: скрытые, проданные и ожидающие проверки не предлагаем
   const { isPublic } = useVisibility();
 
-  const suggestions = FILTER_KEYS.filter((key) => params.get(key))
+  const names = { dealer: (slug: string) => dealerOf(slug)?.name, place: placeName };
+  const suggestions = FILTER_KEYS.filter((key) => key !== "area" && params.get(key))
     .map((key) => {
       const without = new URLSearchParams(params.toString());
       without.delete(key);
       if (key === "brand") without.delete("model"); // модель без марки не имеет смысла
+      if (key === "place") without.delete("area");
 
       return {
         key,
-        label: chipLabel(key as FilterKey, params.get(key)!, tOptions, tChips, (slug) => dealerOf(slug)?.name),
-        count: filterListings(listings, without, { distanceTo, inCollection }).filter((l) => isPublic(l.id)).length,
+        label: chipLabel(key as FilterKey, params.get(key)!, tOptions, tChips, names, params.get("area")),
+        count: filterListings(listings, without, { inCollection }).filter((l) => isPublic(l.id)).length,
       };
     })
     .filter((s) => s.count > 0)

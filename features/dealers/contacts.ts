@@ -3,7 +3,7 @@
 import type { Listing } from "@/features/cars/types";
 import { createLocalStore } from "@/lib/localStore";
 
-import { useDealerLookup } from "./api";
+import { useDealerLookup } from "./hooks";
 import type { DealerContact } from "./types";
 import { useOwnDealer } from "./useOwnDealer";
 

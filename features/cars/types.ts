@@ -60,3 +60,12 @@ export type Listing = {
   serviceBook?: boolean;
   mileageLatvia?: MileageLatvia; // пробег в Латвии: 0 — только что ввезён
 };
+
+// Сколько опубликованных объявлений: всего, по маркам, моделям (byModel[brand][model]) и подборкам.
+// Считает сервер (getListingStats), в браузер приходит через CatalogProvider — useListingStats()
+export type ListingStats = {
+  total: number;
+  byBrand: Record<string, number>;
+  byModel: Record<string, Record<string, number>>;
+  byCollection: Record<string, number>;
+};

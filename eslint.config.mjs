@@ -5,11 +5,11 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Демо-данные объявлений, дилеров и аккаунтов читаются только через features/*/api.ts —
-  // это единственное место, которое поменяется при подключении бэкенда
+  // База данных — только из features/*/api.ts (там пишутся SQL-запросы); демо-данные — только для npm run db:seed
+  // и демо-входа (features/auth/api.ts, до подключения Supabase Auth)
   {
     files: ["**/*.{ts,tsx}"],
-    ignores: ["features/*/api.ts", "features/*/data/**"],
+    ignores: ["features/*/api.ts", "features/*/data/**", "lib/db/**", "scripts/**"],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -17,7 +17,11 @@ const eslintConfig = defineConfig([
           patterns: [
             {
               regex: "(^|/)data/(listings|dealers|demoUsers)$",
-              message: "Используйте функции и хуки из features/<feature>/api.ts вместо прямого импорта демо-данных.",
+              message: "Демо-данные лежат в базе (npm run db:seed). Используйте features/<feature>/api.ts на сервере или ./hooks в клиенте.",
+            },
+            {
+              regex: "^@/lib/db(/|$)",
+              message: "Запросы к базе пишутся в features/<feature>/api.ts — импортируйте функции оттуда.",
             },
           ],
         },

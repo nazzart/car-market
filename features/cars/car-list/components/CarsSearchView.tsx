@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import TuneIcon from "@mui/icons-material/Tune";
 import ViewAgendaOutlinedIcon from "@mui/icons-material/ViewAgendaOutlined";
@@ -9,21 +9,21 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import { brands } from "@/features/brands/data/brands";
 import { collections } from "@/features/collections/config";
-import { useDealerLookup } from "@/features/dealers/api";
+import { useDealerLookup } from "@/features/dealers/hooks";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
 
-import { useCarFilters } from "../hooks/useCarFilters";
-import { useListings } from "../../api";
-import { filterListings } from "../../lib/filterListings";
+import { SearchTransitionContext, useCarFilters } from "../hooks/useCarFilters";
 import { sortValues } from "../../config/filterOptions";
+import type { Listing } from "../../types";
 import ActiveFilterChips from "./ActiveFilterChips";
 import EmptyResults from "./EmptyResults";
 import FiltersPanel from "./FiltersPanel";
 import ListingRow from "./ListingRow";
+import Pagination from "./Pagination";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import ScrollArea from "./ScrollArea";
-import { useCollectionMembership, useVisibility } from "@/features/moderation/visibility";
+import { useVisibility } from "@/features/moderation/visibility";
 import { inputClass } from "./ui";
 
 // Сайдбар всегда целиком в окне: пока он не прилип, высота — до нижнего края экрана.
@@ -70,7 +70,26 @@ const views = [
   { value: "grid", label: "viewGrid", icon: GridViewOutlinedIcon },
 ];
 
-export default function CarsSearchView() {
+// Одна страница результатов, посчитанная сервером (searchListings в features/cars/api.ts)
+export type SearchResultProps = {
+  result: { items: Listing[]; total: number; page: number; pageCount: number };
+  pageSize: number;
+  // ничего не нашлось: какой фильтр убрать (и сколько тогда будет) и свежие объявления
+  empty?: { suggestions: { key: string; count: number }[]; fresh: Listing[] };
+};
+
+export default function CarsSearchView(props: SearchResultProps) {
+  // смена фильтров — переход в transition: пока сервер готовит новую страницу, старая видна затемнённой
+  const [pending, startTransition] = useTransition();
+
+  return (
+    <SearchTransitionContext.Provider value={startTransition}>
+      <SearchView {...props} pending={pending} />
+    </SearchTransitionContext.Provider>
+  );
+}
+
+function SearchView({ result, pageSize, empty, pending }: SearchResultProps & { pending: boolean }) {
   const t = useTranslations("cars");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
@@ -78,17 +97,14 @@ export default function CarsSearchView() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const sidebarRef = useFitToViewport<HTMLElement>();
 
-  // скрытые, проданные и удалённые продавцом — не в поиске (демо: статус из браузера)
+  // скрытые, проданные и удалённые продавцом — не в поиске.
+  // TODO(backend): статусы и модерация сейчас в браузере — перенести в базу и фильтровать в SQL
   const { isPublic } = useVisibility();
-  const listings = useListings();
   const dealerOf = useDealerLookup();
-  const inCollection = useCollectionMembership();
-  const results = filterListings(listings, params, { inCollection }).filter(
-    (l) => isPublic(l.id)
-  );
+  const results = result.items.filter(isPublic);
   const view = params.get("view") === "grid" ? "grid" : "list";
 
-  const resultsLabel = tCommon("listings", { count: results.length });
+  const resultsLabel = tCommon("listings", { count: result.total });
 
   // Заголовок отражает поиск: «BMW M4», «Электромобили» или общий
   const brandName = brands.find((b) => b.slug === params.get("brand"))?.name;
@@ -110,7 +126,7 @@ export default function CarsSearchView() {
 
       <div className="mb-5">
         <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">{title}</h1>
-        <p className="text-gray-500 mt-1">{t("resultsIn", { count: results.length })}</p>
+        <p className="text-gray-500 mt-1">{t("resultsIn", { count: result.total })}</p>
       </div>
 
       <div className="mb-8">
@@ -224,9 +240,9 @@ export default function CarsSearchView() {
 
           {/* List */}
 
-          <div className="mt-5">
+          <div className={`mt-5 transition-opacity ${pending ? "opacity-50 pointer-events-none" : ""}`} aria-busy={pending}>
             {results.length === 0 ? (
-              <EmptyResults />
+              <EmptyResults suggestions={empty?.suggestions ?? []} fresh={empty?.fresh ?? []} />
             ) : view === "grid" ? (
               <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-8">
                 {results.map((listing) => (
@@ -240,6 +256,8 @@ export default function CarsSearchView() {
                 ))}
               </div>
             )}
+
+            <Pagination page={result.page} pageCount={result.pageCount} total={result.total} pageSize={pageSize} />
           </div>
         </div>
       </div>

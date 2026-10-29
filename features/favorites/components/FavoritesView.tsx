@@ -15,7 +15,7 @@ import { openAuthModal, useAuth } from "@/features/auth/store";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { inputClass } from "@/features/cars/car-list/components/ui";
 import { Listing } from "@/features/cars/types";
-import { useListingLookup, useListings } from "@/features/cars/api";
+import { useLatestListings, useListingsByIds } from "@/features/cars/hooks";
 import { useVisibility } from "@/features/moderation/visibility";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
@@ -44,7 +44,9 @@ export default function FavoritesView() {
   const { entries } = useFavorites();
   const { isLoggedIn } = useAuth();
   const now = useNow();
-  const listingOf = useListingLookup();
+  // с сервера — только объявления из избранного; undefined — ещё загружаются
+  const loaded = useListingsByIds(entries.map((e) => e.id));
+  const listingOf = (id: string) => loaded?.find((l) => l.id === id);
 
   const [sort, setSort] = useState<Sort>("added");
   const [undo, setUndo] = useState<Undo | null>(null);
@@ -119,7 +121,7 @@ export default function FavoritesView() {
         )}
       </div>
 
-      {!hydrated ? (
+      {!hydrated || (entries.length > 0 && loaded === undefined) ? (
         <Skeleton />
       ) : entries.length === 0 ? (
         <EmptyState />
@@ -305,9 +307,7 @@ function UnavailableCard({ onRemove }: { onRemove: () => void }) {
 function EmptyState() {
   const t = useTranslations("favorites");
   const { isPublic } = useVisibility();
-  const suggested = useListings()
-    .filter((l) => isPublic(l.id))
-    .sort((a, b) => a.postedMinutesAgo - b.postedMinutesAgo).slice(0, 4);
+  const suggested = (useLatestListings(6) ?? []).filter(isPublic).slice(0, 4);
 
   return (
     <div>

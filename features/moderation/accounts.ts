@@ -8,7 +8,7 @@ export const dealerAccount = (slug: string): AccountKey => `dealer:${slug}`;
 export const userAccount = (id: string): AccountKey => `user:${id}`;
 
 // Аккаунт продавца объявления. У части демо-объявлений частных лиц аккаунта нет — тогда null
-export function ownerOf(listing: Listing): AccountKey | null {
+export function ownerOf(listing: Pick<Listing, "dealer" | "userId">): AccountKey | null {
   if (listing.dealer) return dealerAccount(listing.dealer);
   return listing.userId ? userAccount(listing.userId) : null;
 }

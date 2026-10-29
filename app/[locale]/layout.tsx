@@ -5,12 +5,15 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import AppThemeProvider from "@/components/providers/ThemeProvider";
+import { CatalogProvider } from "@/components/providers/CatalogProvider";
 import "../globals.css";
 import { colors } from "@/lib/colors";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
 import NavigationProgress from "@/components/layout/NavigationProgress";
 import CompareBar from "@/features/compare/components/CompareBar";
+import { getListingStats } from "@/features/cars/api";
+import { getDealers } from "@/features/dealers/api";
 import { routing } from "@/i18n/routing";
 
 // latin-ext — латышские ā, ē, ļ, š…; cyrillic — русский
@@ -28,6 +31,9 @@ type Props = Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }>;
+
+// Страницы собираются заранее и обновляются из базы не реже раза в 5 минут (и сразу — по revalidateTag)
+export const revalidate = 300;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -51,6 +57,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
 
   setRequestLocale(locale);
+  const [stats, dealers] = await Promise.all([getListingStats(), getDealers()]);
 
   return (
     <html
@@ -66,12 +73,14 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <NextIntlClientProvider>
           <AppThemeProvider>
-            <Header />
-            <NavigationProgress />
-            {/* flex-1 — подвал прижат к низу экрана даже на коротких страницах */}
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <CompareBar />
+            <CatalogProvider dealers={dealers} stats={stats}>
+              <Header />
+              <NavigationProgress />
+              {/* flex-1 — подвал прижат к низу экрана даже на коротких страницах */}
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <CompareBar />
+            </CatalogProvider>
           </AppThemeProvider>
         </NextIntlClientProvider>
       </body>

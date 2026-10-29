@@ -5,27 +5,37 @@ import { getTranslations } from "next-intl/server";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import CarsSearchView from "@/features/cars/car-list/components/CarsSearchView";
-import { countListings } from "@/features/cars/api";
+import { PAGE_SIZE, type Params, countListings, getLatestListings, relaxSuggestions, searchListings } from "@/features/cars/api";
 import { collections } from "@/features/collections/config";
 import { getDealer } from "@/features/dealers/api";
 
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
 type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: SearchParams;
+};
+
+// Фильтры — в URL (?brand=bmw&priceTo=30000&page=2): страница рендерится на сервере, Google видит результаты
+const toParams = async (searchParams: SearchParams): Promise<Params> => {
+  const query = await searchParams;
+  return {
+    get: (key) => {
+      const value = query[key];
+      return typeof value === "string" && value ? value : null;
+    },
+  };
 };
 
 // Заголовок вкладки повторяет заголовок поиска: «BMW M4 — 3 sludinājumi | bestauto.lv»
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const query = await searchParams;
-  const get = (key: string) => {
-    const value = query[key];
-    return typeof value === "string" && value ? value : null;
-  };
+  const { get } = await toParams(searchParams);
 
   const t = await getTranslations({ locale, namespace: "cars" });
   const tOptions = await getTranslations({ locale, namespace: "options" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
+  const tPages = await getTranslations({ locale, namespace: "cars.pagination" });
 
   const brandName = brands.find((b) => b.slug === get("brand"))?.name;
   const collection = collections.find((c) => c.slug === get("collection"));
@@ -41,19 +51,29 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         : t("title");
 
   const count = await countListings({ get });
+  const page = Number(get("page")) > 1 ? ` · ${tPages("page", { page: Number(get("page")) })}` : "";
 
   return {
-    title: t("metaTitle", { title, results: tCommon("listings", { count }) }),
+    title: t("metaTitle", { title: `${title}${page}`, results: tCommon("listings", { count }) }),
     description: t("metaDescription", { title }),
   };
 }
 
-export default function CarsPage() {
+export default async function CarsPage({ searchParams }: Props) {
+  const params = await toParams(searchParams);
+  const result = await searchListings(params);
+
+  // ничего не нашлось — подсказки, какой фильтр убрать, и свежие объявления
+  const empty =
+    result.total === 0
+      ? { suggestions: await relaxSuggestions(params), fresh: await getLatestListings(3, { withPhotos: true }) }
+      : undefined;
+
   return (
     <Container>
       {/* Suspense нужен для useSearchParams в клиентском компоненте */}
       <Suspense>
-        <CarsSearchView />
+        <CarsSearchView result={result} pageSize={PAGE_SIZE} empty={empty} />
       </Suspense>
     </Container>
   );

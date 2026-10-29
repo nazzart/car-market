@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-import { getPublishedListings } from "@/features/cars/api";
+import { getLatestListings } from "@/features/cars/api";
 import { Link } from "@/i18n/navigation";
 
 import CarCard from "./CarCard";
@@ -11,9 +11,7 @@ const HOMEPAGE_LIMIT = 6;
 
 export default async function CarGrid() {
   const t = await getTranslations("home.latest");
-  const homepageListings = (await getPublishedListings())
-    .filter((listing) => listing.images.length > 0)
-    .slice(0, HOMEPAGE_LIMIT);
+  const homepageListings = await getLatestListings(HOMEPAGE_LIMIT, { withPhotos: true });
 
   return (
     <section className="py-8 sm:py-10">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Popover } from "@mui/material";
@@ -15,9 +15,7 @@ import {
 } from "@/features/collections/config";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
-import { useListingCounts, useListings } from "@/features/cars/api";
-import { useVisibility } from "@/features/moderation/visibility";
-import { filterListings } from "@/features/cars/lib/filterListings";
+import { useListingStats, useSearchCount } from "@/features/cars/hooks";
 
 type Panel = "brand" | "model" | "price" | "year";
 
@@ -158,9 +156,8 @@ const priceInputClass = `
 
 export default function QuickSearch() {
   const t = useTranslations("search");
-  const listings = useListings();
-  const { isPublic } = useVisibility();
-  const { total: totalListingCount, byBrand: brandListingCount } = useListingCounts();
+  const { total: totalListingCount, byBrand } = useListingStats();
+  const brandListingCount = (slug: string) => byBrand[slug] ?? 0;
   const tOptions = useTranslations("options");
   const router = useRouter();
   const modelRef = useRef<HTMLDivElement>(null);
@@ -186,9 +183,18 @@ export default function QuickSearch() {
   const models = modelsByBrand[brand] ?? [];
   const brandName = brands.find((b) => b.slug === brand)?.name ?? "";
 
-  // Те же правила, что и на /cars — число на кнопке совпадает с результатом поиска
+  // Число на кнопке считает сервер по тем же правилам, что и /cars. Запрос — через 300 мс после последнего
+  // изменения, чтобы не спрашивать на каждую введённую цифру цены
   const query: Record<string, string> = { condition, brand, model, priceFrom, priceTo, yearFrom };
-  const count = filterListings(listings, { get: (key) => query[key] || null }).filter((l) => isPublic(l.id)).length;
+  const queryKey = JSON.stringify(query);
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(JSON.parse(queryKey)), 300);
+    return () => clearTimeout(timer);
+  }, [queryKey]);
+  const hasFilters = Object.values(debouncedQuery).some(Boolean);
+  const searchCount = useSearchCount(hasFilters ? debouncedQuery : {});
+  const count = hasFilters ? (searchCount ?? totalListingCount) : totalListingCount;
 
   const filteredBrands = sortedBrands.filter((b) =>
     b.name.toLowerCase().includes(brandQuery.trim().toLowerCase())

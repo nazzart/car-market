@@ -10,11 +10,11 @@ import type { Listing } from "@/features/cars/types";
 type CollectionConfig = {
   slug: string;
   icon: SvgIconComponent;
-  // правило попадания объявления в подборку (позже — условие запроса к БД)
+  // правило попадания объявления в подборку. То же правило на SQL — collectionWhere в features/cars/api.ts
   matches: (listing: Listing) => boolean;
 };
 
-const EXOTIC_BRANDS = [
+export const EXOTIC_BRANDS = [
   "ferrari",
   "lamborghini",
   "rolls-royce",
@@ -49,7 +49,7 @@ const config: CollectionConfig[] = [
 
 export type Collection = CollectionConfig;
 
-// Правила подборок. Число объявлений в подборке — useCollectionCount() из features/cars/api.
+// Правила подборок. Число объявлений в подборке — useListingStats().byCollection
 // TODO(backend): скрывать почти пустые подборки (меньше ~10 объявлений), когда данные будут из БД
 export const collections: Collection[] = config;
 

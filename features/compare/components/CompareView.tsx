@@ -13,8 +13,8 @@ import { useTranslations } from "next-intl";
 
 import { equipmentGroups } from "@/features/cars/config/equipment";
 import { Listing, OVERALL_CONDITIONS, SERVICE_STATES } from "@/features/cars/types";
-import { useListingLookup, useListingsByIds } from "@/features/cars/api";
-import { useDealerLookup } from "@/features/dealers/api";
+import { useListingsByIds } from "@/features/cars/hooks";
+import { useDealerLookup } from "@/features/dealers/hooks";
 import { useFavorites } from "@/features/favorites/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatNumber } from "@/lib/utils";
@@ -67,8 +67,10 @@ export default function CompareView() {
   const { entries: favorites } = useFavorites();
   const [onlyDiff, setOnlyDiff] = useState(false);
 
-  const cars = useListingsByIds(ids);
-  const listingOf = useListingLookup();
+  // одним запросом — машины в сравнении и избранное (чтобы предложить добавить его)
+  const loaded = useListingsByIds([...new Set([...ids, ...favorites.map((f) => f.id)])]);
+  const listingOf = (id: string) => loaded?.find((l) => l.id === id);
+  const cars = ids.map(listingOf).filter((l) => l !== undefined);
   const dealerOf = useDealerLookup();
 
   const header = useRef<HTMLDivElement>(null);
@@ -77,7 +79,7 @@ export default function CompareView() {
     if (header.current) header.current.scrollLeft = e.currentTarget.scrollLeft;
   };
 
-  if (!hydrated) return <div className="h-96 my-6 rounded-3xl bg-gray-50 animate-pulse" />;
+  if (!hydrated || loaded === undefined) return <div className="h-96 my-6 rounded-3xl bg-gray-50 animate-pulse" />;
 
   const favoritesToAdd = favorites.filter((f) => !ids.includes(f.id) && listingOf(f.id) !== undefined);
 

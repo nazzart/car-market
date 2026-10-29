@@ -107,5 +107,12 @@
     "area": "Iekļaut apkārtni",
     "areaNone": "Nē",
     "areaKm": "+{km} km"
+  },
+  "pagination": {
+    "label": "Lapas",
+    "previous": "Iepriekšējā",
+    "next": "Nākamā",
+    "page": "{page}. lapa",
+    "range": "{from}–{to} no {total}"
   }
 }

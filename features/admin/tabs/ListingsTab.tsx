@@ -87,7 +87,7 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
           {rows.map((l) => {
             const status = statusKey(l.id);
             const reportsCount = openReports(l.id).length;
-            const v = of(l.id);
+            const v = of(l.id)!;
             const reason = v.moderation?.reason ?? v.accountBlock?.reason;
 
             return (

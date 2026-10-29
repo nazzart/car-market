@@ -21,7 +21,7 @@ import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import { Listing } from "@/features/cars/types";
-import { useDealerListingsOf, useUserListings } from "@/features/cars/api";
+import { useDealerListingsOf, useUserListings } from "@/features/cars/hooks";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { formatHours } from "@/features/dealers/lib/hours";
@@ -223,14 +223,15 @@ export default function AccountView() {
   if (!user) return <LoggedOut />;
 
   const isDealer = user.type === "dealer";
-  const all = (dealer ? dealerListings : privateListings).filter((l) => statusOf(statuses, l.id) !== "deleted");
-  const tabOf = (id: string): Tab => {
-    const v = of(id);
+  const ownListings = dealer ? dealerListings : privateListings; // undefined — ещё загружаются
+  const all = (ownListings ?? []).filter((l) => statusOf(statuses, l.id) !== "deleted");
+  const tabOf = (listing: Listing): Tab => {
+    const v = of(listing);
     if (v.moderation) return "blocked";
     if (v.pending) return "pending";
-    return statusOf(statuses, id) as Tab;
+    return statusOf(statuses, listing.id) as Tab;
   };
-  const byStatus = (s: Tab) => all.filter((l) => tabOf(l.id) === s);
+  const byStatus = (s: Tab) => all.filter((l) => tabOf(l) === s);
   const visibleTabs = tabs.filter((item) => !["pending", "blocked"].includes(item) || byStatus(item).length > 0);
   const accountBlock = blockedAccounts[accountOfUser(user)];
   const blockedCount = byStatus("blocked").length;
@@ -366,7 +367,13 @@ export default function AccountView() {
             </div>
           </div>
 
-          {shown.length > 0 ? (
+          {ownListings === undefined ? (
+            <div className="space-y-3">
+              {[0, 1].map((i) => (
+                <div key={i} className="h-28 rounded-2xl bg-gray-50 animate-pulse" />
+              ))}
+            </div>
+          ) : shown.length > 0 ? (
             <div className="space-y-3">
               {shown.map((l) => (
                 <ListingRow
@@ -374,7 +381,7 @@ export default function AccountView() {
                   listing={l}
                   status={statusOf(statuses, l.id)}
                   moderation={moderation[l.id]}
-                  pending={tabOf(l.id) === "pending"}
+                  pending={tabOf(l) === "pending"}
                   onStatusChange={(next) => changeStatus(l.id, next)}
                 />
               ))}

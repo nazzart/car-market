@@ -22,13 +22,17 @@ import UsersTab from "./tabs/UsersTab";
 const TABS: AdminTab[] = ["overview", "approvals", "listings", "reports", "collections", "users"];
 
 export default function AdminView() {
-  const t = useTranslations("moderation.admin");
   const { user } = useAuth();
+  // данные модерации загружаются только для модератора
+  return isAdmin(user) ? <AdminPanel /> : <NoAccess />;
+}
+
+function AdminPanel() {
+  const t = useTranslations("moderation.admin");
   const [tab, setTab] = useState<AdminTab>("overview");
   const [listingsQuery, setListingsQuery] = useState("");
   const counts = useTabCounts();
-
-  if (!isAdmin(user)) return <NoAccess />;
+  const { loading } = useAdminData();
 
   return (
     <div className="pt-8 pb-16">
@@ -68,12 +72,13 @@ export default function AdminView() {
       </div>
 
       <div className="mt-6">
-        {tab === "overview" && <OverviewTab onOpen={setTab} />}
-        {tab === "approvals" && <ApprovalsTab />}
-        {tab === "listings" && <ListingsTab query={listingsQuery} onQueryChange={setListingsQuery} />}
-        {tab === "reports" && <ReportsTab />}
-        {tab === "collections" && <CollectionsTab />}
-        {tab === "users" && (
+        {loading && <div className="h-64 rounded-2xl bg-gray-50 animate-pulse" />}
+        {!loading && tab === "overview" && <OverviewTab onOpen={setTab} />}
+        {!loading && tab === "approvals" && <ApprovalsTab />}
+        {!loading && tab === "listings" && <ListingsTab query={listingsQuery} onQueryChange={setListingsQuery} />}
+        {!loading && tab === "reports" && <ReportsTab />}
+        {!loading && tab === "collections" && <CollectionsTab />}
+        {!loading && tab === "users" && (
           <UsersTab
             onShowListings={(name) => {
               setListingsQuery(name);

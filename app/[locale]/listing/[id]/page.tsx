@@ -114,7 +114,10 @@ export default async function ListingPage({ params }: Props) {
         <HeaderActions listing={{ id: listing.id, title: listing.title, price: listing.price }} />
       </header>
 
-      <ListingStatusNotice id={listing.id} brand={listing.brand} />
+      <ListingStatusNotice
+        listing={{ id: listing.id, review: listing.review, dealer: listing.dealer, userId: listing.userId }}
+        brand={listing.brand}
+      />
 
       <div className="mt-5">
         <PhotoGallery images={listing.images} title={listing.title} />

@@ -1,4 +1,4 @@
-// Демо-данные — читаются только через features/cars/api.ts. TODO(backend): таблица listings
+// Демо-объявления — загружаются в базу командой npm run db:seed (scripts/db-seed.ts); приложение читает их из базы
 import type { Listing } from "../types";
 
 const bmwGallery = [

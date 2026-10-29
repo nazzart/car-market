@@ -4,15 +4,15 @@ import { useTranslations } from "next-intl";
 import BlockIcon from "@mui/icons-material/Block";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-import { useVisibility } from "@/features/moderation/visibility";
+import { VisibilitySubject, useVisibility } from "@/features/moderation/visibility";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 // Плашка над объявлением: продавец скрыл / продал / удалил или модератор заблокировал
-export default function ListingStatusNotice({ id, brand }: { id: string; brand: string }) {
+export default function ListingStatusNotice({ listing, brand }: { listing: VisibilitySubject; brand: string }) {
   const t = useTranslations("listing.status");
   const { of } = useVisibility();
-  const { seller, moderation, pending, accountBlock } = of(id);
+  const { seller, moderation, pending, accountBlock } = of(listing);
 
   // решение модератора важнее статуса продавца
   const key = moderation

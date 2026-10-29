@@ -1,4 +1,4 @@
-// Демо-данные — читаются только через features/dealers/api.ts. Компании вымышленные. TODO(backend): таблица dealers
+// Демо-дилеры (компании вымышленные) — загружаются в базу командой npm run db:seed; приложение читает их из базы
 import type { Dealer } from "../types";
 
 export const dealers: Dealer[] = [

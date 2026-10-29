@@ -21,9 +21,9 @@ import { isEmail } from "@/features/auth/ui";
 import { brands } from "@/features/brands/data/brands";
 import { ChipGroup } from "@/features/cars/car-list/components/ui";
 import type { Dealer } from "@/features/dealers/types";
-import { useDealerLookup } from "@/features/dealers/api";
+import { useDealerLookup } from "@/features/dealers/hooks";
 import { resolveDealer } from "@/features/dealers/useOwnDealer";
-import { useDealerListingsOf } from "@/features/cars/api";
+import { useDealerListingsOf } from "@/features/cars/hooks";
 import { assignContact, useContactAssignments } from "@/features/dealers/contacts";
 import { Link } from "@/i18n/navigation";
 import PlacePicker from "@/components/ui/PlacePicker";
@@ -364,7 +364,7 @@ function DealerSettings({ user }: { user: User }) {
 
   // объявления дилера и кто за ними закреплён сейчас
   const assignments = useContactAssignments();
-  const dealerListings = useDealerListingsOf(user.dealerSlug);
+  const dealerListings = useDealerListingsOf(user.dealerSlug) ?? [];
   const contactOf = (listingId: string, fallback?: string) => assignments[listingId] ?? fallback;
   const contactUsage = (contactId: string) =>
     dealerListings.filter((l) => contactOf(l.id, l.contactId) === contactId).length;

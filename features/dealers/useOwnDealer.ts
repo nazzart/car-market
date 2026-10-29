@@ -6,7 +6,7 @@ import { useAuth } from "@/features/auth/store";
 import type { User } from "@/features/auth/types";
 import { placePointOrRiga } from "@/lib/places";
 
-import { useDealerLookup } from "./api";
+import { useDealerLookup } from "./hooks";
 import type { Dealer } from "./types";
 
 // Профиль дилера, как его видят все: каталог + сохранённые настройки + данные аккаунта.

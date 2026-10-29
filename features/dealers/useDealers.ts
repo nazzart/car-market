@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { dealerAccount } from "@/features/moderation/accounts";
 import { useBlockedAccounts } from "@/features/moderation/store";
 
-import { useDealerCatalog } from "./api";
+import { useDealerCatalog } from "./hooks";
 import { useOwnDealer } from "./useOwnDealer";
 
 // Каталог дилеров для покупателей: свой профиль вошедшего дилера — с изменениями из настроек,

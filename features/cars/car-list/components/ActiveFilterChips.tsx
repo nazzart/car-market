@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import { useDealerLookup } from "@/features/dealers/api";
+import { useDealerLookup } from "@/features/dealers/hooks";
 import { usePlaceName } from "@/lib/places";
 
 import { useCarFilters } from "../hooks/useCarFilters";

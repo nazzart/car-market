@@ -3,8 +3,7 @@
 import { ListingStatus, statusOf, useListingStatuses } from "@/features/account/listings/statusStore";
 import { Listing } from "@/features/cars/types";
 import { Collection } from "@/features/collections/config";
-import { useListingLookup } from "@/features/cars/api";
-import { useDealerLookup } from "@/features/dealers/api";
+import { useDealerLookup } from "@/features/dealers/hooks";
 
 import { ownerOf } from "./accounts";
 import {
@@ -25,28 +24,28 @@ export type Visibility = {
   accountBlock?: AccountBlock; // заблокирован весь аккаунт продавца
 };
 
+// Что нужно знать об объявлении, чтобы решить, кому оно видно
+export type VisibilitySubject = Pick<Listing, "id" | "review" | "dealer" | "userId">;
+
 export function useVisibility() {
   const statuses = useListingStatuses();
   const moderation = useModeration();
   const approvals = useApprovals();
   const blockedAccounts = useBlockedAccounts();
 
-  const listingById = useListingLookup();
-
-  const of = (id: string): Visibility => {
-    const listing = listingById(id);
-    const owner = listing && ownerOf(listing);
+  const of = (listing: VisibilitySubject): Visibility => {
+    const owner = ownerOf(listing);
     return {
-      seller: statusOf(statuses, id),
-      moderation: moderation[id],
-      pending: listing?.review === "pending" && !approvals[id],
+      seller: statusOf(statuses, listing.id),
+      moderation: moderation[listing.id],
+      pending: listing.review === "pending" && !approvals[listing.id],
       accountBlock: owner ? blockedAccounts[owner] : undefined,
     };
   };
 
   // показывается покупателям
-  const isPublic = (id: string) => {
-    const v = of(id);
+  const isPublic = (listing: VisibilitySubject) => {
+    const v = of(listing);
     return v.seller === "active" && !v.moderation && !v.pending && !v.accountBlock;
   };
 

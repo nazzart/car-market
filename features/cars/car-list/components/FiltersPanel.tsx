@@ -6,8 +6,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
-import { useListings } from "@/features/cars/api";
-import { useVisibility } from "@/features/moderation/visibility";
+import { useListingStats } from "@/features/cars/hooks";
 import SearchSelect from "@/components/ui/SearchSelect";
 import { formatNumber } from "@/lib/utils";
 import CheckIcon from "@mui/icons-material/Check";
@@ -125,22 +124,12 @@ export default function FiltersPanel() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const advancedOpen = showAdvanced || advancedActive > 0;
 
-
-
-  // сколько объявлений у каждой марки и модели — подсказка рядом с названием
-  const listings = useListings();
-  const { isPublic } = useVisibility();
-  const brandCount = new Map<string, number>();
-  const modelCount = new Map<string, number>();
+  // сколько объявлений у каждой марки и модели — подсказка рядом с названием (считает сервер)
+  const { byBrand, byModel } = useListingStats();
   const brand = get("brand");
-  for (const l of listings) {
-    if (!isPublic(l.id)) continue;
-    brandCount.set(l.brand, (brandCount.get(l.brand) ?? 0) + 1);
-    if (l.brand === brand) modelCount.set(l.model, (modelCount.get(l.model) ?? 0) + 1);
-  }
 
-  const brandOption = (b: (typeof brands)[number]) => ({ value: b.slug, label: b.name, count: brandCount.get(b.slug) });
-  const models = (modelsByBrand[brand] ?? []).map((m) => ({ value: m, label: m, count: modelCount.get(m) }));
+  const brandOption = (b: (typeof brands)[number]) => ({ value: b.slug, label: b.name, count: byBrand[b.slug] });
+  const models = (modelsByBrand[brand] ?? []).map((m) => ({ value: m, label: m, count: byModel[brand]?.[m] }));
 
   return (
     <div>

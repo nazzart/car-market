@@ -5,52 +5,41 @@ import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 import CarCard from "@/features/latest-cars/components/CarCard";
 
-import { FILTER_KEYS, FilterKey, chipLabel } from "../../config/filterOptions";
-import { useDealerLookup } from "@/features/dealers/api";
+import { FilterKey, chipLabel } from "../../config/filterOptions";
+import { useDealerLookup } from "@/features/dealers/hooks";
 import { usePlaceName } from "@/lib/places";
 
-import { useListings } from "../../api";
-import { useCollectionMembership, useVisibility } from "@/features/moderation/visibility";
-import { filterListings } from "../../lib/filterListings";
+import type { Listing } from "../../types";
+import { useVisibility } from "@/features/moderation/visibility";
 import { useCarFilters } from "../hooks/useCarFilters";
 
 // Ничего не нашлось: подсказываем, какой один фильтр убрать и сколько тогда будет авто,
-// а ниже — свежие объявления, чтобы страница не была тупиком
-export default function EmptyResults() {
+// а ниже — свежие объявления, чтобы страница не была тупиком. Числа и объявления считает сервер (/cars/page.tsx)
+export default function EmptyResults({
+  suggestions,
+  fresh,
+}: {
+  suggestions: { key: string; count: number }[];
+  fresh: Listing[];
+}) {
   const t = useTranslations("cars.empty");
   const tChips = useTranslations("cars.chips");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
   const { params, updateFilter, resetFilters } = useCarFilters();
-  const listings = useListings();
   const dealerOf = useDealerLookup();
   const placeName = usePlaceName();
-  const inCollection = useCollectionMembership();
   // как в поиске: скрытые, проданные и ожидающие проверки не предлагаем
   const { isPublic } = useVisibility();
 
   const names = { dealer: (slug: string) => dealerOf(slug)?.name, place: placeName };
-  const suggestions = FILTER_KEYS.filter((key) => key !== "area" && params.get(key))
-    .map((key) => {
-      const without = new URLSearchParams(params.toString());
-      without.delete(key);
-      if (key === "brand") without.delete("model"); // модель без марки не имеет смысла
-      if (key === "place") without.delete("area");
-
-      return {
-        key,
-        label: chipLabel(key as FilterKey, params.get(key)!, tOptions, tChips, names, params.get("area")),
-        count: filterListings(listings, without, { inCollection }).filter((l) => isPublic(l.id)).length,
-      };
-    })
-    .filter((s) => s.count > 0)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 4);
-
-  const fresh = listings
-    .filter((l) => l.images.length > 0 && isPublic(l.id))
-    .sort((a, b) => a.postedMinutesAgo - b.postedMinutesAgo)
-    .slice(0, 3);
+  const relax = suggestions
+    .filter((s) => params.get(s.key))
+    .map((s) => ({
+      ...s,
+      label: chipLabel(s.key as FilterKey, params.get(s.key)!, tOptions, tChips, names, params.get("area")),
+    }));
+  const freshPublic = fresh.filter(isPublic);
 
   return (
     <div>
@@ -58,11 +47,11 @@ export default function EmptyResults() {
         <SearchOffIcon sx={{ fontSize: 48 }} className="text-gray-300" />
 
         <h3 className="text-lg font-semibold mt-3">{t("title")}</h3>
-        <p className="text-gray-500 mt-1">{suggestions.length > 0 ? t("relax") : t("text")}</p>
+        <p className="text-gray-500 mt-1">{relax.length > 0 ? t("relax") : t("text")}</p>
 
-        {suggestions.length > 0 && (
+        {relax.length > 0 && (
           <div className="flex flex-wrap justify-center gap-2 mt-5">
-            {suggestions.map((s) => (
+            {relax.map((s) => (
               <button
                 key={s.key}
                 type="button"
@@ -87,7 +76,7 @@ export default function EmptyResults() {
 
       <h3 className="text-lg font-semibold tracking-tight mt-10 mb-5">{t("fresh")}</h3>
       <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-8">
-        {fresh.map((listing) => (
+        {freshPublic.map((listing) => (
           <CarCard key={listing.id} listing={listing} />
         ))}
       </div>

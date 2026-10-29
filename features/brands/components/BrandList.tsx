@@ -6,7 +6,7 @@ import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-import { useListingCounts } from "@/features/cars/api";
+import { useListingStats } from "@/features/cars/hooks";
 import { Link } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
 
@@ -27,7 +27,7 @@ const groupByLetter =(list: Brand[]) => {
 };
 
 function BrandLink({ brand }: { brand: Brand }) {
-  const count = useListingCounts().byBrand(brand.slug);
+  const count = useListingStats().byBrand[brand.slug] ?? 0;
 
   return (
     <Link

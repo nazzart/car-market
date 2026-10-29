@@ -6,8 +6,8 @@ import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined
 
 import { Listing } from "@/features/cars/types";
 import { useRegisteredUsers } from "@/features/auth/api";
-import { useListingLookup, useListings } from "@/features/cars/api";
-import { useDealerCatalog, useDealerLookup } from "@/features/dealers/api";
+import { useAllListings } from "@/features/cars/hooks";
+import { useDealerCatalog, useDealerLookup } from "@/features/dealers/hooks";
 import {
   BlockReason,
   blockAccount,
@@ -45,15 +45,18 @@ export const statusTone: Record<StatusKey, string> = {
 export const minutesSince = (at: number) => Math.max(0, Math.round((Date.now() - at) / 60000));
 
 // Всё, что видит модератор: весь каталог, включая скрытое, и подписи к нему.
-// TODO(backend): админские запросы с пагинацией и поиском на сервере
+// TODO(admin): запросы с пагинацией и поиском на сервере вместо загрузки всего каталога
 export function useAdminData() {
-  const listings = useListings();
-  const listingOf = useListingLookup();
+  const loaded = useAllListings(); // undefined — ещё загружается
+  const listings = loaded ?? [];
+  const byId = new Map(listings.map((l) => [l.id, l]));
+  const listingOf = (id: string) => byId.get(id);
   const dealers = useDealerCatalog();
   const dealerOf = useDealerLookup();
   const users = useRegisteredUsers();
 
   return {
+    loading: loaded === undefined,
     listings,
     dealers,
     users,
@@ -73,11 +76,20 @@ export function useAdminData() {
 
 // Итоговый статус объявления для модератора
 export function useListingAdmin() {
-  const { of, isPublic } = useVisibility();
+  const visibility = useVisibility();
+  const { listingOf } = useAdminData();
   const reports = useReports();
+
+  // по id объявления из каталога модератора; удалённое из базы — «удалено»
+  const of = (id: string) => {
+    const listing = listingOf(id);
+    return listing ? visibility.of(listing) : undefined;
+  };
+  const isPublic = (id: string) => of(id) !== undefined && visibility.isPublic(listingOf(id)!);
 
   const statusKey = (id: string): StatusKey => {
     const v = of(id);
+    if (!v) return "deleted";
     if (v.moderation) return v.moderation.status;
     if (v.accountBlock) return "accountBlocked";
     if (v.pending) return "pending";

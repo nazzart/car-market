@@ -2,8 +2,8 @@
 
 Marketplace for buying and selling cars in Latvia — private sellers and dealers. Latvian (default) and Russian.
 
-> **Status: front-end prototype.** All pages and flows work, but data is sample data in code and user
-> actions (login, favorites, moderation, settings) are stored in the browser. See [Before production](#before-production).
+> **Status: prototype moving to production.** Listings and dealers are stored in PostgreSQL (Supabase). Login is still
+> demo-only, and user actions (favorites, moderation, settings) are stored in the browser. See [Before production](#before-production).
 
 ## Stack
 
@@ -12,12 +12,16 @@ Marketplace for buying and selling cars in Latvia — private sellers and dealer
 - [next-intl](https://next-intl.dev) — Latvian / Russian
 - [Leaflet](https://leafletjs.com) + OpenStreetMap — dealer maps, location picker
 - [Photon](https://photon.komoot.io) — address suggestions (OpenStreetMap geocoder)
+- [Supabase](https://supabase.com) PostgreSQL (EU) + [Drizzle ORM](https://orm.drizzle.team) — database, typed SQL and migrations
 
 ## Getting started
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
+# create .env.local (see Environment variables), then:
+npm run db:migrate   # create tables
+npm run db:seed      # load demo dealers and listings
+npm run dev          # http://localhost:3000
 ```
 
 | Command | What it does |
@@ -26,6 +30,10 @@ npm run dev      # http://localhost:3000
 | `npm run build` | Production build (also type-checks) |
 | `npm start` | Run the production build |
 | `npm run lint` | ESLint |
+| `npm run db:generate` | After changing `lib/db/schema.ts`: writes a new SQL migration to `lib/db/migrations/` |
+| `npm run db:migrate` | Applies pending migrations to the database |
+| `npm run db:seed` | Loads demo dealers and listings into an empty database (`-- --reset` wipes and reloads; `-- --reset --generate 100` adds 100 random listings for testing search and pagination) |
+| `npm run db:studio` | Browse the database in Drizzle Studio |
 | `npm run catalog:build` | Rebuilds car brands and models from the Dutch vehicle register (RDW open data, CC0) — run yearly |
 
 ### Environment variables
@@ -33,6 +41,13 @@ npm run dev      # http://localhost:3000
 | Variable | Purpose | Default |
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | Absolute site URL for link previews, sitemap and robots | `http://localhost:3000` |
+| `DATABASE_URL` | Server only. Supabase **transaction pooler** connection string (port 6543), used by the app | — |
+| `MIGRATIONS_DATABASE_URL` | Server only. Supabase **session pooler** (port 5432), used by migrations and seeding | `DATABASE_URL` |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project (for Supabase Auth, later) | — |
+
+The connection strings contain the database password: keep them in `.env.local` (git-ignored) and in the
+hosting provider's settings, never in code. All tables have Row Level Security enabled with no policies, so
+the public Supabase key cannot read or change them; only the Next.js server (which connects as the owner) can.
 
 ### Demo accounts
 
@@ -49,12 +64,15 @@ Open **Ienākt** (Login) and use the demo buttons, or log in with password `demo
 ```
 app/[locale]/      Routes (pages, metadata, error pages); locale is "lv" (no prefix) or "ru"
 features/          Code grouped by feature: cars, dealers, favorites, compare, account, admin, moderation…
-  */api.ts         Data access for the feature — the only code that reads */data/
-  */data/          Sample data — to be replaced by the database
+  */api.ts         Server-only data access: the SQL queries for the feature (Drizzle), cached
+  */actions.ts     Server Actions: how client components ask the server for data (validate input here)
+  */hooks.ts       Client hooks: counters from CatalogProvider, listings loaded on demand via actions
+  */data/          Demo data, loaded into the database by npm run db:seed
   */types.ts       Shared types (Listing, Dealer, User)
   */components/    Feature UI
 components/        Shared layout (header, footer) and UI pieces
 lib/               Helpers: formatting, geo, places (all Latvian towns and novadi), local storage store, colors
+lib/db/            Database: schema.ts (tables), migrations/ (generated SQL), index.ts (server-only client)
 messages/{lv,ru}/  Translations, one file per feature
 i18n/              next-intl routing and message loading
 proxy.ts           Locale routing (Next.js middleware)
@@ -64,9 +82,16 @@ Conventions:
 
 - All user-facing text lives in `messages/` — never hard-code strings in components.
 - The brand color is defined once in `lib/colors.ts`.
-- **Data access goes through `features/{cars,dealers,auth}/api.ts`.** Server pages use the async functions
-  (`getListing`, `getDealers`…), client components use the hooks (`useListings`, `useDealerLookup`…).
-  ESLint blocks importing `data/listings`, `data/dealers` or `data/demoUsers` anywhere else.
+- **SQL lives in `features/{cars,dealers}/api.ts`** (server-only). Server pages call its async functions
+  (`getListing`, `searchListings`…); client components use the hooks in `hooks.ts`, which load only what the page
+  needs (`useListingsByIds`, `useDealerLookup`…). The browser never receives the whole catalogue.
+- **`/cars` search runs on the server:** filters in the URL become a SQL `WHERE`, results come 20 per page
+  (`?page=2`) with real links, so search engines can reach every listing.
+  ESLint blocks importing `@/lib/db` or the demo `data/` files anywhere else.
+- **Caching:** query results are cached with the tags `"listings"` / `"dealers"` for up to 5 minutes. Code that
+  changes data must call `revalidateTag("listings")` (or `"dealers"`) so pages update at once.
+- **Schema changes:** edit `lib/db/schema.ts` → `npm run db:generate` → review the SQL → `npm run db:migrate`.
+  Commit the migration files.
 - A dealer's own profile (catalogue + saved settings + account) is built in one place: `useOwnDealer()`.
 - Profile changes go through `updateProfile()` in `features/auth/store.ts`, never by rewriting the session.
 - Browser-stored state goes through `lib/localStore.ts`, so each store can later be swapped for an API call.
@@ -80,8 +105,9 @@ analytics…), add its domain to the `sources` list there, otherwise the browser
 
 ## Before production
 
-- **Backend:** database for listings, users and dealers; real authentication; server-side admin role checks;
-  saving listings and photo uploads from the sell form.
+- **Backend:** real authentication (Supabase Auth); server-side admin role checks; saving listings and photo
+  uploads (Cloudflare R2) from the sell form; server-side search on `/cars`; moving favorites, statuses,
+  moderation and settings from the browser to the database.
 - **Services:** OpenStreetMap tiles and the public Photon server are for light use — switch to a tile provider
   (e.g. MapTiler, Stadia) and a self-hosted geocoder or the VZD address register.
 - **Content:** real contact email and a lawyer-reviewed privacy policy.

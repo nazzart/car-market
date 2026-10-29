@@ -1,15 +1,16 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
-import { getListingCounts } from "@/features/cars/api";
+import { getListingStats } from "@/features/cars/api";
 import { Link } from "@/i18n/navigation";
 
 export default async function BrandGrid() {
-  const [t, tCommon, { byBrand: brandListingCount }] = await Promise.all([
+  const [t, tCommon, { byBrand }] = await Promise.all([
     getTranslations("home.brands"),
     getTranslations("common"),
-    getListingCounts(),
+    getListingStats(),
   ]);
+  const brandListingCount = (slug: string) => byBrand[slug] ?? 0;
   const brands = [
     { name: "BMW", logo: "/brands/bmw.svg", url: "bmw" },
     { name: "Toyota", logo: "/brands/toyota.svg", url: "toyota" },

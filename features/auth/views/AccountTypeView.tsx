@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@mui/material";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 
+import Button from "@/components/ui/Button";
+
 import { AccountType } from "../types/authView";
-import { AuthHeader, TextLinkButton, pillSx } from "../ui";
+import { AuthHeader, TextLinkButton } from "../ui";
 
 type Props = {
   initial?: AccountType;
@@ -90,14 +91,7 @@ export default function AccountTypeView({ initial, onSelect, onLogin }: Props) {
         })}
       </div>
 
-      <Button
-        variant="contained"
-        size="large"
-        fullWidth
-        disabled={!selected}
-        onClick={() => selected && onSelect(selected)}
-        sx={pillSx}
-      >
+      <Button size="lg" fullWidth disabled={!selected} onClick={() => selected && onSelect(selected)}>
         {t("accountType.continue")}
       </Button>
 

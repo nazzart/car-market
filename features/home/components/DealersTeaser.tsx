@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
+import Button from "@/components/ui/Button";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
 import { getPublicDealers } from "@/features/dealers/api";
@@ -27,13 +28,10 @@ export default async function DealersTeaser() {
           <p className="text-gray-500 mt-1">{t("subtitle", { count: dealers.length })}</p>
         </div>
 
-        <Link
-          href="/dealers"
-          className="inline-flex items-center gap-2 h-11 px-5 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-semibold transition"
-        >
+        <Button variant="dark" href="/dealers">
           <MapOutlinedIcon fontSize="small" />
           {t("map")}
-        </Link>
+        </Button>
       </div>
 
       <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 snap-x scroll-px-4">

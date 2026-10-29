@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import { collections } from "@/features/collections/config";
 import { setExcluded, useExcluded } from "@/features/moderation/store";
@@ -57,13 +58,9 @@ export default function CollectionsTab() {
                       {isExcluded && <span className="text-red-700"> · {t("excluded")}</span>}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setExcluded(l.id, slug, !isExcluded)}
-                    className="shrink-0 h-9 px-4 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium transition cursor-pointer"
-                  >
+                  <Button variant="outline" size="sm" onClick={() => setExcluded(l.id, slug, !isExcluded)}>
                     {isExcluded ? t("include") : t("exclude")}
-                  </button>
+                  </Button>
                 </li>
               );
             })}

@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Alert, Button, TextField } from "@mui/material";
+import { Alert, TextField } from "@mui/material";
 
+import Button from "@/components/ui/Button";
 import Skeleton from "@/components/ui/Skeleton";
-import { Link } from "@/i18n/navigation";
 
 import { updatePassword } from "../actions";
 import { openAuthModal, useAuth } from "../store";
-import { AuthHeader, pillSx } from "../ui";
+import { AuthHeader } from "../ui";
 
 // Новый пароль после перехода по ссылке из письма. Ссылка уже выполнила вход — меняем пароль вошедшему
 export default function NewPasswordView() {
@@ -27,7 +27,7 @@ export default function NewPasswordView() {
     return (
       <div className="text-center">
         <AuthHeader title={t("newPassword.expired")} subtitle={t("newPassword.expiredText")} />
-        <Button variant="contained" size="large" fullWidth onClick={openAuthModal} sx={pillSx}>
+        <Button size="lg" fullWidth onClick={openAuthModal}>
           {t("newPassword.login")}
         </Button>
       </div>
@@ -38,12 +38,9 @@ export default function NewPasswordView() {
     return (
       <div className="text-center">
         <AuthHeader title={t("newPassword.done")} subtitle={t("newPassword.doneText")} />
-        <Link
-          href="/account"
-          className="inline-flex items-center justify-center w-full h-12 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold"
-        >
+        <Button size="lg" fullWidth href="/account">
           {t("newPassword.toAccount")}
-        </Link>
+        </Button>
       </div>
     );
   }
@@ -80,7 +77,7 @@ export default function NewPasswordView() {
             {error}
           </Alert>
         )}
-        <Button type="submit" variant="contained" size="large" fullWidth disabled={state === "sending"} sx={pillSx}>
+        <Button type="submit"  size="lg" fullWidth disabled={state === "sending"}>
           {t("newPassword.submit")}
         </Button>
       </form>

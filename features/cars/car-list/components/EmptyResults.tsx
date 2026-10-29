@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 
+import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import CarCard from "@/features/latest-cars/components/CarCard";
 
@@ -62,13 +63,9 @@ export default function EmptyResults({
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={resetFilters}
-          className="mt-5 px-5 py-2.5 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-medium transition cursor-pointer"
-        >
+        <Button variant="dark" onClick={resetFilters} className="mt-5">
           {tCommon("resetFilters")}
-        </button>
+        </Button>
       </EmptyState>
 
       <h3 className="text-lg font-semibold tracking-tight mt-10 mb-5">{t("fresh")}</h3>

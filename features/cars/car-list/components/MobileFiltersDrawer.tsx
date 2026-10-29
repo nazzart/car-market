@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useCarFilters } from "../hooks/useCarFilters";
 import FiltersPanel from "./FiltersPanel";
 import ScrollArea from "./ScrollArea";
+import Button from "@/components/ui/Button";
 
 type Props = {
   open: boolean;
@@ -76,13 +77,9 @@ export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: Pro
             </button>
           )}
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 h-12 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition cursor-pointer"
-          >
+          <Button size="lg" onClick={onClose} className="flex-1">
             {t("showResults", { results: resultsLabel })}
-          </button>
+          </Button>
         </div>
       </div>
     </Drawer>

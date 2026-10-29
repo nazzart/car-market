@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@mui/material";
+
 import MarkEmailUnreadOutlinedIcon from "@mui/icons-material/MarkEmailUnreadOutlined";
 
-import { AuthHeader, pillSx } from "../ui";
+import Button from "@/components/ui/Button";
+
+import { AuthHeader } from "../ui";
 
 type Props = {
   email: string;
@@ -27,7 +29,7 @@ export default function RegisterSuccessView({ email, onClose }: Props) {
         subtitle={t("text", { email })}
       />
 
-      <Button variant="contained" size="large" fullWidth onClick={onClose} sx={pillSx}>
+      <Button size="lg" fullWidth onClick={onClose}>
         {t("ok")}
       </Button>
 

@@ -5,6 +5,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
+import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
 import { RiskFlag, riskFlags } from "@/features/moderation/riskFlags";
@@ -82,22 +83,14 @@ export default function ApprovalsTab() {
             )}
 
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-3">
-              <button
-                type="button"
-                onClick={() => reject(l.id, l.title, reasonFor(flags))}
-                className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-full border border-gray-200 hover:border-red-600 hover:text-red-700 text-sm font-medium transition cursor-pointer"
-              >
+              <Button variant="dangerOutline" onClick={() => reject(l.id, l.title, reasonFor(flags))}>
                 <CloseIcon sx={{ fontSize: 18 }} />
                 {t("actions.reject")}
-              </button>
-              <button
-                type="button"
-                onClick={() => approveListing(l.id)}
-                className="inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-semibold transition cursor-pointer"
-              >
+              </Button>
+              <Button variant="dark" onClick={() => approveListing(l.id)}>
                 <CheckIcon sx={{ fontSize: 18 }} />
                 {t("actions.approve")}
-              </button>
+              </Button>
             </div>
           </article>
         );

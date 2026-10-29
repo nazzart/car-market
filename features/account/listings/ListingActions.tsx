@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { ListItemIcon, Menu, MenuItem } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
@@ -9,6 +9,9 @@ import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useTranslations } from "next-intl";
+
+import { IconButton } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/Dialog";
 
 import type { ListingStatus } from "./status";
 
@@ -31,15 +34,9 @@ export default function ListingActions({ title, status, onChange }: Props) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={(e) => setAnchor(e.currentTarget)}
-        aria-label={t("menu")}
-        aria-haspopup="menu"
-        className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-900 text-gray-700 transition cursor-pointer"
-      >
+      <IconButton label={t("menu")} aria-haspopup="menu" onClick={(e) => setAnchor(e.currentTarget)}>
         <MoreHorizIcon fontSize="small" />
-      </button>
+      </IconButton>
 
       <Menu
         anchorEl={anchor}
@@ -87,37 +84,21 @@ export default function ListingActions({ title, status, onChange }: Props) {
         </MenuItem>
       </Menu>
 
-      <Dialog
+      <ConfirmDialog
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
-        slotProps={{ paper: { sx: { borderRadius: 4, m: 2, maxWidth: 420 } } }}
+        onConfirm={() => {
+          setConfirmDelete(false);
+          onChange("deleted");
+        }}
+        title={t("confirmTitle")}
+        text={t("confirmText", { title })}
+        confirmLabel={t("confirmDelete")}
+        cancelLabel={t("cancel")}
+        maxWidth={420}
       >
-        <div className="p-6">
-          <h2 className="text-lg font-semibold">{t("confirmTitle")}</h2>
-          <p className="text-gray-600 mt-2">{t("confirmText", { title })}</p>
-          <p className="text-sm text-gray-500 mt-3">{t("confirmHint")}</p>
-
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-6">
-            <button
-              type="button"
-              onClick={() => setConfirmDelete(false)}
-              className="h-11 px-5 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium transition cursor-pointer"
-            >
-              {t("cancel")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setConfirmDelete(false);
-                onChange("deleted");
-              }}
-              className="h-11 px-5 rounded-full bg-error hover:opacity-90 text-white text-sm font-semibold transition cursor-pointer"
-            >
-              {t("confirmDelete")}
-            </button>
-          </div>
-        </div>
-      </Dialog>
+        <p className="text-sm text-gray-500 mt-3">{t("confirmHint")}</p>
+      </ConfirmDialog>
     </>
   );
 }

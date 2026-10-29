@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddIcon from "@mui/icons-material/Add";
 
-import { Badge, IconButton, Button } from "@mui/material";
+import { Badge, IconButton } from "@mui/material";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import { Link } from "@/i18n/navigation";
 
 import LocaleSwitcher from "./LocaleSwitcher";
@@ -45,37 +46,19 @@ export default function HeaderActions() {
         <UserMenu user={user} onLoginClick={() => setAuthOpen(true)} />
 
         <div className="hidden sm:block">
-          <Button
-            variant="contained"
-            color="primary"
-            component={Link}
-            href="/sell"
-            startIcon={<AddIcon fontSize="small" />}
-          >
+          <Button size="sm" href="/sell" icon={<AddIcon fontSize="small" />}>
             {t("post")}
           </Button>
         </div>
 
         <div className="sm:hidden">
-          <IconButton
-            component={Link}
+          <Button
             href="/sell"
             aria-label={t("postListing")}
-            sx={{
-              width: 42,
-              height: 42,
-              bgcolor: "primary.main",
-              color: "white",
-              boxShadow: "0 8px 20px color-mix(in srgb, var(--color-primary) 35%, transparent)",
-              transition: "all .2s ease",
-              "&:hover": {
-                bgcolor: "primary.dark",
-                transform: "scale(1.05)",
-              },
-            }}
+            className="w-11 px-0 shadow-lg shadow-primary/35 hover:scale-105"
           >
             <AddIcon />
-          </IconButton>
+          </Button>
         </div>
       </div>
 

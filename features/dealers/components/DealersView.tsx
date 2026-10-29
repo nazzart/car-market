@@ -15,6 +15,7 @@ import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import { withQuery } from "@/lib/url";
 import Pagination from "@/components/ui/Pagination";
+import Button from "@/components/ui/Button";
 import { Segmented, Select, inputClass } from "@/components/ui/form";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
@@ -286,8 +287,9 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
 
       {/* Mobile: плавающий переключатель список / карта, как на Airbnb */}
 
-      <button
-        type="button"
+      <Button
+        variant="dark"
+        size="lg"
         onClick={() => {
           const next = mobileView === "map" ? "list" : "map";
           setMobileView(next);
@@ -298,11 +300,11 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
               : window.scrollTo({ top: 0 })
           );
         }}
-        className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[1100] inline-flex items-center gap-2 h-12 px-5 rounded-full bg-gray-900 text-white text-sm font-semibold shadow-xl shadow-black/25 cursor-pointer"
+        className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[1100] text-sm shadow-xl shadow-black/25"
       >
         {mobileView === "map" ? <ViewListIcon fontSize="small" /> : <MapOutlinedIcon fontSize="small" />}
         {mobileView === "map" ? t("list") : t("map")}
-      </button>
+      </Button>
     </div>
   );
 }

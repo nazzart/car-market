@@ -3,18 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import { Link } from "@/i18n/navigation";
 import { isEmail, isRegNumber } from "@/lib/validate";
-import {
-  Alert,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormHelperText,
-  IconButton,
-  InputAdornment,
-  TextField,
-} from "@mui/material";
+import { Alert, Checkbox, FormControlLabel, FormHelperText, IconButton, InputAdornment, TextField } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CheckIcon from "@mui/icons-material/Check";
@@ -24,7 +16,7 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import { signUp } from "../actions";
 import { useAuth } from "../store";
 import { AccountType } from "../types/authView";
-import { AuthHeader, TextLinkButton, pillSx } from "../ui";
+import { AuthHeader, TextLinkButton } from "../ui";
 
 type Props = {
   accountType: AccountType;
@@ -233,7 +225,7 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
           </Alert>
         )}
 
-        <Button type="submit" variant="contained" size="large" fullWidth disabled={sending} sx={pillSx}>
+        <Button type="submit"  size="lg" fullWidth disabled={sending}>
           {t("register.submit")}
         </Button>
       </form>

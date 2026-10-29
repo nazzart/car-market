@@ -11,6 +11,7 @@ import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import { ContactForm } from "@/features/account/settings/ContactsEditor";
 import { addContact, completeProfile, saveCompanyPhone } from "@/features/account/actions";
 import { openAuthModal, useAuth } from "@/features/auth/store";
@@ -83,13 +84,9 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
           </span>
           <h3 className="font-semibold mt-3">{t("loginTitle")}</h3>
           <p className="text-sm text-gray-500 mt-1 max-w-sm mx-auto">{t("loginText")}</p>
-          <button
-            type="button"
-            onClick={openAuthModal}
-            className="mt-4 h-11 px-6 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-semibold transition cursor-pointer"
-          >
+          <Button variant="dark" onClick={openAuthModal} className="mt-4 px-6">
             {t("login")}
-          </button>
+          </Button>
           {attemptedNext && <p className="text-sm text-error mt-3">{t("loginRequired")}</p>}
         </div>
       ) : isDealer ? (

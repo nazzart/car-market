@@ -2,10 +2,10 @@
 
 import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { Button } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import Skeleton from "@/components/ui/Skeleton";
 
 import AddressField from "./AddressField";
@@ -100,7 +100,7 @@ export default function AddressCard({ settings }: { settings: DealerSettingsForm
           <PlaceOutlinedIcon className="text-gray-400" sx={{ fontSize: 20 }} />
           <span className="text-gray-500">{t("pinAddress")}</span>
           <span className="font-medium text-gray-900">{pinAddress.label}</span>
-          <Button size="small" variant="outlined" onClick={() => applyAddress(pinAddress)} className="sm:ml-auto">
+          <Button variant="outline" size="sm" onClick={() => applyAddress(pinAddress)} className="sm:ml-auto">
             {t("useAddress")}
           </Button>
         </div>

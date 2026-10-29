@@ -1,4 +1,6 @@
-// lib/theme.ts
+// Тема MUI. MUI используется только для сложных элементов — поля ввода, выпадающие списки, меню, Popover,
+// Drawer, Tooltip — и оформляется здесь, а не через sx в компонентах. Кнопки, окна (Dialog) и уведомления —
+// общие компоненты из components/ui (Button, Dialog, useToast), они уже в стиле сайта
 import { createTheme } from "@mui/material/styles";
 import { colors } from "../lib/colors";
 

@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
-import { Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import { NoPhoto } from "@/components/ui/CarPhoto";
+import { useToast } from "@/components/ui/Toast";
 import { useListingsByIds } from "@/features/cars/hooks";
-import { Link, usePathname } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 
 import { MAX_COMPARE, clearCompare, onCompareFull, removeFromCompare, useCompare } from "../store";
 
@@ -20,9 +21,16 @@ export default function CompareBar() {
   const t = useTranslations("compare");
   const pathname = usePathname();
   const ids = useCompare();
-  const [fullToast, setFullToast] = useState(false);
+  const toast = useToast();
 
-  useEffect(() => onCompareFull(() => setFullToast(true)), []);
+  // список полон — подсказываем открыть сравнение
+  useEffect(
+    () =>
+      onCompareFull(() =>
+        toast({ message: t("full", { max: MAX_COMPARE }), position: "top", action: { label: t("bar.open"), href: "/compare" } })
+      ),
+    [toast, t]
+  );
 
   const cars = useListingsByIds(ids) ?? [];
   const visible = cars.length > 0 && (pathname === "/" || SHOW_ON.some((p) => pathname.startsWith(p)));
@@ -82,27 +90,12 @@ export default function CompareBar() {
             <CloseIcon fontSize="small" />
           </button>
 
-          <Link
-            href="/compare"
-            className="shrink-0 h-10 px-5 inline-flex items-center rounded-xl bg-white text-gray-900 text-sm font-semibold hover:bg-gray-100 transition"
-          >
+          <Button variant="white" href="/compare">
             {t("bar.open")}
-          </Link>
+          </Button>
         </div>
       </div>
 
-      <Snackbar
-        open={fullToast}
-        autoHideDuration={4000}
-        onClose={() => setFullToast(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        message={t("full", { max: MAX_COMPARE })}
-        action={
-          <Link href="/compare" onClick={() => setFullToast(false)} className="px-2 text-sm font-semibold text-white underline underline-offset-4">
-            {t("bar.open")}
-          </Link>
-        }
-      />
     </>
   );
 }

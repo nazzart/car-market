@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Alert, Button, IconButton, InputAdornment, TextField } from "@mui/material";
+import { Alert, IconButton, InputAdornment, TextField } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
+import Button from "@/components/ui/Button";
 import { isEmail } from "@/lib/validate";
 
 import { signIn } from "../actions";
 import { useAuth } from "../store";
-import { AuthHeader, pillSx } from "../ui";
+import { AuthHeader } from "../ui";
 
 type Props = {
   onForgotPassword: () => void;
@@ -110,7 +111,7 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
           </Alert>
         )}
 
-        <Button type="submit" variant="contained" size="large" fullWidth disabled={sending} sx={pillSx}>
+        <Button type="submit"  size="lg" fullWidth disabled={sending}>
           {t("login.submit")}
         </Button>
       </form>
@@ -122,7 +123,7 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
         <span className="h-px flex-1 bg-gray-200" />
       </div>
 
-      <Button variant="outlined" size="large" fullWidth onClick={onCreateAccount} sx={{ ...pillSx, borderColor: "grey.300", color: "grey.900", "&:hover": { borderColor: "grey.900", bgcolor: "transparent" } }}>
+      <Button variant="outline" size="lg" fullWidth onClick={onCreateAccount}>
         {t("login.createAccount")}
       </Button>
     </>

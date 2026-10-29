@@ -9,9 +9,7 @@ const tones = {
   warning: { box: "bg-amber-50 border-amber-100 text-amber-900", Icon: InfoOutlinedIcon },
 };
 
-// Белая кнопка-«таблетка» для action (кнопка или ссылка)
-export const noticeActionClass =
-  "shrink-0 inline-flex items-center justify-center h-10 px-4 rounded-full bg-white border border-gray-200 hover:border-gray-900 text-sm font-semibold text-gray-900 transition cursor-pointer";
+// Белая кнопка-«таблетка» для action: <Button variant="outline" size="sm"> или эти классы на ссылке
 
 export default function Notice({
   tone,

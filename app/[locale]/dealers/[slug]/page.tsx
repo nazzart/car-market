@@ -9,6 +9,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import { getTranslations } from "next-intl/server";
 
+import { buttonClass } from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import StatTile from "@/components/ui/StatTile";
 import Container from "@/components/layout/Container";
@@ -221,7 +222,7 @@ export default async function DealerPage({ params }: Props) {
               href={directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 w-full inline-flex items-center justify-center gap-2 h-11 rounded-full border border-gray-200 text-sm font-medium hover:border-gray-900 transition"
+              className={buttonClass({ variant: "outline", fullWidth: true, className: "mt-3" })}
             >
               <DirectionsOutlinedIcon fontSize="small" />
               {t("page.directions")}

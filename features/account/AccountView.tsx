@@ -8,24 +8,23 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import { Snackbar } from "@mui/material";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import Skeleton from "@/components/ui/Skeleton";
 import StatTile from "@/components/ui/StatTile";
+import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/features/auth/store";
 import type { Listing } from "@/features/cars/types";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { isProfileComplete } from "@/features/dealers/lib/listed";
 import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { useVisibility } from "@/features/moderation/visibility";
-import { Link } from "@/i18n/navigation";
 import { formatNumber, initials } from "@/lib/utils";
 
 import AccountNotices from "./AccountNotices";
 import AccountSidebar from "./AccountSidebar";
-import { primaryButton, secondaryButton } from "./buttons";
 import AccountListingRow, { favoritesOf, phoneShows } from "./listings/AccountListingRow";
 import type { ListingStatus } from "./listings/status";
 import LoggedOut from "./LoggedOut";
@@ -40,7 +39,7 @@ export default function AccountView() {
   const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("active");
   const { of } = useVisibility();
-  const [undo, setUndo] = useState<{ id: string; prev: ListingStatus; next: ListingStatus } | null>(null);
+  const toast = useToast();
   const dealer = useOwnDealer();
   // новый дилер без адреса и телефона покупателям не виден — подсказываем заполнить профиль
   const dealerIncomplete = dealer !== null && !isProfileComplete(dealer);
@@ -66,7 +65,8 @@ export default function AccountView() {
 
   const changeStatus = (listing: Listing, next: ListingStatus) => {
     setStatus(listing.id, next);
-    setUndo({ id: listing.id, prev: listing.status, next });
+    const prev = listing.status;
+    toast({ message: t(`actions.done.${next}`), action: { label: t("actions.undo"), onClick: () => setStatus(listing.id, prev) } });
   };
 
   const totalViews = own.reduce((sum, l) => sum + (l.views ?? 0), 0);
@@ -109,16 +109,14 @@ export default function AccountView() {
 
         <div className="flex flex-wrap gap-2">
           {dealer?.slug && !dealerIncomplete && (
-            <Link href={`/dealers/${dealer.slug}`} className={secondaryButton}>
-              <StorefrontOutlinedIcon sx={{ fontSize: 18 }} />
+            <Button variant="outline" href={`/dealers/${dealer.slug}`} icon={<StorefrontOutlinedIcon sx={{ fontSize: 18 }} />}>
               {t("header.publicPage")}
-            </Link>
+            </Button>
           )}
 
-          <Link href="/sell" className={primaryButton}>
-            <AddIcon sx={{ fontSize: 18 }} />
+          <Button href="/sell" icon={<AddIcon sx={{ fontSize: 18 }} />}>
             {t("header.post")}
-          </Link>
+          </Button>
         </div>
       </header>
 
@@ -194,25 +192,6 @@ export default function AccountView() {
         <AccountSidebar user={user} dealer={dealer} shownCity={shownCity} />
       </div>
 
-      <Snackbar
-        open={Boolean(undo)}
-        autoHideDuration={5000}
-        onClose={(_, reason) => reason !== "clickaway" && setUndo(null)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        message={undo && t(`actions.done.${undo.next}`)}
-        action={
-          <button
-            type="button"
-            onClick={() => {
-              if (undo) setStatus(undo.id, undo.prev);
-              setUndo(null);
-            }}
-            className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white hover:bg-white/10 cursor-pointer"
-          >
-            {t("actions.undo")}
-          </button>
-        }
-      />
     </div>
   );
 }

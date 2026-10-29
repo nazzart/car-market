@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import { brands } from "@/features/brands/data/brands";
 import { useListingStats } from "@/features/cars/hooks";
 import { formatNumber } from "@/lib/utils";
@@ -132,13 +133,9 @@ export function PricePanel({ search }: { search: QuickSearchState }) {
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={closePanel}
-        className="mt-4 w-full py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-black transition cursor-pointer"
-      >
+      <Button variant="dark" fullWidth onClick={closePanel} className="mt-4">
         {t("done")}
-      </button>
+      </Button>
     </div>
   );
 }

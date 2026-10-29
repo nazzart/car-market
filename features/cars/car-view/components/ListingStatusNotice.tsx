@@ -2,9 +2,9 @@
 
 import { useTranslations } from "next-intl";
 
-import Notice, { noticeActionClass } from "@/components/ui/Notice";
+import Button from "@/components/ui/Button";
+import Notice from "@/components/ui/Notice";
 import { VisibilitySubject, useVisibility } from "@/features/moderation/visibility";
-import { Link } from "@/i18n/navigation";
 
 // Плашка над объявлением: продавец скрыл / продал / удалил или модератор заблокировал
 export default function ListingStatusNotice({ listing, brand }: { listing: VisibilitySubject; brand: string }) {
@@ -29,9 +29,9 @@ export default function ListingStatusNotice({ listing, brand }: { listing: Visib
       tone={key === "blocked" ? "danger" : "warning"}
       title={t(`${key}.title`)}
       action={
-        <Link href={`/cars?brand=${brand}`} className={noticeActionClass}>
+        <Button variant="outline" size="sm" href={`/cars?brand=${brand}`}>
           {t("similar")}
-        </Link>
+        </Button>
       }
       className="mt-4"
     >

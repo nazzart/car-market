@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, MenuItem, TextField } from "@mui/material";
+import { MenuItem, TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/Dialog";
 import type { DealerContact } from "@/features/dealers/types";
 import { isPhone } from "@/lib/phone";
 
@@ -78,20 +80,12 @@ export function ContactForm({ initial, onSave, onCancel }: FormProps) {
       </div>
 
       <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="h-9 px-4 rounded-full border border-gray-200 bg-white hover:border-gray-900 text-sm font-medium transition cursor-pointer"
-        >
+        <Button variant="outline" size="sm" onClick={onCancel}>
           {t("cancel")}
-        </button>
-        <button
-          type="button"
-          onClick={save}
-          className="h-9 px-4 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-semibold transition cursor-pointer"
-        >
+        </Button>
+        <Button variant="dark" size="sm" onClick={save}>
           {initial ? t("saveEdit") : t("add")}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -211,16 +205,17 @@ export default function ContactsEditor({ contacts, companyPhone, onChange, usage
       )}
 
       {/* удаление контакта, за которым закреплены объявления */}
-      <Dialog
+      <ConfirmDialog
         open={removing !== null}
         onClose={() => setRemoving(null)}
-        slotProps={{ paper: { sx: { borderRadius: 4, m: 2, width: "100%", maxWidth: 440 } } }}
+        onConfirm={confirmRemove}
+        title={removing && t("removeTitle", { name: removing.name })}
+        text={removing && t("removeText", { count: usage(removing.id) })}
+        confirmLabel={t("removeConfirm")}
+        cancelLabel={t("cancel")}
+        maxWidth={440}
       >
         {removing && (
-          <div className="p-6">
-            <h2 className="text-lg font-semibold">{t("removeTitle", { name: removing.name })}</h2>
-            <p className="text-sm text-gray-600 mt-1">{t("removeText", { count: usage(removing.id) })}</p>
-
             <TextField select label={t("reassignTo")} value={target} onChange={(e) => setTarget(e.target.value)} fullWidth sx={{ mt: 3 }}>
               <MenuItem value="company">
                 {t("company")} · {companyPhone}
@@ -233,26 +228,8 @@ export default function ContactsEditor({ contacts, companyPhone, onChange, usage
                   </MenuItem>
                 ))}
             </TextField>
-
-            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-6">
-              <button
-                type="button"
-                onClick={() => setRemoving(null)}
-                className="h-11 px-5 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium transition cursor-pointer"
-              >
-                {t("cancel")}
-              </button>
-              <button
-                type="button"
-                onClick={confirmRemove}
-                className="h-11 px-5 rounded-full bg-error hover:opacity-90 text-white text-sm font-semibold transition cursor-pointer"
-              >
-                {t("removeConfirm")}
-              </button>
-            </div>
-          </div>
         )}
-      </Dialog>
+      </ConfirmDialog>
     </div>
   );
 }

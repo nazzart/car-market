@@ -3,6 +3,7 @@
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import CarPhoto from "@/components/ui/CarPhoto";
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
@@ -70,13 +71,9 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={onSubmit}
-        className="w-full h-14 mt-6 rounded-full bg-primary hover:bg-primary-hover text-white text-base font-semibold transition cursor-pointer"
-      >
+      <Button size="xl" fullWidth onClick={onSubmit} className="mt-6">
         {t("submit")}
-      </button>
+      </Button>
 
       <p className="text-xs text-gray-500 text-center mt-3">
         {t("terms")}

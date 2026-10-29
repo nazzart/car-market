@@ -22,7 +22,7 @@ import DeleteAccountCard from "./DeleteAccountCard";
 import { parseAddress } from "./geocoding";
 import HoursEditor, { hoursInvalid } from "./HoursEditor";
 import PasswordCard from "./PasswordCard";
-import { SaveBar, SavedToast } from "./SaveBar";
+import { SaveBar } from "./SaveBar";
 import SettingsCard from "./SettingsCard";
 import SettingsHeader from "./SettingsHeader";
 import { type SettingsForm, useSettingsForm } from "./useSettingsForm";
@@ -80,7 +80,7 @@ function DealerSettingsForm({ user, dealer }: { user: User; dealer: Dealer }) {
   const t = useTranslations("account.settings");
   const { setUser } = useAuth();
   const settings = useSettingsForm(initialForm(user, dealer), validate);
-  const { form, set, show, dirty, discard, save, toast, closeToast } = settings;
+  const { form, set, show, dirty, discard, save } = settings;
   // после «Отменить» карта и подсказка адреса начинают заново
   const [resets, setResets] = useState(0);
 
@@ -160,7 +160,6 @@ function DealerSettingsForm({ user, dealer }: { user: User; dealer: Dealer }) {
         }}
         onSave={submit}
       />
-      <SavedToast state={toast} onClose={closeToast} />
     </>
   );
 }

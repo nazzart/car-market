@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 
+import Button from "@/components/ui/Button";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
-import { Link } from "@/i18n/navigation";
 
 const popularBrands = brands.filter((b) => b.popular).slice(0, 8);
 
@@ -22,35 +22,25 @@ export default function NotFound() {
         <p className="mt-3 text-gray-500">{t("text")}</p>
 
         <div className="flex flex-wrap justify-center gap-3 mt-8">
-          <Link
-            href="/cars"
-            className="inline-flex items-center h-12 px-6 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition"
-          >
+          <Button size="lg" href="/cars">
             {t("cars")}
-          </Link>
-          <Link
-            href="/"
-            className="inline-flex items-center h-12 px-6 rounded-full border border-gray-300 font-semibold hover:border-gray-900 transition"
-          >
+          </Button>
+          <Button variant="outline" size="lg" href="/">
             {t("home")}
-          </Link>
+          </Button>
         </div>
 
         <div className="mt-12">
           <p className="text-sm text-gray-500 mb-3">{t("popular")}</p>
           <div className="flex flex-wrap justify-center gap-2">
             {popularBrands.map((b) => (
-              <Link
-                key={b.slug}
-                href={`/cars?brand=${b.slug}`}
-                className="px-4 py-2 rounded-full border border-gray-200 text-sm hover:border-gray-900 transition"
-              >
+              <Button variant="outline" size="sm" key={b.slug} href={`/cars?brand=${b.slug}`}>
                 {b.name}
-              </Link>
+              </Button>
             ))}
-            <Link href="/dealers" className="px-4 py-2 rounded-full border border-gray-200 text-sm hover:border-gray-900 transition">
+            <Button variant="outline" size="sm" href="/dealers">
               {t("dealers")}
-            </Link>
+            </Button>
           </div>
         </div>
       </div>

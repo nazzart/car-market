@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 
-import { Link } from "@/i18n/navigation";
+import Button from "@/components/ui/Button";
 
 const benefits = ["free", "fast", "buyers"];
 
@@ -43,13 +43,10 @@ export default function SellBanner() {
             ))}
           </ul>
 
-          <Link
-            href="/sell"
-            className="inline-flex items-center gap-2 mt-8 h-12 px-6 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition"
-          >
+          <Button size="lg" href="/sell" className="mt-8">
             <AddIcon fontSize="small" />
             {t("cta")}
-          </Link>
+          </Button>
         </div>
       </div>
     </section>

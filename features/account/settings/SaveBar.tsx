@@ -1,11 +1,10 @@
 "use client";
 
-import { Alert, Snackbar } from "@mui/material";
 import { useTranslations } from "next-intl";
 
-import type { SaveToast } from "./useSettingsForm";
+import Button from "@/components/ui/Button";
 
-// Панель «Есть несохранённые изменения» внизу экрана и уведомление о результате сохранения
+// Панель «Есть несохранённые изменения» внизу экрана
 export function SaveBar({ visible, onDiscard, onSave }: { visible: boolean; onDiscard: () => void; onSave: () => void }) {
   const t = useTranslations("account.settings.saveBar");
 
@@ -30,26 +29,10 @@ export function SaveBar({ visible, onDiscard, onSave }: { visible: boolean; onDi
         >
           {t("discard")}
         </button>
-        <button
-          type="button"
-          onClick={onSave}
-          className="h-10 px-5 rounded-full bg-white text-gray-900 text-sm font-semibold hover:bg-gray-100 transition cursor-pointer"
-        >
+        <Button variant="white" onClick={onSave} className="h-10">
           {t("save")}
-        </button>
+        </Button>
       </div>
     </div>
-  );
-}
-
-export function SavedToast({ state, onClose }: { state: SaveToast; onClose: () => void }) {
-  const t = useTranslations("account.settings.saveBar");
-
-  return (
-    <Snackbar open={Boolean(state)} autoHideDuration={4000} onClose={onClose} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-      <Alert severity={state === "error" ? "error" : "success"} variant="filled" onClose={onClose} sx={{ borderRadius: "14px" }}>
-        {state === "error" ? t("fixErrors") : <div className="font-medium">{t("saved")}</div>}
-      </Alert>
-    </Snackbar>
   );
 }

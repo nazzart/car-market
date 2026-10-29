@@ -5,16 +5,15 @@ import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import type { User } from "@/features/auth/types";
 import { brands } from "@/features/brands/data/brands";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
 import { formatHours } from "@/features/dealers/lib/hours";
 import type { Dealer } from "@/features/dealers/types";
-import { Link } from "@/i18n/navigation";
 import { usePlaceName } from "@/lib/places";
 
-import { secondaryButton } from "./buttons";
 
 // Боковая колонка кабинета: данные профиля, автосалон дилера, подсказка частному лицу
 export default function AccountSidebar({
@@ -61,9 +60,9 @@ export default function AccountSidebar({
           </div>
         </dl>
 
-        <Link href="/account/profile" className={`${secondaryButton} w-full mt-5`}>
+        <Button variant="outline" href="/account/profile" fullWidth className="mt-5">
           {t("profile.edit")}
-        </Link>
+        </Button>
       </div>
 
       {dealer?.address && (

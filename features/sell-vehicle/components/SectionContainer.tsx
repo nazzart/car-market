@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useTranslations } from "next-intl";
+import Button from "@/components/ui/Button";
 
 type Props = {
   id: string;
@@ -90,14 +91,10 @@ export function SectionContainer({
               </button>
             )}
 
-            <button
-              type="button"
-              onClick={handleNext}
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-semibold transition cursor-pointer"
-            >
+            <Button variant="dark" onClick={handleNext} className="px-6">
               {t("next")}
               <ArrowForwardIcon sx={{ fontSize: 18 }} />
-            </button>
+            </Button>
           </div>
         )}
       </div>

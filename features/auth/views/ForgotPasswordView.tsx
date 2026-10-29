@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 
+import Button from "@/components/ui/Button";
 import { isEmail } from "@/lib/validate";
 
 import { requestPasswordReset } from "../actions";
-import { AuthHeader, pillSx } from "../ui";
+import { AuthHeader } from "../ui";
 
 type Props = {
   onBack: () => void;
@@ -49,7 +50,7 @@ export default function ForgotPasswordView({ onBack }: Props) {
           subtitle={t("forgot.sentText", { email: email.trim() })}
         />
 
-        <Button variant="contained" size="large" fullWidth onClick={onBack} sx={pillSx}>
+        <Button size="lg" fullWidth onClick={onBack}>
           {t("forgot.back")}
         </Button>
       </div>
@@ -76,7 +77,7 @@ export default function ForgotPasswordView({ onBack }: Props) {
           helperText={emailError && t("invalidEmail")}
         />
 
-        <Button type="submit" variant="contained" size="large" fullWidth disabled={sending} sx={pillSx}>
+        <Button type="submit"  size="lg" fullWidth disabled={sending}>
           {t("forgot.submit")}
         </Button>
       </form>

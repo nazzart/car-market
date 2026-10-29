@@ -5,6 +5,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import { useLocale, useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
 import { Report, dismissReports, useReports } from "@/features/moderation/store";
@@ -83,13 +84,9 @@ export default function ReportsTab() {
 
                   {!showResolved && (
                     <div className="flex gap-2 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => dismissReports(listing.id)}
-                        className="h-9 px-4 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium transition cursor-pointer"
-                      >
+                      <Button variant="outline" size="sm" onClick={() => dismissReports(listing.id)}>
                         {t("actions.dismiss")}
-                      </button>
+                      </Button>
                       <button
                         type="button"
                         onClick={() => block(listing.id, listing.title, group[0].reason)}

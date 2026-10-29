@@ -3,7 +3,8 @@
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { useTranslations } from "next-intl";
 
-import Notice, { noticeActionClass } from "@/components/ui/Notice";
+import Button from "@/components/ui/Button";
+import Notice from "@/components/ui/Notice";
 import type { User } from "@/features/auth/types";
 import { useRouter } from "@/i18n/navigation";
 
@@ -28,9 +29,9 @@ export default function AccountNotices({
   const hourglass = <HourglassEmptyIcon className="shrink-0" />;
 
   const action = (label: string, onClick: () => void) => (
-    <button type="button" onClick={onClick} className={noticeActionClass}>
+    <Button variant="outline" size="sm" onClick={onClick}>
       {label}
-    </button>
+    </Button>
   );
 
   return (

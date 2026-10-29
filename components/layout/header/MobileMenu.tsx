@@ -11,6 +11,7 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import { Link } from "@/i18n/navigation";
 
 import {
@@ -50,14 +51,10 @@ export default function MobileMenu() {
             <LocaleSwitcher />
           </div>
 
-          <Link
-            href="/sell"
-            onClick={() => setOpen(false)}
-            className="flex items-center justify-center gap-2 h-11 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition"
-          >
+          <Button fullWidth href="/sell" onClick={() => setOpen(false)}>
             <AddIcon fontSize="small" />
             {t("postListing")}
-          </Link>
+          </Button>
 
           <nav className="flex flex-col gap-1 -mx-2 text-gray-800">
             {mainLinks.map(({ href, label, icon: Icon }) => (

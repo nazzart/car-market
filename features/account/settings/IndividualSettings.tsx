@@ -13,7 +13,7 @@ import { isEmail } from "@/lib/validate";
 import ContactDetailsCard from "./ContactDetailsCard";
 import DeleteAccountCard from "./DeleteAccountCard";
 import PasswordCard from "./PasswordCard";
-import { SaveBar, SavedToast } from "./SaveBar";
+import { SaveBar } from "./SaveBar";
 import SettingsCard from "./SettingsCard";
 import SettingsHeader from "./SettingsHeader";
 import { useSettingsForm } from "./useSettingsForm";
@@ -24,7 +24,7 @@ export default function IndividualSettings({ user }: { user: User }) {
   const { setUser } = useAuth();
 
   const [firstName, ...rest] = user.name.split(" ");
-  const { form, set, show, dirty, discard, save, toast, closeToast } = useSettingsForm(
+  const { form, set, show, dirty, discard, save } = useSettingsForm(
     { firstName, lastName: rest.join(" "), email: user.email, phone: user.phone, city: user.city ?? "" },
     (f) => ({ firstName: !f.firstName.trim(), email: !isEmail(f.email), phone: !isPhone(f.phone) })
   );
@@ -89,7 +89,6 @@ export default function IndividualSettings({ user }: { user: User }) {
       </div>
 
       <SaveBar visible={dirty} onDiscard={discard} onSave={submit} />
-      <SavedToast state={toast} onClose={closeToast} />
     </>
   );
 }

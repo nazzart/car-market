@@ -12,6 +12,7 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 
+import { IconButton } from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
 import { dealerAccount, ownerOf, userAccount } from "@/features/moderation/accounts";
@@ -180,15 +181,9 @@ function AccountMenu({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={(e) => setAnchor(e.currentTarget)}
-        aria-label={t("menu")}
-        aria-haspopup="menu"
-        className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-900 text-gray-700 transition cursor-pointer"
-      >
+      <IconButton label={t("menu")} aria-haspopup="menu" onClick={(e) => setAnchor(e.currentTarget)}>
         <MoreHorizIcon fontSize="small" />
-      </button>
+      </IconButton>
 
       <Menu
         anchorEl={anchor}

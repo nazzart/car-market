@@ -5,14 +5,13 @@ import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useLocale, useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import Badge, { type BadgeTone } from "@/components/ui/Badge";
 import CarPhoto from "@/components/ui/CarPhoto";
 import type { Listing } from "@/features/cars/types";
 import type { Moderation } from "@/features/moderation/types";
-import { Link } from "@/i18n/navigation";
 import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
-import { secondaryButton } from "../buttons";
 import ListingActions from "./ListingActions";
 import type { ListingStatus } from "./status";
 
@@ -95,9 +94,9 @@ export default function AccountListingRow({
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <Link href={`/listing/${listing.id}`} className={`${secondaryButton} h-9 px-4`}>
+          <Button variant="outline" size="sm" href={`/listing/${listing.id}`}>
             {t("open")}
-          </Link>
+          </Button>
           {/* заблокированное модератором продавец не может снова активировать */}
           {!moderation && !pending && <ListingActions title={listing.title} status={status} onChange={onStatusChange} />}
         </div>

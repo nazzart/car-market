@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useState } from "react";
 import {
   Popover,
-  Button,
   Stack,
   Box,
   Typography,
@@ -14,6 +13,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import {
   Damage,
   DamageMap,
@@ -213,13 +213,7 @@ export function CarDamageSelector({ value, onChange }: Props) {
               const active = selected.includes(value);
 
               return (
-                <Button
-                  key={value}
-                  variant={active ? "contained" : "outlined"}
-                  size="small"
-                  onClick={() => toggleDamage(value)}
-                  sx={{ textTransform: "none" }}
-                >
+                <Button key={value} variant={active ? "dark" : "outline"} size="sm" onClick={() => toggleDamage(value)}>
                   {tOptions(`damageTypes.${value}`)}
                 </Button>
               );
@@ -230,11 +224,11 @@ export function CarDamageSelector({ value, onChange }: Props) {
         <Divider />
 
         <Stack direction="row" justifyContent="space-between" p={1.5}>
-          <Button size="small" color="error" onClick={deleteDamage}>
+          <Button variant="ghost" size="sm" onClick={deleteDamage} className="text-error hover:text-error">
             {t("remove")}
           </Button>
 
-          <Button size="small" variant="contained" onClick={saveDamage}>
+          <Button size="sm" onClick={saveDamage}>
             {t("save")}
           </Button>
         </Stack>

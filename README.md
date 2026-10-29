@@ -109,6 +109,10 @@ Conventions:
   actions (`cleanText`, `isEmail`, `parseListingId`, `isRegNumber`…) are in `lib/validate.ts`.
 - **Shared helpers:** prices via `formatPrice()` (`lib/utils.ts`), query-string changes via `withQuery()`
   (`lib/url.ts`), the card spec line "year · km · fuel · gearbox" via `useSpecLine()` (`features/cars/lib`).
+- **Buttons, dialogs, toasts:** `Button` / `IconButton` / `buttonClass()` (variants primary, dark, outline, ghost,
+  danger, white; sizes sm–xl; `href` makes it a link), `Dialog` / `ConfirmDialog`, and `useToast()` — all in
+  `components/ui`. MUI is used only for inputs, selects, menus, popovers, drawers and tooltips, styled once in
+  `lib/theme.ts` — no `sx` styling of MUI in feature code beyond icon sizes.
 - **Shared UI before new markup:** a status or label → `Badge` (fixed tones, no ad-hoc colours); a listing photo →
   `CarPhoto` (4:3 frame with the "no photo" fallback); "nothing here" → `EmptyState` (`box` or `hero`); loading →
   `Skeleton`; form fields → `components/ui/form.tsx`. All in `components/ui/`.

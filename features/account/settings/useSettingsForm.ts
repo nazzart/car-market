@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
-export type SaveToast = "saved" | "error" | null;
+import { useToast } from "@/components/ui/Toast";
 
 // Состояние формы настроек: значения, ошибки (показываются после первой попытки сохранить),
-// «есть несохранённые изменения» и сохранение с уведомлением
+// «есть несохранённые изменения» и сохранение с уведомлением (useToast)
 export function useSettingsForm<T, E extends string>(initialValues: T, validate: (form: T) => Record<E, boolean>) {
   const [saved, setSaved] = useState(initialValues);
   const [form, setForm] = useState(initialValues);
   const [submitted, setSubmitted] = useState(false);
-  const [toast, setToast] = useState<SaveToast>(null);
+  const t = useTranslations("account.settings.saveBar");
+  const toast = useToast();
+  const failed = () => toast({ message: t("fixErrors"), tone: "error" });
 
   const errors = validate(form);
 
@@ -22,14 +25,14 @@ export function useSettingsForm<T, E extends string>(initialValues: T, validate:
   // send — запрос на сервер, true при успехе; after — что поменять в форме после сохранения
   const save = async (send: () => Promise<boolean>, after?: Partial<T>) => {
     setSubmitted(true);
-    if (Object.values(errors).some(Boolean)) return setToast("error");
-    if (!(await send().catch(() => false))) return setToast("error");
+    if (Object.values(errors).some(Boolean)) return failed();
+    if (!(await send().catch(() => false))) return failed();
 
     const next = { ...form, ...after };
     setForm(next);
     setSaved(next);
     setSubmitted(false);
-    setToast("saved");
+    toast({ message: t("saved"), tone: "success" });
   };
 
   return {
@@ -43,8 +46,6 @@ export function useSettingsForm<T, E extends string>(initialValues: T, validate:
       setSubmitted(false);
     },
     save,
-    toast,
-    closeToast: () => setToast(null),
   };
 }
 

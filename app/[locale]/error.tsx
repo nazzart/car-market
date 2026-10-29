@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
+import Button from "@/components/ui/Button";
 import Container from "@/components/layout/Container";
-import { Link } from "@/i18n/navigation";
 
 // Неожиданная ошибка на странице: шапка и подвал остаются, предлагаем повторить
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
@@ -27,19 +27,12 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <p className="mt-3 text-gray-500">{t("text")}</p>
 
         <div className="flex flex-wrap justify-center gap-3 mt-8">
-          <button
-            type="button"
-            onClick={reset}
-            className="inline-flex items-center h-12 px-6 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition cursor-pointer"
-          >
+          <Button size="lg" onClick={reset}>
             {t("retry")}
-          </button>
-          <Link
-            href="/"
-            className="inline-flex items-center h-12 px-6 rounded-full border border-gray-300 font-semibold hover:border-gray-900 transition"
-          >
+          </Button>
+          <Button variant="outline" size="lg" href="/">
             {t("home")}
-          </Link>
+          </Button>
         </div>
 
         {error.digest && <p className="mt-8 text-xs text-gray-400">{t("code", { code: error.digest })}</p>}

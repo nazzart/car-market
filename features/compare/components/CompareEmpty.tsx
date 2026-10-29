@@ -3,8 +3,8 @@
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
-import { Link } from "@/i18n/navigation";
 
 import { MAX_COMPARE } from "../store";
 
@@ -18,21 +18,14 @@ export default function CompareEmpty({ favoritesCount, onAddFavorites }: { favor
 
       <EmptyState variant="hero" icon={CompareArrowsIcon} title={t("empty.title")} text={t("empty.text", { max: MAX_COMPARE })}>
         <div className="flex flex-wrap justify-center gap-3 mt-6">
-          <Link
-            href="/cars"
-            className="inline-flex items-center h-12 px-6 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition"
-          >
+          <Button size="lg" href="/cars">
             {t("empty.cta")}
-          </Link>
+          </Button>
 
           {favoritesCount > 0 && (
-            <button
-              type="button"
-              onClick={onAddFavorites}
-              className="inline-flex items-center h-12 px-6 rounded-full border border-gray-300 bg-white font-semibold hover:border-gray-900 transition cursor-pointer"
-            >
+            <Button variant="outline" size="lg" onClick={onAddFavorites}>
               {t("fromFavorites", { count: favoritesCount })}
-            </button>
+            </Button>
           )}
         </div>
       </EmptyState>

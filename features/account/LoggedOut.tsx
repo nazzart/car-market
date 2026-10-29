@@ -3,10 +3,10 @@
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import Skeleton from "@/components/ui/Skeleton";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 
-import { primaryButton } from "./buttons";
 
 // title — заголовок страницы, на которую пытались попасть (например, «Настройки профиля»)
 // Не вошёл — просим войти. Пока профиль загружается, вместо этого — заглушка (чтобы не мигало «Войдите»)
@@ -27,9 +27,9 @@ export default function LoggedOut({ title }: { title?: string }) {
         {t("text")}
       </p>
 
-      <button type="button" onClick={openAuthModal} className={`${primaryButton} mt-6 px-8 cursor-pointer`}>
+      <Button onClick={openAuthModal} className="mt-6 px-8">
         {t("login")}
-      </button>
+      </Button>
 
     </div>
   );

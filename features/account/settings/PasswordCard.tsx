@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import { changePassword } from "@/features/auth/actions";
 
 import SettingsCard from "./SettingsCard";
@@ -60,7 +61,7 @@ export default function PasswordCard() {
         />
 
         <div className="sm:col-span-2 flex flex-wrap items-center gap-3">
-          <Button type="submit" variant="outlined" sx={{ borderRadius: "999px", px: 3 }}>
+          <Button type="submit" variant="outline">
             {t("change")}
           </Button>
           {done && <span className="text-sm text-emerald-700">{t("changed")}</span>}

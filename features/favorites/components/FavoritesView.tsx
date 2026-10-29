@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { Snackbar } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
@@ -9,9 +8,11 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useLocale, useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import CarPhoto from "@/components/ui/CarPhoto";
 import Badge from "@/components/ui/Badge";
+import { useToast } from "@/components/ui/Toast";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { inputClass } from "@/components/ui/form";
@@ -37,7 +38,6 @@ type Sort = (typeof SORTS)[number];
 const noop = () => () => {};
 const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
 
-type Undo = { message: string; entries: FavoriteEntry[] };
 
 export default function FavoritesView() {
   const t = useTranslations("favorites");
@@ -51,7 +51,7 @@ export default function FavoritesView() {
   const listingOf = (id: string) => loaded?.find((l) => l.id === id);
 
   const [sort, setSort] = useState<Sort>("added");
-  const [undo, setUndo] = useState<Undo | null>(null);
+  const toast = useToast();
 
   const items = entries.map((entry) => ({ entry, listing: listingOf(entry.id) }));
 
@@ -62,20 +62,18 @@ export default function FavoritesView() {
     return sort === "price_asc" ? a.listing.price - b.listing.price : b.listing.price - a.listing.price;
   });
 
+  // «Удалено — Отменить»: возвращаем в обратном порядке, чтобы сохранился исходный порядок
+  const offerUndo = (message: string, removed: FavoriteEntry[]) =>
+    toast({ message, action: { label: t("undo"), onClick: () => removed.toReversed().forEach(addFavorite) } });
+
   const remove = (entry: FavoriteEntry) => {
     removeFavorite(entry.id);
-    setUndo({ message: t("removed"), entries: [entry] });
+    offerUndo(t("removed"), [entry]);
   };
 
   const clear = () => {
-    setUndo({ message: t("cleared"), entries });
+    offerUndo(t("cleared"), entries);
     clearFavorites();
-  };
-
-  const restore = () => {
-    // добавляем в обратном порядке, чтобы сохранился исходный порядок
-    undo?.entries.toReversed().forEach(addFavorite);
-    setUndo(null);
   };
 
   return (
@@ -131,13 +129,9 @@ export default function FavoritesView() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 p-4 rounded-2xl bg-gray-50 text-sm">
             <LockOutlinedIcon className="text-gray-400 shrink-0" />
             <p className="flex-1 text-gray-700">{t("guest.text")}</p>
-            <button
-              type="button"
-              onClick={openAuthModal}
-              className="self-start sm:self-auto shrink-0 h-10 px-5 rounded-full bg-gray-900 hover:bg-black text-white font-medium transition cursor-pointer"
-            >
+            <Button variant="dark" onClick={openAuthModal} className="self-start sm:self-auto">
               {t("guest.login")}
-            </button>
+            </Button>
           </div>
           <FavoritesEmpty />
         </>
@@ -157,22 +151,6 @@ export default function FavoritesView() {
         </>
       )}
 
-      <Snackbar
-        open={Boolean(undo)}
-        autoHideDuration={5000}
-        onClose={(_, reason) => reason !== "clickaway" && setUndo(null)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        message={undo?.message}
-        action={
-          <button
-            type="button"
-            onClick={restore}
-            className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white hover:bg-white/10 cursor-pointer"
-          >
-            {t("undo")}
-          </button>
-        }
-      />
     </div>
   );
 }
@@ -309,12 +287,9 @@ function FavoritesEmpty() {
         text={t("empty.text")}
       >
 
-        <Link
-          href="/cars"
-          className="inline-flex items-center h-12 px-6 mt-6 rounded-full bg-primary hover:bg-primary-hover text-white font-semibold transition"
-        >
+        <Button size="lg" href="/cars" className="mt-6">
           {t("empty.cta")}
-        </Link>
+        </Button>
 
         {/* min-w-0: строка подборок листается вбок, а не растягивает страницу */}
         <div className="mt-8 min-w-0 text-left sm:[&>div]:justify-center">

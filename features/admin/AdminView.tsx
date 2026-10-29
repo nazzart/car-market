@@ -5,6 +5,7 @@ import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettin
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
 import Skeleton from "@/components/ui/Skeleton";
 import { isAdmin } from "@/features/auth/types";
 import { openAuthModal, useAuth } from "@/features/auth/store";
@@ -127,13 +128,9 @@ function NoAccess() {
       </span>
       <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       <p className="text-gray-500 mt-2">{t("text")}</p>
-      <button
-        type="button"
-        onClick={openAuthModal}
-        className="mt-6 h-11 px-8 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-semibold transition cursor-pointer"
-      >
+      <Button variant="dark" onClick={openAuthModal} className="mt-6 px-8">
         {t("login")}
-      </button>
+      </Button>
     </div>
   );
 }

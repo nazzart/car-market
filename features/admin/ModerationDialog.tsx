@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, MenuItem, TextField } from "@mui/material";
+import { MenuItem, TextField } from "@mui/material";
 import { useTranslations } from "next-intl";
 
+import Button from "@/components/ui/Button";
+import Dialog, { DialogActions, DialogHeader } from "@/components/ui/Dialog";
 import { BLOCK_REASONS, BlockReason } from "@/features/moderation/store";
 
 export type DialogMode = "block" | "remove" | "reject" | "blockAccount";
@@ -19,11 +21,7 @@ type Props = {
 // Блокировка / удаление / отклонение: причина обязательна (её увидит продавец), пояснение — по желанию
 export default function ModerationDialog({ mode, name, defaultReason, onClose, onConfirm }: Props) {
   return (
-    <Dialog
-      open={mode !== null}
-      onClose={onClose}
-      slotProps={{ paper: { sx: { borderRadius: 4, m: 2, width: "100%", maxWidth: 460 } } }}
-    >
+    <Dialog open={mode !== null} onClose={onClose}>
       {/* key: при каждом открытии — свежие поля */}
       {mode && (
         <DialogBody
@@ -46,9 +44,8 @@ function DialogBody({ mode, name, defaultReason, onClose, onConfirm }: Omit<Prop
   const [note, setNote] = useState("");
 
   return (
-    <div className="p-6">
-      <h2 className="text-lg font-semibold">{t(`${mode}.title`)}</h2>
-      <p className="text-sm text-gray-600 mt-1">{t(`${mode}.text`, { name })}</p>
+    <>
+      <DialogHeader title={t(`${mode}.title`)} text={t(`${mode}.text`, { name })} />
 
       <div className="space-y-4 mt-5">
         <TextField
@@ -76,22 +73,14 @@ function DialogBody({ mode, name, defaultReason, onClose, onConfirm }: Omit<Prop
         />
       </div>
 
-      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-6">
-        <button
-          type="button"
-          onClick={onClose}
-          className="h-11 px-5 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium transition cursor-pointer"
-        >
+      <DialogActions>
+        <Button variant="outline" onClick={onClose}>
           {t("cancel")}
-        </button>
-        <button
-          type="button"
-          onClick={() => onConfirm(reason, note.trim())}
-          className="h-11 px-5 rounded-full bg-error hover:opacity-90 text-white text-sm font-semibold transition cursor-pointer"
-        >
+        </Button>
+        <Button variant="danger" onClick={() => onConfirm(reason, note.trim())}>
           {t(`${mode}.confirm`)}
-        </button>
-      </div>
-    </div>
+        </Button>
+      </DialogActions>
+    </>
   );
 }

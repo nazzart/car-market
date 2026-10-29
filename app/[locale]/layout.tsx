@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import AppThemeProvider from "@/components/providers/ThemeProvider";
 import { CatalogProvider } from "@/components/providers/CatalogProvider";
+import { ToastProvider } from "@/components/ui/Toast";
 import { AuthProvider } from "@/features/auth/store";
 import { FavoritesSync } from "@/features/favorites/store";
 import "../globals.css";
@@ -75,17 +76,19 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <NextIntlClientProvider>
           <AppThemeProvider>
-            <CatalogProvider dealers={dealers} stats={stats}>
-              <AuthProvider>
-                <FavoritesSync />
-                <Header />
-                <NavigationProgress />
-                {/* flex-1 — подвал прижат к низу экрана даже на коротких страницах */}
-                <main className="flex-1">{children}</main>
-                <Footer />
-                <CompareBar />
-              </AuthProvider>
-            </CatalogProvider>
+            <ToastProvider>
+              <CatalogProvider dealers={dealers} stats={stats}>
+                <AuthProvider>
+                  <FavoritesSync />
+                  <Header />
+                  <NavigationProgress />
+                  {/* flex-1 — подвал прижат к низу экрана даже на коротких страницах */}
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                  <CompareBar />
+                </AuthProvider>
+              </CatalogProvider>
+            </ToastProvider>
           </AppThemeProvider>
         </NextIntlClientProvider>
       </body>

@@ -33,7 +33,7 @@ export function filterListings(listings: Listing[], params: Params, { inCollecti
   const yearFrom = num("yearFrom");
   const yearTo = num("yearTo");
   const mileageTo = num("mileageTo");
-  const model = params.get("model")?.toLowerCase();
+  const model = params.get("model");
   const posted = postedPeriods[params.get("posted") as keyof typeof postedPeriods];
   const flag = (key: string) => params.get(key) === "1";
   // место: город или край (край — со своими городами), area — плюс окрестности в км
@@ -57,7 +57,7 @@ export function filterListings(listings: Listing[], params: Params, { inCollecti
       (!collection || (inCollection ? inCollection(l, collection) : collection.matches(l))) &&
       eq("condition", l.condition) &&
       eq("brand", l.brand) &&
-      (!model || l.title.toLowerCase().includes(model)) &&
+      (!model || l.model === model) &&
       (priceFrom === null || l.price >= priceFrom) &&
       (priceTo === null || l.price <= priceTo) &&
       (yearFrom === null || l.year >= yearFrom) &&

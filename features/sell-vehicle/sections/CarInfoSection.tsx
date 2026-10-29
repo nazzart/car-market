@@ -1,8 +1,10 @@
 "use client";
 
-import { TextField, MenuItem, InputAdornment } from "@mui/material";
+import { Autocomplete, TextField, MenuItem, InputAdornment } from "@mui/material";
 import { useTranslations } from "next-intl";
 
+import { brands } from "@/features/brands/data/brands";
+import { modelsByBrand } from "@/features/brands/data/models";
 import { carColors } from "@/features/cars/config/colors";
 
 import { SectionContainer } from "../components/SectionContainer";
@@ -26,7 +28,7 @@ export function CarInfoSection({
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
 
-  const brands = ["Audi", "BMW", "Mercedes"];
+  const models = modelsByBrand[data.brand] ?? [];
 
   const colorOptions = carColors.map((c) => ({ ...c, label: tOptions(`colors.${c.value}`) }));
   const bodyTypeOptions = bodyTypes.map((value) => ({ value, label: tOptions(`bodyType.${value}`) }));
@@ -53,34 +55,47 @@ export function CarInfoSection({
         {/* Brand / Model */}
 
         <div className="grid md:grid-cols-2 gap-4">
-          <TextField
-            select
-            label={t("brand")}
-            required
+          {/* марка — из списка (по ней работает поиск); модель — из списка или своя, если её там нет */}
+          <Autocomplete
+            options={brands}
+            value={brands.find((b) => b.slug === data.brand) ?? null}
+            onChange={(_, brand) => {
+              updateField("brand", brand?.slug ?? "");
+              updateField("model", "");
+            }}
+            getOptionLabel={(b) => b.name}
+            isOptionEqualToValue={(a, b) => a.slug === b.slug}
+            autoHighlight
             fullWidth
-            value={data.brand ?? ""}
-            onChange={(e) => updateField("brand", e.target.value)}
-            error={
-              attemptedNext && !validateField(data.brand, getRules("brand"))
-            }
-          >
-            {brands.map((b) => (
-              <MenuItem key={b} value={b}>
-                {b}
-              </MenuItem>
-            ))}
-          </TextField>
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={t("brand")}
+                required
+                error={attemptedNext && !validateField(data.brand, getRules("brand"))}
+              />
+            )}
+          />
 
-          <TextField
-            label={t("model")}
-            required
-            placeholder={t("modelPlaceholder")}
+          <Autocomplete
+            freeSolo
+            options={models}
+            value={data.model || null}
+            inputValue={data.model ?? ""}
+            onInputChange={(_, text) => updateField("model", text)}
+            disabled={!data.brand}
+            autoHighlight
             fullWidth
-            value={data.model ?? ""}
-            onChange={(e) => updateField("model", e.target.value)}
-            error={
-              attemptedNext && !validateField(data.model, getRules("model"))
-            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={t("model")}
+                required
+                placeholder={data.brand ? t("modelPlaceholder") : t("brandFirst")}
+                helperText={data.brand ? t("modelHint") : undefined}
+                error={attemptedNext && !validateField(data.model, getRules("model"))}
+              />
+            )}
           />
         </div>
 

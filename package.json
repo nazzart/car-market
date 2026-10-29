@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "catalog:build": "node scripts/build-car-catalog.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

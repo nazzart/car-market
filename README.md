@@ -26,6 +26,7 @@ npm run dev      # http://localhost:3000
 | `npm run build` | Production build (also type-checks) |
 | `npm start` | Run the production build |
 | `npm run lint` | ESLint |
+| `npm run catalog:build` | Rebuilds car brands and models from the Dutch vehicle register (RDW open data, CC0) — run yearly |
 
 ### Environment variables
 

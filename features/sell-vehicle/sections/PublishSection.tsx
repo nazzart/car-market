@@ -5,6 +5,7 @@ import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import { useTranslations } from "next-intl";
 
+import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import { formatNumber } from "@/lib/utils";
 
@@ -24,7 +25,8 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
   const placeName = usePlaceName();
 
   const photos: string[] = data.photos ?? [];
-  const title = [data.brand, data.model].filter(Boolean).join(" ") || t("yourCar");
+  const brandName = brands.find((b) => b.slug === data.brand)?.name;
+  const title = [brandName, data.model].filter(Boolean).join(" ") || t("yourCar");
   const complete = requiredDone === requiredTotal;
 
   return (

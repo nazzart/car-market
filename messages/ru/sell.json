@@ -45,7 +45,7 @@
   "info": {
     "brand": "Марка",
     "model": "Модель",
-    "modelPlaceholder": "Например: A4",
+    "modelPlaceholder": "Начните вводить, напр. Octavia",
     "year": "Год выпуска",
     "mileage": "Пробег",
     "price": "Цена",
@@ -53,7 +53,9 @@
     "negotiableYes": "Да, уместен",
     "negotiableNo": "Нет, цена окончательная",
     "body": "Тип кузова",
-    "color": "Цвет"
+    "color": "Цвет",
+    "brandFirst": "Сначала выберите марку",
+    "modelHint": "Нет в списке? Впишите модель сами"
   },
   "technical": {
     "fuel": "Тип топлива",

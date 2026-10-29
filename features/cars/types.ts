@@ -17,6 +17,7 @@ export type MileageLatvia = (typeof MILEAGE_LATVIA)[number];
 export type Listing = {
   id: string;
   brand: string; // slug марки (features/brands/data/brands.ts)
+  model: string; // модель из features/brands/data/models.ts или своя, если её нет в списке
   title: string;
   year: number;
   price: number;

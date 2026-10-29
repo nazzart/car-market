@@ -57,6 +57,22 @@ export async function getDealer(slug: string): Promise<Dealer | undefined> {
   return (await catalog()).find((d) => d.slug === slug);
 }
 
+// Своя страница дилера для кабинета и настроек — мимо кэша: только что зарегистрированный дилер
+// или правка из базы видны сразу
+export async function getDealerUncached(slug: string): Promise<Dealer | undefined> {
+  const [row] = await db.select().from(dealers).where(eq(dealers.slug, slug));
+  if (!row) return undefined;
+  const contacts = await db
+    .select()
+    .from(dealerContacts)
+    .where(eq(dealerContacts.dealerId, row.id))
+    .orderBy(asc(dealerContacts.position));
+  return toDealer(
+    row,
+    contacts.map(({ id, name, phone, role }) => ({ id, name, phone, ...(role ? { role } : {}) }))
+  );
+}
+
 // Весь каталог, включая заблокированных (модерация). Страница /dealers — searchDealers()
 export async function getDealers(): Promise<Dealer[]> {
   return catalog();

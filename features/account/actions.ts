@@ -8,7 +8,8 @@ import { requireUser } from "@/features/auth/api";
 import type { User } from "@/features/auth/types";
 import { getDealerListings, getUserListings } from "@/features/cars/api";
 import type { Listing } from "@/features/cars/types";
-import { DAYS, type DealerContact, type OpeningHours } from "@/features/dealers/types";
+import { getDealerUncached } from "@/features/dealers/api";
+import { DAYS, type Dealer, type DealerContact, type OpeningHours } from "@/features/dealers/types";
 import { isPhone } from "@/lib/phone";
 import { findPlace } from "@/lib/places";
 import { createSupabase } from "@/lib/supabase/server";
@@ -32,6 +33,13 @@ const listingId = (id: unknown) => (typeof id === "string" && /^\d{1,15}$/.test(
 export async function loadOwnListings(): Promise<Listing[]> {
   const user = await requireUser();
   return user.type === "dealer" && user.dealerSlug ? getDealerListings(user.dealerSlug) : getUserListings(user.id);
+}
+
+// Страница дилера вошедшей компании — свежая из базы (каталог в layout кэшируется до 5 минут)
+export async function loadOwnDealer(): Promise<Dealer | null> {
+  const user = await requireUser();
+  if (user.type !== "dealer" || !user.dealerSlug) return null;
+  return (await getDealerUncached(user.dealerSlug)) ?? null;
 }
 
 export async function setListingStatus(id: string, status: ListingStatus): Promise<boolean> {

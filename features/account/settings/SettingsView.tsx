@@ -26,8 +26,7 @@ import { isEmail } from "@/features/auth/ui";
 import { brands } from "@/features/brands/data/brands";
 import { ChipGroup } from "@/features/cars/car-list/components/ui";
 import type { Dealer } from "@/features/dealers/types";
-import { useDealerLookup } from "@/features/dealers/hooks";
-import { resolveDealer } from "@/features/dealers/useOwnDealer";
+import { useOwnDealerState } from "@/features/dealers/useOwnDealer";
 import { Link } from "@/i18n/navigation";
 import PlacePicker from "@/components/ui/PlacePicker";
 import { placeNameLv } from "@/lib/places";
@@ -412,13 +411,28 @@ function IndividualSettings({ user }: { user: User }) {
 
 /* ---------- Дилер ---------- */
 
+// Форма заполняется один раз при открытии — поэтому ждём свежую страницу дилера из базы
 function DealerSettings({ user }: { user: User }) {
+  const { dealer, loading } = useOwnDealerState();
+  if (loading || !dealer) return <SettingsSkeleton />;
+  return <DealerSettingsForm user={user} dealer={dealer} />;
+}
+
+function SettingsSkeleton() {
+  return (
+    <div className="space-y-4" aria-busy="true">
+      <div className="h-8 w-48 rounded-lg bg-gray-100 animate-pulse" />
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="h-48 rounded-2xl bg-gray-100 animate-pulse" />
+      ))}
+    </div>
+  );
+}
+
+function DealerSettingsForm({ user, dealer }: { user: User; dealer: Dealer }) {
   const t = useTranslations("account.settings");
   const [toast, setToast] = useState<"saved" | "error" | null>(null);
   const { setUser } = useAuth();
-
-  // страница дилера из базы
-  const dealer = resolveDealer(user, useDealerLookup()(user.dealerSlug));
 
   const { form, set, dirty, discard, markSaved, submitted, setSubmitted } = useSettingsForm({
     name: user.name,

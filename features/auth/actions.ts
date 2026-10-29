@@ -2,6 +2,7 @@
 
 // Вход, регистрация, выход и смена пароля — Supabase Auth на сервере: сессия ставится в cookie ответа.
 // Пароль в наш код и в нашу базу не попадает: его проверяет и хранит Supabase
+import { updateTag } from "next/cache";
 import { headers } from "next/headers";
 
 import { createSupabase } from "@/lib/supabase/server";
@@ -62,6 +63,7 @@ export async function signUp(input: SignUpInput): Promise<AuthResult | { confirm
   if (!data.user || data.user.identities?.length === 0) return { error: "exists" };
 
   await createProfile(data.user.id, meta);
+  if (type === "dealer") updateTag("dealers"); // новая страница дилера — в каталог (модерация, кабинет)
   if (!data.session) return { confirmEmail: true };
 
   return { user: await loadUser(data.user.id, data.user.email ?? "", meta) };

@@ -80,7 +80,9 @@
     "power": "Jauda",
     "unitHp": "ZS",
     "mileageLatvia": "Nobraukums Latvijā",
-    "advanced": "Papildu filtri"
+    "advanced": "Papildu filtri",
+    "popularBrands": "Populārās markas",
+    "allBrands": "Visas markas"
   },
   "row": {
     "new": "Jauns",

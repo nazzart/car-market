@@ -53,5 +53,9 @@
     "noResults": "Nekas nav atrasts",
     "clear": "Notīrīt",
     "majorCities": "Lielākās pilsētas"
+  },
+  "select": {
+    "noResults": "Nekas nav atrasts",
+    "clear": "Notīrīt"
   }
 }

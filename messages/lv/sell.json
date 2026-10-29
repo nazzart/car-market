@@ -55,7 +55,9 @@
     "body": "Virsbūves tips",
     "color": "Krāsa",
     "brandFirst": "Vispirms izvēlieties marku",
-    "modelHint": "Nav sarakstā? Ierakstiet modeli pats"
+    "modelHint": "Nav sarakstā? Ierakstiet modeli pats",
+    "popularBrands": "Populārās markas",
+    "allBrands": "Visas markas"
   },
   "technical": {
     "fuel": "Degvielas veids",

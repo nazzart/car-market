@@ -6,6 +6,9 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
+import { useListings } from "@/features/cars/api";
+import { useVisibility } from "@/features/moderation/visibility";
+import SearchSelect from "@/components/ui/SearchSelect";
 import { formatNumber } from "@/lib/utils";
 import CheckIcon from "@mui/icons-material/Check";
 import { carColors } from "../../config/colors";
@@ -23,12 +26,10 @@ import {
   sellerTypes,
   transmissions,
 } from "../../config/filterOptions";
-import { ChipGroup, FilterSection, Segmented, Select, inputClass } from "./ui";
+import { ChipGroup, FilterSection, Segmented, inputClass } from "./ui";
 import LocationFilter from "./LocationFilter";
 
-const brandOptions = [...brands]
-  .sort((a, b) => a.name.localeCompare(b.name))
-  .map((b) => ({ label: b.name, value: b.slug }));
+const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
 
 // Поле «от–до». Неуправляемые input + key: значение применяется по blur/Enter,
 // а при сбросе фильтров поле пересоздаётся с новым значением из URL
@@ -126,11 +127,20 @@ export default function FiltersPanel() {
 
 
 
+  // сколько объявлений у каждой марки и модели — подсказка рядом с названием
+  const listings = useListings();
+  const { isPublic } = useVisibility();
+  const brandCount = new Map<string, number>();
+  const modelCount = new Map<string, number>();
   const brand = get("brand");
-  const models = (modelsByBrand[brand] ?? []).map((m) => ({
-    label: m,
-    value: m,
-  }));
+  for (const l of listings) {
+    if (!isPublic(l.id)) continue;
+    brandCount.set(l.brand, (brandCount.get(l.brand) ?? 0) + 1);
+    if (l.brand === brand) modelCount.set(l.model, (modelCount.get(l.model) ?? 0) + 1);
+  }
+
+  const brandOption = (b: (typeof brands)[number]) => ({ value: b.slug, label: b.name, count: brandCount.get(b.slug) });
+  const models = (modelsByBrand[brand] ?? []).map((m) => ({ value: m, label: m, count: modelCount.get(m) }));
 
   return (
     <div>
@@ -145,15 +155,20 @@ export default function FiltersPanel() {
 
       <FilterSection title={t("brandModel")} active={isActive(["brand", "model"])}>
         <div className="space-y-2">
-          <Select
+          <SearchSelect
+            variant="compact"
             label={t("brand")}
             placeholder={t("anyBrand")}
-            options={brandOptions}
+            featured={sortedBrands.filter((b) => b.popular).map(brandOption)}
+            featuredLabel={t("popularBrands")}
+            options={sortedBrands.map(brandOption)}
+            allLabel={t("allBrands")}
             value={brand}
             onChange={set("brand")}
           />
 
-          <Select
+          <SearchSelect
+            variant="compact"
             label={t("model")}
             placeholder={brand ? t("anyModel") : t("brandFirst")}
             options={models}

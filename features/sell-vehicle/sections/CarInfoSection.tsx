@@ -3,6 +3,7 @@
 import { Autocomplete, TextField, MenuItem, InputAdornment } from "@mui/material";
 import { useTranslations } from "next-intl";
 
+import SearchSelect, { popupSlotProps } from "@/components/ui/SearchSelect";
 import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
 import { carColors } from "@/features/cars/config/colors";
@@ -29,6 +30,8 @@ export function CarInfoSection({
   const tOptions = useTranslations("options");
 
   const models = modelsByBrand[data.brand] ?? [];
+  const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
+  const brandOption = (b: (typeof brands)[number]) => ({ value: b.slug, label: b.name });
 
   const colorOptions = carColors.map((c) => ({ ...c, label: tOptions(`colors.${c.value}`) }));
   const bodyTypeOptions = bodyTypes.map((value) => ({ value, label: tOptions(`bodyType.${value}`) }));
@@ -56,25 +59,19 @@ export function CarInfoSection({
 
         <div className="grid md:grid-cols-2 gap-4">
           {/* марка — из списка (по ней работает поиск); модель — из списка или своя, если её там нет */}
-          <Autocomplete
-            options={brands}
-            value={brands.find((b) => b.slug === data.brand) ?? null}
-            onChange={(_, brand) => {
-              updateField("brand", brand?.slug ?? "");
+          <SearchSelect
+            label={t("brand")}
+            required
+            featured={sortedBrands.filter((b) => b.popular).map(brandOption)}
+            featuredLabel={t("popularBrands")}
+            options={sortedBrands.map(brandOption)}
+            allLabel={t("allBrands")}
+            value={data.brand ?? ""}
+            onChange={(slug) => {
+              updateField("brand", slug);
               updateField("model", "");
             }}
-            getOptionLabel={(b) => b.name}
-            isOptionEqualToValue={(a, b) => a.slug === b.slug}
-            autoHighlight
-            fullWidth
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={t("brand")}
-                required
-                error={attemptedNext && !validateField(data.brand, getRules("brand"))}
-              />
-            )}
+            error={attemptedNext && !validateField(data.brand, getRules("brand"))}
           />
 
           <Autocomplete
@@ -84,6 +81,7 @@ export function CarInfoSection({
             inputValue={data.model ?? ""}
             onInputChange={(_, text) => updateField("model", text)}
             disabled={!data.brand}
+            slotProps={popupSlotProps}
             autoHighlight
             fullWidth
             renderInput={(params) => (

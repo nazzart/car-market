@@ -8,6 +8,8 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { PLACES, Place, findPlace, foldText } from "@/lib/places";
 
+import { GroupHeader, popupSlotProps } from "./SearchSelect";
+
 type Props = {
   value: string; // ключ места или ""
   onChange: (key: string) => void;
@@ -67,7 +69,7 @@ export default function PlacePicker({ value, onChange, label, placeholder, requi
       filterOptions={(options, state) => filter(options, { ...state, inputValue: foldText(state.inputValue) })}
       renderGroup={(group) => (
         <li key={group.key}>
-          <div className="px-4 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{group.group}</div>
+          <GroupHeader>{group.group}</GroupHeader>
           <ul>{group.children}</ul>
         </li>
       )}
@@ -75,7 +77,7 @@ export default function PlacePicker({ value, onChange, label, placeholder, requi
       autoHighlight
       fullWidth
       popupIcon={<KeyboardArrowDownIcon fontSize="small" />}
-      slotProps={{ paper: { sx: { borderRadius: 3, mt: 0.5 } }, listbox: { sx: { maxHeight: 320 } } }}
+      slotProps={popupSlotProps}
       renderInput={(params) =>
         variant === "compact" ? (
           <div ref={params.InputProps.ref} className="relative">

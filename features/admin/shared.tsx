@@ -5,8 +5,6 @@ import Image from "next/image";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 
 import { Listing } from "@/features/cars/types";
-import { useRegisteredUsers } from "@/features/auth/api";
-import { useAllListings } from "@/features/cars/hooks";
 import { useDealerCatalog, useDealerLookup } from "@/features/dealers/hooks";
 import {
   BlockReason,
@@ -14,6 +12,7 @@ import {
   blockListing,
   rejectListing,
   removeListing,
+  useAdminState,
   useReports,
 } from "@/features/moderation/store";
 import { useVisibility } from "@/features/moderation/visibility";
@@ -44,19 +43,19 @@ export const statusTone: Record<StatusKey, string> = {
 
 export const minutesSince = (at: number) => Math.max(0, Math.round((Date.now() - at) / 60000));
 
-// Всё, что видит модератор: весь каталог, включая скрытое, и подписи к нему.
+// Всё, что видит модератор: весь каталог, включая скрытое, и подписи к нему (загружает AdminDataProvider).
 // TODO(admin): запросы с пагинацией и поиском на сервере вместо загрузки всего каталога
 export function useAdminData() {
-  const loaded = useAllListings(); // undefined — ещё загружается
-  const listings = loaded ?? [];
+  const state = useAdminState(); // null — ещё загружается
+  const listings = state?.listings ?? [];
   const byId = new Map(listings.map((l) => [l.id, l]));
   const listingOf = (id: string) => byId.get(id);
   const dealers = useDealerCatalog();
   const dealerOf = useDealerLookup();
-  const users = useRegisteredUsers();
+  const users = state?.users ?? [];
 
   return {
-    loading: loaded === undefined,
+    loading: state === null,
     listings,
     dealers,
     users,

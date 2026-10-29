@@ -1,148 +1,76 @@
 "use client";
 
-import { createLocalStore } from "@/lib/localStore";
+// Модерация в браузере: данные /admin загружаются с сервера (loadAdminData) и хранятся в AdminDataProvider,
+// решения отправляются Server Actions (проверка роли — на сервере), после каждого — данные перечитываются
+import { createContext, createElement, useContext, useEffect, useState } from "react";
 
-import { dealerAccount } from "./accounts";
+import { useDealerCatalog } from "@/features/dealers/hooks";
 
-// Модерация (демо: всё в браузере; позже — таблицы в БД и проверка роли на сервере).
-// Решение модератора важнее статуса продавца: заблокированное нельзя снова активировать из кабинета
+import * as actions from "./actions";
+import type { AdminData } from "./actions";
+import { dealerAccount, userAccount } from "./accounts";
+import type { AccountBlock } from "./types";
 
-export type BlockReason = "fraud" | "wrongPrice" | "wrongInfo" | "duplicate" | "sold" | "prohibited" | "other";
-export const BLOCK_REASONS: BlockReason[] = ["fraud", "wrongPrice", "wrongInfo", "duplicate", "sold", "prohibited", "other"];
+export * from "./types";
 
-export type Moderation = {
-  status: "blocked" | "removed";
-  reason: BlockReason;
-  note?: string; // пояснение для продавца
-  at: number;
-};
+const CHANGED = "bestauto:admin-changed";
 
-export type Report = {
-  id: string;
-  listingId: string;
-  reason: BlockReason;
-  text?: string;
-  at: number;
-  resolved?: "blocked" | "dismissed";
-};
+const AdminDataContext = createContext<AdminData | null>(null);
 
-export type LogEntry = {
-  at: number;
-  listingId?: string;
-  account?: string; // «dealer:baltic-auto» / «user:demo-individual»
-  action:
-    | "block"
-    | "unblock"
-    | "remove"
-    | "restore"
-    | "dismiss"
-    | "approve"
-    | "reject"
-    | "exclude"
-    | "include"
-    | "blockAccount"
-    | "unblockAccount"
-    | "verify"
-    | "unverify";
-  reason?: BlockReason;
-};
+// Только на /admin и только для модератора: всё, что видит модератор, — одним запросом
+export function AdminDataProvider({ children }: { children: React.ReactNode }) {
+  const [data, setData] = useState<AdminData | null>(null);
 
-// Аккаунт продавца: дилер или зарегистрированный пользователь
-export type AccountBlock = { reason: BlockReason; note?: string; at: number };
+  useEffect(() => {
+    const reload = () => actions.loadAdminData().then(setData);
+    reload();
+    window.addEventListener(CHANGED, reload);
+    return () => window.removeEventListener(CHANGED, reload);
+  }, []);
 
-const moderation = createLocalStore<Record<string, Moderation>>("bestauto.moderation", {});
-const reports = createLocalStore<Report[]>("bestauto.reports", []);
-const log = createLocalStore<LogEntry[]>("bestauto.moderationLog", []);
-// решения по новым объявлениям (премодерация)
-const approvals = createLocalStore<Record<string, "approved" | "rejected">>("bestauto.approvals", {});
-// модератор убрал объявление из подборки: listingId → slug подборок
-const excluded = createLocalStore<Record<string, string[]>>("bestauto.collectionExcluded", {});
-const blockedAccounts = createLocalStore<Record<string, AccountBlock>>("bestauto.blockedAccounts", {});
-// ручная проверка дилеров поверх данных (verified в dealers.ts)
-const verification = createLocalStore<Record<string, boolean>>("bestauto.dealerVerification", {});
-
-export const useApprovals = approvals.useValue;
-export const useExcluded = excluded.useValue;
-export const useBlockedAccounts = blockedAccounts.useValue;
-export const useVerification = verification.useValue;
-
-export const useModeration = moderation.useValue;
-export const useReports = reports.useValue;
-export const useModerationLog = log.useValue;
-
-const addLog = (entry: Omit<LogEntry, "at">) => log.set([{ ...entry, at: Date.now() }, ...log.get()].slice(0, 200));
-
-// все открытые жалобы на объявление закрываются решением модератора
-const resolveReports = (listingId: string, resolved: Report["resolved"]) =>
-  reports.set(reports.get().map((r) => (r.listingId === listingId && !r.resolved ? { ...r, resolved } : r)));
-
-export function blockListing(listingId: string, reason: BlockReason, note?: string) {
-  moderation.set({ ...moderation.get(), [listingId]: { status: "blocked", reason, note, at: Date.now() } });
-  resolveReports(listingId, "blocked");
-  addLog({ listingId, action: "block", reason });
+  return createElement(AdminDataContext.Provider, { value: data }, children);
 }
 
-export function removeListing(listingId: string, reason: BlockReason) {
-  moderation.set({ ...moderation.get(), [listingId]: { status: "removed", reason, at: Date.now() } });
-  resolveReports(listingId, "blocked");
-  addLog({ listingId, action: "remove", reason });
+// null — ещё загружается
+export const useAdminState = () => useContext(AdminDataContext);
+
+export const useReports = () => useAdminState()?.reports ?? [];
+export const useModerationLog = () => useAdminState()?.log ?? [];
+
+// Заблокированные аккаунты: дилеры — из каталога дилеров, частные лица — из списка пользователей
+export function useBlockedAccounts(): Record<string, AccountBlock> {
+  const users = useAdminState()?.users ?? [];
+  const dealers = useDealerCatalog();
+  return Object.fromEntries([
+    ...dealers.flatMap((d) => (d.blocked ? [[dealerAccount(d.slug), d.blocked] as const] : [])),
+    ...users.flatMap((u) => (u.blocked && u.type !== "dealer" ? [[userAccount(u.id), u.blocked] as const] : [])),
+  ]);
 }
 
-export function clearModeration(listingId: string) {
-  const prev = moderation.get()[listingId];
-  const next = { ...moderation.get() };
-  delete next[listingId];
-  moderation.set(next);
-  addLog({ listingId, action: prev?.status === "removed" ? "restore" : "unblock" });
+// Объявление → подборки, из которых модератор его убрал
+export function useExcluded(): Record<string, string[]> {
+  const listings = useAdminState()?.listings ?? [];
+  return Object.fromEntries(listings.flatMap((l) => (l.excludedCollections ? [[l.id, l.excludedCollections]] : [])));
 }
 
-export function dismissReports(listingId: string) {
-  resolveReports(listingId, "dismissed");
-  addLog({ listingId, action: "dismiss" });
-}
+// Решение модератора → на сервер, затем перечитать данные /admin
+const run =
+  <Args extends unknown[]>(action: (...args: Args) => Promise<void>) =>
+  async (...args: Args) => {
+    await action(...args);
+    window.dispatchEvent(new Event(CHANGED));
+  };
 
-export function addReport(listingId: string, reason: BlockReason, text?: string) {
-  reports.set([{ id: `${Date.now()}`, listingId, reason, text, at: Date.now() }, ...reports.get()]);
-}
+export const blockListing = run(actions.blockListing);
+export const removeListing = run(actions.removeListing);
+export const clearModeration = run(actions.clearModeration);
+export const dismissReports = run(actions.dismissReports);
+export const approveListing = run(actions.approveListing);
+export const rejectListing = run(actions.rejectListing);
+export const setExcluded = run(actions.setExcluded);
+export const blockAccount = run(actions.blockAccount);
+export const unblockAccount = run(actions.unblockAccount);
+export const setDealerVerified = run(actions.setDealerVerified);
 
-/* ---------- Премодерация новых объявлений ---------- */
-
-export function approveListing(listingId: string) {
-  approvals.set({ ...approvals.get(), [listingId]: "approved" });
-  addLog({ listingId, action: "approve" });
-}
-
-// отклонить = заблокировать с причиной (продавец видит её в кабинете)
-export function rejectListing(listingId: string, reason: BlockReason, note?: string) {
-  approvals.set({ ...approvals.get(), [listingId]: "rejected" });
-  moderation.set({ ...moderation.get(), [listingId]: { status: "blocked", reason, note, at: Date.now() } });
-  addLog({ listingId, action: "reject", reason });
-}
-
-/* ---------- Подборки ---------- */
-
-export function setExcluded(listingId: string, slug: string, exclude: boolean) {
-  const current = excluded.get()[listingId] ?? [];
-  const next = exclude ? [...new Set([...current, slug])] : current.filter((s) => s !== slug);
-  excluded.set({ ...excluded.get(), [listingId]: next });
-  addLog({ listingId, action: exclude ? "exclude" : "include" });
-}
-
-/* ---------- Аккаунты и дилеры ---------- */
-
-export function blockAccount(account: string, reason: BlockReason, note?: string) {
-  blockedAccounts.set({ ...blockedAccounts.get(), [account]: { reason, note, at: Date.now() } });
-  addLog({ account, action: "blockAccount", reason });
-}
-
-export function unblockAccount(account: string) {
-  const next = { ...blockedAccounts.get() };
-  delete next[account];
-  blockedAccounts.set(next);
-  addLog({ account, action: "unblockAccount" });
-}
-
-export function setDealerVerified(slug: string, verified: boolean) {
-  verification.set({ ...verification.get(), [slug]: verified });
-  addLog({ account: dealerAccount(slug), action: verified ? "verify" : "unverify" });
-}
+// Жалоба покупателя (кнопка «Пожаловаться» на странице объявления)
+export const addReport = actions.addReport;

@@ -22,6 +22,13 @@
       "when": 1793289568382,
       "tag": "0002_drop_dealer_copies",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793291980583,
+      "tag": "0003_accounts_and_moderation",
+      "breakpoints": true
     }
   ]
 }

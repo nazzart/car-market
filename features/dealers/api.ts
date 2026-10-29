@@ -3,9 +3,10 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { type SQL, and, arrayContains, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { type SQL, and, arrayContains, asc, desc, eq, ilike, isNull, or, sql } from "drizzle-orm";
 
 import { db, schema } from "@/lib/db";
+import { CACHE_VERSION } from "@/lib/db/cacheVersion";
 
 import { getOpenStatus } from "./lib/openStatus";
 import type { Dealer, DealerContact, DealerPin } from "./types";
@@ -14,13 +15,21 @@ const { dealers, dealerContacts } = schema;
 
 type Row = typeof dealers.$inferSelect;
 
+// внутренний номер, даты и поля блокировки наружу как есть не отдаём: дилер известен по slug, блокировка — объектом
+const HIDDEN = new Set(["id", "createdAt", "blockedReason", "blockedNote", "blockedAt"]);
+
 function toDealer(row: Row, contacts: DealerContact[]): Dealer {
-  // необязательные поля без значения — undefined, как в типе Dealer; внутренний номер и даты наружу не отдаём —
-  // снаружи дилер известен по slug
-  const fields = Object.fromEntries(
-    Object.entries(row).filter(([key, value]) => value !== null && key !== "createdAt" && key !== "id")
-  );
-  return { ...(fields as Omit<Dealer, "contacts">), ...(contacts.length ? { contacts } : {}) };
+  // необязательные поля без значения — undefined, как в типе Dealer
+  const fields = Object.fromEntries(Object.entries(row).filter(([key, value]) => value !== null && !HIDDEN.has(key)));
+  const { blockedReason, blockedNote, blockedAt } = row;
+  return {
+    ...(fields as Omit<Dealer, "contacts" | "blocked">),
+    ...(contacts.length ? { contacts } : {}),
+    // из кэша дата приходит строкой
+    ...(blockedReason && blockedAt
+      ? { blocked: { reason: blockedReason, note: blockedNote ?? undefined, at: new Date(blockedAt).getTime() } }
+      : {}),
+  };
 }
 
 // Дилеров немного (сотни), поэтому каталог читается целиком двумя запросами и кэшируется
@@ -39,7 +48,7 @@ const catalog = unstable_cache(
       )
     );
   },
-  ["dealers", "catalog"],
+  ["dealers", CACHE_VERSION, "catalog"],
   { tags: ["dealers"], revalidate: 300 }
 );
 
@@ -52,9 +61,9 @@ export async function getDealers(): Promise<Dealer[]> {
   return catalog();
 }
 
-// Всего дилеров — для подзаголовка «14 uzņēmumi visā Latvijā»
+// Всего дилеров — для подзаголовка «14 uzņēmumi visā Latvijā» (заблокированные модератором не считаем)
 export async function countDealers(): Promise<number> {
-  return (await catalog()).length;
+  return (await catalog()).filter((d) => !d.blocked).length;
 }
 
 /* ---------- Страница /dealers: фильтры, карта, постраничный список ---------- */
@@ -72,7 +81,7 @@ const filterOptions = unstable_cache(
     ]);
     return { cities: cities.map((r) => r.city), brands: brands.rows.map((r) => r.brand) };
   },
-  ["dealers", "filterOptions"],
+  ["dealers", CACHE_VERSION, "filterOptions"],
   { tags: ["dealers"], revalidate: 300 }
 );
 
@@ -86,7 +95,7 @@ const likeText = (text: string) => `%${text.replace(/[\\%_]/g, (c) => `\\${c}`)}
 // Фильтры из URL → SQL. Результат кэшируется: «открыто сейчас» и область карты считаются после, на каждый запрос
 const matchingRows = unstable_cache(
   async (q: string, type: string, city: string, brand: string) => {
-    const conditions: (SQL | undefined)[] = [];
+    const conditions: (SQL | undefined)[] = [isNull(dealers.blockedAt)]; // заблокированных модератором не показываем
     if (q) conditions.push(or(ilike(dealers.name, likeText(q)), ilike(dealers.address, likeText(q))));
     if (type) conditions.push(eq(dealers.type, type as Dealer["type"]));
     if (city) conditions.push(eq(dealers.city, city));
@@ -98,7 +107,7 @@ const matchingRows = unstable_cache(
       .where(and(...conditions))
       .orderBy(desc(dealers.verified), asc(dealers.name));
   },
-  ["dealers", "search"],
+  ["dealers", CACHE_VERSION, "search"],
   { tags: ["dealers"], revalidate: 300 }
 );
 

@@ -5,12 +5,9 @@ import { useTranslations } from "next-intl";
 import { Alert, Button, IconButton, InputAdornment, TextField } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
-import { DEMO_PASSWORD, demoAccounts, signInWithPassword } from "../api";
-import type { User } from "../types";
-import { login } from "../store";
+import { signIn } from "../actions";
+import { useAuth } from "../store";
 import { AuthHeader, isEmail, pillSx } from "../ui";
 
 type Props = {
@@ -19,11 +16,6 @@ type Props = {
   onLoggedIn: () => void;
 };
 
-const demoButtons = [
-  { id: "demo-individual", label: "types.individual", icon: PersonOutlineIcon },
-  { id: "demo-dealer", label: "types.dealer", icon: StorefrontOutlinedIcon },
-] as const;
-
 export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedIn }: Props) {
   const t = useTranslations("auth");
   const [email, setEmail] = useState("");
@@ -31,14 +23,11 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
+  const { setUser } = useAuth();
 
   const emailError = submitted && !isEmail(email);
   const passwordError = submitted && !password;
-
-  const signIn = (user: User) => {
-    login(user);
-    onLoggedIn();
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,14 +36,17 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
 
     if (!isEmail(email) || !password) return;
 
-    const user = await signInWithPassword(email, password);
+    setSending(true);
+    const result = await signIn(email, password).catch(() => ({ error: "failed" as const }));
+    setSending(false);
 
-    if (!user) {
-      setError(t("login.wrong"));
+    if ("error" in result) {
+      setError(result.error === "invalid" ? t("login.wrong") : t(`errors.${result.error}`));
       return;
     }
 
-    signIn(user);
+    setUser(result.user);
+    onLoggedIn();
   };
 
   return (
@@ -116,7 +108,7 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
           </Alert>
         )}
 
-        <Button type="submit" variant="contained" size="large" fullWidth sx={pillSx}>
+        <Button type="submit" variant="contained" size="large" fullWidth disabled={sending} sx={pillSx}>
           {t("login.submit")}
         </Button>
       </form>
@@ -131,29 +123,6 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
       <Button variant="outlined" size="large" fullWidth onClick={onCreateAccount} sx={{ ...pillSx, borderColor: "grey.300", color: "grey.900", "&:hover": { borderColor: "grey.900", bgcolor: "transparent" } }}>
         {t("login.createAccount")}
       </Button>
-
-      {/* Демо-доступ — пока нет настоящих аккаунтов */}
-
-      <div className="mt-6 p-4 rounded-2xl bg-gray-50">
-        <div className="text-sm font-semibold text-gray-900">{t("login.demoTitle")}</div>
-        <p className="text-xs text-gray-500 mt-0.5">
-          {t("login.demoText", { email: demoAccounts[0].email, password: DEMO_PASSWORD })}
-        </p>
-
-        <div className="grid grid-cols-2 gap-2 mt-3">
-          {demoButtons.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => signIn(demoAccounts.find((u) => u.id === id)!)}
-              className="inline-flex items-center justify-center gap-1.5 min-h-10 py-1.5 px-2 rounded-full border border-gray-200 bg-white text-xs sm:text-sm font-medium text-gray-900 hover:border-gray-900 transition cursor-pointer"
-            >
-              <Icon sx={{ fontSize: 18 }} />
-              {t(label)}
-            </button>
-          ))}
-        </div>
-      </div>
     </>
   );
 }

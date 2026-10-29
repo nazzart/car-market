@@ -4,7 +4,8 @@
 import { brands } from "../features/brands/data/brands";
 import { modelsByBrand } from "../features/brands/data/models";
 import { carColors } from "../features/cars/config/colors";
-import type { Drive, Fuel, Listing, MileageLatvia, OverallCondition, ServiceState } from "../features/cars/types";
+import type { DemoListing } from "../features/cars/data/listings";
+import type { Drive, Fuel, MileageLatvia, OverallCondition, ServiceState } from "../features/cars/types";
 import type { Dealer } from "../features/dealers/types";
 import { PLACES } from "../lib/places";
 
@@ -101,7 +102,7 @@ function random(seed: number) {
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
-export function generateListings(count: number, firstId: number, dealers: Dealer[]): (Listing & { postedMinutesAgo: number })[] {
+export function generateListings(count: number, firstId: number, dealers: Dealer[]): DemoListing[] {
   for (const [brand, model] of MODELS) {
     if (!modelsByBrand[brand]?.includes(model)) throw new Error(`Нет модели в каталоге: ${brand} ${model}`);
   }

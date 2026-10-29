@@ -1,3 +1,5 @@
+import type { AccountBlock } from "@/features/moderation/types";
+
 // Дилер и связанные типы — общие для демо-данных, API и компонентов
 
 // Часы работы по дням; нет дня — выходной. Время в формате «HH:MM»
@@ -34,6 +36,7 @@ export type Dealer = {
   carsInStock: number;
   since: number; // на сайте с
   description?: string;
+  blocked?: AccountBlock; // модератор заблокировал компанию: страница и объявления скрыты
 };
 
 // Метка на карте дилеров: только то, что нужно для значка и всплывающей карточки

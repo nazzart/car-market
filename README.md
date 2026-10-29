@@ -2,8 +2,9 @@
 
 Marketplace for buying and selling cars in Latvia — private sellers and dealers. Latvian (default) and Russian.
 
-> **Status: prototype moving to production.** Listings and dealers are stored in PostgreSQL (Supabase). Login is still
-> demo-only, and user actions (favorites, moderation, settings) are stored in the browser. See [Before production](#before-production).
+> **Status: moving to production.** Listings, dealers, accounts (Supabase Auth), favorites, listing statuses and
+> moderation are stored in PostgreSQL (Supabase). Creating listings from the sell form is not connected yet.
+> See [Before production](#before-production).
 
 ## Stack
 
@@ -32,8 +33,9 @@ npm run dev          # http://localhost:3000
 | `npm run lint` | ESLint |
 | `npm run db:generate` | After changing `lib/db/schema.ts`: writes a new SQL migration to `lib/db/migrations/` |
 | `npm run db:migrate` | Applies pending migrations to the database |
-| `npm run db:seed` | Loads demo dealers and listings into an empty database (`-- --reset` wipes and reloads; `-- --reset --generate 100` adds 100 random listings for testing search and pagination) |
+| `npm run db:seed` | Loads demo dealers and listings into an empty database (`-- --reset` replaces demo data — never touches registered accounts and their listings; `-- --reset --generate 100` adds 100 random listings for testing search and pagination) |
 | `npm run db:studio` | Browse the database in Drizzle Studio |
+| `npm run admin:grant -- email` | Give a registered account moderator rights (`--revoke` to remove) |
 | `npm run catalog:build` | Rebuilds car brands and models from the Dutch vehicle register (RDW open data, CC0) — run yearly |
 
 ### Environment variables
@@ -43,21 +45,27 @@ npm run dev          # http://localhost:3000
 | `NEXT_PUBLIC_SITE_URL` | Absolute site URL for link previews, sitemap and robots | `http://localhost:3000` |
 | `DATABASE_URL` | Server only. Supabase **transaction pooler** connection string (port 6543), used by the app | — |
 | `MIGRATIONS_DATABASE_URL` | Server only. Supabase **session pooler** (port 5432), used by migrations and seeding | `DATABASE_URL` |
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project (for Supabase Auth, later) | — |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project: login (Supabase Auth) | — |
 
 The connection strings contain the database password: keep them in `.env.local` (git-ignored) and in the
 hosting provider's settings, never in code. All tables have Row Level Security enabled with no policies, so
 the public Supabase key cannot read or change them; only the Next.js server (which connects as the owner) can.
 
-### Demo accounts
+### Accounts
 
-Open **Ienākt** (Login) and use the demo buttons, or log in with password `demo1234`:
+Accounts use **Supabase Auth** (email + password). The session lives in a cookie, so the server knows who is asking:
+every Server Action that changes data calls `requireUser()` / `requireAdmin()` from `features/auth/api.ts` first.
 
-| Account | Email | What to try |
-|---|---|---|
-| Private seller | `andris@demo.lv` | Account page, listing statuses, settings |
-| Dealer | `dealer@demo.lv` | Dealer settings (address, map pin, opening hours) |
-| Moderator | `admin@demo.lv` | `/admin` — approvals, reports, users, collections |
+- **Register** on the site (Ienākt → Izveidot kontu). A company account also gets a public dealer page right away,
+  without the "Verified" badge until a moderator checks its registration number.
+- **Make yourself a moderator** (access to `/admin`): `npm run admin:grant -- you@example.com`
+- **Supabase settings** (dashboard):
+  - *Authentication → Sign In / Providers → Email → Confirm email*: off for now. Turn it on together with your own
+    email sender (e.g. Resend) — Supabase's built-in sender allows only a few emails per hour.
+  - *Authentication → URL Configuration*: Site URL `http://localhost:3000` (production URL later) and redirect URL
+    `http://localhost:3000/api/auth/callback` — password-reset links land there.
+
+Compare is the only thing kept in the browser (`lib/localStore.ts`): it's a temporary scratch list.
 
 ## Project structure
 
@@ -90,17 +98,20 @@ Conventions:
   engines can reach every page. The dealers map gets light pins for all matches; "search as I move the map"
   puts the map area in the URL (`?bounds=south,west,north,east`).
   ESLint blocks importing `@/lib/db` or the demo `data/` files anywhere else.
-- **Caching:** query results are cached with the tags `"listings"` / `"dealers"` for up to 5 minutes. Code that
-  changes data must call `revalidateTag("listings")` (or `"dealers"`) so pages update at once.
+- **Caching:** query results are cached with the tags `"listings"` / `"dealers"` for up to 5 minutes. A Server
+  Action that changes data calls `updateTag("listings")` (or `"dealers"`) so pages update at once.
+- **Changing data:** `features/*/actions.ts` (Server Actions: check who is logged in, validate input) →
+  `features/*/api.ts` (SQL). Never trust ids or roles sent from the browser.
 - **No copies of related data:** a listing references its dealer (`dealer_id`) and contact person (`contact_id`);
   the dealer's name and phone are read with a JOIN in `features/cars/api.ts`, so a change in `dealers` shows everywhere.
+- **Cache version:** after a schema change (or a change to what a cached query returns), bump `CACHE_VERSION` in
+  `lib/db/cacheVersion.ts` — cached results survive restarts and deploys and would otherwise have the old shape.
 - **Schema changes:** edit `lib/db/schema.ts` → `npm run db:generate` → review the SQL → `npm run db:migrate`.
   Commit the migration files. When a change must move existing data (like `0001_dealer_ids.sql`), edit the
   generated SQL by hand to fill new columns before old ones are dropped.
-- A dealer's own profile (catalogue + saved settings + account) is built in one place: `useOwnDealer()`.
-- Profile changes go through `updateProfile()` in `features/auth/store.ts`, never by rewriting the session.
-- Browser-stored state goes through `lib/localStore.ts`, so each store can later be swapped for an API call.
-- `TODO(backend)` comments mark the places to connect to the backend.
+- The logged-in user in the browser: `useAuth()` (`features/auth/store.ts`); a dealer's own page: `useOwnDealer()`.
+- Profile and dealer-page changes go through `saveProfile()` / `saveDealerProfile()` in `features/account/actions.ts`.
+- `TODO(...)` comments mark known next steps (search, admin paging, sell form saving).
 
 ## Security
 
@@ -110,9 +121,9 @@ analytics…), add its domain to the `sources` list there, otherwise the browser
 
 ## Before production
 
-- **Backend:** real authentication (Supabase Auth); server-side admin role checks; saving listings and photo
-  uploads (Cloudflare R2) from the sell form; server-side search on `/cars`; moving favorites, statuses,
-  moderation and settings from the browser to the database.
+- **Backend:** saving listings and photo uploads (Cloudflare R2) from the sell form; rate limiting for login,
+  registration and reports.
+- **Email:** own sender (Resend) and *Confirm email* on in Supabase.
 - **Services:** OpenStreetMap tiles and the public Photon server are for light use — switch to a tile provider
   (e.g. MapTiler, Stadia) and a self-hosted geocoder or the VZD address register.
 - **Content:** real contact email and a lawyer-reviewed privacy policy.

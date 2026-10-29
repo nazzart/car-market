@@ -24,7 +24,7 @@ import { Badge, EmptyBox, pillClass, useAdminData, useModerationDialog } from ".
 const REGISTER_URL = "https://info.ur.gov.lv/";
 
 type Account = {
-  key: string; // «dealer:baltic-auto» / «user:demo-individual»
+  key: string; // «dealer:baltic-auto» / «user:<uuid>»
   name: string;
   kind: "dealer" | "individual";
   contact: string;

@@ -16,7 +16,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { Menu, MenuItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
 
 import { User, isAdmin } from "@/features/auth/types";
-import { logout } from "@/features/auth/store";
+import { useLogout } from "@/features/auth/store";
 import { initials } from "@/lib/utils";
 
 type Props = {
@@ -27,6 +27,7 @@ type Props = {
 export default function UserMenu({ user, onLoginClick }: Props) {
   const t = useTranslations("nav");
   const router = useRouter();
+  const logout = useLogout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const close = () => setAnchorEl(null);
@@ -113,8 +114,8 @@ export default function UserMenu({ user, onLoginClick }: Props) {
         <MenuItem
           onClick={() => {
             close();
-            logout();
             router.push("/");
+            logout();
           }}
           sx={{ borderRadius: "10px", color: "#dc2626" }}
         >

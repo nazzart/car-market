@@ -16,7 +16,6 @@ import { Segmented, Select, inputClass } from "@/features/cars/car-list/componen
 import { usePathname, useRouter } from "@/i18n/navigation";
 
 import type { DealerSearchResult } from "../api";
-import { useDealerOverrides } from "../useDealers";
 import DealerCard from "./DealerCard";
 import type { MapBounds } from "./DealersMap";
 
@@ -121,10 +120,8 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
   const setSearchOnMove = (on: boolean) =>
     setParam("bounds")(on && bounds.current ? formatBounds(bounds.current) : null);
 
-  // скрытые модератором — не показываем, свой профиль дилера — с изменениями из настроек
-  const overrides = useDealerOverrides();
-  const visible = overrides(result.items);
-  const pins = overrides(result.pins);
+  const visible = result.items;
+  const pins = result.pins;
 
   // Клик по метке → прокручиваем список к карточке
   useEffect(() => {

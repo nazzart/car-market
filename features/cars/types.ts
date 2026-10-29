@@ -1,3 +1,6 @@
+import type { ListingStatus } from "@/features/account/listings/status";
+import type { AccountBlock, Moderation } from "@/features/moderation/types";
+
 import type { DamageMap } from "./config/damage";
 
 // Объявление — общий тип для демо-данных, API и компонентов
@@ -32,13 +35,17 @@ export type Listing = {
   sellerType: SellerType;
   sellerName?: string;
   dealer?: string; // slug дилера
-  userId?: string; // владелец — зарегистрированный частный продавец (у дилерских — dealer)
+  userId?: string; // владелец — зарегистрированный частный продавец, uuid (у дилерских — dealer)
   contactId?: string; // контактное лицо дилера (DealerContact.id); нет — основной телефон компании
   city: string; // ключ места из lib/places.ts (город или край)
   postedMinutesAgo: number;
   phone: string;
   images: string[];
   review?: "pending"; // новое объявление на проверке: не видно покупателям, пока модератор не одобрит
+  status: ListingStatus; // продавец: активно / скрыто / продано / удалено
+  moderation?: Moderation; // решение модератора — важнее статуса продавца
+  accountBlock?: AccountBlock; // модератор заблокировал аккаунт продавца
+  excludedCollections?: string[]; // модератор убрал из подборок (slug)
 
   // Детали для страницы объявления (необязательные)
   color?: string; // ключ цвета, как в форме продажи

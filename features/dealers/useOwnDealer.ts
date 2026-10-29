@@ -9,32 +9,23 @@ import { placePointOrRiga } from "@/lib/places";
 import { useDealerLookup } from "./hooks";
 import type { Dealer } from "./types";
 
-// Профиль дилера, как его видят все: каталог + сохранённые настройки + данные аккаунта.
-// Единые правила: имя и телефон — из аккаунта (пустой телефон → телефон из каталога).
-// У нового дилера без страницы в каталоге — пустые значения вместо undefined
+// Страница дилера вошедшей компании — из базы (каталог дилеров). Если каталог ещё не обновился
+// после регистрации — пустые значения вместо undefined
 export function resolveDealer(user: User, base: Dealer | undefined): Dealer {
-  const city = user.dealerProfile?.city ?? base?.city ?? user.city;
-  const fallback: Dealer = {
+  return {
     slug: user.dealerSlug ?? "",
     name: user.name,
     type: "used",
     brands: [],
-    city,
+    city: user.city,
     address: "",
-    ...placePointOrRiga(city),
-    phone: "",
+    ...placePointOrRiga(user.city),
+    phone: user.phone,
     contacts: [],
     hours: {},
     carsInStock: 0,
     since: user.since,
-  };
-
-  return {
-    ...fallback,
     ...base,
-    ...user.dealerProfile,
-    name: user.name || base?.name || "",
-    phone: user.phone || base?.phone || "",
   };
 }
 

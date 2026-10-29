@@ -3,8 +3,7 @@
   "loggedOut": {
     "title": "Mans konts",
     "text": "Ienāciet, lai pārvaldītu sludinājumus un sekotu skatījumiem",
-    "login": "Ienākt",
-    "demo": "Pārbaudei ir demo piekļuve: privātpersona vai dīleris"
+    "login": "Ienākt"
   },
   "tabs": {
     "active": "Aktīvie",
@@ -154,9 +153,10 @@
       "current": "Pašreizējā parole",
       "next": "Jaunā parole",
       "change": "Mainīt paroli",
-      "changed": "Parole nomainīta (demo režīms)",
+      "changed": "Parole nomainīta",
       "weak": "Parole neatbilst prasībām",
-      "currentRequired": "Ievadiet pašreizējo paroli"
+      "currentRequired": "Ievadiet pašreizējo paroli",
+      "wrong": "Nepareiza pašreizējā parole"
     },
     "saveBar": {
       "unsaved": "Ir nesaglabātas izmaiņas",

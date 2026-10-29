@@ -8,10 +8,8 @@ import { useCatalog } from "@/components/providers/CatalogProvider";
 
 import {
   countSearch,
-  loadAllListings,
   loadLatestListings,
   loadListingsByIds,
-  loadOwnerListings,
 } from "./actions";
 import type { Listing, ListingStats } from "./types";
 
@@ -54,24 +52,9 @@ export function useListingsByIds(ids: string[]): Listing[] | undefined {
   return ids.length ? data : [];
 }
 
-export function useDealerListingsOf(slug: string | undefined): Listing[] | undefined {
-  const data = useServerData(slug ? `dealer:${slug}` : null, () => loadOwnerListings({ dealer: slug }));
-  return slug ? data : [];
-}
-
-export function useUserListings(userId: string | undefined): Listing[] | undefined {
-  const data = useServerData(userId ? `user:${userId}` : null, () => loadOwnerListings({ userId }));
-  return userId ? data : [];
-}
-
 // Свежие объявления с фото — подсказки на пустых страницах
 export function useLatestListings(limit: number): Listing[] | undefined {
   return useServerData(`latest:${limit}`, () => loadLatestListings(limit));
-}
-
-// Весь каталог, включая скрытые и на проверке — только модерация
-export function useAllListings(): Listing[] | undefined {
-  return useServerData("all", loadAllListings);
 }
 
 // Число объявлений по фильтрам (быстрый поиск на главной)

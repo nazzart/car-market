@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button, TextField } from "@mui/material";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 
+import { requestPasswordReset } from "../actions";
 import { AuthHeader, isEmail, pillSx } from "../ui";
 
 type Props = {
@@ -19,13 +20,18 @@ export default function ForgotPasswordView({ onBack }: Props) {
 
   const emailError = submitted && !isEmail(email);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
 
     if (!isEmail(email)) return;
 
-    // TODO(backend): отправка письма через API
+    // ссылка в письме ведёт на /api/auth/callback → /account/password (новый пароль)
+    setSending(true);
+    await requestPasswordReset(email).catch(() => null);
+    setSending(false);
     setSent(true);
   };
 
@@ -68,7 +74,7 @@ export default function ForgotPasswordView({ onBack }: Props) {
           helperText={emailError && t("invalidEmail")}
         />
 
-        <Button type="submit" variant="contained" size="large" fullWidth sx={pillSx}>
+        <Button type="submit" variant="contained" size="large" fullWidth disabled={sending} sx={pillSx}>
           {t("forgot.submit")}
         </Button>
       </form>

@@ -1,21 +1,17 @@
-import type { Dealer } from "@/features/dealers/types";
+import type { AccountBlock } from "@/features/moderation/types";
 
-// Изменения, которые дилер сделал в настройках (поверх данных каталога дилеров)
-export type DealerProfile = Partial<
-  Pick<Dealer, "type" | "brands" | "contacts" | "regNumber" | "description" | "address" | "city" | "lat" | "lng" | "hours">
->;
-
+// Вошедший пользователь: профиль из таблицы profiles + email из Supabase Auth
 export type User = {
-  id: string;
+  id: string; // uuid из Supabase Auth
   type: "individual" | "dealer";
   name: string;
   email: string;
   phone: string;
   city: string; // ключ места из lib/places.ts (город или край)
-  since: number;
+  since: number; // год регистрации
   dealerSlug?: string; // для дилера — его страница /dealers/[slug]
-  dealerProfile?: DealerProfile;
   role?: "admin"; // модератор: доступ к /admin
+  blocked?: AccountBlock; // аккаунт заблокирован модератором
 };
 
 export const isAdmin = (user: User | null | undefined) => user?.role === "admin";

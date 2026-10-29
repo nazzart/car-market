@@ -8,12 +8,15 @@ import { type SQL, and, asc, count, desc, eq, getTableColumns, gte, inArray, isN
 
 import { EXOTIC_BRANDS, collections } from "@/features/collections/config";
 import { db, schema } from "@/lib/db";
+import { CACHE_VERSION } from "@/lib/db/cacheVersion";
 import { PLACES, placeMatcher } from "@/lib/places";
 
 import { FILTER_KEYS, postedPeriods } from "./config/filterOptions";
+import type { BlockReason } from "@/features/moderation/types";
+
 import type { Listing, ListingStats } from "./types";
 
-const { listings, dealers, dealerContacts } = schema;
+const { listings, dealers, dealerContacts, profiles } = schema;
 
 export type Params = { get: (key: string) => string | null };
 
@@ -23,12 +26,16 @@ export const PAGE_SIZE = 20;
 
 // Объявление вместе с продавцом. У дилерского имя и телефон не хранятся в listings, а берутся при чтении:
 // имя — из dealers, телефон — контактного лица (dealer_contacts) или основной телефон дилера
+// и блокировка аккаунта продавца модератором — из dealers или profiles
 const listingColumns = {
   ...getTableColumns(listings),
   dealerSlug: dealers.slug,
   dealerName: dealers.name,
   dealerPhone: dealers.phone,
   contactPhone: dealerContacts.phone,
+  blockedReason: sql<BlockReason | null>`coalesce(${dealers.blockedReason}, ${profiles.blockedReason})`,
+  blockedNote: sql<string | null>`coalesce(${dealers.blockedNote}, ${profiles.blockedNote})`,
+  blockedAt: sql<string | null>`coalesce(${dealers.blockedAt}, ${profiles.blockedAt})`,
 };
 
 const selectListings = () =>
@@ -36,11 +43,14 @@ const selectListings = () =>
     .select(listingColumns)
     .from(listings)
     .leftJoin(dealers, eq(dealers.id, listings.dealerId))
-    .leftJoin(dealerContacts, eq(dealerContacts.id, listings.contactId));
+    .leftJoin(dealerContacts, eq(dealerContacts.id, listings.contactId))
+    .leftJoin(profiles, eq(profiles.id, listings.userId));
 
 // Минуты с публикации считаются при каждом чтении, а не хранятся в кэше
 type Row = Awaited<ReturnType<typeof selectListings>>[number];
 type CachedRow = Omit<Row, "postedAt"> & { postedAt: Date | string }; // из кэша дата приходит строкой
+
+const time = (value: Date | string | null) => (value === null ? 0 : new Date(value).getTime());
 
 function toListing({
   id,
@@ -53,20 +63,33 @@ function toListing({
   phone,
   postedAt,
   engine,
+  moderationStatus,
+  moderationReason,
+  moderationNote,
+  moderatedAt,
+  blockedReason,
+  blockedNote,
+  blockedAt,
+  excludedCollections,
   ...rest
 }: CachedRow): Listing {
   // необязательные поля без значения — undefined, как в типе Listing
   const fields = Object.fromEntries(Object.entries(rest).filter(([, value]) => value !== null));
   const name = dealerName ?? sellerName;
   return {
-    ...(fields as Omit<Listing, "id" | "dealer" | "engine" | "postedMinutesAgo" | "sellerType" | "phone">),
+    ...(fields as unknown as Omit<Listing, "id" | "dealer" | "engine" | "postedMinutesAgo" | "sellerType" | "phone">),
     id: String(id),
     sellerType: dealerId === null ? "private" : "dealer",
     ...(dealerSlug ? { dealer: dealerSlug } : {}),
     ...(name ? { sellerName: name } : {}),
     phone: contactPhone ?? dealerPhone ?? phone ?? "",
     engine,
-    postedMinutesAgo: Math.max(0, Math.round((Date.now() - new Date(postedAt).getTime()) / 60_000)),
+    postedMinutesAgo: Math.max(0, Math.round((Date.now() - time(postedAt)) / 60_000)),
+    ...(moderationStatus && moderationReason
+      ? { moderation: { status: moderationStatus, reason: moderationReason, note: moderationNote ?? undefined, at: time(moderatedAt) } }
+      : {}),
+    ...(blockedReason ? { accountBlock: { reason: blockedReason, note: blockedNote ?? undefined, at: time(blockedAt) } } : {}),
+    ...(excludedCollections?.length ? { excludedCollections } : {}),
   };
 }
 
@@ -76,9 +99,21 @@ const ofDealer = (slug: string) =>
 
 // Тег "dealers" тоже: объявления читают имя и телефон дилера (JOIN), изменение дилера должно обновить и их
 const cached = <Args extends unknown[], Result>(fn: (...args: Args) => Promise<Result>, key: string) =>
-  unstable_cache(fn, ["listings", key], { tags: ["listings", "dealers"], revalidate: 300 });
+  unstable_cache(fn, ["listings", CACHE_VERSION, key], { tags: ["listings", "dealers"], revalidate: 300 });
 
-const published = isNull(listings.review); // новое объявление на проверке не видно покупателям
+// Видно покупателям: не на проверке, продавец не скрыл/не продал, модератор не заблокировал,
+// аккаунт продавца не заблокирован. Должно совпадать с isPublic() в features/moderation/visibility.ts
+const published = and(
+  isNull(listings.review),
+  eq(listings.status, "active"),
+  isNull(listings.moderationStatus),
+  sql`not exists (select 1 from ${dealers} where ${dealers.id} = ${listings.dealerId} and ${dealers.blockedAt} is not null)`,
+  sql`not exists (select 1 from ${profiles} where ${profiles.id} = ${listings.userId} and ${profiles.blockedAt} is not null)`
+)!;
+
+// Подборка — по её правилу, кроме объявлений, которые модератор из неё убрал
+const inCollection = (slug: string) =>
+  and(collectionWhere[slug], sql`not (${slug} = any(${listings.excludedCollections}))`);
 const newestFirst = [desc(listings.postedAt), desc(listings.id)];
 
 /* ---------- Фильтры поиска → WHERE ---------- */
@@ -126,7 +161,7 @@ function searchWhere(params: Params): SQL | undefined {
   }
 
   const collection = collections.find((c) => c.slug === text("collection"));
-  if (collection) conditions.push(collectionWhere[collection.slug]);
+  if (collection) conditions.push(inCollection(collection.slug));
 
   // место: город или край (край — со своими городами), area — плюс окрестности в км
   const place = text("place");
@@ -257,7 +292,7 @@ const statsQuery = cached(async (): Promise<ListingStats> => {
         const [{ total }] = await db
           .select({ total: count() })
           .from(listings)
-          .where(and(published, collectionWhere[c.slug]));
+          .where(and(published, inCollection(c.slug)));
         return [c.slug, total] as const;
       })
     ),
@@ -279,7 +314,7 @@ export async function getListingStats(): Promise<ListingStats> {
 
 /* ---------- Отдельные объявления и подборки ---------- */
 
-const allRows = cached(() => selectListings().orderBy(...newestFirst), "all");
+const allRows = () => selectListings().orderBy(...newestFirst); // только модерация — без кэша
 const publishedRows = cached(
   () => selectListings().where(published).orderBy(...newestFirst),
   "published"
@@ -300,14 +335,13 @@ const rowsByIds = cached(
   (ids: number[]) => selectListings().where(inArray(listings.id, ids)),
   "byIds"
 );
-const dealerRows = cached(
-  (slug: string) => selectListings().where(ofDealer(slug)).orderBy(...newestFirst),
+// Страница дилера (видимые покупателям) — из кэша; кабинет и модерация — всегда свежие данные из базы
+const publicDealerRows = cached(
+  (slug: string) => selectListings().where(and(ofDealer(slug), published)).orderBy(...newestFirst),
   "byDealer"
 );
-const userRows = cached(
-  (userId: string) => selectListings().where(eq(listings.userId, userId)).orderBy(...newestFirst),
-  "byUser"
-);
+const dealerRows = (slug: string) => selectListings().where(ofDealer(slug)).orderBy(...newestFirst);
+const userRows = (userId: string) => selectListings().where(eq(listings.userId, userId)).orderBy(...newestFirst);
 
 const similarRows = cached(
   (id: number, brand: string, bodyType: string, limit: number) => {
@@ -361,8 +395,9 @@ export async function getSimilarListings(listing: Listing, limit: number): Promi
   return (await similarRows(Number(listing.id), listing.brand, listing.bodyType, limit)).map(toListing);
 }
 
-export async function getDealerListings(slug: string): Promise<Listing[]> {
-  return (await dealerRows(slug)).map(toListing);
+// Все объявления дилера (кабинет) или только видимые покупателям (страница дилера)
+export async function getDealerListings(slug: string, { publicOnly = false } = {}): Promise<Listing[]> {
+  return (await (publicOnly ? publicDealerRows(slug) : dealerRows(slug))).map(toListing);
 }
 
 export async function getUserListings(userId: string): Promise<Listing[]> {

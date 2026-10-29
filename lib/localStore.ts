@@ -2,7 +2,8 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 
-// Небольшое хранилище в localStorage с подпиской для React (избранное, сравнение).
+// Небольшое хранилище в localStorage с подпиской для React — только для временного списка сравнения.
+// Всё, что принадлежит пользователю (избранное, статусы, настройки), хранится в базе
 // На сервере значения нет — useValue() отдаёт fallback до гидратации
 export function createLocalStore<T>(key: string, fallback: T) {
   const listeners = new Set<() => void>();

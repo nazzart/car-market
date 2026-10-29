@@ -1,6 +1,8 @@
 // Заполняет базу демо-дилерами и демо-объявлениями из features/*/data.
 //   npm run db:seed                            — только в пустую базу
-//   npm run db:seed -- --reset                 — удаляет ВСЕ объявления и дилеров и загружает демо заново
+//   npm run db:seed -- --reset                 — заменяет демо-данные: объявления без владельца-аккаунта и дилеров
+//                                                без аккаунта. Зарегистрированные пользователи, их дилеры и объявления
+//                                                не трогаются
 //   npm run db:seed -- --reset --generate 100  — плюс 100 случайных объявлений (проверка поиска и пагинации)
 import { loadEnvConfig } from "@next/env";
 import { count, sql } from "drizzle-orm";
@@ -34,33 +36,42 @@ async function main() {
   const allListings = [...demoListings, ...generated];
 
   await db.transaction(async (tx) => {
-    await tx.execute(sql`truncate ${schema.listings}, ${schema.dealerContacts}, ${schema.dealers} restart identity`);
+    // демо — то, что не принадлежит ни одному аккаунту (избранное и жалобы на них удалятся каскадом)
+    const accountDealers = sql`(select ${schema.profiles.dealerId} from ${schema.profiles} where ${schema.profiles.dealerId} is not null)`;
+    await tx.execute(
+      sql`delete from ${schema.listings} where ${schema.listings.userId} is null and (${schema.listings.dealerId} is null or ${schema.listings.dealerId} not in ${accountDealers})`
+    );
+    await tx.execute(sql`delete from ${schema.dealers} where ${schema.dealers.id} not in ${accountDealers}`);
 
     // лишние поля (contacts) Drizzle пропускает: в таблицу попадают только её колонки.
     // База выдаёт дилерам номера (id) — по ним связываем контакты и объявления
     const inserted = await tx
       .insert(schema.dealers)
       .values(demoDealers)
+      .onConflictDoNothing({ target: schema.dealers.slug }) // адрес уже занят зарегистрированным дилером
       .returning({ id: schema.dealers.id, slug: schema.dealers.slug });
     const dealerId = new Map(inserted.map((d) => [d.slug, d.id]));
 
-    const contacts = demoDealers.flatMap((d) =>
-      (d.contacts ?? []).map((c, position) => ({ ...c, dealerId: dealerId.get(d.slug)!, position }))
-    );
+    // у пропущенных дилеров (адрес занят аккаунтом) — без контактов и объявлений
+    const contacts = demoDealers
+      .filter((d) => dealerId.has(d.slug))
+      .flatMap((d) => (d.contacts ?? []).map((c, position) => ({ ...c, dealerId: dealerId.get(d.slug)!, position })));
     if (contacts.length) await tx.insert(schema.dealerContacts).values(contacts);
 
     // у дилерских объявлений имя и телефон не храним — они берутся из dealers при чтении;
     // sellerType тоже не колонка (считается по dealer_id), Drizzle его пропускает
     await tx.insert(schema.listings).values(
-      allListings.map(({ id, dealer, postedMinutesAgo, sellerName, phone, ...listing }) => ({
-        ...listing,
-        id: Number(id),
-        dealerId: dealer ? dealerId.get(dealer)! : null,
-        sellerName: dealer ? null : sellerName,
-        phone: dealer ? null : phone,
-        postedAt: new Date(now - postedMinutesAgo * 60_000),
-      }))
-    );
+      allListings
+        .filter((l) => !l.dealer || dealerId.has(l.dealer))
+        .map(({ id, dealer, postedMinutesAgo, sellerName, phone, ...listing }) => ({
+          ...listing,
+          id: Number(id),
+          dealerId: dealer ? dealerId.get(dealer)! : null,
+          sellerName: dealer ? null : sellerName,
+          phone: dealer ? null : phone,
+          postedAt: new Date(now - postedMinutesAgo * 60_000),
+        }))
+    ).onConflictDoNothing(); // номер занят объявлением пользователя — демо пропускаем
 
     // следующие объявления получат номера после демо (identity не знает о вставленных вручную id)
     await tx.execute(

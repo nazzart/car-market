@@ -115,7 +115,7 @@ export default async function ListingPage({ params }: Props) {
       </header>
 
       <ListingStatusNotice
-        listing={{ id: listing.id, review: listing.review, dealer: listing.dealer, userId: listing.userId }}
+        listing={{ status: listing.status, review: listing.review, moderation: listing.moderation, accountBlock: listing.accountBlock }}
         brand={listing.brand}
       />
 

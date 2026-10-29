@@ -21,19 +21,18 @@ import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import { Listing } from "@/features/cars/types";
-import { useDealerListingsOf, useUserListings } from "@/features/cars/hooks";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { formatHours } from "@/features/dealers/lib/hours";
 import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { Link } from "@/i18n/navigation";
 
-import { accountOfUser } from "@/features/moderation/accounts";
-import { Moderation, useBlockedAccounts, useModeration } from "@/features/moderation/store";
+import type { Moderation } from "@/features/moderation/types";
 import { useVisibility } from "@/features/moderation/visibility";
 
 import ListingActions from "./listings/ListingActions";
-import { ListingStatus, setListingStatus, statusOf, useListingStatuses } from "./listings/statusStore";
+import type { ListingStatus } from "./listings/status";
+import { useOwnListings } from "./useOwnListings";
 import { formatAgo, formatNumber, initials } from "@/lib/utils";
 
 // Пока статистики нет — считаем примерные значения от просмотров
@@ -59,8 +58,12 @@ const secondaryButton =
   "inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium text-gray-900 transition";
 
 // title — заголовок страницы, на которую пытались попасть (например, «Настройки профиля»)
+// Не вошёл — просим войти. Пока профиль загружается, вместо этого — заглушка (чтобы не мигало «Войдите»)
 export function LoggedOut({ title }: { title?: string }) {
   const t = useTranslations("account.loggedOut");
+  const { loading } = useAuth();
+
+  if (loading) return <div className="max-w-3xl mx-auto my-10 h-80 rounded-3xl bg-gray-50 animate-pulse" />;
 
   return (
     <div className="max-w-md mx-auto text-center py-20">
@@ -77,9 +80,6 @@ export function LoggedOut({ title }: { title?: string }) {
         {t("login")}
       </button>
 
-      <p className="text-xs text-gray-500 mt-4">
-        {t("demo")}
-      </p>
     </div>
   );
 }
@@ -210,40 +210,33 @@ export default function AccountView() {
   const placeName = usePlaceName();
   const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("active");
-  const statuses = useListingStatuses();
-  const moderation = useModeration();
   const { of } = useVisibility();
-  const blockedAccounts = useBlockedAccounts();
   const [undo, setUndo] = useState<{ id: string; prev: ListingStatus; next: ListingStatus } | null>(null);
-  // каталог дилеров + изменения из настроек
   const dealer = useOwnDealer();
-  const dealerListings = useDealerListingsOf(dealer ? user?.dealerSlug : undefined);
-  const privateListings = useUserListings(dealer ? undefined : user?.id);
+  const { listings: ownListings, setStatus } = useOwnListings(); // undefined — ещё загружаются
 
   if (!user) return <LoggedOut />;
 
   const isDealer = user.type === "dealer";
-  const ownListings = dealer ? dealerListings : privateListings; // undefined — ещё загружаются
-  const all = (ownListings ?? []).filter((l) => statusOf(statuses, l.id) !== "deleted");
+  const all = (ownListings ?? []).filter((l) => l.status !== "deleted");
   const tabOf = (listing: Listing): Tab => {
     const v = of(listing);
     if (v.moderation) return "blocked";
     if (v.pending) return "pending";
-    return statusOf(statuses, listing.id) as Tab;
+    return listing.status as Tab;
   };
   const byStatus = (s: Tab) => all.filter((l) => tabOf(l) === s);
   const visibleTabs = tabs.filter((item) => !["pending", "blocked"].includes(item) || byStatus(item).length > 0);
-  const accountBlock = blockedAccounts[accountOfUser(user)];
+  const accountBlock = user.blocked;
   const blockedCount = byStatus("blocked").length;
   const pendingCount = byStatus("pending").length;
   // статистика — только по активным
   const own = byStatus("active");
   const shown = byStatus(tab);
 
-  const changeStatus = (id: string, next: ListingStatus) => {
-    const prev = statusOf(statuses, id);
-    setListingStatus(id, next);
-    setUndo({ id, prev, next });
+  const changeStatus = (listing: Listing, next: ListingStatus) => {
+    setStatus(listing.id, next);
+    setUndo({ id: listing.id, prev: listing.status, next });
   };
 
   const totalViews = own.reduce((sum, l) => sum + (l.views ?? 0), 0);
@@ -379,10 +372,10 @@ export default function AccountView() {
                 <ListingRow
                   key={l.id}
                   listing={l}
-                  status={statusOf(statuses, l.id)}
-                  moderation={moderation[l.id]}
+                  status={l.status}
+                  moderation={l.moderation}
                   pending={tabOf(l) === "pending"}
-                  onStatusChange={(next) => changeStatus(l.id, next)}
+                  onStatusChange={(next) => changeStatus(l, next)}
                 />
               ))}
             </div>
@@ -477,7 +470,7 @@ export default function AccountView() {
           <button
             type="button"
             onClick={() => {
-              if (undo) setListingStatus(undo.id, undo.prev);
+              if (undo) setStatus(undo.id, undo.prev);
               setUndo(null);
             }}
             className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white hover:bg-white/10 cursor-pointer"

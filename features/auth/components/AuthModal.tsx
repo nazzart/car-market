@@ -121,6 +121,10 @@ export default function AuthModal({ open, onClose, initialView = "login" }: Prop
               setRegisteredEmail(email);
               setView("registerSuccess");
             }}
+            onLoggedIn={() => {
+              onClose();
+              router.push("/account");
+            }}
           />
         )}
 

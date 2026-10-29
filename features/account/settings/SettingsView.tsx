@@ -16,15 +16,16 @@ import { useTranslations } from "next-intl";
 
 import { AccountType } from "@/features/auth/types/authView";
 import { User } from "@/features/auth/types";
-import { updateProfile, useAuth } from "@/features/auth/store";
+import { changePassword } from "@/features/auth/actions";
+import { useAuth } from "@/features/auth/store";
+import { saveDealerProfile, saveProfile } from "@/features/account/actions";
+import { useOwnListings } from "@/features/account/useOwnListings";
 import { isEmail } from "@/features/auth/ui";
 import { brands } from "@/features/brands/data/brands";
 import { ChipGroup } from "@/features/cars/car-list/components/ui";
 import type { Dealer } from "@/features/dealers/types";
 import { useDealerLookup } from "@/features/dealers/hooks";
 import { resolveDealer } from "@/features/dealers/useOwnDealer";
-import { useDealerListingsOf } from "@/features/cars/hooks";
-import { assignContact, useContactAssignments } from "@/features/dealers/contacts";
 import { Link } from "@/i18n/navigation";
 import PlacePicker from "@/components/ui/PlacePicker";
 import { placeNameLv } from "@/lib/places";
@@ -140,7 +141,6 @@ function SavedToast({ state, onClose }: { state: "saved" | "error" | null; onClo
         ) : (
           <>
             <div className="font-medium">{t("saved")}</div>
-            <div className="text-xs opacity-90">{t("demoNote")}</div>
           </>
         )}
       </Alert>
@@ -178,16 +178,19 @@ function PasswordCard() {
   const [next, setNext] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [done, setDone] = useState(false);
+  const [wrongCurrent, setWrongCurrent] = useState(false);
 
   const strong = next.length >= 8 && /\d/.test(next) && /\p{L}/u.test(next);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
     setDone(false);
+    setWrongCurrent(false);
     if (!current || !strong) return;
 
-    // TODO(backend): смена пароля через API
+    const result = await changePassword(current, next).catch(() => ({ error: "failed" as const }));
+    if ("error" in result) return setWrongCurrent(true);
     setCurrent("");
     setNext("");
     setSubmitted(false);
@@ -203,8 +206,8 @@ function PasswordCard() {
           autoComplete="current-password"
           value={current}
           onChange={(e) => setCurrent(e.target.value)}
-          error={submitted && !current}
-          helperText={submitted && !current && t("currentRequired")}
+          error={(submitted && !current) || wrongCurrent}
+          helperText={(submitted && !current && t("currentRequired")) || (wrongCurrent && t("wrong"))}
           fullWidth
         />
         <TextField
@@ -234,6 +237,7 @@ function PasswordCard() {
 function IndividualSettings({ user }: { user: User }) {
   const t = useTranslations("account.settings");
   const [toast, setToast] = useState<"saved" | "error" | null>(null);
+  const { setUser } = useAuth();
 
   const [firstName, ...rest] = user.name.split(" ");
 
@@ -252,16 +256,19 @@ function IndividualSettings({ user }: { user: User }) {
   };
   const show = (key: keyof typeof errors) => submitted && errors[key];
 
-  const save = () => {
+  const save = async () => {
     setSubmitted(true);
     if (Object.values(errors).some(Boolean)) return setToast("error");
 
-    updateProfile({
+    const result = await saveProfile({
       name: [form.firstName.trim(), form.lastName.trim()].filter(Boolean).join(" "),
       email: form.email.trim(),
       phone: form.phone.trim(),
       city: form.city,
-    });
+    }).catch(() => ({ error: "invalid" as const }));
+    if ("error" in result) return setToast("error");
+
+    setUser(result.user);
     markSaved();
     setToast("saved");
   };
@@ -340,8 +347,9 @@ function IndividualSettings({ user }: { user: User }) {
 function DealerSettings({ user }: { user: User }) {
   const t = useTranslations("account.settings");
   const [toast, setToast] = useState<"saved" | "error" | null>(null);
+  const { setUser } = useAuth();
 
-  // данные из каталога дилеров + то, что дилер уже поменял в настройках
+  // страница дилера из базы
   const dealer = resolveDealer(user, useDealerLookup()(user.dealerSlug));
 
   const { form, set, dirty, discard, markSaved, submitted, setSubmitted } = useSettingsForm({
@@ -363,11 +371,8 @@ function DealerSettings({ user }: { user: User }) {
   });
 
   // объявления дилера и кто за ними закреплён сейчас
-  const assignments = useContactAssignments();
-  const dealerListings = useDealerListingsOf(user.dealerSlug) ?? [];
-  const contactOf = (listingId: string, fallback?: string) => assignments[listingId] ?? fallback;
-  const contactUsage = (contactId: string) =>
-    dealerListings.filter((l) => contactOf(l.id, l.contactId) === contactId).length;
+  const dealerListings = useOwnListings().listings ?? [];
+  const contactUsage = (contactId: string) => dealerListings.filter((l) => l.contactId === contactId).length;
 
   const parsedAddress = parseAddress(form.address);
 
@@ -422,35 +427,31 @@ function DealerSettings({ user }: { user: User }) {
     }
   };
 
-  const save = () => {
+  const save = async () => {
     setSubmitted(true);
     if (Object.values(errors).some(Boolean)) return setToast("error");
 
-    updateProfile({
+    // страница дилера, контактные лица и передача объявлений удалённых контактов — одним запросом
+    const result = await saveDealerProfile({
       name: form.name.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),
+      type: form.type,
+      brands: form.type === "official" ? form.brands : [],
+      regNumber: form.regNumber.replace(/\s/g, ""),
+      description: form.description.trim(),
+      address: parsedAddress!.street,
       city: parsedAddress!.city,
-      dealerProfile: {
-        type: form.type,
-        brands: form.type === "official" ? form.brands : [],
-        regNumber: form.regNumber.replace(/\s/g, ""),
-        description: form.description.trim(),
-        address: parsedAddress!.street,
-        city: parsedAddress!.city,
-        lat: form.lat,
-        lng: form.lng,
-        hours: form.hours,
-        contacts: form.contacts,
-      },
-    });
-    // объявления удалённых контактов — тому, кого выбрал дилер
-    for (const [fromId, toId] of Object.entries(form.reassign)) {
-      const ids = dealerListings.filter((l) => contactOf(l.id, l.contactId) === fromId).map((l) => l.id);
-      if (ids.length) assignContact(ids, toId);
-    }
-    set("reassign")({});
+      lat: form.lat,
+      lng: form.lng,
+      hours: form.hours,
+      contacts: form.contacts,
+      reassign: form.reassign,
+    }).catch(() => ({ error: "invalid" as const }));
+    if ("error" in result) return setToast("error");
 
+    setUser(result.user);
+    set("reassign")({});
     markSaved();
     setToast("saved");
   };

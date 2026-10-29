@@ -10,7 +10,7 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useTranslations } from "next-intl";
 
-import { ListingStatus } from "./statusStore";
+import type { ListingStatus } from "./status";
 
 type Props = {
   title: string;

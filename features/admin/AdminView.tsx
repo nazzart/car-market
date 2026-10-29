@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { isAdmin } from "@/features/auth/types";
 import { openAuthModal, useAuth } from "@/features/auth/store";
-import { useReports } from "@/features/moderation/store";
+import { AdminDataProvider, useReports } from "@/features/moderation/store";
 import { useDealerVerified } from "@/features/moderation/visibility";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +22,16 @@ import UsersTab from "./tabs/UsersTab";
 const TABS: AdminTab[] = ["overview", "approvals", "listings", "reports", "collections", "users"];
 
 export default function AdminView() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   // данные модерации загружаются только для модератора
-  return isAdmin(user) ? <AdminPanel /> : <NoAccess />;
+  if (loading) return <div className="max-w-3xl mx-auto my-10 h-80 rounded-3xl bg-gray-50 animate-pulse" />;
+  return isAdmin(user) ? (
+    <AdminDataProvider>
+      <AdminPanel />
+    </AdminDataProvider>
+  ) : (
+    <NoAccess />
+  );
 }
 
 function AdminPanel() {
@@ -88,7 +95,6 @@ function AdminPanel() {
         )}
       </div>
 
-      <p className="text-xs text-gray-500 mt-10">{t("demo")}</p>
     </div>
   );
 }

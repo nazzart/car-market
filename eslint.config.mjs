@@ -6,7 +6,6 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   // База данных — только из features/*/api.ts (там пишутся SQL-запросы); демо-данные — только для npm run db:seed
-  // и демо-входа (features/auth/api.ts, до подключения Supabase Auth)
   {
     files: ["**/*.{ts,tsx}"],
     ignores: ["features/*/api.ts", "features/*/data/**", "lib/db/**", "scripts/**"],
@@ -16,8 +15,8 @@ const eslintConfig = defineConfig([
         {
           patterns: [
             {
-              regex: "(^|/)data/(listings|dealers|demoUsers)$",
-              message: "Демо-данные лежат в базе (npm run db:seed). Используйте features/<feature>/api.ts на сервере или ./hooks в клиенте.",
+              regex: "(^|/)data/(listings|dealers)$",
+              message: "Демо-данные лежат в базе (npm run db:seed). Используйте features/<feature>/api.ts на сервере или ./actions и ./hooks в клиенте.",
             },
             {
               regex: "^@/lib/db(/|$)",

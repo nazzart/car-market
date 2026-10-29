@@ -12,7 +12,8 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import { useTranslations } from "next-intl";
 
 import { ContactForm } from "@/features/account/settings/ContactsEditor";
-import { openAuthModal, updateProfile, useAuth } from "@/features/auth/store";
+import { addContact, saveCompanyPhone } from "@/features/account/actions";
+import { openAuthModal, useAuth } from "@/features/auth/store";
 import { useDealerContacts } from "@/features/dealers/contacts";
 import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { Link } from "@/i18n/navigation";
@@ -103,7 +104,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
                 onChange={(e) => updateField("sellerPhone", e.target.value)}
                 onBlur={() => {
                   // сохраняем в профиль, чтобы в следующий раз не вводить
-                  if (isPhone(data.sellerPhone)) updateProfile({ phone: data.sellerPhone.trim() });
+                  if (isPhone(data.sellerPhone)) saveCompanyPhone(data.sellerPhone.trim());
                 }}
                 error={phoneError}
                 helperText={phoneError ? t("phoneError") : t("savedToProfile")}
@@ -138,10 +139,10 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
           {adding ? (
             <ContactForm
               onCancel={() => setAdding(false)}
-              onSave={(contact) => {
+              onSave={async (contact) => {
                 // сохраняем в профиль дилера сразу — контакт пригодится и для других объявлений
-                updateProfile({ dealerProfile: { contacts: [...contacts, contact] } });
-                updateField("contactId", contact.id);
+                const id = await addContact(contact).catch(() => null);
+                if (id) updateField("contactId", id);
                 setAdding(false);
               }}
             />

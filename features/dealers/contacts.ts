@@ -1,30 +1,13 @@
 "use client";
 
 import type { Listing } from "@/features/cars/types";
-import { createLocalStore } from "@/lib/localStore";
 
 import { useDealerLookup } from "./hooks";
 import type { DealerContact } from "./types";
-import { useOwnDealer } from "./useOwnDealer";
 
-// Переназначения «объявление → контактное лицо», сделанные дилером (демо: в браузере).
-// "company" — основной телефон компании. TODO(backend): поле contactId объявления в БД
-const assignments = createLocalStore<Record<string, string>>("bestauto.listingContacts", {});
-
-export const useContactAssignments = assignments.useValue;
-
-export function assignContact(listingIds: string[], contactId: string) {
-  const next = { ...assignments.get() };
-  for (const id of listingIds) next[id] = contactId;
-  assignments.set(next);
-}
-
-// Контакты дилера: из настроек вошедшего дилера, иначе из каталога.
-// Без slug — свой аккаунт дилера, у которого ещё нет страницы в каталоге (новый дилер)
+// Контакты дилера из базы (каталог дилеров в CatalogProvider)
 export function useDealerContacts(slug?: string) {
-  const own = useOwnDealer();
-  const dealerOf = useDealerLookup();
-  const dealer = own && (own.slug || undefined) === slug ? own : dealerOf(slug);
+  const dealer = useDealerLookup()(slug);
 
   return {
     contacts: dealer?.contacts ?? [],
@@ -33,15 +16,10 @@ export function useDealerContacts(slug?: string) {
   };
 }
 
-// Кто отвечает на звонки по объявлению: контактное лицо дилера или телефон из объявления
+// Кто отвечает на звонки по объявлению: контактное лицо дилера (listings.contact_id) или телефон из объявления.
+// Телефон уже подставлен сервером; здесь — ещё имя и должность контактного лица для карточки
 export function useListingContact(listing: Listing): { phone: string; person?: DealerContact } {
-  const { contacts, phone: companyPhone } = useDealerContacts(listing.dealer);
-  const overrides = useContactAssignments();
-
-  if (!listing.dealer) return { phone: listing.phone };
-
-  const contactId = overrides[listing.id] ?? listing.contactId;
-  const person = contacts.find((c) => c.id === contactId);
-
-  return person ? { phone: person.phone, person } : { phone: companyPhone || listing.phone };
+  const { contacts } = useDealerContacts(listing.dealer);
+  const person = listing.dealer ? contacts.find((c) => c.id === listing.contactId) : undefined;
+  return person ? { phone: person.phone, person } : { phone: listing.phone };
 }

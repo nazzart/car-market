@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import {
+  Alert,
   Button,
   Checkbox,
   FormControlLabel,
@@ -19,6 +20,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
+import { signUp } from "../actions";
+import { useAuth } from "../store";
 import { AccountType } from "../types/authView";
 import { AuthHeader, TextLinkButton, isEmail, pillSx } from "../ui";
 
@@ -26,7 +29,8 @@ type Props = {
   accountType: AccountType;
   onChangeType: () => void;
   onLogin: () => void;
-  onRegistered: (email: string) => void;
+  onRegistered: (email: string) => void; // нужно подтвердить email
+  onLoggedIn: () => void; // аккаунт создан и пользователь сразу вошёл
 };
 
 const passwordRules = [
@@ -38,7 +42,7 @@ const passwordRules = [
 // Регистрационный номер компании в Латвии — 11 цифр
 const isRegNumber = (value: string) => /^\d{11}$/.test(value.replace(/\s/g, ""));
 
-export default function RegisterView({ accountType, onChangeType, onLogin, onRegistered }: Props) {
+export default function RegisterView({ accountType, onChangeType, onLogin, onRegistered, onLoggedIn }: Props) {
   const t = useTranslations("auth");
   const isCompany = accountType === "company";
 
@@ -49,6 +53,9 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
   const [showPassword, setShowPassword] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const { setUser } = useAuth();
 
   const passwordOk = passwordRules.every((r) => r.test(password));
 
@@ -62,14 +69,27 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
 
   const show = (key: keyof typeof errors) => submitted && errors[key];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    setError("");
 
     if (Object.values(errors).some(Boolean)) return;
 
-    // TODO(backend): создание аккаунта через API и отправка письма с подтверждением
-    onRegistered(email.trim());
+    setSending(true);
+    const result = await signUp({
+      type: isCompany ? "dealer" : "individual",
+      name,
+      regNumber: isCompany ? regNumber : undefined,
+      email,
+      password,
+    }).catch(() => ({ error: "failed" as const }));
+    setSending(false);
+
+    if ("error" in result) return setError(t(`errors.${result.error === "invalid" ? "failed" : result.error}`));
+    if ("confirmEmail" in result) return onRegistered(email.trim());
+    setUser(result.user);
+    onLoggedIn();
   };
 
   return (
@@ -207,7 +227,13 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
           )}
         </div>
 
-        <Button type="submit" variant="contained" size="large" fullWidth sx={pillSx}>
+        {error && (
+          <Alert severity="error" sx={{ borderRadius: "12px" }}>
+            {error}
+          </Alert>
+        )}
+
+        <Button type="submit" variant="contained" size="large" fullWidth disabled={sending} sx={pillSx}>
           {t("register.submit")}
         </Button>
       </form>

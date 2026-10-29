@@ -44,7 +44,8 @@ const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ??
 
 export default async function DealerPage({ params }: Props) {
   const dealer = await findDealer(params);
-  if (!dealer) notFound();
+  // заблокированный модератором дилер скрыт вместе со страницей
+  if (!dealer || dealer.blocked) notFound();
 
   const t = await getTranslations("dealers");
   const tListing = await getTranslations("listing");
@@ -54,7 +55,7 @@ export default async function DealerPage({ params }: Props) {
   const cityName = placeName(dealer.city, (await params).locale);
 
   const official = dealer.type === "official";
-  const [cars, dealers] = await Promise.all([getDealerListings(dealer.slug), getDealers()]);
+  const [cars, dealers] = await Promise.all([getDealerListings(dealer.slug, { publicOnly: true }), getDealers()]);
   const neighbours = dealers.filter((d) => d.city === dealer.city && d.slug !== dealer.slug).slice(0, 3);
 
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dealer.lat},${dealer.lng}`;

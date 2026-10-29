@@ -7,7 +7,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import CloudOffOutlinedIcon from "@mui/icons-material/CloudOffOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -41,8 +41,8 @@ export default function FavoritesView() {
   const t = useTranslations("favorites");
   const tCommon = useTranslations("common");
   const hydrated = useHydrated();
-  const { entries } = useFavorites();
-  const { isLoggedIn } = useAuth();
+  const { entries, ready } = useFavorites();
+  const { isLoggedIn, loading } = useAuth();
   const now = useNow();
   // с сервера — только объявления из избранного; undefined — ещё загружаются
   const loaded = useListingsByIds(entries.map((e) => e.id));
@@ -121,27 +121,28 @@ export default function FavoritesView() {
         )}
       </div>
 
-      {!hydrated || (entries.length > 0 && loaded === undefined) ? (
+      {!hydrated || loading || !ready || (entries.length > 0 && loaded === undefined) ? (
         <Skeleton />
+      ) : !isLoggedIn ? (
+        <>
+          {/* Избранное хранится в аккаунте — гостю предлагаем войти */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 p-4 rounded-2xl bg-gray-50 text-sm">
+            <LockOutlinedIcon className="text-gray-400 shrink-0" />
+            <p className="flex-1 text-gray-700">{t("guest.text")}</p>
+            <button
+              type="button"
+              onClick={openAuthModal}
+              className="self-start sm:self-auto shrink-0 h-10 px-5 rounded-full bg-gray-900 hover:bg-black text-white font-medium transition cursor-pointer"
+            >
+              {t("guest.login")}
+            </button>
+          </div>
+          <EmptyState />
+        </>
       ) : entries.length === 0 ? (
         <EmptyState />
       ) : (
         <>
-          {/* Гостю — напоминание, что избранное живёт только в этом браузере */}
-          {!isLoggedIn && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 p-4 rounded-2xl bg-gray-50 text-sm">
-              <CloudOffOutlinedIcon className="text-gray-400 shrink-0" />
-              <p className="flex-1 text-gray-700">{t("guest.text")}</p>
-              <button
-                type="button"
-                onClick={openAuthModal}
-                className="self-start sm:self-auto shrink-0 h-10 px-5 rounded-full bg-gray-900 hover:bg-black text-white font-medium transition cursor-pointer"
-              >
-                {t("guest.login")}
-              </button>
-            </div>
-          )}
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {sorted.map(({ entry, listing }) =>
               listing ? (

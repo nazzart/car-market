@@ -6,6 +6,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import AppThemeProvider from "@/components/providers/ThemeProvider";
 import { CatalogProvider } from "@/components/providers/CatalogProvider";
+import { AuthProvider } from "@/features/auth/store";
+import { FavoritesSync } from "@/features/favorites/store";
 import "../globals.css";
 import { colors } from "@/lib/colors";
 import Header from "@/components/layout/header/Header";
@@ -74,12 +76,15 @@ export default async function LocaleLayout({ children, params }: Props) {
         <NextIntlClientProvider>
           <AppThemeProvider>
             <CatalogProvider dealers={dealers} stats={stats}>
-              <Header />
-              <NavigationProgress />
-              {/* flex-1 — подвал прижат к низу экрана даже на коротких страницах */}
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <CompareBar />
+              <AuthProvider>
+                <FavoritesSync />
+                <Header />
+                <NavigationProgress />
+                {/* flex-1 — подвал прижат к низу экрана даже на коротких страницах */}
+                <main className="flex-1">{children}</main>
+                <Footer />
+                <CompareBar />
+              </AuthProvider>
             </CatalogProvider>
           </AppThemeProvider>
         </NextIntlClientProvider>

@@ -1,6 +1,9 @@
 // Демо-объявления — загружаются в базу командой npm run db:seed (scripts/db-seed.ts); приложение читает их из базы
 import type { Listing } from "../types";
 
+// Демо-объявление: статусы и решения модератора задаёт база (по умолчанию — активно), здесь их нет
+export type DemoListing = Omit<Listing, "status" | "moderation" | "accountBlock" | "excludedCollections">;
+
 const bmwGallery = [
   "/cars/bmw1.jpg",
   "/cars/bmw2.jpg",
@@ -15,7 +18,7 @@ const rotate = (list: string[], start: number) => [
   ...list.slice(0, start),
 ];
 
-export const listings: Listing[] = [
+export const listings: DemoListing[] = [
   {
     id: "1",
     overallCondition: "excellent",
@@ -68,7 +71,6 @@ export const listings: Listing[] = [
   },
   {
     id: "2",
-    userId: "demo-individual",
     overallCondition: "excellent",
     service: "recent",
     serviceBook: true,
@@ -187,7 +189,6 @@ export const listings: Listing[] = [
   },
   {
     id: "9",
-    userId: "demo-individual",
     overallCondition: "good",
     service: "recent",
     serviceBook: true,
@@ -432,7 +433,6 @@ export const listings: Listing[] = [
   },
   {
     id: "13",
-    userId: "demo-individual",
     brand: "mercedes",
     model: "E-Class",
     title: "Mercedes-Benz E 220d",

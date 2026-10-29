@@ -31,7 +31,7 @@ function BrandLink({ brand }: { brand: Brand }) {
 
   return (
     <Link
-      href={`/cars/${brand.slug}`}
+      href={`/cars?brand=${brand.slug}`}
       className="
         group
         flex items-baseline justify-between gap-3

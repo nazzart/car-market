@@ -96,28 +96,6 @@
   "moreFilters": "Vairāk filtru",
   "metaTitle": "{title} — {results} | bestauto.lv",
   "metaDescription": "{title}: automašīnu pārdošanas sludinājumi Latvijā no privātpersonām un dīleriem.",
-  "brandPage": {
-    "breadcrumbs": "Navigācija",
-    "home": "Sākums",
-    "title": "{name} — lietotas un jaunas automašīnas",
-    "intro": "{count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}}: {name} no privātpersonām un dīleriem visā Latvijā. Salīdziniet cenas, nobraukumu un stāvokli.",
-    "introEmpty": "Pašlaik nav {name} sludinājumu. Apskatiet līdzīgas automašīnas vai atgriezieties vēlāk.",
-    "openSearch": "Meklēt ar filtriem",
-    "facts": {
-      "listings": "Sludinājumi",
-      "price": "Cenas",
-      "years": "Izlaiduma gadi",
-      "body": "Populārākā virsbūve"
-    },
-    "models": "{brand} modeļi",
-    "listings": "{name} sludinājumi",
-    "empty": "{name} sludinājumu pagaidām nav",
-    "allOfBrand": "Visi {brand}",
-    "allCars": "Visas automašīnas",
-    "otherBrands": "Citas populāras markas",
-    "metaTitle": "{name} pārdošanā Latvijā — {count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}} | bestauto.lv",
-    "metaDescription": "Pērciet {name} Latvijā: lietotas un jaunas automašīnas no privātpersonām un dīleriem. Cenas, nobraukums, stāvoklis un foto."
-  },
   "location": {
     "useMine": "Noteikt manu atrašanās vietu",
     "locating": "Nosaka atrašanās vietu…",

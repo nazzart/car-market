@@ -42,7 +42,7 @@ export default function NotFound() {
             {popularBrands.map((b) => (
               <Link
                 key={b.slug}
-                href={`/cars/${b.slug}`}
+                href={`/cars?brand=${b.slug}`}
                 className="px-4 py-2 rounded-full border border-gray-200 text-sm hover:border-gray-900 transition"
               >
                 {b.name}

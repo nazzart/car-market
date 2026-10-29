@@ -1,8 +1,6 @@
 import type { MetadataRoute } from "next";
 
 import { brands } from "@/features/brands/data/brands";
-import { modelsByBrand } from "@/features/brands/data/models";
-import { modelSlug } from "@/features/brands/lib/landing";
 import { getPublishedListings } from "@/features/cars/api";
 import { getDealers } from "@/features/dealers/api";
 
@@ -19,8 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...["/", "/cars", "/dealers", "/sell", "/about", "/rules", "/privacy", "/contacts"].map(both),
-    ...brands.map((b) => both(`/cars/${b.slug}`)),
-    ...Object.entries(modelsByBrand).flatMap(([brand, models]) => models.map((m) => both(`/cars/${brand}/${modelSlug(m)}`))),
+    ...brands.map((b) => both(`/cars?brand=${b.slug}`)),
     ...listings.map((l) => both(`/listing/${l.id}`)),
     ...dealers.map((d) => both(`/dealers/${d.slug}`)),
   ];

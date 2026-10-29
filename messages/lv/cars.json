@@ -99,7 +99,7 @@
   "location": {
     "place": "Pilsēta vai novads",
     "choose": "Visa Latvija",
-    "useMine": "Noteikt pēc manas atrašanās vietas",
+    "useMine": "Noteikt manu atrašanās vietu",
     "locating": "Nosaka atrašanās vietu…",
     "error": "Neizdevās noteikt atrašanās vietu. Izvēlieties pilsētu sarakstā.",
     "area": "Iekļaut apkārtni",

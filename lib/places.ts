@@ -11,6 +11,12 @@ export type Place = {
   lv: string;
   ru: string;
   kind: "city" | "municipality";
+  major?: true; // 10 республиканских городов — отдельной группой в начале списка
+  aliases?: string[]; // как ищут по привычке: края до реформы 2021 («Babītes novads») и «Liepājas novads» → Dienvidkurzemes
+  hint?: { lv: string; ru: string }; // подсказка в списке, если по названию края не понять, где он: «ap Liepāju»
+  // край вокруг города с собственным самоуправлением (в него город не входит): Liepāja → Dienvidkurzemes novads.
+  // «Liepāja + 20 km» = город и его окрестности, как «Liepāja un raj.» на ss.lv
+  surroundings?: string;
   municipality?: string; // край, в который входит город (ключ); у 7 городов с собственным самоуправлением — нет
   lat: number;
   lng: number;
@@ -18,16 +24,16 @@ export type Place = {
 
 export const PLACES: Place[] = [
   // Города
-  { key: "riga", lv: "Rīga", ru: "Рига", kind: "city", lat: 56.9494, lng: 24.1052 },
-  { key: "daugavpils", lv: "Daugavpils", ru: "Даугавпилс", kind: "city", lat: 55.8712, lng: 26.5159 },
-  { key: "liepaja", lv: "Liepāja", ru: "Лиепая", kind: "city", lat: 56.5048, lng: 21.0071 },
-  { key: "jelgava", lv: "Jelgava", ru: "Елгава", kind: "city", lat: 56.6522, lng: 23.7292 },
-  { key: "jurmala", lv: "Jūrmala", ru: "Юрмала", kind: "city", lat: 56.9727, lng: 23.7887 },
-  { key: "ventspils", lv: "Ventspils", ru: "Вентспилс", kind: "city", lat: 57.3904, lng: 21.5636 },
-  { key: "rezekne", lv: "Rēzekne", ru: "Резекне", kind: "city", lat: 56.5063, lng: 27.3307 },
-  { key: "valmiera", lv: "Valmiera", ru: "Валмиера", kind: "city", municipality: "valmieras-novads", lat: 57.5389, lng: 25.4262 },
-  { key: "ogre", lv: "Ogre", ru: "Огре", kind: "city", municipality: "ogres-novads", lat: 56.8192, lng: 24.6074 },
-  { key: "jekabpils", lv: "Jēkabpils", ru: "Екабпилс", kind: "city", municipality: "jekabpils-novads", lat: 56.4959, lng: 25.8688 },
+  { key: "riga", major: true, lv: "Rīga", ru: "Рига", kind: "city", lat: 56.9494, lng: 24.1052 },
+  { key: "daugavpils", major: true, surroundings: "augsdaugavas-novads", lv: "Daugavpils", ru: "Даугавпилс", kind: "city", lat: 55.8712, lng: 26.5159 },
+  { key: "liepaja", major: true, surroundings: "dienvidkurzemes-novads", lv: "Liepāja", ru: "Лиепая", kind: "city", lat: 56.5048, lng: 21.0071 },
+  { key: "jelgava", major: true, surroundings: "jelgavas-novads", lv: "Jelgava", ru: "Елгава", kind: "city", lat: 56.6522, lng: 23.7292 },
+  { key: "jurmala", major: true, lv: "Jūrmala", ru: "Юрмала", kind: "city", lat: 56.9727, lng: 23.7887 },
+  { key: "ventspils", major: true, surroundings: "ventspils-novads", lv: "Ventspils", ru: "Вентспилс", kind: "city", lat: 57.3904, lng: 21.5636 },
+  { key: "rezekne", major: true, surroundings: "rezeknes-novads", lv: "Rēzekne", ru: "Резекне", kind: "city", lat: 56.5063, lng: 27.3307 },
+  { key: "valmiera", major: true, lv: "Valmiera", ru: "Валмиера", kind: "city", municipality: "valmieras-novads", lat: 57.5389, lng: 25.4262 },
+  { key: "ogre", major: true, lv: "Ogre", ru: "Огре", kind: "city", municipality: "ogres-novads", lat: 56.8192, lng: 24.6074 },
+  { key: "jekabpils", major: true, lv: "Jēkabpils", ru: "Екабпилс", kind: "city", municipality: "jekabpils-novads", lat: 56.4959, lng: 25.8688 },
   { key: "adazi", lv: "Ādaži", ru: "Адажи", kind: "city", municipality: "adazu-novads", lat: 57.082, lng: 24.3243 },
   { key: "ainazi", lv: "Ainaži", ru: "Айнажи", kind: "city", municipality: "limbazu-novads", lat: 57.8637, lng: 24.3586 },
   { key: "aizkraukle", lv: "Aizkraukle", ru: "Айзкраукле", kind: "city", municipality: "aizkraukles-novads", lat: 56.6011, lng: 25.2543 },
@@ -101,31 +107,31 @@ export const PLACES: Place[] = [
   { key: "vilani", lv: "Viļāni", ru: "Виляны", kind: "city", municipality: "rezeknes-novads", lat: 56.555, lng: 26.9289 },
   { key: "zilupe", lv: "Zilupe", ru: "Зилупе", kind: "city", municipality: "ludzas-novads", lat: 56.3864, lng: 28.1215 },
   // Края — для тех, кто живёт вне города
-  { key: "adazu-novads", lv: "Ādažu novads", ru: "Адажский край", kind: "municipality", lat: 57.1114, lng: 24.3455 },
+  { key: "adazu-novads", aliases: ["Carnikavas novads"], lv: "Ādažu novads", ru: "Адажский край", kind: "municipality", lat: 57.1114, lng: 24.3455 },
   { key: "aizkraukles-novads", lv: "Aizkraukles novads", ru: "Айзкраукльский край", kind: "municipality", lat: 56.4875, lng: 25.2618 },
   { key: "aluksnes-novads", lv: "Alūksnes novads", ru: "Алуксненский край", kind: "municipality", lat: 57.43, lng: 27.1217 },
-  { key: "augsdaugavas-novads", lv: "Augšdaugavas novads", ru: "Аугшдаугавский край", kind: "municipality", lat: 55.9415, lng: 26.3119 },
+  { key: "augsdaugavas-novads", hint: { lv: "ap Daugavpili", ru: "вокруг Даугавпилса" }, aliases: ["Daugavpils novads", "Ilūkstes novads"], lv: "Augšdaugavas novads", ru: "Аугшдаугавский край", kind: "municipality", lat: 55.9415, lng: 26.3119 },
   { key: "balvu-novads", lv: "Balvu novads", ru: "Балвский край", kind: "municipality", lat: 57.0754, lng: 27.3602 },
-  { key: "bauskas-novads", lv: "Bauskas novads", ru: "Бауский край", kind: "municipality", lat: 56.4833, lng: 24.4315 },
+  { key: "bauskas-novads", aliases: ["Iecavas novads", "Rundāles novads", "Vecumnieku novads"], lv: "Bauskas novads", ru: "Бауский край", kind: "municipality", lat: 56.4833, lng: 24.4315 },
   { key: "cesu-novads", lv: "Cēsu novads", ru: "Цесисский край", kind: "municipality", lat: 57.2159, lng: 25.3392 },
-  { key: "dienvidkurzemes-novads", lv: "Dienvidkurzemes novads", ru: "Южнокурземский край", kind: "municipality", lat: 56.5225, lng: 21.4596 },
+  { key: "dienvidkurzemes-novads", hint: { lv: "ap Liepāju", ru: "вокруг Лиепаи" }, aliases: ["Liepājas novads", "Grobiņas novads", "Nīcas novads", "Rucavas novads", "Durbes novads", "Aizputes novads", "Pāvilostas novads", "Priekules novads", "Vaiņodes novads"], lv: "Dienvidkurzemes novads", ru: "Южнокурземский край", kind: "municipality", lat: 56.5225, lng: 21.4596 },
   { key: "dobeles-novads", lv: "Dobeles novads", ru: "Добельский край", kind: "municipality", lat: 56.5616, lng: 23.1046 },
   { key: "gulbenes-novads", lv: "Gulbenes novads", ru: "Гулбенский край", kind: "municipality", lat: 57.1765, lng: 26.6112 },
   { key: "jelgavas-novads", lv: "Jelgavas novads", ru: "Елгавский край", kind: "municipality", lat: 56.6081, lng: 23.8672 },
-  { key: "jekabpils-novads", lv: "Jēkabpils novads", ru: "Екабпилсский край", kind: "municipality", lat: 56.3585, lng: 25.7282 },
-  { key: "kekavas-novads", lv: "Ķekavas novads", ru: "Кекавский край", kind: "municipality", lat: 56.7849, lng: 24.3208 },
+  { key: "jekabpils-novads", aliases: ["Aknīstes novads", "Viesītes novads", "Salas novads"], lv: "Jēkabpils novads", ru: "Екабпилсский край", kind: "municipality", lat: 56.3585, lng: 25.7282 },
+  { key: "kekavas-novads", aliases: ["Baldones novads"], lv: "Ķekavas novads", ru: "Кекавский край", kind: "municipality", lat: 56.7849, lng: 24.3208 },
   { key: "kraslavas-novads", lv: "Krāslavas novads", ru: "Краславский край", kind: "municipality", lat: 56.0226, lng: 27.3988 },
   { key: "kuldigas-novads", lv: "Kuldīgas novads", ru: "Кулдигский край", kind: "municipality", lat: 56.8418, lng: 21.9526 },
   { key: "limbazu-novads", lv: "Limbažu novads", ru: "Лимбажский край", kind: "municipality", lat: 57.606, lng: 24.6375 },
   { key: "livanu-novads", lv: "Līvānu novads", ru: "Ливанский край", kind: "municipality", lat: 56.3517, lng: 26.3338 },
   { key: "ludzas-novads", lv: "Ludzas novads", ru: "Лудзенский край", kind: "municipality", lat: 56.508, lng: 27.8168 },
-  { key: "madonas-novads", lv: "Madonas novads", ru: "Мадонский край", kind: "municipality", lat: 56.8185, lng: 26.3456 },
-  { key: "marupes-novads", lv: "Mārupes novads", ru: "Марупский край", kind: "municipality", lat: 56.8946, lng: 23.8074 },
+  { key: "madonas-novads", aliases: ["Varakļānu novads", "Cesvaines novads", "Lubānas novads", "Ērgļu novads"], lv: "Madonas novads", ru: "Мадонский край", kind: "municipality", lat: 56.8185, lng: 26.3456 },
+  { key: "marupes-novads", aliases: ["Babītes novads"], lv: "Mārupes novads", ru: "Марупский край", kind: "municipality", lat: 56.8946, lng: 23.8074 },
   { key: "ogres-novads", lv: "Ogres novads", ru: "Огрский край", kind: "municipality", lat: 56.7691, lng: 24.9763 },
   { key: "olaines-novads", lv: "Olaines novads", ru: "Олайнский край", kind: "municipality", lat: 56.7722, lng: 23.9004 },
   { key: "preilu-novads", lv: "Preiļu novads", ru: "Прейльский край", kind: "municipality", lat: 56.3092, lng: 26.7713 },
-  { key: "rezeknes-novads", lv: "Rēzeknes novads", ru: "Резекненский край", kind: "municipality", lat: 56.501, lng: 27.0569 },
-  { key: "ropazu-novads", lv: "Ropažu novads", ru: "Ропажский край", kind: "municipality", lat: 56.988, lng: 24.56 },
+  { key: "rezeknes-novads", aliases: ["Viļānu novads"], lv: "Rēzeknes novads", ru: "Резекненский край", kind: "municipality", lat: 56.501, lng: 27.0569 },
+  { key: "ropazu-novads", aliases: ["Garkalnes novads"], lv: "Ropažu novads", ru: "Ропажский край", kind: "municipality", lat: 56.988, lng: 24.56 },
   { key: "salaspils-novads", lv: "Salaspils novads", ru: "Саласпилсский край", kind: "municipality", lat: 56.8731, lng: 24.3675 },
   { key: "saldus-novads", lv: "Saldus novads", ru: "Салдусский край", kind: "municipality", lat: 56.6398, lng: 22.4845 },
   { key: "saulkrastu-novads", lv: "Saulkrastu novads", ru: "Саулкрастский край", kind: "municipality", lat: 57.2291, lng: 24.5274 },
@@ -171,7 +177,7 @@ export const placePointOrRiga = (key: string) => placePoint(key) ?? RIGA;
 // Фильтр поиска по месту: попадает ли место объявления в выбранное.
 //  — сам город или край; край включает свои города («Ogres novads» → Ogre, Ikšķile, Ķegums, Lielvārde);
 //  — areaKm > 0: плюс окрестности — места, чьи центры не дальше areaKm от центра выбранного
-//    («Rīga + 20 km» → Jūrmala, Mārupe, Ķekava…), а для города — и весь его край.
+//    («Rīga + 20 km» → Jūrmala, Mārupe, Ķekava…), а для города — и весь его край или край вокруг него.
 // Считаем по центрам городов и краёв, а не по точным адресам: люди ориентируются по названиям мест
 export function placeMatcher(selected: string, areaKm = 0): (placeKey: string) => boolean {
   const target = byKey.get(selected);
@@ -181,7 +187,7 @@ export function placeMatcher(selected: string, areaKm = 0): (placeKey: string) =
   if (areaKm <= 0) return inside;
 
   return (key) => {
-    if (inside(key) || key === target.municipality) return true;
+    if (inside(key) || key === (target.municipality ?? target.surroundings)) return true;
     const place = byKey.get(key);
     return place ? distanceKm(target, place) <= areaKm : false;
   };

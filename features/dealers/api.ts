@@ -3,11 +3,12 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { type SQL, and, arrayContains, asc, desc, eq, ilike, isNull, or, sql } from "drizzle-orm";
+import { type SQL, and, arrayContains, asc, desc, eq, ilike, isNull, ne, or, sql } from "drizzle-orm";
 
 import { db, schema } from "@/lib/db";
 import { CACHE_VERSION } from "@/lib/db/cacheVersion";
 
+import { isListed } from "./lib/listed";
 import { getOpenStatus } from "./lib/openStatus";
 import type { Dealer, DealerContact, DealerPin } from "./types";
 
@@ -61,9 +62,14 @@ export async function getDealers(): Promise<Dealer[]> {
   return catalog();
 }
 
-// Всего дилеров — для подзаголовка «14 uzņēmumi visā Latvijā» (заблокированные модератором не считаем)
+// Дилеры, видимые покупателям: с заполненным профилем и не заблокированные (lib/listed.ts)
+export async function getPublicDealers(): Promise<Dealer[]> {
+  return (await catalog()).filter(isListed);
+}
+
+// Всего дилеров — для подзаголовка «14 uzņēmumi visā Latvijā»
 export async function countDealers(): Promise<number> {
-  return (await catalog()).filter((d) => !d.blocked).length;
+  return (await getPublicDealers()).length;
 }
 
 /* ---------- Страница /dealers: фильтры, карта, постраничный список ---------- */
@@ -95,7 +101,8 @@ const likeText = (text: string) => `%${text.replace(/[\\%_]/g, (c) => `\\${c}`)}
 // Фильтры из URL → SQL. Результат кэшируется: «открыто сейчас» и область карты считаются после, на каждый запрос
 const matchingRows = unstable_cache(
   async (q: string, type: string, city: string, brand: string) => {
-    const conditions: (SQL | undefined)[] = [isNull(dealers.blockedAt)]; // заблокированных модератором не показываем
+    // как isListed() в lib/listed.ts: профиль заполнен (адрес, телефон), модератор не заблокировал
+    const conditions: (SQL | undefined)[] = [isNull(dealers.blockedAt), ne(dealers.address, ""), ne(dealers.phone, "")];
     if (q) conditions.push(or(ilike(dealers.name, likeText(q)), ilike(dealers.address, likeText(q))));
     if (type) conditions.push(eq(dealers.type, type as Dealer["type"]));
     if (city) conditions.push(eq(dealers.city, city));

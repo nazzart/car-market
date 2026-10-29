@@ -56,8 +56,10 @@ the public Supabase key cannot read or change them; only the Next.js server (whi
 Accounts use **Supabase Auth** (email + password). The session lives in a cookie, so the server knows who is asking:
 every Server Action that changes data calls `requireUser()` / `requireAdmin()` from `features/auth/api.ts` first.
 
-- **Register** on the site (Ienākt → Izveidot kontu). A company account also gets a public dealer page right away,
-  without the "Verified" badge until a moderator checks its registration number.
+- **Register** on the site (Ienākt → Izveidot kontu). No city is asked: a private seller picks it in settings or in
+  the first listing (then it's saved to the profile). A company account gets a dealer page that buyers see once the
+  address and phone are filled in (`features/dealers/lib/listed.ts`), without the "Verified" badge until a moderator
+  checks its registration number.
 - **Make yourself a moderator** (access to `/admin`): `npm run admin:grant -- you@example.com`
 - **Supabase settings** (dashboard):
   - *Authentication → Sign In / Providers → Email → Confirm email*: off for now. Turn it on together with your own

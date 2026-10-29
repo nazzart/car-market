@@ -16,7 +16,8 @@ import ContactPhoneButton from "@/features/cars/car-view/components/ContactPhone
 import { getDealerListings } from "@/features/cars/api";
 import DealerMiniMap from "@/features/dealers/components/DealerMiniMap";
 import { hasRating } from "@/features/dealers/lib/rating";
-import { getDealer, getDealers } from "@/features/dealers/api";
+import { getDealer, getPublicDealers } from "@/features/dealers/api";
+import { isListed } from "@/features/dealers/lib/listed";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import OpenStatus, { WeekHours } from "@/features/dealers/components/OpenStatus";
@@ -44,8 +45,8 @@ const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ??
 
 export default async function DealerPage({ params }: Props) {
   const dealer = await findDealer(params);
-  // заблокированный модератором дилер скрыт вместе со страницей
-  if (!dealer || dealer.blocked) notFound();
+  // заблокированный модератором или ещё не заполнивший профиль дилер — без публичной страницы
+  if (!dealer || !isListed(dealer)) notFound();
 
   const t = await getTranslations("dealers");
   const tListing = await getTranslations("listing");
@@ -55,7 +56,7 @@ export default async function DealerPage({ params }: Props) {
   const cityName = placeName(dealer.city, (await params).locale);
 
   const official = dealer.type === "official";
-  const [cars, dealers] = await Promise.all([getDealerListings(dealer.slug, { publicOnly: true }), getDealers()]);
+  const [cars, dealers] = await Promise.all([getDealerListings(dealer.slug, { publicOnly: true }), getPublicDealers()]);
   const neighbours = dealers.filter((d) => d.city === dealer.city && d.slug !== dealer.slug).slice(0, 3);
 
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dealer.lat},${dealer.lng}`;

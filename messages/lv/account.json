@@ -194,6 +194,9 @@
     "blockedText": "Moderators apturēja sludinājuma rādīšanu. Iemeslu redzēsiet pie sludinājuma — izlabojiet to vai sazinieties ar mums.",
     "pendingTitle": "{count, plural, zero {# sludinājumi gaida} one {# sludinājums gaida} other {# sludinājumi gaida}} apstiprinājumu",
     "pendingText": "Jauni sludinājumi parādās pircējiem pēc moderatora pārbaudes — parasti dažu stundu laikā.",
-    "show": "Skatīt"
+    "show": "Skatīt",
+    "completeTitle": "Pabeidziet uzņēmuma profilu",
+    "completeText": "Pircēji redzēs jūsu dīlera lapu un uzņēmumu kartē, kad norādīsiet adresi un tālruni.",
+    "completeAction": "Aizpildīt"
   }
 }

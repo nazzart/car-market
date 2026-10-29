@@ -246,7 +246,7 @@ function IndividualSettings({ user }: { user: User }) {
     lastName: rest.join(" "),
     email: user.email,
     phone: user.phone,
-    city: user.city,
+    city: user.city ?? "",
   });
 
   const errors = {

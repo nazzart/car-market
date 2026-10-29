@@ -12,7 +12,7 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import { useTranslations } from "next-intl";
 
 import { ContactForm } from "@/features/account/settings/ContactsEditor";
-import { addContact, saveCompanyPhone } from "@/features/account/actions";
+import { addContact, completeProfile, saveCompanyPhone } from "@/features/account/actions";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import { useDealerContacts } from "@/features/dealers/contacts";
 import { useOwnDealer } from "@/features/dealers/useOwnDealer";
@@ -33,7 +33,7 @@ import { validateField } from "../utils/validationRules";
 export function ContactInfoSection({ id, title, data, required, fields, onNext, updateField }: FormStepProps) {
   const t = useTranslations("sell.contact");
   const placeName = usePlaceName();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const { isValid } = useSectionValidation(fields, data);
   const { attemptedNext, handleNext } = useSectionNext(isValid, required, onNext);
   const [custom, setCustom] = useState(false); // частное лицо: «изменить для этого объявления»
@@ -58,11 +58,17 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
       if (!needsCompanyPhone || selectedContact) updateField("sellerPhone", selectedContact?.phone ?? companyPhone);
     } else if (!custom) {
       updateField("sellerPhone", user.phone);
-      updateField("sellerCity", user.city);
+      updateField("sellerCity", user.city ?? "");
     }
     // updateField стабилен по смыслу; синхронизируем при смене аккаунта, контакта или режима
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, isDealer, custom, dealerCity, companyPhone, selectedContact?.phone]);
+
+  // в профиле ещё нет телефона или места (первое объявление) — поля сразу открыты, введённое сохранится в профиль
+  const missingProfile = !isDealer && Boolean(user) && (!user?.phone || !user?.city);
+  const saveToProfile = (input: { phone?: string; city?: string }) => {
+    if (missingProfile) completeProfile(input).then((next) => next && setUser(next), () => {});
+  };
 
   const getRules = (name: string) => fields.find((f) => f.name === name)?.rules;
   const phoneError = attemptedNext && !validateField(data.sellerPhone, getRules("sellerPhone"));
@@ -171,7 +177,9 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
             }
           />
 
-          {!custom ? (
+          {missingProfile && <p className="text-sm text-gray-600">{t("completeProfile")}</p>}
+
+          {!custom && !missingProfile ? (
             <div className="grid sm:grid-cols-2 gap-3">
               <SummaryRow icon={<PhoneOutlinedIcon fontSize="small" />} title={data.sellerPhone} text={t("phone")} />
               <SummaryRow
@@ -186,6 +194,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
                 label={t("phone")}
                 value={data.sellerPhone}
                 onChange={(e) => updateField("sellerPhone", e.target.value)}
+                onBlur={() => isPhone(data.sellerPhone) && saveToProfile({ phone: data.sellerPhone.trim() })}
                 error={phoneError}
                 helperText={phoneError ? t("phoneError") : undefined}
                 placeholder="+371 2000 0000"
@@ -196,20 +205,25 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
               <PlacePicker
                 label={t("carLocation")}
                 value={data.sellerCity}
-                onChange={(key) => updateField("sellerCity", key)}
+                onChange={(key) => {
+                  updateField("sellerCity", key);
+                  if (key) saveToProfile({ city: key });
+                }}
                 required
               />
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => setCustom(!custom)}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-900 hover:text-primary transition cursor-pointer"
-          >
-            <EditOutlinedIcon sx={{ fontSize: 18 }} />
-            {custom ? t("useAccount") : t("changeForListing")}
-          </button>
+          {!missingProfile && (
+            <button
+              type="button"
+              onClick={() => setCustom(!custom)}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-900 hover:text-primary transition cursor-pointer"
+            >
+              <EditOutlinedIcon sx={{ fontSize: 18 }} />
+              {custom ? t("useAccount") : t("changeForListing")}
+            </button>
+          )}
         </div>
       )}
     </SectionContainer>

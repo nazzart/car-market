@@ -75,7 +75,8 @@ export const profiles = pgTable("profiles", {
   type: text().$type<"individual" | "dealer">().notNull(),
   name: text().notNull(),
   phone: text().notNull().default(""),
-  city: text().notNull().default("riga"), // ключ места из lib/places.ts
+  // ключ места из lib/places.ts. Пусто, пока пользователь не выбрал (в настройках или при первом объявлении)
+  city: text(),
   role: text().$type<"admin">(), // модератор: доступ к /admin
   // у аккаунта компании — её страница дилера
   dealerId: integer()

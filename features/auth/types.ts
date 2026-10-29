@@ -7,7 +7,7 @@ export type User = {
   name: string;
   email: string;
   phone: string;
-  city: string; // ключ места из lib/places.ts (город или край)
+  city?: string; // ключ места из lib/places.ts (город или край); нет — ещё не выбрал
   since: number; // год регистрации
   dealerSlug?: string; // для дилера — его страница /dealers/[slug]
   role?: "admin"; // модератор: доступ к /admin

@@ -66,13 +66,14 @@ export type SaveResult = { ok: true; user: User; emailPending?: boolean } | { er
 
 export async function saveProfile(input: { name: string; email: string; phone: string; city: string }): Promise<SaveResult> {
   const user = await requireUser();
-  const fields = { name: text(input?.name, 120), phone: text(input?.phone, 40), city: text(input?.city, 60) };
-  if (!fields.name || !isPhone(fields.phone) || !findPlace(fields.city)) return { error: "invalid" };
+  const city = text(input?.city, 60);
+  const fields = { name: text(input?.name, 120), phone: text(input?.phone, 40), city: city || null };
+  if (!fields.name || !isPhone(fields.phone) || (city && !findPlace(city))) return { error: "invalid" };
 
   await saveOwnProfile(user, fields);
   const email = await changeEmail(user, text(input.email, 200).toLowerCase());
   if (email === "invalid") return { error: "invalid" };
-  return { ok: true, user: { ...user, ...fields }, emailPending: email === "confirm" };
+  return { ok: true, user: { ...user, name: fields.name, phone: fields.phone, city: city || undefined }, emailPending: email === "confirm" };
 }
 
 const validHours = (hours: unknown): hours is OpeningHours =>
@@ -140,7 +141,7 @@ export async function saveCompanyPhone(phone: string): Promise<boolean> {
   const user = await requireUser();
   const value = text(phone, 40);
   if (!isPhone(value)) return false;
-  await saveOwnProfile(user, { name: user.name, phone: value, city: user.city });
+  await saveOwnProfile(user, { name: user.name, phone: value, city: user.city ?? null });
   if (user.type === "dealer") {
     await saveDealerPhone(user, value);
     updateTag("dealers");
@@ -156,4 +157,20 @@ export async function addContact(contact: DealerContact): Promise<string | null>
   const id = await addOwnContact(user, valid);
   if (id) updateTag("dealers");
   return id;
+}
+
+// Первое объявление частного лица: телефон и место, которых ещё нет в профиле, сохраняем туда —
+// в следующий раз форма подставит их сама. Заполненное раньше не перезаписываем
+export async function completeProfile(input: { phone?: string; city?: string }): Promise<User | null> {
+  const user = await requireUser();
+  const phone = text(input?.phone, 40);
+  const city = text(input?.city, 60);
+  const next = {
+    name: user.name,
+    phone: user.phone || (isPhone(phone) ? phone : ""),
+    city: user.city ?? (findPlace(city) ? city : null),
+  };
+  if (next.phone === user.phone && (next.city ?? undefined) === user.city) return user;
+  await saveOwnProfile(user, next);
+  return { ...user, phone: next.phone, city: next.city ?? undefined };
 }

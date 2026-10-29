@@ -41,7 +41,7 @@ function toUser(row: ProfileRow, email: string): User {
     name: row.name,
     email,
     phone: row.phone,
-    city: row.city,
+    ...(row.city ? { city: row.city } : {}),
     since: row.createdAt.getFullYear(),
     ...(row.dealerSlug ? { dealerSlug: row.dealerSlug } : {}),
     ...(row.role ? { role: row.role } : {}),
@@ -64,10 +64,11 @@ async function freeDealerSlug(name: string) {
   return slug;
 }
 
-// Профиль нового пользователя. У компании сразу появляется страница дилера — без значка «Проверенный»,
-// пока модератор не сверит регистрационный номер. Адрес, часы и телефон дилер заполнит в настройках
+// Профиль нового пользователя. Город не спрашиваем при регистрации — его выберут в настройках
+// или в первом объявлении. У компании сразу создаётся страница дилера, но покупатели увидят её,
+// когда дилер укажет адрес и телефон (lib/listed.ts); значок «Проверенный» — после проверки модератором
 export async function createProfile(id: string, meta: SignUpMeta) {
-  const city = "riga";
+  const city = "riga"; // место-заглушка для пустой страницы дилера: заменится адресом из настроек
   await db.transaction(async (tx) => {
     let dealerId: number | null = null;
     if (meta.type === "dealer") {
@@ -87,7 +88,7 @@ export async function createProfile(id: string, meta: SignUpMeta) {
         .returning({ id: dealers.id });
       dealerId = dealer.id;
     }
-    await tx.insert(profiles).values({ id, type: meta.type, name: meta.name, city, dealerId }).onConflictDoNothing();
+    await tx.insert(profiles).values({ id, type: meta.type, name: meta.name, dealerId }).onConflictDoNothing();
   });
 }
 

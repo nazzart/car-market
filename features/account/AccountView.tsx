@@ -25,7 +25,8 @@ import OpenStatus from "@/features/dealers/components/OpenStatus";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { formatHours } from "@/features/dealers/lib/hours";
 import { useOwnDealer } from "@/features/dealers/useOwnDealer";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { isProfileComplete } from "@/features/dealers/lib/listed";
 
 import type { Moderation } from "@/features/moderation/types";
 import { useVisibility } from "@/features/moderation/visibility";
@@ -213,6 +214,11 @@ export default function AccountView() {
   const { of } = useVisibility();
   const [undo, setUndo] = useState<{ id: string; prev: ListingStatus; next: ListingStatus } | null>(null);
   const dealer = useOwnDealer();
+  const router = useRouter();
+  // новый дилер без адреса и телефона покупателям не виден — подсказываем заполнить профиль
+  const dealerIncomplete = dealer !== null && !isProfileComplete(dealer);
+  // у дилера город — из адреса его страницы, у частного лица — из профиля
+  const shownCity = dealer ? (dealerIncomplete ? undefined : dealer.city) : user?.city;
   const { listings: ownListings, setStatus } = useOwnListings(); // undefined — ещё загружаются
 
   if (!user) return <LoggedOut />;
@@ -278,7 +284,7 @@ export default function AccountView() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {dealer?.slug && (
+          {dealer?.slug && !dealerIncomplete && (
             <Link href={`/dealers/${dealer.slug}`} className={secondaryButton}>
               <StorefrontOutlinedIcon sx={{ fontSize: 18 }} />
               {t("header.publicPage")}
@@ -294,6 +300,15 @@ export default function AccountView() {
 
       {/* Решения модератора — заметно, с причиной */}
       <div className="space-y-3 mt-6 empty:hidden">
+        {dealerIncomplete && (
+          <Notice
+            tone="amber"
+            title={t("notices.completeTitle")}
+            action={{ label: t("notices.completeAction"), onClick: () => router.push("/account/profile") }}
+          >
+            {t("notices.completeText")}
+          </Notice>
+        )}
         {accountBlock && (
           <Notice tone="red" title={t("notices.accountTitle")}>
             {t("notices.accountText", { reason: tReasons(accountBlock.reason) })}
@@ -406,11 +421,11 @@ export default function AccountView() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-gray-500">{t("profile.phone")}</dt>
-                <dd className="text-gray-900 text-right">{user.phone}</dd>
+                <dd className="text-gray-900 text-right">{user.phone || "—"}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-gray-500">{t("profile.city")}</dt>
-                <dd className="text-gray-900 text-right">{placeName(user.city)}</dd>
+                <dd className="text-gray-900 text-right">{shownCity ? placeName(shownCity) : "—"}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-gray-500">{t("profile.since")}</dt>

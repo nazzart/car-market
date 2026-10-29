@@ -134,7 +134,8 @@
     "changeForListing": "Mainīt šim sludinājumam",
     "useAccount": "Izmantot konta datus",
     "noCompanyPhone": "Jūsu uzņēmuma profilā vēl nav tālruņa. Norādiet to — pircēji zvanīs uz šo numuru.",
-    "savedToProfile": "Tālrunis tiks saglabāts uzņēmuma profilā"
+    "savedToProfile": "Tālrunis tiks saglabāts uzņēmuma profilā",
+    "completeProfile": "Norādiet tālruni un vietu, kur atrodas automašīna — tie saglabāsies jūsu profilā nākamajiem sludinājumiem."
   },
   "photos": {
     "description": "Pirmais foto būs sludinājuma titulattēls",

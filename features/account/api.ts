@@ -52,7 +52,7 @@ export async function assignOwnContact(user: User, listingIds: number[], contact
   return true;
 }
 
-export type ProfileFields = { name: string; phone: string; city: string };
+export type ProfileFields = { name: string; phone: string; city: string | null };
 
 export async function saveOwnProfile(user: User, fields: ProfileFields) {
   await db.update(profiles).set(fields).where(eq(profiles.id, user.id));

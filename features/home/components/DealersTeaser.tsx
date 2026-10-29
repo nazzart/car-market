@@ -4,7 +4,7 @@ import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
-import { getDealers } from "@/features/dealers/api";
+import { getPublicDealers } from "@/features/dealers/api";
 import { Link } from "@/i18n/navigation";
 import { placeName } from "@/lib/places";
 import { initials } from "@/lib/utils";
@@ -14,7 +14,7 @@ export default async function DealersTeaser() {
     getTranslations("home.dealers"),
     getTranslations("dealers"),
     getLocale(),
-    getDealers(),
+    getPublicDealers(),
   ]);
   // самые крупные салоны — по числу авто в наличии
   const topDealers = [...dealers].sort((a, b) => b.carsInStock - a.carsInStock).slice(0, 4);

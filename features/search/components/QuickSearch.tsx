@@ -1,241 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+// Главная: большой блок поиска — состояние (выбор, число объявлений) в quick-search/useQuickSearch,
+// панели выбора — в quick-search/panels
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Popover } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import CloseIcon from "@mui/icons-material/Close";
 
 import { brands } from "@/features/brands/data/brands";
-import { modelsByBrand } from "@/features/brands/data/models";
-import {
-  collectionHref,
-  collections,
-} from "@/features/collections/config";
+import { collectionHref, collections } from "@/features/collections/config";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
-import { useListingStats, useSearchCount } from "@/features/cars/hooks";
 
-type Panel = "brand" | "model" | "price" | "year";
-
-const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
+import { BrandPanel, ModelPanel, PricePanel, YearPanel } from "./quick-search/panels";
+import { Segment, SegmentDivider } from "./quick-search/Segment";
+import { useQuickSearch } from "./quick-search/useQuickSearch";
 
 const conditions = ["", "used", "new"];
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 24 }, (_, i) => String(currentYear - i));
-
-const pricePresets = [3000, 5000, 10000, 15000, 20000, 30000];
-
-
-/* ---------- UI parts ---------- */
-
-type SegmentProps = {
-  label: string;
-  value: string;
-  placeholder: string;
-  active: boolean;
-  disabled?: boolean;
-  onOpen: (el: HTMLElement) => void;
-  onClear: () => void;
-  segmentRef?: React.Ref<HTMLDivElement>;
-};
-
-function Segment({
-  label,
-  value,
-  placeholder,
-  active,
-  disabled,
-  onOpen,
-  onClear,
-  segmentRef,
-}: SegmentProps) {
-  const t = useTranslations("search");
-
-  return (
-    <div ref={segmentRef} className="relative flex-1 min-w-0">
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={(e) => onOpen(e.currentTarget.parentElement!)}
-        className={`
-          w-full text-left
-          px-5 py-2.5
-          rounded-2xl md:rounded-full
-          transition
-          cursor-pointer
-          disabled:cursor-not-allowed disabled:opacity-60
-          ${active ? "bg-gray-100" : "hover:bg-gray-50"}
-        `}
-      >
-        <div className="text-xs font-semibold text-gray-900">{label}</div>
-
-        <div
-          className={`text-sm truncate pr-6 ${
-            value ? "text-gray-900" : "text-gray-500"
-          }`}
-        >
-          {value || placeholder}
-        </div>
-      </button>
-
-      {value && (
-        <button
-          type="button"
-          onClick={onClear}
-          aria-label={t("clear", { label })}
-          className="
-            absolute right-3 top-1/2 -translate-y-1/2
-            w-6 h-6
-            flex items-center justify-center
-            rounded-full
-            text-gray-400
-            hover:bg-gray-200 hover:text-gray-700
-            transition
-            cursor-pointer
-          "
-        >
-          <CloseIcon sx={{ fontSize: 14 }} />
-        </button>
-      )}
-    </div>
-  );
-}
-
-function SegmentDivider() {
-  return (
-    <>
-      <div className="hidden md:block w-px h-8 bg-gray-200 shrink-0" />
-      <div className="md:hidden h-px bg-gray-100 mx-4" />
-    </>
-  );
-}
-
-function OptionButton({
-  selected,
-  onClick,
-  children,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`
-        flex items-center justify-between gap-3
-        px-3 py-2
-        rounded-lg
-        text-sm text-left
-        transition
-        cursor-pointer
-        ${selected ? "bg-gray-900 text-white" : "text-gray-800 hover:bg-gray-100"}
-      `}
-    >
-      {children}
-    </button>
-  );
-}
-
-const priceInputClass = `
-  w-full
-  px-3 py-2.5
-  rounded-xl
-  border border-gray-200
-  text-sm
-  outline-none
-  focus:border-gray-900
-  transition
-`;
-
-/* ---------- Main ---------- */
-
 export default function QuickSearch() {
   const t = useTranslations("search");
-  const { total: totalListingCount, byBrand } = useListingStats();
-  const brandListingCount = (slug: string) => byBrand[slug] ?? 0;
   const tOptions = useTranslations("options");
   const router = useRouter();
-  const modelRef = useRef<HTMLDivElement>(null);
+  const search = useQuickSearch();
+  const { filters, set, selectBrand, panel, anchorEl, openPanel, closePanel, modelRef, models, count, total } = search;
 
-  const [panel, setPanel] = useState<Panel | null>(null);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const brandName = brands.find((b) => b.slug === filters.brand)?.name ?? "";
 
-  const [condition, setCondition] = useState("");
-  const [brand, setBrand] = useState("");
-  const [model, setModel] = useState("");
-  const [priceFrom, setPriceFrom] = useState("");
-  const [priceTo, setPriceTo] = useState("");
-  const [yearFrom, setYearFrom] = useState("");
-  const [brandQuery, setBrandQuery] = useState("");
-
-  const formatPrice = (from: string, to: string) => {
+  const priceLabel = (from: string, to: string) => {
     if (from && to) return t("priceRange", { from: formatNumber(+from), to: formatNumber(+to) });
     if (from) return t("priceFrom", { value: formatNumber(+from) });
     if (to) return t("priceTo", { value: formatNumber(+to) });
     return "";
   };
 
-  const models = modelsByBrand[brand] ?? [];
-  const brandName = brands.find((b) => b.slug === brand)?.name ?? "";
-
-  // Число на кнопке считает сервер по тем же правилам, что и /cars. Запрос — через 300 мс после последнего
-  // изменения, чтобы не спрашивать на каждую введённую цифру цены
-  const query: Record<string, string> = { condition, brand, model, priceFrom, priceTo, yearFrom };
-  const queryKey = JSON.stringify(query);
-  const [debouncedQuery, setDebouncedQuery] = useState(query);
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(JSON.parse(queryKey)), 300);
-    return () => clearTimeout(timer);
-  }, [queryKey]);
-  const hasFilters = Object.values(debouncedQuery).some(Boolean);
-  const searchCount = useSearchCount(hasFilters ? debouncedQuery : {});
-  const count = hasFilters ? (searchCount ?? totalListingCount) : totalListingCount;
-
-  const filteredBrands = sortedBrands.filter((b) =>
-    b.name.toLowerCase().includes(brandQuery.trim().toLowerCase())
-  );
-
-  const openPanel = (name: Panel, el: HTMLElement) => {
-    setPanel(name);
-    setAnchorEl(el);
-  };
-
-  const closePanel = () => {
-    setPanel(null);
-    setAnchorEl(null);
-    setBrandQuery("");
-  };
-
-  const selectBrand = (slug: string) => {
-    setBrand(slug);
-    setModel("");
-    setBrandQuery("");
-
-    // сразу предлагаем выбрать модель
-    if (slug && modelsByBrand[slug] && modelRef.current) {
-      openPanel("model", modelRef.current);
-    } else {
-      closePanel();
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const params = new URLSearchParams();
-    const filters = { condition, brand, model, priceFrom, priceTo, yearFrom };
-
-    for (const [key, value] of Object.entries(filters)) {
-      if (value) params.set(key, value);
-    }
-
-    const query = params.toString();
-    router.push(query ? `/cars?${query}` : "/cars");
+    router.push(search.href);
   };
 
   return (
@@ -262,7 +63,7 @@ export default function QuickSearch() {
           </h1>
 
           <p className="text-white/75 mt-3 sm:text-lg">
-            {t("heroSubtitle", { count: totalListingCount })}
+            {t("heroSubtitle", { count: total })}
           </p>
 
           {/* Condition */}
@@ -272,8 +73,8 @@ export default function QuickSearch() {
               <button
                 key={c}
                 type="button"
-                onClick={() => setCondition(c)}
-                aria-pressed={condition === c}
+                onClick={() => set({ condition: c })}
+                aria-pressed={filters.condition === c}
                 className={`
                   px-4 py-1.5
                   rounded-full
@@ -281,7 +82,7 @@ export default function QuickSearch() {
                   transition
                   cursor-pointer
                   ${
-                    condition === c
+                    filters.condition === c
                       ? "bg-white text-gray-900"
                       : "text-white/80 hover:text-white"
                   }
@@ -295,7 +96,7 @@ export default function QuickSearch() {
           {/* Search bar */}
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={submit}
             className="
               mt-4 max-w-5xl
               flex flex-col md:flex-row md:items-center
@@ -320,37 +121,34 @@ export default function QuickSearch() {
             <Segment
               segmentRef={modelRef}
               label={t("model")}
-              value={model}
-              placeholder={brand ? t("anyModel") : t("brandFirst")}
+              value={filters.model}
+              placeholder={filters.brand ? t("anyModel") : t("brandFirst")}
               active={panel === "model"}
-              disabled={!brand || models.length === 0}
+              disabled={!filters.brand || models.length === 0}
               onOpen={(el) => openPanel("model", el)}
-              onClear={() => setModel("")}
+              onClear={() => set({ model: "" })}
             />
 
             <SegmentDivider />
 
             <Segment
               label={t("price")}
-              value={formatPrice(priceFrom, priceTo)}
+              value={priceLabel(filters.priceFrom, filters.priceTo)}
               placeholder={t("anyPrice")}
               active={panel === "price"}
               onOpen={(el) => openPanel("price", el)}
-              onClear={() => {
-                setPriceFrom("");
-                setPriceTo("");
-              }}
+              onClear={() => set({ priceFrom: "", priceTo: "" })}
             />
 
             <SegmentDivider />
 
             <Segment
               label={t("year")}
-              value={yearFrom ? t("yearFrom", { year: yearFrom }) : ""}
+              value={filters.yearFrom ? t("yearFrom", { year: filters.yearFrom }) : ""}
               placeholder={t("anyYear")}
               active={panel === "year"}
               onOpen={(el) => openPanel("year", el)}
-              onClear={() => setYearFrom("")}
+              onClear={() => set({ yearFrom: "" })}
             />
 
             <button
@@ -426,169 +224,10 @@ export default function QuickSearch() {
           },
         }}
       >
-        {panel === "brand" && (
-          <div>
-            <input
-              autoFocus
-              value={brandQuery}
-              onChange={(e) => setBrandQuery(e.target.value)}
-              placeholder={t("findBrand")}
-              className={priceInputClass}
-            />
-
-            <div className="mt-2 max-h-80 overflow-y-auto flex flex-col">
-              {filteredBrands.map((b) => (
-                <OptionButton
-                  key={b.slug}
-                  selected={brand === b.slug}
-                  onClick={() => selectBrand(b.slug)}
-                >
-                  <span>{b.name}</span>
-                  <span
-                    className={`text-xs tabular-nums ${
-                      brand === b.slug ? "text-white/70" : "text-gray-500"
-                    }`}
-                  >
-                    {brandListingCount(b.slug) > 0 && formatNumber(brandListingCount(b.slug))}
-                  </span>
-                </OptionButton>
-              ))}
-
-              {filteredBrands.length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-6">
-                  {t("nothingFound")}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {panel === "model" && (
-          <div>
-            <div className="text-xs font-semibold text-gray-500 mb-2 px-1">
-              {t("modelsOf", { brand: brandName })}
-            </div>
-
-            <div className="grid grid-cols-2 gap-1 max-h-80 overflow-y-auto">
-              <OptionButton
-                selected={!model}
-                onClick={() => {
-                  setModel("");
-                  closePanel();
-                }}
-              >
-                {t("any")}
-              </OptionButton>
-
-              {models.map((m) => (
-                <OptionButton
-                  key={m}
-                  selected={model === m}
-                  onClick={() => {
-                    setModel(m);
-                    closePanel();
-                  }}
-                >
-                  {m}
-                </OptionButton>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {panel === "price" && (
-          <div>
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                autoFocus
-                type="number"
-                min={0}
-                value={priceFrom}
-                onChange={(e) => setPriceFrom(e.target.value)}
-                placeholder={t("fromPlaceholder")}
-                className={priceInputClass}
-              />
-
-              <input
-                type="number"
-                min={0}
-                value={priceTo}
-                onChange={(e) => setPriceTo(e.target.value)}
-                placeholder={t("toPlaceholder")}
-                className={priceInputClass}
-              />
-            </div>
-
-            <div className="flex flex-wrap gap-1.5 mt-3">
-              {pricePresets.map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => {
-                    setPriceFrom("");
-                    setPriceTo(String(p));
-                  }}
-                  className={`
-                    px-3 py-1.5
-                    rounded-full
-                    text-sm
-                    border
-                    transition
-                    cursor-pointer
-                    ${
-                      priceTo === String(p) && !priceFrom
-                        ? "bg-gray-900 border-gray-900 text-white"
-                        : "border-gray-200 text-gray-700 hover:border-gray-900"
-                    }
-                  `}
-                >
-                  {t("priceTo", { value: formatNumber(p) })}
-                </button>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={closePanel}
-              className="mt-4 w-full py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-black transition cursor-pointer"
-            >
-              {t("done")}
-            </button>
-          </div>
-        )}
-
-        {panel === "year" && (
-          <div>
-            <div className="text-xs font-semibold text-gray-500 mb-2 px-1">
-              {t("yearFromTitle")}
-            </div>
-
-            <div className="grid grid-cols-4 gap-1">
-              <OptionButton
-                selected={!yearFrom}
-                onClick={() => {
-                  setYearFrom("");
-                  closePanel();
-                }}
-              >
-                {t("anyYearOption")}
-              </OptionButton>
-
-              {years.map((y) => (
-                <OptionButton
-                  key={y}
-                  selected={yearFrom === y}
-                  onClick={() => {
-                    setYearFrom(y);
-                    closePanel();
-                  }}
-                >
-                  {y}
-                </OptionButton>
-              ))}
-            </div>
-          </div>
-        )}
+        {panel === "brand" && <BrandPanel search={search} />}
+        {panel === "model" && <ModelPanel search={search} brandName={brandName} />}
+        {panel === "price" && <PricePanel search={search} />}
+        {panel === "year" && <YearPanel search={search} />}
       </Popover>
     </section>
   );

@@ -1,216 +1,47 @@
 "use client";
 
+// /account: кабинет — шапка, уведомления, статистика, свои объявления по статусам, боковая колонка
 import { useState } from "react";
-import BlockIcon from "@mui/icons-material/Block";
-import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
-import { Snackbar } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
-import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { useLocale, useTranslations } from "next-intl";
+import { Snackbar } from "@mui/material";
+import { useTranslations } from "next-intl";
 
-import Skeleton from "@/components/ui/Skeleton";
 import EmptyState from "@/components/ui/EmptyState";
-import CarPhoto from "@/components/ui/CarPhoto";
-import Badge, { type BadgeTone } from "@/components/ui/Badge";
-import { brands } from "@/features/brands/data/brands";
-import { usePlaceName } from "@/lib/places";
-import { openAuthModal, useAuth } from "@/features/auth/store";
-import { Listing } from "@/features/cars/types";
-import OpenStatus from "@/features/dealers/components/OpenStatus";
+import Skeleton from "@/components/ui/Skeleton";
+import StatTile from "@/components/ui/StatTile";
+import { useAuth } from "@/features/auth/store";
+import type { Listing } from "@/features/cars/types";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
-import { formatHours } from "@/features/dealers/lib/hours";
-import { useOwnDealer } from "@/features/dealers/useOwnDealer";
-import { Link, useRouter } from "@/i18n/navigation";
 import { isProfileComplete } from "@/features/dealers/lib/listed";
-
-import type { Moderation } from "@/features/moderation/types";
+import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { useVisibility } from "@/features/moderation/visibility";
+import { Link } from "@/i18n/navigation";
+import { formatNumber, initials } from "@/lib/utils";
 
-import ListingActions from "./listings/ListingActions";
+import AccountNotices from "./AccountNotices";
+import AccountSidebar from "./AccountSidebar";
+import { primaryButton, secondaryButton } from "./buttons";
+import AccountListingRow, { favoritesOf, phoneShows } from "./listings/AccountListingRow";
 import type { ListingStatus } from "./listings/status";
+import LoggedOut from "./LoggedOut";
 import { useOwnListings } from "./useOwnListings";
-import { formatAgo, formatNumber, formatPrice, initials } from "@/lib/utils";
-
-// Пока статистики нет — считаем примерные значения от просмотров
-const phoneShows = (l: Listing) => Math.round((l.views ?? 0) * 0.12);
-const favorites = (l: Listing) => Math.round((l.views ?? 0) * 0.05);
 
 // Вкладки = статусы объявлений (удалённые не показываем); «pending» и «blocked» — только если есть такие
 const tabs = ["active", "pending", "paused", "sold", "blocked"] as const;
 type Tab = (typeof tabs)[number];
 
-const statusBadge: Record<string, BadgeTone> = {
-  active: "success",
-  pending: "warning",
-  paused: "muted",
-  sold: "info",
-  blocked: "danger",
-};
-
-const primaryButton =
-  "inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-full bg-primary hover:bg-primary-hover text-white text-sm font-semibold transition";
-
-const secondaryButton =
-  "inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-full border border-gray-200 hover:border-gray-900 text-sm font-medium text-gray-900 transition";
-
-// title — заголовок страницы, на которую пытались попасть (например, «Настройки профиля»)
-// Не вошёл — просим войти. Пока профиль загружается, вместо этого — заглушка (чтобы не мигало «Войдите»)
-export function LoggedOut({ title }: { title?: string }) {
-  const t = useTranslations("account.loggedOut");
-  const { loading } = useAuth();
-
-  if (loading) return <Skeleton className="max-w-3xl mx-auto my-10 h-80 rounded-3xl bg-gray-50" />;
-
-  return (
-    <div className="max-w-md mx-auto text-center py-20">
-      <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-gray-100 text-gray-700 mb-5">
-        <LockOutlinedIcon sx={{ fontSize: 30 }} />
-      </span>
-
-      <h1 className="text-2xl font-semibold tracking-tight">{title ?? t("title")}</h1>
-      <p className="text-gray-500 mt-2">
-        {t("text")}
-      </p>
-
-      <button type="button" onClick={openAuthModal} className={`${primaryButton} mt-6 px-8 cursor-pointer`}>
-        {t("login")}
-      </button>
-
-    </div>
-  );
-}
-
-function ListingRow({
-  listing,
-  status,
-  moderation,
-  pending,
-  onStatusChange,
-}: {
-  listing: Listing;
-  status: ListingStatus;
-  moderation?: Moderation;
-  pending?: boolean;
-  onStatusChange: (status: ListingStatus) => void;
-}) {
-  const t = useTranslations("account.row");
-  const tReasons = useTranslations("moderation.reasons");
-  const locale = useLocale();
-  const badge = moderation ? "blocked" : pending ? "pending" : status;
-
-  return (
-    <div className={`flex gap-4 p-3 rounded-2xl border border-gray-200 ${status === "active" ? "" : "bg-gray-50/60"}`}>
-      <CarPhoto
-        src={listing.images[0]}
-        alt={listing.title}
-        sizes="144px"
-        iconSize={24}
-        className="w-28 sm:w-36 shrink-0 rounded-xl"
-        imageClassName={status === "active" ? "" : "grayscale opacity-70"}
-      />
-
-      <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <Badge tone={statusBadge[badge]}>{t(`status.${badge}`)}</Badge>
-            <span className="text-xs text-gray-500">{formatAgo(listing.postedMinutesAgo, locale)}</span>
-          </div>
-
-          <div className="font-semibold text-gray-900 truncate mt-1">
-            {listing.title}, {listing.year}
-          </div>
-          <div className="font-bold text-gray-900">{formatPrice(listing.price)}</div>
-
-          {/* продавцу — причина блокировки */}
-          {moderation && (
-            <p className="mt-1.5 text-xs text-red-700">
-              {t("blockedReason", { reason: tReasons(moderation.reason) })}
-              {moderation.note && ` — ${moderation.note}`}
-            </p>
-          )}
-
-          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-gray-500">
-            <span className="inline-flex items-center gap-1">
-              <VisibilityOutlinedIcon sx={{ fontSize: 14 }} />
-              {formatNumber(listing.views ?? 0)}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <PhoneOutlinedIcon sx={{ fontSize: 14 }} />
-              {formatNumber(phoneShows(listing))}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <FavoriteBorderIcon sx={{ fontSize: 14 }} />
-              {formatNumber(favorites(listing))}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <Link href={`/listing/${listing.id}`} className={`${secondaryButton} h-9 px-4`}>
-            {t("open")}
-          </Link>
-          {/* заблокированное модератором продавец не может снова активировать */}
-          {!moderation && !pending && <ListingActions title={listing.title} status={status} onChange={onStatusChange} />}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Notice({
-  tone,
-  title,
-  children,
-  action,
-}: {
-  tone: "red" | "amber";
-  title: string;
-  children: React.ReactNode;
-  action?: { label: string; onClick: () => void };
-}) {
-  return (
-    <div
-      className={`flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl border ${
-        tone === "red" ? "bg-red-50 border-red-100 text-red-900" : "bg-amber-50 border-amber-100 text-amber-900"
-      }`}
-    >
-      {tone === "red" ? <BlockIcon className="shrink-0" /> : <HourglassEmptyIcon className="shrink-0" />}
-      <div className="flex-1">
-        <div className="font-semibold">{title}</div>
-        <div className="text-sm">{children}</div>
-      </div>
-      {action && (
-        <button
-          type="button"
-          onClick={action.onClick}
-          className="shrink-0 h-10 px-4 rounded-full bg-white border border-gray-200 hover:border-gray-900 text-sm font-semibold text-gray-900 transition cursor-pointer"
-        >
-          {action.label}
-        </button>
-      )}
-    </div>
-  );
-}
-
 export default function AccountView() {
   const t = useTranslations("account");
-  const tReasons = useTranslations("moderation.reasons");
-  const tOptions = useTranslations("options");
-  const placeName = usePlaceName();
   const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("active");
   const { of } = useVisibility();
   const [undo, setUndo] = useState<{ id: string; prev: ListingStatus; next: ListingStatus } | null>(null);
   const dealer = useOwnDealer();
-  const router = useRouter();
   // новый дилер без адреса и телефона покупателям не виден — подсказываем заполнить профиль
   const dealerIncomplete = dealer !== null && !isProfileComplete(dealer);
   // у дилера город — из адреса его страницы, у частного лица — из профиля
@@ -229,9 +60,6 @@ export default function AccountView() {
   };
   const byStatus = (s: Tab) => all.filter((l) => tabOf(l) === s);
   const visibleTabs = tabs.filter((item) => !["pending", "blocked"].includes(item) || byStatus(item).length > 0);
-  const accountBlock = user.blocked;
-  const blockedCount = byStatus("blocked").length;
-  const pendingCount = byStatus("pending").length;
   // статистика — только по активным
   const own = byStatus("active");
   const shown = byStatus(tab);
@@ -243,7 +71,7 @@ export default function AccountView() {
 
   const totalViews = own.reduce((sum, l) => sum + (l.views ?? 0), 0);
   const totalPhone = own.reduce((sum, l) => sum + phoneShows(l), 0);
-  const totalFavorites = own.reduce((sum, l) => sum + favorites(l), 0);
+  const totalFavorites = own.reduce((sum, l) => sum + favoritesOf(l), 0);
 
   const stats = [
     {
@@ -295,51 +123,19 @@ export default function AccountView() {
       </header>
 
       {/* Решения модератора — заметно, с причиной */}
-      <div className="space-y-3 mt-6 empty:hidden">
-        {dealerIncomplete && (
-          <Notice
-            tone="amber"
-            title={t("notices.completeTitle")}
-            action={{ label: t("notices.completeAction"), onClick: () => router.push("/account/profile") }}
-          >
-            {t("notices.completeText")}
-          </Notice>
-        )}
-        {accountBlock && (
-          <Notice tone="red" title={t("notices.accountTitle")}>
-            {t("notices.accountText", { reason: tReasons(accountBlock.reason) })}
-            {accountBlock.note && <> — {accountBlock.note}</>}
-          </Notice>
-        )}
-        {!accountBlock && blockedCount > 0 && (
-          <Notice
-            tone="red"
-            title={t("notices.blockedTitle", { count: blockedCount })}
-            action={{ label: t("notices.show"), onClick: () => setTab("blocked") }}
-          >
-            {t("notices.blockedText")}
-          </Notice>
-        )}
-        {pendingCount > 0 && (
-          <Notice
-            tone="amber"
-            title={t("notices.pendingTitle", { count: pendingCount })}
-            action={{ label: t("notices.show"), onClick: () => setTab("pending") }}
-          >
-            {t("notices.pendingText")}
-          </Notice>
-        )}
-      </div>
+      <AccountNotices
+        user={user}
+        dealerIncomplete={dealerIncomplete}
+        blockedCount={byStatus("blocked").length}
+        pendingCount={byStatus("pending").length}
+        onShow={setTab}
+      />
 
       {/* Stats */}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-8">
-        {stats.map(({ label, value, icon: Icon }) => (
-          <div key={label} className="p-4 rounded-2xl bg-gray-50">
-            <Icon fontSize="small" className="text-gray-500" />
-            <div className="text-2xl font-semibold tracking-tight mt-2">{formatNumber(value)}</div>
-            <div className="text-sm text-gray-500">{label}</div>
-          </div>
+        {stats.map(({ label, value, icon }) => (
+          <StatTile key={label} icon={icon} value={formatNumber(value)} label={label} />
         ))}
       </div>
       <p className="text-xs text-gray-500 mt-2">{t("stats.period")}</p>
@@ -380,7 +176,7 @@ export default function AccountView() {
           ) : shown.length > 0 ? (
             <div className="space-y-3">
               {shown.map((l) => (
-                <ListingRow
+                <AccountListingRow
                   key={l.id}
                   listing={l}
                   status={l.status}
@@ -395,75 +191,7 @@ export default function AccountView() {
           )}
         </section>
 
-        {/* Sidebar */}
-
-        <aside className="space-y-4">
-          <div className="rounded-2xl border border-gray-200 p-5">
-            <h3 className="font-semibold mb-3">{isDealer ? t("profile.company") : t("profile.title")}</h3>
-
-            <dl className="space-y-2 text-sm">
-              {!isDealer && (
-                <div className="flex justify-between gap-4">
-                  <dt className="text-gray-500">{t("profile.name")}</dt>
-                  <dd className="text-gray-900 text-right">{user.name}</dd>
-                </div>
-              )}
-              <div className="flex justify-between gap-4">
-                <dt className="text-gray-500">{t("profile.email")}</dt>
-                <dd className="text-gray-900 text-right truncate">{user.email}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-gray-500">{t("profile.phone")}</dt>
-                <dd className="text-gray-900 text-right">{user.phone || "—"}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-gray-500">{t("profile.city")}</dt>
-                <dd className="text-gray-900 text-right">{shownCity ? placeName(shownCity) : "—"}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-gray-500">{t("profile.since")}</dt>
-                <dd className="text-gray-900 text-right">{user.since}</dd>
-              </div>
-            </dl>
-
-            <Link href="/account/profile" className={`${secondaryButton} w-full mt-5`}>
-              {t("profile.edit")}
-            </Link>
-          </div>
-
-          {dealer?.address && (
-            <div className="rounded-2xl border border-gray-200 p-5">
-              <h3 className="font-semibold mb-3">{t("profile.dealerCenter")}</h3>
-
-              <div className="space-y-2 text-sm text-gray-800">
-                <div className="flex items-start gap-2">
-                  <PlaceOutlinedIcon sx={{ fontSize: 18 }} className="text-gray-500" />
-                  {dealer.address}, {placeName(dealer.city)}
-                </div>
-                <div className="flex items-start gap-2">
-                  <ScheduleOutlinedIcon sx={{ fontSize: 18 }} className="text-gray-500" />
-                  <div>
-                    <OpenStatus hours={dealer.hours} />
-                    <div className="text-xs text-gray-500">{formatHours(dealer.hours, (d) => tOptions(`days.${d}`))}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 mt-4">
-                {dealer.brands.map((b) => (
-                  <Badge key={b}>{brands.find((brand) => brand.slug === b)?.name ?? b}</Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {!isDealer && (
-            <div className="flex gap-3 rounded-2xl bg-gray-50 p-5 text-sm text-gray-700">
-              <MailOutlineIcon fontSize="small" className="text-gray-500 shrink-0" />
-              {t("profile.tip")}
-            </div>
-          )}
-        </aside>
+        <AccountSidebar user={user} dealer={dealer} shownCity={shownCity} />
       </div>
 
       <Snackbar

@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import Badge from "@/components/ui/Badge";
+import StatTile from "@/components/ui/StatTile";
 import { isFresh } from "@/features/cars/lib/isFresh";
 import { LogEntry, useModerationLog, useReports } from "@/features/moderation/store";
 import { useDealerVerified } from "@/features/moderation/visibility";
@@ -46,10 +47,7 @@ export default function OverviewTab({ onOpen }: { onOpen: (tab: AdminTab) => voi
     <div className="space-y-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {stats.map((s) => (
-          <div key={s.label} className="p-4 rounded-2xl bg-gray-50">
-            <div className="text-2xl font-semibold tracking-tight">{formatNumber(s.value)}</div>
-            <div className="text-sm text-gray-500">{s.label}</div>
-          </div>
+          <StatTile key={s.label} value={formatNumber(s.value)} label={s.label} />
         ))}
       </div>
 

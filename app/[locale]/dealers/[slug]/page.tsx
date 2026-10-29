@@ -10,6 +10,7 @@ import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined
 import { getTranslations } from "next-intl/server";
 
 import EmptyState from "@/components/ui/EmptyState";
+import StatTile from "@/components/ui/StatTile";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import { placeName } from "@/lib/places";
@@ -143,10 +144,7 @@ export default async function DealerPage({ params }: Props) {
 
       <div className={`grid grid-cols-2 gap-3 mt-8 ${rated ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
         {stats.map((s) => (
-          <div key={s.label} className="p-4 rounded-2xl bg-gray-50">
-            <div className="text-2xl font-semibold tracking-tight">{s.value}</div>
-            <div className="text-sm text-gray-500">{s.label}</div>
-          </div>
+          <StatTile key={s.label} value={s.value} label={s.label} />
         ))}
       </div>
 

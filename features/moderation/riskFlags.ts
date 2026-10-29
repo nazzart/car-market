@@ -10,7 +10,7 @@ const median = (values: number[]) => {
   return sorted[Math.floor(sorted.length / 2)];
 };
 
-// all — объявления для сравнения цены и поиска дублей. TODO(backend): считать на сервере при подаче
+// all — объявления для сравнения цены и поиска дублей. TODO(admin): считать на сервере при подаче
 export function riskFlags(listing: Listing, all: Listing[]): RiskFlag[] {
   const flags: RiskFlag[] = [];
   const thisYear = new Date().getFullYear();

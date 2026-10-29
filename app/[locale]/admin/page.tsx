@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: LocaleParams): Promise<Metada
   return { title: t("metaTitle"), robots: { index: false, follow: false } };
 }
 
-// TODO(backend): с бэкендом — проверка роли на сервере (сейчас демо: роль из браузера)
+// Модерация: страница открывается всем, но данные и решения — только для модератора (requireAdmin в Server Actions)
 export default function AdminPage() {
   return (
     <Container>

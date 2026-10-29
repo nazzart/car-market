@@ -34,7 +34,7 @@ export function SellCarView() {
 
     if (!isOk) return;
 
-    // TODO(backend): отправка объявления на сервер (API), затем переход на страницу «объявление на проверке»
+    // TODO(sell): сохранить объявление (Server Action + фото в R2), затем перейти на страницу «объявление на проверке»
   };
 
   const lastSection = sections.at(-1);

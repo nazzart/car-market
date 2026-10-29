@@ -24,7 +24,6 @@ import FiltersPanel from "./FiltersPanel";
 import ListingRow from "./ListingRow";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import ScrollArea from "./ScrollArea";
-import { useVisibility } from "@/features/moderation/visibility";
 import { inputClass } from "@/components/ui/form";
 
 // Сайдбар всегда целиком в окне: пока он не прилип, высота — до нижнего края экрана.
@@ -102,11 +101,9 @@ function SearchView({ result, pageSize, empty, pending }: SearchViewProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const sidebarRef = useFitToViewport<HTMLElement>();
 
-  // скрытые, проданные и удалённые продавцом — не в поиске.
-  // TODO(backend): статусы и модерация сейчас в браузере — перенести в базу и фильтровать в SQL
-  const { isPublic } = useVisibility();
   const dealerOf = useDealerLookup();
-  const results = result.items.filter(isPublic);
+  // только опубликованные — сервер уже отфильтровал (published в features/cars/api.ts)
+  const results = result.items;
   const view = params.get("view") === "grid" ? "grid" : "list";
 
   const resultsLabel = tCommon("listings", { count: result.total });

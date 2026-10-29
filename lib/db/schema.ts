@@ -120,7 +120,7 @@ export const listings = pgTable(
     bodyType: text().notNull(),
     condition: text().$type<"used" | "new">().notNull(),
     // Продавец. Дилер — ссылка: имя и телефон берутся из dealers / dealer_contacts при чтении (JOIN), не копируются.
-    // Частный продавец — имя и телефон хранятся здесь. TODO(auth): брать из профиля пользователя, как у дилеров
+    // Частный продавец — имя и телефон хранятся здесь: в форме подачи их можно изменить для конкретного объявления
     dealerId: integer().references(() => dealers.id, { onDelete: "cascade" }), // null — частный продавец
     contactId: text().references(() => dealerContacts.id, { onDelete: "set null" }), // нет — основной телефон дилера
     // владелец — частный продавец (у дилерских владелец — дилер). null — объявление без аккаунта

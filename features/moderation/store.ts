@@ -11,8 +11,6 @@ import type { AdminData } from "./actions";
 import { dealerAccount, userAccount } from "./accounts";
 import type { AccountBlock } from "./types";
 
-export * from "./types";
-
 const CHANGED = "bestauto:admin-changed";
 
 const AdminDataContext = createContext<AdminData | null>(null);

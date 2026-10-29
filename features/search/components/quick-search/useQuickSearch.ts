@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { modelsByBrand } from "@/features/brands/data/models";
 import { useListingStats, useSearchCount } from "@/features/cars/hooks";
 import { withQuery } from "@/lib/url";
+import { useDebouncedValue } from "@/lib/useDebounced";
 
 export type Panel = "brand" | "model" | "price" | "year";
 
@@ -25,12 +26,7 @@ export function useQuickSearch() {
 
   // Число на кнопке считает сервер по тем же правилам, что и /cars. Запрос — через 300 мс после последнего
   // изменения, чтобы не спрашивать на каждую введённую цифру цены
-  const queryKey = JSON.stringify(filters);
-  const [debounced, setDebounced] = useState(filters);
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(JSON.parse(queryKey)), 300);
-    return () => clearTimeout(timer);
-  }, [queryKey]);
+  const debounced = useDebouncedValue(filters, 300);
   const hasFilters = Object.values(debounced).some(Boolean);
   const searchCount = useSearchCount(hasFilters ? debounced : {});
   const count = hasFilters ? (searchCount ?? total) : total;

@@ -7,7 +7,8 @@ import Card, { CardTitle } from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import StatTile from "@/components/ui/StatTile";
 import { isFresh } from "@/features/cars/lib/isFresh";
-import { LogEntry, useModerationLog, useReports } from "@/features/moderation/store";
+import { useModerationLog, useReports } from "@/features/moderation/store";
+import { type LogEntry } from "@/features/moderation/types";
 import { useDealerVerified } from "@/features/moderation/visibility";
 import { cn, formatAgo, formatNumber } from "@/lib/utils";
 

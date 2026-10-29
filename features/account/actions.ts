@@ -18,7 +18,6 @@ import { createSupabase } from "@/lib/supabase/server";
 import {
   type DealerFields,
   addOwnContact,
-  assignOwnContact,
   deleteOwnAccount,
   saveDealerPhone,
   saveOwnDealer,
@@ -46,16 +45,6 @@ export async function setListingStatus(id: string, status: ListingStatus): Promi
   const user = await requireUser();
   if (!isListingId(id) || !LISTING_STATUSES.includes(status)) return false;
   const ok = await setOwnListingStatus(user, Number(id), status);
-  if (ok) updateTag("listings");
-  return ok;
-}
-
-// contactId "company" — основной телефон дилера
-export async function assignContact(ids: string[], contactId: string): Promise<boolean> {
-  const user = await requireUser();
-  const numbers = (Array.isArray(ids) ? ids : []).filter(isListingId).map(Number).slice(0, 500);
-  if (!numbers.length) return false;
-  const ok = await assignOwnContact(user, numbers, contactId === "company" ? null : text(contactId, 80));
   if (ok) updateTag("listings");
   return ok;
 }

@@ -12,7 +12,6 @@ import { useDealerLookup } from "@/features/dealers/hooks";
 import { usePlaceName } from "@/lib/places";
 
 import type { Listing } from "../../types";
-import { useVisibility } from "@/features/moderation/visibility";
 import { useCarFilters } from "../hooks/useCarFilters";
 
 type EmptyResultsProps = {
@@ -33,8 +32,6 @@ export default function EmptyResults({
   const { params, updateFilter, resetFilters } = useCarFilters();
   const dealerOf = useDealerLookup();
   const placeName = usePlaceName();
-  // как в поиске: скрытые, проданные и ожидающие проверки не предлагаем
-  const { isPublic } = useVisibility();
 
   const names = { dealer: (slug: string) => dealerOf(slug)?.name, place: placeName };
   const relax = suggestions
@@ -43,7 +40,6 @@ export default function EmptyResults({
       ...s,
       label: chipLabel(s.key as FilterKey, params.get(s.key)!, tOptions, tChips, names, params.get("area")),
     }));
-  const freshPublic = fresh.filter(isPublic);
 
   return (
     <div>
@@ -72,7 +68,7 @@ export default function EmptyResults({
 
       <h3 className="text-lg font-semibold tracking-tight mt-10 mb-5">{t("fresh")}</h3>
       <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-8">
-        {freshPublic.map((listing) => (
+        {fresh.map((listing) => (
           <CarCard key={listing.id} listing={listing} />
         ))}
       </div>

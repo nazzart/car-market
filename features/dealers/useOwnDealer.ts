@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { loadOwnDealer } from "@/features/account/actions";
 import { useAuth } from "@/features/auth/store";
 import type { User } from "@/features/auth/types";
 import { placePointOrRiga } from "@/lib/places";
+import { useServerData } from "@/lib/useServerData";
 
 import { useDealerLookup } from "./hooks";
 import type { Dealer } from "./types";
 
 // Страница дилера вошедшей компании. Недостающие поля — пустые значения вместо undefined
-export function resolveDealer(user: User, base: Dealer | undefined): Dealer {
+function resolveDealer(user: User, base: Dealer | undefined): Dealer {
   return {
     slug: user.dealerSlug ?? "",
     name: user.name,
@@ -35,23 +36,16 @@ export function useOwnDealerState(): { dealer: Dealer | null; loading: boolean }
   const { user } = useAuth();
   const cached = useDealerLookup()(user?.dealerSlug);
   const isDealer = user?.type === "dealer";
-  const [fresh, setFresh] = useState<{ userId: string; dealer: Dealer | null } | null>(null);
-
-  useEffect(() => {
-    if (!isDealer || !user) return;
-    let alive = true;
-    loadOwnDealer()
-      .catch(() => null)
-      .then((dealer) => alive && setFresh({ userId: user.id, dealer }));
-    return () => {
-      alive = false;
-    };
-  }, [isDealer, user]);
+  // ttl: 0 — при каждом открытии кабинета или настроек заново
+  const fresh = useServerData(
+    isDealer && user ? `own-dealer:${user.id}` : null,
+    () => loadOwnDealer().catch(() => null),
+    { ttl: 0, keepPrevious: false }
+  );
 
   return useMemo(() => {
     if (!isDealer || !user) return { dealer: null, loading: false };
-    const loaded = fresh?.userId === user.id;
-    return { dealer: resolveDealer(user, (loaded ? fresh.dealer : null) ?? cached), loading: !loaded };
+    return { dealer: resolveDealer(user, fresh ?? cached), loading: fresh === undefined };
   }, [isDealer, user, fresh, cached]);
 }
 

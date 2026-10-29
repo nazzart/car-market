@@ -18,7 +18,7 @@ export type Visibility = {
 
 export type VisibilitySubject = Pick<Listing, "status" | "review" | "moderation" | "accountBlock">;
 
-export const visibilityOf = (listing: VisibilitySubject): Visibility => ({
+const visibilityOf = (listing: VisibilitySubject): Visibility => ({
   seller: listing.status,
   moderation: listing.moderation,
   pending: listing.review === "pending",

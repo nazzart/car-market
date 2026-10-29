@@ -9,7 +9,8 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
-import { Report, dismissReports, useReports } from "@/features/moderation/store";
+import { dismissReports, useReports } from "@/features/moderation/store";
+import { type Report } from "@/features/moderation/types";
 import { Link } from "@/i18n/navigation";
 import { cn, formatAgo } from "@/lib/utils";
 

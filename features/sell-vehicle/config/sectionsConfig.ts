@@ -1,6 +1,6 @@
 import { CarInfoSection } from "../sections/CarInfoSection";
 import { CarConditionSection } from "../sections/CarConditionSection";
-import { TechnicalSection } from "../sections/TechicalSection";
+import { TechnicalSection } from "../sections/TechnicalSection";
 import { CarHistorySection } from "../sections/CarHistorySection";
 import { CarEquipmentSection } from "../sections/CarEquipmentSection";
 import { CarDescriptionSection } from "../sections/CarDescriptionSection";

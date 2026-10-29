@@ -10,7 +10,8 @@ import Button from "@/components/ui/Button";
 import Dialog, { DialogActions, DialogHeader } from "@/components/ui/Dialog";
 import { cn } from "@/lib/utils";
 
-import { BLOCK_REASONS, BlockReason, addReport } from "./store";
+import { addReport } from "./store";
+import { BLOCK_REASONS, type BlockReason } from "./types";
 
 type ReportButtonProps = { listingId: string; className?: string };
 

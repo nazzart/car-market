@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { MenuItem, TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -47,8 +47,9 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
   // нет ни телефона компании, ни менеджеров — телефон нужно ввести (и он сохранится в профиль)
   const needsCompanyPhone = isDealer && !companyPhone;
 
-  // данные аккаунта → в поля формы (пока продавец не изменил их для этого объявления)
-  useEffect(() => {
+  // данные аккаунта → в поля формы (пока продавец не изменил их для этого объявления):
+  // при смене аккаунта, контакта или режима; updateField и data берутся последние
+  const syncFromAccount = useEffectEvent(() => {
     if (!user) {
       updateField("account", "");
       return;
@@ -61,9 +62,8 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
       updateField("sellerPhone", user.phone);
       updateField("sellerCity", user.city ?? "");
     }
-    // updateField стабилен по смыслу; синхронизируем при смене аккаунта, контакта или режима
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, isDealer, custom, dealerCity, companyPhone, selectedContact?.phone]);
+  });
+  useEffect(() => syncFromAccount(), [user?.id, isDealer, custom, dealerCity, companyPhone, selectedContact?.phone]);
 
   // в профиле ещё нет телефона или места (первое объявление) — поля сразу открыты, введённое сохранится в профиль
   const missingProfile = !isDealer && Boolean(user) && (!user?.phone || !user?.city);

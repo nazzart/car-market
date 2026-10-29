@@ -113,6 +113,10 @@ Conventions:
   danger, white; sizes sm–xl; `href` makes it a link), `Dialog` / `ConfirmDialog`, and `useToast()` — all in
   `components/ui`. MUI is used only for inputs, selects, menus, popovers, drawers and tooltips, styled once in
   `lib/theme.ts` — no `sx` styling of MUI in feature code beyond icon sizes.
+- **Shared hooks** (`lib/`): `useServerData` (load via a Server Action after mount, with a shared short cache),
+  `useDebouncedValue` / `useDebouncedCallback` (typing, map moves), `useCopyToClipboard`, `useNow`. For effects that
+  must re-run only on specific changes but read the latest values, use React's `useEffectEvent` instead of
+  disabling `react-hooks/exhaustive-deps`.
 - **Types:** a component file declares only its own props — `type XxxProps = { … }` right above the component,
   never inline in the signature. Everything else (data shapes, unions, option lists) lives in the feature's
   `types.ts` (`components/ui/types.ts` for the UI kit, `i18n/types.ts` for route params). ESLint enforces both.

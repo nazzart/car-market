@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useEffectEvent, useRef, useState, useTransition } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -19,6 +19,7 @@ import Pagination from "@/components/ui/Pagination";
 import Button from "@/components/ui/Button";
 import { Segmented, Select, inputClass } from "@/components/ui/form";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { useDebouncedCallback, useDebouncedValue } from "@/lib/useDebounced";
 
 import type { DealerSearchResult } from "../api";
 import DealerCard from "./DealerCard";
@@ -88,16 +89,13 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
   // Поиск по тексту — в URL через 300 мс после последней буквы, а не на каждую
   const [text, setText] = useState(query);
   const lastQuery = useRef(query);
-  useEffect(() => {
-    if (text.trim() === lastQuery.current) return;
-    const timer = setTimeout(() => {
-      lastQuery.current = text.trim();
-      setParam("q")(text.trim() || null);
-    }, 300);
-    return () => clearTimeout(timer);
-    // setParam меняется на каждом рендере; ждём только изменения текста
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text]);
+  const debouncedText = useDebouncedValue(text.trim(), 300);
+  const pushQuery = useEffectEvent((value: string) => {
+    if (value === lastQuery.current) return;
+    lastQuery.current = value;
+    setParam("q")(value || null);
+  });
+  useEffect(() => pushQuery(debouncedText), [debouncedText]);
 
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
@@ -105,15 +103,13 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
 
   // Карта двигается → при включённом поиске по карте обновляем область в URL (после остановки, раз в 400 мс)
   const bounds = useRef<MapBounds | null>(null);
-  const boundsTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const pushBounds = useDebouncedCallback((next: MapBounds) => {
+    const value = formatBounds(next);
+    if (value !== params.get("bounds")) setParam("bounds")(value);
+  }, 400);
   const onBoundsChange = (next: MapBounds) => {
     bounds.current = next;
-    if (!searchOnMove) return;
-    clearTimeout(boundsTimer.current);
-    boundsTimer.current = setTimeout(() => {
-      const value = formatBounds(next);
-      if (value !== params.get("bounds")) setParam("bounds")(value);
-    }, 400);
+    if (searchOnMove) pushBounds.call(next);
   };
   const setSearchOnMove = (on: boolean) =>
     setParam("bounds")(on && bounds.current ? formatBounds(bounds.current) : null);

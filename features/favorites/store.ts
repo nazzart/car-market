@@ -10,7 +10,6 @@ import { openAuthModal, useAuth } from "@/features/auth/store";
 import * as actions from "./actions";
 import type { FavoriteEntry } from "./types";
 
-export type { FavoriteEntry };
 
 let entries: FavoriteEntry[] = [];
 let loggedIn = false;

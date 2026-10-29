@@ -6,15 +6,8 @@ import type { BadgeTone } from "@/components/ui/types";
 import CarPhoto from "@/components/ui/CarPhoto";
 import { Listing } from "@/features/cars/types";
 import { useDealerCatalog, useDealerLookup } from "@/features/dealers/hooks";
-import {
-  BlockReason,
-  blockAccount,
-  blockListing,
-  rejectListing,
-  removeListing,
-  useAdminState,
-  useReports,
-} from "@/features/moderation/store";
+import { blockAccount, blockListing, rejectListing, removeListing, useAdminState, useReports } from "@/features/moderation/store";
+import { type BlockReason } from "@/features/moderation/types";
 import { useVisibility } from "@/features/moderation/visibility";
 import { cn } from "@/lib/utils";
 

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 import Button from "@/components/ui/Button";
 import Dialog, { DialogActions, DialogHeader } from "@/components/ui/Dialog";
-import { BLOCK_REASONS, BlockReason } from "@/features/moderation/store";
+import { BLOCK_REASONS, type BlockReason } from "@/features/moderation/types";
 
 import type { DialogMode } from "./types";
 

@@ -11,7 +11,8 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
 import { RiskFlag, riskFlags } from "@/features/moderation/riskFlags";
-import { BlockReason, approveListing } from "@/features/moderation/store";
+import { approveListing } from "@/features/moderation/store";
+import { type BlockReason } from "@/features/moderation/types";
 import { Link } from "@/i18n/navigation";
 import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 

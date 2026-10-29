@@ -166,7 +166,7 @@ export const placeNameLv = (key: string) => byKey.get(key)?.lv ?? key;
 // Город из ответа геокодера («Ķekava») → ключ; не из списка — латышское название как есть
 export const placeFromName = (name: string) => PLACES.find((p) => p.lv === name)?.key ?? name;
 
-export const placePoint = (key: string): Point | null => {
+const placePoint = (key: string): Point | null => {
   const place = byKey.get(key);
   return place ? { lat: place.lat, lng: place.lng } : null;
 };

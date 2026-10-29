@@ -1,7 +1,7 @@
 import { isPhone } from "@/lib/phone";
 import { youtubeId } from "@/lib/youtube";
 
-export const rulesMap: Record<string, (value: unknown) => boolean> = {
+const rulesMap: Record<string, (value: unknown) => boolean> = {
   required: (v) => {
     if (Array.isArray(v)) return v.length > 0;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent } from "react";
 import L from "leaflet";
 import { useTranslations } from "next-intl";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
@@ -53,27 +53,18 @@ type FitToDealersProps = { dealers: DealerPin[]; fitKey: string };
 
 function FitToDealers({ dealers, fitKey }: FitToDealersProps) {
   const map = useMap();
-  const dealersRef = useRef(dealers);
 
-  useEffect(() => {
-    dealersRef.current = dealers;
-  });
-
-  const fit = () => {
-    const list = dealersRef.current;
-    if (list.length === 0) return;
-
+  // всегда по текущему списку дилеров, но вызывается только из эффектов ниже
+  const fit = useEffectEvent(() => {
+    if (dealers.length === 0) return;
     map.fitBounds(
-      list.map((d) => [d.lat, d.lng] as [number, number]),
+      dealers.map((d) => [d.lat, d.lng] as [number, number]),
       { padding: [48, 48], maxZoom: 13 }
     );
-  };
+  });
 
-  useEffect(() => {
-    fit();
-    // подстраиваемся только при смене фильтров, не при каждом рендере
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fitKey, map]);
+  // подстраиваемся только при смене фильтров (fitKey), не при каждом рендере
+  useEffect(() => fit(), [fitKey, map]);
 
   // На телефоне карта сначала скрыта (display: none) — когда она появляется,
   // Leaflet нужно пересчитать размер и заново показать дилеров
@@ -91,7 +82,6 @@ function FitToDealers({ dealers, fitKey }: FitToDealersProps) {
 
     observer.observe(container);
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map]);
 
   return null;

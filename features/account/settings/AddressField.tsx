@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { Autocomplete, CircularProgress, InputAdornment, TextField } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 
+import { useDebouncedCallback } from "@/lib/useDebounced";
+
 import { AddressResult, searchAddress } from "./geocoding";
 
 const MIN_QUERY = 3;
@@ -24,15 +26,27 @@ type AddressFieldProps = {
 export default function AddressField({ value, onChange, onSelect, near, label, placeholder, error, helperText }: AddressFieldProps) {
   const [options, setOptions] = useState<AddressResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const request = useRef<AbortController>(undefined);
 
+  const fetchOptions = useDebouncedCallback(async (text: string) => {
+    const controller = new AbortController();
+    request.current = controller;
+
+    try {
+      setOptions(await searchAddress(text, near, controller.signal));
+    } catch {
+      if (!controller.signal.aborted) setOptions([]);
+    } finally {
+      if (!controller.signal.aborted) setLoading(false);
+    }
+  }, DEBOUNCE_MS);
+
   const cancel = () => {
-    clearTimeout(timer.current);
+    fetchOptions.cancel();
     request.current?.abort();
   };
 
-  useEffect(() => cancel, []);
+  useEffect(() => () => request.current?.abort(), []);
 
   const search = (text: string) => {
     cancel();
@@ -44,18 +58,7 @@ export default function AddressField({ value, onChange, onSelect, near, label, p
     }
 
     setLoading(true);
-    timer.current = setTimeout(async () => {
-      const controller = new AbortController();
-      request.current = controller;
-
-      try {
-        setOptions(await searchAddress(text, near, controller.signal));
-      } catch {
-        if (!controller.signal.aborted) setOptions([]);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    }, DEBOUNCE_MS);
+    fetchOptions.call(text);
   };
 
   return (

@@ -34,24 +34,6 @@ export async function setOwnListingStatus(user: User, listingId: number, status:
   return updated.length > 0;
 }
 
-// Кто отвечает на звонки по объявлениям дилера: контактное лицо или основной телефон (null)
-export async function assignOwnContact(user: User, listingIds: number[], contactId: string | null) {
-  const dealerId = await dealerIdOf(user);
-  if (dealerId === null) return false;
-  if (contactId !== null) {
-    const [own] = await db
-      .select({ id: dealerContacts.id })
-      .from(dealerContacts)
-      .where(and(eq(dealerContacts.id, contactId), eq(dealerContacts.dealerId, dealerId)));
-    if (!own) return false;
-  }
-  await db
-    .update(listings)
-    .set({ contactId })
-    .where(and(inArray(listings.id, listingIds), eq(listings.dealerId, dealerId)));
-  return true;
-}
-
 export type ProfileFields = { name: string; phone: string; city: string | null };
 
 export async function saveOwnProfile(user: User, fields: ProfileFields) {

@@ -11,6 +11,8 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { useTranslations } from "next-intl";
 
+import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
+
 type ShareMenuProps = {
   title: string; // «BMW M4 Coupe, 2018 — 47 500 €»
   className: string;
@@ -20,7 +22,7 @@ type ShareMenuProps = {
 export default function ShareMenu({ title, className }: ShareMenuProps) {
   const t = useTranslations("listing.actions");
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy: copyText } = useCopyToClipboard();
 
   const url = () => window.location.href;
 
@@ -40,14 +42,8 @@ export default function ShareMenu({ title, className }: ShareMenuProps) {
     { key: "facebook", icon: FacebookIcon, color: "#1877F2", href: () => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url())}` },
   ];
 
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(url());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // буфер обмена недоступен
-    }
+  const copy = () => {
+    copyText(url());
     setAnchor(null);
   };
 

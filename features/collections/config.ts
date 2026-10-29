@@ -50,7 +50,7 @@ const config: CollectionConfig[] = [
 export type Collection = CollectionConfig;
 
 // Правила подборок. Число объявлений в подборке — useListingStats().byCollection
-// TODO(backend): скрывать почти пустые подборки (меньше ~10 объявлений), когда данные будут из БД
+// TODO(collections): скрывать почти пустые подборки (меньше ~10 объявлений) — счётчики уже есть в byCollection
 export const collections: Collection[] = config;
 
 export const collectionHref = (slug: string) => `/cars?collection=${slug}`;

@@ -1,4 +1,3 @@
-import type { User } from "@/features/auth/types";
 import type { Listing } from "@/features/cars/types";
 
 // Ключ аккаунта продавца: "dealer:<slug>" или "user:<id>". Модерация (блокировки, жалобы) ведётся по этим ключам
@@ -13,5 +12,3 @@ export function ownerOf(listing: Pick<Listing, "dealer" | "userId">): AccountKey
   return listing.userId ? userAccount(listing.userId) : null;
 }
 
-export const accountOfUser = (user: Pick<User, "id" | "type" | "dealerSlug">): AccountKey =>
-  user.type === "dealer" && user.dealerSlug ? dealerAccount(user.dealerSlug) : userAccount(user.id);

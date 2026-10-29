@@ -1,44 +1,31 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
-import MetaLine from "@/components/ui/MetaLine";
-import PageHeader from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
-import EmptyState from "@/components/ui/EmptyState";
-import CarPhoto from "@/components/ui/CarPhoto";
-import Badge from "@/components/ui/Badge";
+import { inputClass } from "@/components/ui/form";
+import PageHeader from "@/components/ui/PageHeader";
 import { useToast } from "@/components/ui/Toast";
 import { openAuthModal, useAuth } from "@/features/auth/store";
-import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
-import { inputClass } from "@/components/ui/form";
-import { Listing } from "@/features/cars/types";
-import { useLatestListings, useListingsByIds } from "@/features/cars/hooks";
-import { useSpecLine } from "@/features/cars/lib/useSpecLine";
-import { useVisibility } from "@/features/moderation/visibility";
-import CollectionPills from "@/features/collections/components/CollectionPills";
-import CarCard from "@/features/latest-cars/components/CarCard";
-import { Link } from "@/i18n/navigation";
+import { useListingsByIds } from "@/features/cars/hooks";
 import { useNow } from "@/lib/useNow";
-import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
-import CompareButton from "@/features/compare/components/CompareButton";
-import { usePlaceName } from "@/lib/places";
-
-import { FAVORITE_SORTS, type FavoriteSort } from "../types";
-import { FavoriteEntry, addFavorite, clearFavorites, removeFavorite, useFavorites } from "../store";
+import { addFavorite, clearFavorites, removeFavorite, useFavorites } from "../store";
+import { FAVORITE_SORTS, type FavoriteEntry, type FavoriteSort } from "../types";
+import FavoriteCard from "./FavoriteCard";
+import FavoritesEmpty from "./FavoritesEmpty";
+import FavoritesSkeleton from "./FavoritesSkeleton";
+import UnavailableCard from "./UnavailableCard";
 
 // true только в браузере после гидратации — до этого избранное ещё не прочитано
 const noop = () => () => {};
 const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
 
-
+// /favorites: сохранённые объявления с сортировкой, «подешевело» и отменой удаления
 export default function FavoritesView() {
   const t = useTranslations("favorites");
   const tCommon = useTranslations("common");
@@ -143,181 +130,6 @@ export default function FavoritesView() {
         </>
       )}
 
-    </div>
-  );
-}
-
-/* ---------- Карточки ---------- */
-
-const cardClass = "relative min-w-0 flex gap-3 sm:gap-4 p-3 rounded-card border border-gray-200 bg-white";
-
-type RemoveButtonProps = { onClick: () => void };
-
-function RemoveButton({ onClick }: RemoveButtonProps) {
-  const t = useTranslations("favorites");
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={t("remove")}
-      title={t("remove")}
-      className="relative z-10 w-10 h-10 shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer"
-    >
-      <FavoriteIcon fontSize="small" className="text-primary" />
-    </button>
-  );
-}
-
-type FavoriteCardProps = {
-  listing: Listing;
-  entry: FavoriteEntry;
-  now: number | null;
-  onRemove: () => void;
-};
-
-function FavoriteCard({
-  listing,
-  entry,
-  now,
-  onRemove,
-}: FavoriteCardProps) {
-  const t = useTranslations("favorites");
-  const specLine = useSpecLine();
-  const placeName = usePlaceName();
-  const locale = useLocale();
-
-  const image = listing.images[0];
-  const href = `/listing/${listing.id}`;
-  const diff = listing.price - entry.price; // < 0 — подешевело с момента добавления
-  const added = now === null ? null : Math.round((now - entry.addedAt) / 60_000); // минут назад
-
-  return (
-    <article className={`group ${cardClass} hover:border-gray-300 hover:shadow-lg hover:shadow-black/5 transition`}>
-      <CarPhoto src={image} alt={listing.title} sizes="176px" className="w-32 sm:w-44 shrink-0 rounded-xl" />
-
-      <div className="flex-1 min-w-0 flex flex-col">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            {/* ссылка растянута на всю карточку через after: */}
-            <Link href={href} className="after:absolute after:inset-0 after:rounded-card">
-              <h3 className="font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-primary transition">
-                {listing.title}
-              </h3>
-            </Link>
-
-            <div className="flex flex-wrap items-baseline gap-x-2 mt-0.5">
-              <span className="text-lg font-semibold">{formatPrice(listing.price)}</span>
-              {diff < 0 && (
-                <span className="text-sm text-gray-400 line-through">{formatPrice(entry.price)}</span>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center">
-            <CompareButton id={listing.id} variant="soft" className="relative z-10" />
-            <RemoveButton onClick={onRemove} />
-          </div>
-        </div>
-
-        {diff < 0 && (
-          <Badge tone="success" icon={<TrendingDownIcon sx={{ fontSize: 15 }} />} className="self-start mt-1">
-            {t("priceDropped", { amount: formatNumber(-diff) })}
-          </Badge>
-        )}
-
-        <div className="text-sm text-gray-500 mt-1 line-clamp-2">
-          {specLine(listing)}
-        </div>
-
-        <div className="mt-auto pt-2 flex flex-wrap items-end justify-between gap-2">
-          <MetaLine
-            items={[
-              placeName(listing.city),
-              added !== null && (added < 1 ? t("addedJustNow") : t("added", { ago: formatAgo(added, locale) })),
-            ]}
-          />
-
-          <div className="hidden sm:block">
-            <ListingPhone listing={listing} />
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-type UnavailableCardProps = { onRemove: () => void };
-
-function UnavailableCard({ onRemove }: UnavailableCardProps) {
-  const t = useTranslations("favorites");
-
-  return (
-    <article className={`${cardClass} bg-gray-50`}>
-      <CarPhoto src={undefined} alt="" sizes="176px" className="w-32 sm:w-44 shrink-0 rounded-xl" />
-
-      <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
-        <div>
-          <h3 className="font-semibold text-gray-500">{t("unavailable.title")}</h3>
-          <p className="text-sm text-gray-500 mt-1">{t("unavailable.text")}</p>
-        </div>
-
-        <RemoveButton onClick={onRemove} />
-      </div>
-    </article>
-  );
-}
-
-/* ---------- Пустое состояние и загрузка ---------- */
-
-function FavoritesEmpty() {
-  const t = useTranslations("favorites");
-  const { isPublic } = useVisibility();
-  const suggested = (useLatestListings(6) ?? []).filter(isPublic).slice(0, 4);
-
-  return (
-    <div>
-      <EmptyState
-        variant="hero"
-        icon={FavoriteIcon}
-        iconClassName="text-primary"
-        title={t("empty.title")}
-        text={t("empty.text")}
-      >
-
-        <Button size="lg" href="/cars" className="mt-6">
-          {t("empty.cta")}
-        </Button>
-
-        {/* min-w-0: строка подборок листается вбок, а не растягивает страницу */}
-        <div className="mt-8 min-w-0 text-left sm:[&>div]:justify-center">
-          <CollectionPills />
-        </div>
-      </EmptyState>
-
-      <h2 className="text-xl font-semibold tracking-tight mt-12 mb-5">{t("empty.suggested")}</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-8">
-        {suggested.map((listing) => (
-          <CarCard key={listing.id} listing={listing} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function FavoritesSkeleton() {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      {[0, 1, 2, 3].map((i) => (
-        <div key={i} className={`${cardClass} animate-pulse`}>
-          <div className="w-32 sm:w-44 aspect-[4/3] rounded-xl bg-gray-100" />
-          <div className="flex-1 space-y-2 py-1">
-            <div className="h-4 w-2/3 rounded bg-gray-100" />
-            <div className="h-5 w-1/3 rounded bg-gray-100" />
-            <div className="h-3 w-1/2 rounded bg-gray-100" />
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

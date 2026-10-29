@@ -39,7 +39,7 @@ export default function RegisterSuccessView({ email, onClose }: RegisterSuccessV
         ) : (
           <>
             {t("notReceived")}{" "}
-            {/* TODO(backend): повторная отправка через API */}
+            {/* TODO(email): повторная отправка письма — supabase.auth.resend, когда включим подтверждение email */}
             <button
               type="button"
               onClick={() => setResent(true)}

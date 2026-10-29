@@ -16,13 +16,15 @@ import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import { useTranslations } from "next-intl";
 
 import { AccountType } from "@/features/auth/types/authView";
-import { User } from "@/features/auth/data/demoUsers";
-import { login, useAuth } from "@/features/auth/store";
+import { User } from "@/features/auth/types";
+import { updateProfile, useAuth } from "@/features/auth/store";
 import { isEmail } from "@/features/auth/ui";
 import { brands } from "@/features/brands/data/brands";
 import { ChipGroup } from "@/features/cars/car-list/components/ui";
-import { Dealer, OpeningHours, dealers } from "@/features/dealers/data/dealers";
-import { listings } from "@/features/cars/data/listings";
+import type { Dealer } from "@/features/dealers/types";
+import { useDealerLookup } from "@/features/dealers/api";
+import { resolveDealer } from "@/features/dealers/useOwnDealer";
+import { useDealerListingsOf } from "@/features/cars/api";
 import { assignContact, useContactAssignments } from "@/features/dealers/contacts";
 import { Link } from "@/i18n/navigation";
 import { CITY_KEYS, cityNameLv } from "@/lib/cities";
@@ -200,7 +202,7 @@ function PasswordCard() {
     setDone(false);
     if (!current || !strong) return;
 
-    // TODO: смена пароля через API
+    // TODO(backend): смена пароля через API
     setCurrent("");
     setNext("");
     setSubmitted(false);
@@ -269,8 +271,7 @@ function IndividualSettings({ user }: { user: User }) {
     setSubmitted(true);
     if (Object.values(errors).some(Boolean)) return setToast("error");
 
-    login({
-      ...user,
+    updateProfile({
       name: [form.firstName.trim(), form.lastName.trim()].filter(Boolean).join(" "),
       email: form.email.trim(),
       phone: form.phone.trim(),
@@ -356,8 +357,7 @@ function DealerSettings({ user }: { user: User }) {
   const [toast, setToast] = useState<"saved" | "error" | null>(null);
 
   // данные из каталога дилеров + то, что дилер уже поменял в настройках
-  const base = dealers.find((d) => d.slug === user.dealerSlug) as Dealer;
-  const dealer = { ...base, ...user.dealerProfile };
+  const dealer = resolveDealer(user, useDealerLookup()(user.dealerSlug));
 
   const { form, set, dirty, discard, markSaved, submitted, setSubmitted } = useSettingsForm({
     name: user.name,
@@ -368,10 +368,10 @@ function DealerSettings({ user }: { user: User }) {
     email: user.email,
     phone: user.phone,
     // одно поле «улица, город» — как в подсказках геокодера
-    address: `${dealer.address}, ${cityNameLv(dealer.city)}`,
+    address: dealer.address ? `${dealer.address}, ${cityNameLv(dealer.city)}` : "",
     lat: dealer.lat,
     lng: dealer.lng,
-    hours: dealer.hours as OpeningHours,
+    hours: dealer.hours,
     contacts: dealer.contacts ?? [],
     // «контакт → кому передать его объявления» — применяется при сохранении
     reassign: {} as Record<string, string>,
@@ -379,7 +379,7 @@ function DealerSettings({ user }: { user: User }) {
 
   // объявления дилера и кто за ними закреплён сейчас
   const assignments = useContactAssignments();
-  const dealerListings = listings.filter((l) => l.dealer === user.dealerSlug);
+  const dealerListings = useDealerListingsOf(user.dealerSlug);
   const contactOf = (listingId: string, fallback?: string) => assignments[listingId] ?? fallback;
   const contactUsage = (contactId: string) =>
     dealerListings.filter((l) => contactOf(l.id, l.contactId) === contactId).length;
@@ -441,9 +441,7 @@ function DealerSettings({ user }: { user: User }) {
     setSubmitted(true);
     if (Object.values(errors).some(Boolean)) return setToast("error");
 
-    // TODO: сохранение профиля дилера через API (страница дилера пока читает dealers.ts)
-    login({
-      ...user,
+    updateProfile({
       name: form.name.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),

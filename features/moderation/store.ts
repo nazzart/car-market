@@ -2,6 +2,8 @@
 
 import { createLocalStore } from "@/lib/localStore";
 
+import { dealerAccount } from "./accounts";
+
 // Модерация (демо: всё в браузере; позже — таблицы в БД и проверка роли на сервере).
 // Решение модератора важнее статуса продавца: заблокированное нельзя снова активировать из кабинета
 
@@ -142,5 +144,5 @@ export function unblockAccount(account: string) {
 
 export function setDealerVerified(slug: string, verified: boolean) {
   verification.set({ ...verification.get(), [slug]: verified });
-  addLog({ account: `dealer:${slug}`, action: verified ? "verify" : "unverify" });
+  addLog({ account: dealerAccount(slug), action: verified ? "verify" : "unverify" });
 }

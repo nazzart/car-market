@@ -3,23 +3,14 @@
 import { useLocale, useTranslations } from "next-intl";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-import { demoUsers } from "@/features/auth/data/demoUsers";
-import { isFresh } from "@/features/cars/data/isFresh";
-import { listings } from "@/features/cars/data/listings";
-import { dealers } from "@/features/dealers/data/dealers";
+import { isFresh } from "@/features/cars/lib/isFresh";
 import { LogEntry, useModerationLog, useReports } from "@/features/moderation/store";
 import { useDealerVerified } from "@/features/moderation/visibility";
 import { cn, formatAgo, formatNumber } from "@/lib/utils";
 
-import { listingTitle, minutesSince, useListingAdmin } from "../shared";
+import { minutesSince, useAdminData, useListingAdmin } from "../shared";
 
 export type AdminTab = "overview" | "approvals" | "listings" | "reports" | "collections" | "users";
-
-const accountName = (key?: string) => {
-  if (!key) return "";
-  const [kind, id] = key.split(":");
-  return kind === "dealer" ? (dealers.find((d) => d.slug === id)?.name ?? id) : (demoUsers.find((u) => u.id === id)?.name ?? id);
-};
 
 const isNegative = (a: LogEntry["action"]) => ["block", "remove", "reject", "exclude", "blockAccount", "unverify"].includes(a);
 
@@ -31,6 +22,7 @@ export default function OverviewTab({ onOpen }: { onOpen: (tab: AdminTab) => voi
   const reports = useReports();
   const log = useModerationLog();
   const isVerified = useDealerVerified();
+  const { listings, dealers, listingTitle, accountName } = useAdminData();
 
   const pending = listings.filter((l) => statusKey(l.id) === "pending").length;
   const openReports = reports.filter((r) => !r.resolved).length;

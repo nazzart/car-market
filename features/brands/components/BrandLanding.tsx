@@ -24,7 +24,7 @@ export default async function BrandLanding({ brand, model }: Props) {
 
   const brandName = findBrand(brand)!.name;
   const name = model ? `${brandName} ${model}` : brandName;
-  const cars = listingsFor(brand, model);
+  const cars = await listingsFor(brand, model);
 
   const prices = cars.map((l) => l.price);
   const years = cars.map((l) => l.year);
@@ -41,7 +41,9 @@ export default async function BrandLanding({ brand, model }: Props) {
     : [];
 
   const searchHref = `/cars?brand=${brand}${model ? `&model=${encodeURIComponent(model)}` : ""}`;
-  const models = (modelsByBrand[brand] ?? []).map((m) => ({ name: m, count: listingsFor(brand, m).length }));
+  const models = await Promise.all(
+    (modelsByBrand[brand] ?? []).map(async (m) => ({ name: m, count: (await listingsFor(brand, m)).length }))
+  );
   const otherBrands = brands.filter((b) => b.popular && b.slug !== brand).slice(0, 10);
 
   return (

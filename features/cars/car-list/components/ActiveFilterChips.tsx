@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 
 import CloseIcon from "@mui/icons-material/Close";
 
+import { useDealerLookup } from "@/features/dealers/api";
+
 import { useCarFilters } from "../hooks/useCarFilters";
 import { FILTER_KEYS, chipLabel } from "../../config/filterOptions";
 
@@ -12,12 +14,13 @@ export default function ActiveFilterChips() {
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
   const { params, updateFilter, resetFilters } = useCarFilters();
+  const dealerOf = useDealerLookup();
 
   // подборку показывают пилюли над поиском — здесь её не дублируем
   const chips = FILTER_KEYS.filter((key) => key !== "collection").flatMap(
     (key) => {
       const value = params.get(key);
-      return value ? [{ key, label: chipLabel(key, value, tOptions, t) }] : [];
+      return value ? [{ key, label: chipLabel(key, value, tOptions, t, (slug) => dealerOf(slug)?.name) }] : [];
     }
   );
 

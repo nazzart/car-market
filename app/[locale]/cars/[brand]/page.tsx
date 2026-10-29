@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!found) return {};
 
   const t = await getTranslations({ locale, namespace: "cars.brandPage" });
-  const count = listingsFor(brand).length;
+  const count = (await listingsFor(brand)).length;
 
   return {
     title: t("metaTitle", { name: found.name, count }),

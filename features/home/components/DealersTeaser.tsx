@@ -1,21 +1,23 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
-import { dealers } from "@/features/dealers/data/dealers";
+import { getDealers } from "@/features/dealers/api";
 import { Link } from "@/i18n/navigation";
 import { cityLabel } from "@/lib/cities";
 import { initials } from "@/lib/utils";
 
-// Самые крупные салоны — по числу авто в наличии
-const topDealers = [...dealers].sort((a, b) => b.carsInStock - a.carsInStock).slice(0, 4);
-
-export default function DealersTeaser() {
-  const t = useTranslations("home.dealers");
-  const tDealers = useTranslations("dealers");
-  const tOptions = useTranslations("options");
+export default async function DealersTeaser() {
+  const [t, tDealers, tOptions, dealers] = await Promise.all([
+    getTranslations("home.dealers"),
+    getTranslations("dealers"),
+    getTranslations("options"),
+    getDealers(),
+  ]);
+  // самые крупные салоны — по числу авто в наличии
+  const topDealers = [...dealers].sort((a, b) => b.carsInStock - a.carsInStock).slice(0, 4);
 
   return (
     <section className="py-8 sm:py-10">

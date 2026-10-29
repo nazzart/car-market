@@ -37,7 +37,7 @@ export default function RegisterSuccessView({ email, onClose }: Props) {
         ) : (
           <>
             {t("notReceived")}{" "}
-            {/* TODO: повторная отправка через API */}
+            {/* TODO(backend): повторная отправка через API */}
             <button
               type="button"
               onClick={() => setResent(true)}

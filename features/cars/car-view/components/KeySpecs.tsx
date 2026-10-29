@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 
 import { formatNumber } from "@/lib/utils";
 
-import { Listing } from "../../data/listings";
+import { Listing } from "@/features/cars/types";
 
 export default function KeySpecs({ listing }: { listing: Listing }) {
   const t = useTranslations("listing.keySpecs");

@@ -48,7 +48,9 @@ Open **Ienākt** (Login) and use the demo buttons, or log in with password `demo
 ```
 app/[locale]/      Routes (pages, metadata, error pages); locale is "lv" (no prefix) or "ru"
 features/          Code grouped by feature: cars, dealers, favorites, compare, account, admin, moderation…
+  */api.ts         Data access for the feature — the only code that reads */data/
   */data/          Sample data — to be replaced by the database
+  */types.ts       Shared types (Listing, Dealer, User)
   */components/    Feature UI
 components/        Shared layout (header, footer) and UI pieces
 lib/               Helpers: formatting, geo, local storage store, colors
@@ -61,8 +63,13 @@ Conventions:
 
 - All user-facing text lives in `messages/` — never hard-code strings in components.
 - The brand color is defined once in `lib/colors.ts`.
+- **Data access goes through `features/{cars,dealers,auth}/api.ts`.** Server pages use the async functions
+  (`getListing`, `getDealers`…), client components use the hooks (`useListings`, `useDealerLookup`…).
+  ESLint blocks importing `data/listings`, `data/dealers` or `data/demoUsers` anywhere else.
+- A dealer's own profile (catalogue + saved settings + account) is built in one place: `useOwnDealer()`.
+- Profile changes go through `updateProfile()` in `features/auth/store.ts`, never by rewriting the session.
 - Browser-stored state goes through `lib/localStore.ts`, so each store can later be swapped for an API call.
-- `TODO` comments mark the places to connect to the backend.
+- `TODO(backend)` comments mark the places to connect to the backend.
 
 ## Security
 

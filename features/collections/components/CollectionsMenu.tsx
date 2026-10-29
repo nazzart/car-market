@@ -7,11 +7,14 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Link } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
 
-import { collectionHref, visibleCollections } from "../data/collections";
+import { useCollectionCount } from "@/features/cars/api";
+
+import { collectionHref, collections } from "../config";
 
 // Выпадающее меню «Подборки» в шапке (десктоп)
 export default function CollectionsMenu() {
   const t = useTranslations("nav");
+  const countOf = useCollectionCount();
   const tOptions = useTranslations("options");
   const [open, setOpen] = useState(false);
 
@@ -48,7 +51,7 @@ export default function CollectionsMenu() {
         `}
       >
         <div className="w-80 p-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-black/10">
-          {visibleCollections.map((c) => {
+          {collections.map((c) => {
             const Icon = c.icon;
 
             return (
@@ -72,7 +75,7 @@ export default function CollectionsMenu() {
                 </span>
 
                 <span className="text-xs text-gray-500 tabular-nums">
-                  {formatNumber(c.count)}
+                  {formatNumber(countOf(c))}
                 </span>
               </Link>
             );

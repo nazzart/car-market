@@ -12,16 +12,13 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 
-import { demoUsers } from "@/features/auth/data/demoUsers";
-import { listings } from "@/features/cars/data/listings";
-import { dealers } from "@/features/dealers/data/dealers";
-import { ownerOf } from "@/features/moderation/accounts";
+import { dealerAccount, ownerOf, userAccount } from "@/features/moderation/accounts";
 import { setDealerVerified, unblockAccount, useBlockedAccounts, useReports } from "@/features/moderation/store";
 import { useDealerVerified } from "@/features/moderation/visibility";
 import { Link } from "@/i18n/navigation";
 import { cn, initials } from "@/lib/utils";
 
-import { Badge, EmptyBox, pillClass, useModerationDialog } from "../shared";
+import { Badge, EmptyBox, pillClass, useAdminData, useModerationDialog } from "../shared";
 
 // Реестр предприятий Латвии — модератор сверяет название и рег. номер дилера
 const REGISTER_URL = "https://info.ur.gov.lv/";
@@ -36,25 +33,30 @@ type Account = {
 };
 
 // Зарегистрированные продавцы: частные пользователи + дилеры (демо-дилер = дилер Baltic Auto)
-const accounts: Account[] = [
-  ...demoUsers
-    .filter((u) => u.type === "individual" && u.role !== "admin")
-    .map((u) => ({ key: `user:${u.id}`, name: u.name, kind: "individual" as const, contact: `${u.email} · ${u.phone}` })),
-  ...dealers.map((d) => ({
-    key: `dealer:${d.slug}`,
-    name: d.name,
-    kind: "dealer" as const,
-    contact: d.phone,
-    regNumber: d.regNumber,
-    dealerSlug: d.slug,
-  })),
-];
+function useAccounts(): Account[] {
+  const { users, dealers } = useAdminData();
+  return [
+    ...users
+      .filter((u) => u.type === "individual" && u.role !== "admin")
+      .map((u) => ({ key: userAccount(u.id), name: u.name, kind: "individual" as const, contact: `${u.email} · ${u.phone}` })),
+    ...dealers.map((d) => ({
+      key: dealerAccount(d.slug),
+      name: d.name,
+      kind: "dealer" as const,
+      contact: d.phone,
+      regNumber: d.regNumber,
+      dealerSlug: d.slug,
+    })),
+  ];
+}
 
 type Filter = "all" | "dealers" | "individuals" | "unverified" | "blocked";
 
 export default function UsersTab({ onShowListings }: { onShowListings: (query: string) => void }) {
   const t = useTranslations("moderation.admin.users");
   const tReasons = useTranslations("moderation.reasons");
+  const accounts = useAccounts();
+  const { listings } = useAdminData();
   const blocked = useBlockedAccounts();
   const reports = useReports();
   const isVerified = useDealerVerified();

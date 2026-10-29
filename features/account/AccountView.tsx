@@ -19,12 +19,13 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { brands } from "@/features/brands/data/brands";
 import { cityLabel } from "@/lib/cities";
-import { User } from "@/features/auth/data/demoUsers";
 import { openAuthModal, useAuth } from "@/features/auth/store";
-import { Listing, listings } from "@/features/cars/data/listings";
+import { Listing } from "@/features/cars/types";
+import { useDealerListingsOf, useUserListings } from "@/features/cars/api";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
-import { dealers, formatHours } from "@/features/dealers/data/dealers";
+import { formatHours } from "@/features/dealers/lib/hours";
+import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { Link } from "@/i18n/navigation";
 
 import { accountOfUser } from "@/features/moderation/accounts";
@@ -38,11 +39,6 @@ import { formatAgo, formatNumber, initials } from "@/lib/utils";
 // Пока статистики нет — считаем примерные значения от просмотров
 const phoneShows = (l: Listing) => Math.round((l.views ?? 0) * 0.12);
 const favorites = (l: Listing) => Math.round((l.views ?? 0) * 0.05);
-
-const userListings = (user: User) =>
-  user.type === "dealer"
-    ? listings.filter((l) => l.dealer === user.dealerSlug)
-    : listings.filter((l) => user.listingIds?.includes(l.id));
 
 // Вкладки = статусы объявлений (удалённые не показываем); «pending» и «blocked» — только если есть такие
 const tabs = ["active", "pending", "paused", "sold", "blocked"] as const;
@@ -218,14 +214,15 @@ export default function AccountView() {
   const { of } = useVisibility();
   const blockedAccounts = useBlockedAccounts();
   const [undo, setUndo] = useState<{ id: string; prev: ListingStatus; next: ListingStatus } | null>(null);
+  // каталог дилеров + изменения из настроек
+  const dealer = useOwnDealer();
+  const dealerListings = useDealerListingsOf(dealer ? user?.dealerSlug : undefined);
+  const privateListings = useUserListings(dealer ? undefined : user?.id);
 
   if (!user) return <LoggedOut />;
 
   const isDealer = user.type === "dealer";
-  // каталог дилеров + изменения из настроек
-  const baseDealer = dealers.find((d) => d.slug === user.dealerSlug);
-  const dealer = baseDealer && { ...baseDealer, ...user.dealerProfile };
-  const all = userListings(user).filter((l) => statusOf(statuses, l.id) !== "deleted");
+  const all = (dealer ? dealerListings : privateListings).filter((l) => statusOf(statuses, l.id) !== "deleted");
   const tabOf = (id: string): Tab => {
     const v = of(id);
     if (v.moderation) return "blocked";
@@ -286,7 +283,7 @@ export default function AccountView() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {isDealer && dealer && (
+          {dealer?.slug && (
             <Link href={`/dealers/${dealer.slug}`} className={secondaryButton}>
               <StorefrontOutlinedIcon sx={{ fontSize: 18 }} />
               {t("header.publicPage")}
@@ -425,7 +422,7 @@ export default function AccountView() {
             </Link>
           </div>
 
-          {isDealer && dealer && (
+          {dealer?.address && (
             <div className="rounded-2xl border border-gray-200 p-5">
               <h3 className="font-semibold mb-3">{t("profile.dealerCenter")}</h3>
 

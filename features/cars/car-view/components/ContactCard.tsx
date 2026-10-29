@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { formatAgo, formatNumber } from "@/lib/utils";
 
-import { Listing } from "../../data/listings";
+import { Listing } from "@/features/cars/types";
 import ListingPhone, { ContactPerson } from "./ListingPhone";
 import SellerInfo from "./SellerInfo";
 import ReportButton from "@/features/moderation/ReportButton";

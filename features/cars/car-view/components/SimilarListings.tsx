@@ -1,24 +1,25 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import { brands } from "@/features/brands/data/brands";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import { Link } from "@/i18n/navigation";
 
-import { Listing, publishedListings } from "../../data/listings";
+import { Listing } from "@/features/cars/types";
+import { getPublishedListings } from "../../api";
 
 const LIMIT = 3;
 
 // Сначала та же марка, потом тот же кузов; с фото — в приоритете
-export default function SimilarListings({ listing }: { listing: Listing }) {
-  const t = useTranslations("listing.similar");
+export default async function SimilarListings({ listing }: { listing: Listing }) {
+  const t = await getTranslations("listing.similar");
 
   const score = (l: Listing) =>
     (l.brand === listing.brand ? 2 : 0) +
     (l.bodyType === listing.bodyType ? 1 : 0) +
     (l.images.length ? 1 : 0);
 
-  const similar = publishedListings
+  const similar = (await getPublishedListings())
     .filter((l) => l.id !== listing.id && score(l) > 1)
     .sort((a, b) => score(b) - score(a))
     .slice(0, LIMIT);

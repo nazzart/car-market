@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
-import { DAYS, OpeningHours } from "../data/dealers";
+import { DAYS, OpeningHours } from "@/features/dealers/types";
 import { getOpenStatus, rigaNow, useNow } from "../lib/openStatus";
 
 const trim = (time: string) => time.replace(/^0(\d)/, "$1");

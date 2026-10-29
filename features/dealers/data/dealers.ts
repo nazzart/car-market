@@ -1,68 +1,5 @@
-// Временные данные — позже заменим на запрос к БД. Компании вымышленные
-
-// Часы работы по дням; нет дня — выходной. Время в формате «HH:MM»
-export const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
-export type Day = (typeof DAYS)[number];
-export type DayHours = { open: string; close: string };
-export type OpeningHours = Partial<Record<Day, DayHours>>;
-
-const trimHour = (time: string) => time.replace(/^0(\d)/, "$1");
-
-// Соседние дни с одинаковым временем объединяются: «P–Pk 9:00–19:00, S 10:00–16:00».
-// dayLabel — перевод options.days.{day}
-export const formatHours = (hours: OpeningHours, dayLabel: (day: string) => string) => {
-  const groups: { from: Day; to: Day; time: string }[] = [];
-
-  for (const day of DAYS) {
-    const h = hours[day];
-    if (!h) continue;
-
-    const time = `${trimHour(h.open)}–${trimHour(h.close)}`;
-    const last = groups.at(-1);
-    const prevDay = DAYS[DAYS.indexOf(day) - 1];
-
-    if (last && last.time === time && last.to === prevDay) last.to = day;
-    else groups.push({ from: day, to: day, time });
-  }
-
-  return groups
-    .map((g) =>
-      g.from === g.to
-        ? `${dayLabel(g.from)} ${g.time}`
-        : `${dayLabel(g.from)}–${dayLabel(g.to)} ${g.time}`
-    )
-    .join(", ");
-};
-
-// Контактное лицо дилера (менеджер), которого можно указать у конкретного объявления
-export type DealerContact = {
-  id: string;
-  name: string;
-  phone: string;
-  role?: string; // «Pārdošanas konsultants» — как указал дилер
-};
-
-export type Dealer = {
-  slug: string;
-  name: string;
-  type: "official" | "used"; // официальный дилер / автосалон с пробегом
-  brands: string[]; // slug марок, для официальных дилеров
-  city: string; // ключ города: messages → options.cities
-  address: string; // официальный адрес на латышском — не переводится
-  lat: number;
-  lng: number;
-  phone: string; // основной телефон компании — контакт по умолчанию
-  contacts?: DealerContact[];
-  regNumber?: string; // регистрационный номер (11 цифр)
-  verified?: boolean; // модератор сверил компанию с регистром предприятий → значок «Проверенный дилер»
-  hours: OpeningHours;
-  // Рейтинга пока нет — появится вместе с отзывами
-  rating?: number;
-  reviews?: number;
-  carsInStock: number;
-  since: number; // на сайте с
-  description?: string;
-};
+// Демо-данные — читаются только через features/dealers/api.ts. Компании вымышленные. TODO(backend): таблица dealers
+import type { Dealer } from "../types";
 
 export const dealers: Dealer[] = [
   {
@@ -393,10 +330,3 @@ export const dealers: Dealer[] = [
     since: 2017,
   },
 ];
-
-// Рейтинг показываем только при достаточном числе отзывов:
-// «5.0» по одному отзыву вводит покупателей в заблуждение
-const MIN_REVIEWS_FOR_RATING = 5;
-
-export const hasRating = (dealer: Dealer) =>
-  dealer.rating !== undefined && (dealer.reviews ?? 0) >= MIN_REVIEWS_FOR_RATING;

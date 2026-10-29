@@ -5,17 +5,17 @@ import BlockIcon from "@mui/icons-material/Block";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import { useLocale, useTranslations } from "next-intl";
 
-import { listings } from "@/features/cars/data/listings";
 import { Report, dismissReports, useReports } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatAgo } from "@/lib/utils";
 
-import { Badge, EmptyBox, minutesSince, sellerOf, statusTone, useListingAdmin, useModerationDialog } from "../shared";
+import { Badge, EmptyBox, minutesSince, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
 // Жалобы покупателей, сгруппированные по объявлению: решение принимается про объявление целиком
 export default function ReportsTab() {
   const t = useTranslations("moderation.admin");
   const tReasons = useTranslations("moderation.reasons");
+  const { listingOf, sellerOf } = useAdminData();
   const locale = useLocale();
   const reports = useReports();
   const { statusKey } = useListingAdmin();
@@ -56,7 +56,7 @@ export default function ReportsTab() {
       ) : (
         <div className="space-y-3 mt-4">
           {groups.map((group) => {
-            const listing = listings.find((l) => l.id === group[0].listingId);
+            const listing = listingOf(group[0].listingId);
             if (!listing) return null;
             const status = statusKey(listing.id);
 

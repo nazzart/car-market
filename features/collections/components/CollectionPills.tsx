@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 import { useCarFilters } from "@/features/cars/car-list/hooks/useCarFilters";
 
-import { collections, visibleCollections } from "../data/collections";
+import { collections } from "../config";
 
 const pillClass = (active: boolean) => `
   shrink-0
@@ -43,7 +43,7 @@ export default function CollectionPills() {
           {t("allCars")}
         </button>
 
-        {visibleCollections.map((c) => {
+        {collections.map((c) => {
           const Icon = c.icon;
           const isActive = c.slug === activeSlug;
 

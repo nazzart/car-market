@@ -13,18 +13,19 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useLocale, useTranslations } from "next-intl";
 
 import { inputClass } from "@/features/cars/car-list/components/ui";
-import { Listing, listings } from "@/features/cars/data/listings";
+import { Listing } from "@/features/cars/types";
 import { clearModeration, dismissReports } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatAgo, formatNumber } from "@/lib/utils";
 
-import { Badge, EmptyBox, StatusKey, Thumb, pillClass, sellerOf, statusTone, useListingAdmin, useModerationDialog } from "../shared";
+import { Badge, EmptyBox, StatusKey, Thumb, pillClass, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
 type Filter = "all" | "public" | "pending" | "hidden" | "blocked" | "removed" | "reported";
 
 export default function ListingsTab({ query, onQueryChange }: { query: string; onQueryChange: (q: string) => void }) {
   const t = useTranslations("moderation.admin");
   const tReasons = useTranslations("moderation.reasons");
+  const { listings, sellerOf } = useAdminData();
   const locale = useLocale();
   const { statusKey, openReports, of } = useListingAdmin();
   const { dialog, block, remove } = useModerationDialog();

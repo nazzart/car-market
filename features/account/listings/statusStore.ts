@@ -3,7 +3,7 @@
 import { createLocalStore } from "@/lib/localStore";
 
 // Статус объявления, изменённый продавцом в кабинете. Нет записи — объявление активно.
-// TODO: хранить статус в БД; сейчас (демо) — в браузере
+// TODO(backend): хранить статус в БД; сейчас (демо) — в браузере
 export type ListingStatus = "active" | "paused" | "sold" | "deleted";
 
 const store = createLocalStore<Record<string, ListingStatus>>("bestauto.listingStatus", {});

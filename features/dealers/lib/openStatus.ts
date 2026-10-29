@@ -1,4 +1,4 @@
-import { DAYS, Day, OpeningHours } from "../data/dealers";
+import { DAYS, Day, OpeningHours } from "@/features/dealers/types";
 
 // Часы дилеров — по времени Риги, независимо от часового пояса посетителя
 const rigaClock = new Intl.DateTimeFormat("en-GB", {

@@ -9,7 +9,8 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
-import { DEMO_PASSWORD, User, demoUsers, findDemoUser } from "../data/demoUsers";
+import { DEMO_PASSWORD, demoAccounts, signInWithPassword } from "../api";
+import type { User } from "../types";
 import { login } from "../store";
 import { AuthHeader, TextLinkButton, isEmail, pillSx } from "../ui";
 
@@ -41,15 +42,14 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
     onLoggedIn();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
     setError("");
 
     if (!isEmail(email) || !password) return;
 
-    // TODO: настоящая авторизация (Auth.js / Supabase). Пока принимаем только демо-аккаунты
-    const user = findDemoUser(email, password);
+    const user = await signInWithPassword(email, password);
 
     if (!user) {
       setError(t("login.wrong"));
@@ -128,7 +128,7 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
       <div className="mt-6 p-4 rounded-2xl bg-gray-50">
         <div className="text-sm font-semibold text-gray-900">{t("login.demoTitle")}</div>
         <p className="text-xs text-gray-500 mt-0.5">
-          {t("login.demoText", { email: demoUsers[0].email, password: DEMO_PASSWORD })}
+          {t("login.demoText", { email: demoAccounts[0].email, password: DEMO_PASSWORD })}
         </p>
 
         <div className="grid grid-cols-3 gap-2 mt-3">
@@ -136,7 +136,7 @@ export default function LoginView({ onForgotPassword, onCreateAccount, onLoggedI
             <button
               key={id}
               type="button"
-              onClick={() => signIn(demoUsers.find((u) => u.id === id)!)}
+              onClick={() => signIn(demoAccounts.find((u) => u.id === id)!)}
               className="inline-flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 min-h-10 py-1.5 px-2 rounded-2xl sm:rounded-full border border-gray-200 bg-white text-xs sm:text-sm font-medium text-gray-900 hover:border-gray-900 transition cursor-pointer"
             >
               <Icon sx={{ fontSize: 18 }} />

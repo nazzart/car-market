@@ -1,7 +1,7 @@
 import { brands } from "@/features/brands/data/brands";
 import { useTranslations } from "next-intl";
 
-import { Listing } from "../../data/listings";
+import { Listing } from "@/features/cars/types";
 import VinReveal from "./VinReveal";
 
 export default function SpecsTable({ listing }: { listing: Listing }) {

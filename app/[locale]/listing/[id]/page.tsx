@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
-import { listings } from "@/features/cars/data/listings";
+import { getListing } from "@/features/cars/api";
 import ContactCard from "@/features/cars/car-view/components/ContactCard";
 import DamageReport from "@/features/cars/car-view/components/DamageReport";
 import EquipmentList from "@/features/cars/car-view/components/EquipmentList";
@@ -32,7 +32,7 @@ type Props = { params: Promise<{ locale: string; id: string }> };
 
 const findListing = async (params: Props["params"]) => {
   const { id } = await params;
-  return listings.find((l) => l.id === id);
+  return getListing(id);
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

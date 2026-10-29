@@ -5,13 +5,12 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
-import { listings } from "@/features/cars/data/listings";
 import { RiskFlag, riskFlags } from "@/features/moderation/riskFlags";
 import { BlockReason, approveListing } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatAgo, formatNumber } from "@/lib/utils";
 
-import { EmptyBox, Thumb, sellerOf, useListingAdmin, useModerationDialog } from "../shared";
+import { EmptyBox, Thumb, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
 // Флаги, которые сами по себе — повод отклонить; остальные — просто подсказки
 const SERIOUS: RiskFlag[] = ["contactInText", "priceLow", "duplicate"];
@@ -23,6 +22,7 @@ const reasonFor = (flags: RiskFlag[]): BlockReason =>
 // Премодерация: новые объявления не видны покупателям, пока модератор не одобрит
 export default function ApprovalsTab() {
   const t = useTranslations("moderation.admin");
+  const { listings, sellerOf } = useAdminData();
   const locale = useLocale();
   const { statusKey } = useListingAdmin();
   const { dialog, reject } = useModerationDialog();
@@ -36,7 +36,7 @@ export default function ApprovalsTab() {
       <p className="text-sm text-gray-500">{t("approvals.hint")}</p>
 
       {pending.map((l) => {
-        const flags = riskFlags(l);
+        const flags = riskFlags(l, listings);
 
         return (
           <article key={l.id} className="rounded-2xl border border-gray-200 p-4">

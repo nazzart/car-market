@@ -1,63 +1,5 @@
-// Временные данные — позже заменим на запрос к БД
-import type { DamageMap } from "../config/damage";
-
-export type Fuel = "petrol" | "diesel" | "hybrid" | "electric" | "gas";
-export type Transmission = "automatic" | "manual";
-export type Drive = "fwd" | "rwd" | "awd";
-export type SellerType = "private" | "dealer";
-
-// Ключи совпадают с формой продажи; подписи — messages → options
-export const OVERALL_CONDITIONS = ["excellent", "good", "average", "repair"] as const;
-export type OverallCondition = (typeof OVERALL_CONDITIONS)[number];
-export const SERVICE_STATES = ["recent", "partial", "required"] as const;
-export type ServiceState = (typeof SERVICE_STATES)[number];
-export const MILEAGE_LATVIA = ["none", "upTo10k", "from10to50k", "from50to100k", "over100k"] as const;
-export type MileageLatvia = (typeof MILEAGE_LATVIA)[number];
-
-export type Listing = {
-  id: string;
-  brand: string; // slug из features/brands/data/brands.ts
-  title: string;
-  year: number;
-  price: number;
-  mileage: number;
-  engine: number | null; // л, null для электро
-  power: number; // л.с.
-  fuel: Fuel;
-  transmission: Transmission;
-  drive: Drive;
-  bodyType: string; // значения как в форме продажи
-  condition: "used" | "new";
-  sellerType: SellerType;
-  sellerName?: string;
-  dealer?: string; // slug из features/dealers/data/dealers.ts
-  contactId?: string; // контактное лицо дилера (DealerContact.id); нет — основной телефон компании
-  city: string; // ключ города: messages → options.cities
-  postedMinutesAgo: number;
-  phone: string;
-  images: string[];
-  review?: "pending"; // новое объявление на проверке: не видно покупателям, пока модератор не одобрит
-
-  // Детали для страницы объявления (необязательные)
-  color?: string; // ключ цвета, как в форме продажи
-  owners?: number;
-  vin?: string; // полный VIN; на странице скрыт до нажатия «Показать VIN»
-  inspectionUntil?: string; // техосмотр, «MM.YYYY»
-  noAccidents?: boolean;
-  negotiable?: boolean;
-  description?: string;
-  videoUrl?: string; // ссылка на YouTube от продавца
-  equipment?: string[]; // ключи из features/cars/config/equipment.ts
-  sellerSince?: number;
-  views?: number;
-  damages?: DamageMap; // {} — продавец отметил, что повреждений нет
-
-  // Состояние и обслуживание — из раздела «Состояние» формы продажи
-  overallCondition?: OverallCondition;
-  service?: ServiceState;
-  serviceBook?: boolean;
-  mileageLatvia?: MileageLatvia; // пробег в Латвии: 0 — только что ввезён
-};
+// Демо-данные — читаются только через features/cars/api.ts. TODO(backend): таблица listings
+import type { Listing } from "../types";
 
 const bmwGallery = [
   "/cars/bmw1.jpg",
@@ -125,6 +67,7 @@ export const listings: Listing[] = [
   },
   {
     id: "2",
+    userId: "demo-individual",
     overallCondition: "excellent",
     service: "recent",
     serviceBook: true,
@@ -240,6 +183,7 @@ export const listings: Listing[] = [
   },
   {
     id: "9",
+    userId: "demo-individual",
     overallCondition: "good",
     service: "recent",
     serviceBook: true,
@@ -476,6 +420,7 @@ export const listings: Listing[] = [
   },
   {
     id: "13",
+    userId: "demo-individual",
     brand: "mercedes",
     title: "Mercedes-Benz E 220d",
     year: 2019,
@@ -501,7 +446,3 @@ export const listings: Listing[] = [
       "Steidzami pārdodu, aizbraucu uz ārzemēm. Auto ideālā stāvoklī. Rakstiet WhatsApp +371 29991234 vai e-pastā andris.auto@example.com, nosūtīšu vairāk foto.",
   },
 ];
-
-// Опубликованные: без объявлений на премодерации — для списков, которые рендерит сервер
-// TODO: с БД — запрос с условием статуса
-export const publishedListings = listings.filter((l) => l.review !== "pending");

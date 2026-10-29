@@ -6,9 +6,11 @@ import SearchOffIcon from "@mui/icons-material/SearchOff";
 import CarCard from "@/features/latest-cars/components/CarCard";
 
 import { FILTER_KEYS, FilterKey, chipLabel } from "../../config/filterOptions";
-import { Listing, listings } from "../../data/listings";
-import { listingDistance, useOrigin } from "../../lib/location";
-import { useCollectionMembership } from "@/features/moderation/visibility";
+import { useDealerLookup } from "@/features/dealers/api";
+
+import { useListings } from "../../api";
+import { useDistanceTo, useOrigin } from "../../lib/location";
+import { useCollectionMembership, useVisibility } from "@/features/moderation/visibility";
 import { filterListings } from "../../lib/filterListings";
 import { useCarFilters } from "../hooks/useCarFilters";
 
@@ -20,9 +22,12 @@ export default function EmptyResults() {
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
   const { params, updateFilter, resetFilters } = useCarFilters();
-  const origin = useOrigin();
-  const distanceTo = origin ? (l: Listing) => listingDistance(l, origin) : undefined;
+  const listings = useListings();
+  const dealerOf = useDealerLookup();
+  const distanceTo = useDistanceTo(useOrigin());
   const inCollection = useCollectionMembership();
+  // как в поиске: скрытые, проданные и ожидающие проверки не предлагаем
+  const { isPublic } = useVisibility();
 
   const suggestions = FILTER_KEYS.filter((key) => params.get(key))
     .map((key) => {
@@ -32,16 +37,16 @@ export default function EmptyResults() {
 
       return {
         key,
-        label: chipLabel(key as FilterKey, params.get(key)!, tOptions, tChips),
-        count: filterListings(listings, without, { distanceTo, inCollection }).length,
+        label: chipLabel(key as FilterKey, params.get(key)!, tOptions, tChips, (slug) => dealerOf(slug)?.name),
+        count: filterListings(listings, without, { distanceTo, inCollection }).filter((l) => isPublic(l.id)).length,
       };
     })
     .filter((s) => s.count > 0)
     .sort((a, b) => b.count - a.count)
     .slice(0, 4);
 
-  const fresh = [...listings]
-    .filter((l) => l.images.length > 0)
+  const fresh = listings
+    .filter((l) => l.images.length > 0 && isPublic(l.id))
     .sort((a, b) => a.postedMinutesAgo - b.postedMinutesAgo)
     .slice(0, 3);
 

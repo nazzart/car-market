@@ -12,7 +12,9 @@ import PhoneButton from "@/features/cars/car-list/components/PhoneButton";
 import { Link } from "@/i18n/navigation";
 import { initials } from "@/lib/utils";
 
-import { Dealer, formatHours, hasRating } from "../data/dealers";
+import { Dealer } from "@/features/dealers/types";
+import { formatHours } from "@/features/dealers/lib/hours";
+import { hasRating } from "@/features/dealers/lib/rating";
 import OpenStatus from "./OpenStatus";
 import VerifiedBadge from "./VerifiedBadge";
 

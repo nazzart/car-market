@@ -1,67 +1,38 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import { createLocalStore } from "@/lib/localStore";
 
-import { User } from "./data/demoUsers";
+import type { DealerProfile, User } from "./types";
 
 // Демо-авторизация: пользователь хранится в localStorage, поэтому переживает перезагрузку.
-// Позже заменим на сессию Auth.js / Supabase — компоненты используют только useAuth()
-
-const STORAGE_KEY = "bestauto.demoUser";
-const listeners = new Set<() => void>();
-
-const notify = () => listeners.forEach((listener) => listener());
-
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  window.addEventListener("storage", listener); // вход/выход в другой вкладке
-
-  return () => {
-    listeners.delete(listener);
-    window.removeEventListener("storage", listener);
-  };
-};
-
-const getSnapshot = () => {
-  try {
-    return localStorage.getItem(STORAGE_KEY);
-  } catch {
-    return null;
-  }
-};
+// TODO(backend): сессия Auth.js / Supabase — компоненты используют только функции этого файла
+const session = createLocalStore<User | null>("bestauto.demoUser", null);
 
 export function login(user: User) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-  } catch {
-    // localStorage недоступен (приватный режим) — демо-вход не сохранится
-  }
-  notify();
+  session.set(user);
 }
 
 export function logout() {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // нечего удалять
-  }
-  notify();
+  session.set(null);
+}
+
+// Изменения профиля из настроек и формы продажи. dealerProfile дополняется, а не заменяется.
+// TODO(backend): PATCH /api/me, затем обновить сессию ответом сервера
+export type ProfilePatch = Partial<Pick<User, "name" | "email" | "phone" | "city">> & { dealerProfile?: DealerProfile };
+
+export async function updateProfile(patch: ProfilePatch) {
+  const user = session.get();
+  if (!user) return;
+  session.set({
+    ...user,
+    ...patch,
+    dealerProfile: patch.dealerProfile ? { ...user.dealerProfile, ...patch.dealerProfile } : user.dealerProfile,
+  });
 }
 
 export function useAuth() {
   // на сервере пользователя нет — после гидратации подхватится из localStorage
-  const raw = useSyncExternalStore(subscribe, getSnapshot, () => null);
-
-  const user = useMemo<User | null>(() => {
-    if (!raw) return null;
-
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return null;
-    }
-  }, [raw]);
-
+  const user = session.useValue();
   return { user, isLoggedIn: Boolean(user) };
 }
 

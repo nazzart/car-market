@@ -68,7 +68,7 @@ export default function RegisterView({ accountType, onChangeType, onLogin, onReg
 
     if (Object.values(errors).some(Boolean)) return;
 
-    // TODO: создание аккаунта через API и отправка письма с подтверждением
+    // TODO(backend): создание аккаунта через API и отправка письма с подтверждением
     onRegistered(email.trim());
   };
 

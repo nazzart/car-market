@@ -1,5 +1,4 @@
 import { brands } from "@/features/brands/data/brands";
-import { dealers } from "@/features/dealers/data/dealers";
 import { formatNumber } from "@/lib/utils";
 
 // Только значения — названия берутся из messages/{locale}/options.json по группе
@@ -70,7 +69,8 @@ export const chipLabel = (
   key: FilterKey,
   value: string,
   tOptions: Translate,
-  tChips: Translate
+  tChips: Translate,
+  dealerName: (slug: string) => string | undefined
 ): string => {
   switch (key) {
     case "collection":
@@ -102,7 +102,7 @@ export const chipLabel = (
     case "sellerType":
       return tOptions(`sellerType.${value}`);
     case "dealer":
-      return dealers.find((d) => d.slug === value)?.name ?? value;
+      return dealerName(value) ?? value;
     case "color":
       return tOptions(`colors.${value}`);
     case "posted":

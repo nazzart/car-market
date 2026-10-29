@@ -1,4 +1,4 @@
-import type { Listing } from "./listings";
+import type { Listing } from "../types";
 
 // «Новое»: размещено за последние сутки
 export const FRESH_MINUTES = 24 * 60;

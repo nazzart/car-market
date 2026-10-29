@@ -8,7 +8,7 @@ import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import { useTranslations } from "next-intl";
 
-import { listings } from "@/features/cars/data/listings";
+import { useListingsByIds } from "@/features/cars/api";
 import { Link, usePathname } from "@/i18n/navigation";
 
 import { MAX_COMPARE, clearCompare, onCompareFull, removeFromCompare, useCompare } from "../store";
@@ -24,7 +24,7 @@ export default function CompareBar() {
 
   useEffect(() => onCompareFull(() => setFullToast(true)), []);
 
-  const cars = ids.map((id) => listings.find((l) => l.id === id)).filter((l) => l !== undefined);
+  const cars = useListingsByIds(ids);
   const visible = cars.length > 0 && (pathname === "/" || SHOW_ON.some((p) => pathname.startsWith(p)));
 
   return (

@@ -12,9 +12,9 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import { useTranslations } from "next-intl";
 
 import { ContactForm } from "@/features/account/settings/ContactsEditor";
-import { login, openAuthModal, useAuth } from "@/features/auth/store";
+import { openAuthModal, updateProfile, useAuth } from "@/features/auth/store";
 import { useDealerContacts } from "@/features/dealers/contacts";
-import { dealers } from "@/features/dealers/data/dealers";
+import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { Link } from "@/i18n/navigation";
 import { CITY_KEYS, cityLabel } from "@/lib/cities";
 import { isPhone } from "@/lib/phone";
@@ -38,8 +38,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
   const [adding, setAdding] = useState(false); // дилер: новый контакт прямо из формы
 
   const isDealer = user?.type === "dealer";
-  const dealerBase = dealers.find((d) => d.slug === user?.dealerSlug);
-  const dealerCity = user?.dealerProfile?.city ?? dealerBase?.city ?? user?.city ?? "";
+  const dealerCity = useOwnDealer()?.city ?? "";
   const { contacts, phone: companyPhone } = useDealerContacts(user?.dealerSlug);
   const selectedContact = contacts.find((c) => c.id === data.contactId);
   // нет ни телефона компании, ни менеджеров — телефон нужно ввести (и он сохранится в профиль)
@@ -103,7 +102,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
                 onChange={(e) => updateField("sellerPhone", e.target.value)}
                 onBlur={() => {
                   // сохраняем в профиль, чтобы в следующий раз не вводить
-                  if (isPhone(data.sellerPhone)) login({ ...user, phone: data.sellerPhone.trim() });
+                  if (isPhone(data.sellerPhone)) updateProfile({ phone: data.sellerPhone.trim() });
                 }}
                 error={phoneError}
                 helperText={phoneError ? t("phoneError") : t("savedToProfile")}
@@ -140,7 +139,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
               onCancel={() => setAdding(false)}
               onSave={(contact) => {
                 // сохраняем в профиль дилера сразу — контакт пригодится и для других объявлений
-                login({ ...user, dealerProfile: { ...user.dealerProfile, contacts: [...contacts, contact] } });
+                updateProfile({ dealerProfile: { contacts: [...contacts, contact] } });
                 updateField("contactId", contact.id);
                 setAdding(false);
               }}

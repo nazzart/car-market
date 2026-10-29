@@ -25,7 +25,7 @@ export default function ForgotPasswordView({ onBack }: Props) {
 
     if (!isEmail(email)) return;
 
-    // TODO: отправка письма через API
+    // TODO(backend): отправка письма через API
     setSent(true);
   };
 

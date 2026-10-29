@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 
 import { inputClass } from "@/features/cars/car-list/components/ui";
 import { cn } from "@/lib/utils";
-import { DAYS, Day, OpeningHours, formatHours } from "@/features/dealers/data/dealers";
+import { DAYS, Day, OpeningHours } from "@/features/dealers/types";
+import { formatHours } from "@/features/dealers/lib/hours";
 
 const DEFAULT_HOURS = { open: "09:00", close: "18:00" };
 const WEEKDAYS: Day[] = ["tue", "wed", "thu", "fri"];

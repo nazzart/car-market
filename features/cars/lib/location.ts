@@ -1,10 +1,11 @@
 "use client";
 
-import { dealers } from "@/features/dealers/data/dealers";
+import { useDealerLookup } from "@/features/dealers/api";
+import type { Dealer } from "@/features/dealers/types";
 import { CITY_COORDS, Point, distanceKm } from "@/lib/geo";
 import { createLocalStore } from "@/lib/localStore";
 
-import type { Listing } from "../data/listings";
+import type { Listing } from "@/features/cars/types";
 
 // Откуда считать расстояние: точка из браузера (geolocation) или выбранный город.
 // Хранится только в браузере посетителя и не попадает в ссылку — ей можно делиться
@@ -17,15 +18,20 @@ export const setOrigin = store.set;
 export const clearOrigin = () => store.set(null);
 
 // Где машина: адрес дилера, иначе центр города объявления
-export function listingPoint(listing: Listing): Point | null {
-  const dealer = listing.dealer && dealers.find((d) => d.slug === listing.dealer);
+function listingPoint(listing: Listing, dealer: Dealer | undefined): Point | null {
   if (dealer) return { lat: dealer.lat, lng: dealer.lng };
   return CITY_COORDS[listing.city] ?? null;
 }
 
-export function listingDistance(listing: Listing, origin: Point | null) {
-  const point = listingPoint(listing);
-  return origin && point ? distanceKm(origin, point) : null;
+// Расстояние до объявления, км; undefined — посетитель не указал, где он (радиус не учитывается)
+export function useDistanceTo(origin: Point | null) {
+  const dealerOf = useDealerLookup();
+  if (!origin) return undefined;
+
+  return (listing: Listing) => {
+    const point = listingPoint(listing, dealerOf(listing.dealer));
+    return point ? distanceKm(origin, point) : null;
+  };
 }
 
 // Ближайший город из списка — подпись для точки GPS («рядом с Ригой»)

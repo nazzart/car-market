@@ -3,18 +3,18 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { listings } from "@/features/cars/data/listings";
-import { collections } from "@/features/collections/data/collections";
+import { collections } from "@/features/collections/config";
 import { setExcluded, useExcluded } from "@/features/moderation/store";
 import { useCollectionMembership } from "@/features/moderation/visibility";
 import { formatNumber } from "@/lib/utils";
 
-import { EmptyBox, Thumb, pillClass } from "../shared";
+import { EmptyBox, Thumb, pillClass, useAdminData } from "../shared";
 
 // Подборки собираются автоматически по правилам; модератор может снять объявление, которому там не место
 export default function CollectionsTab() {
   const t = useTranslations("moderation.admin.collections");
   const tOptions = useTranslations("options");
+  const { listings } = useAdminData();
   const excluded = useExcluded();
   const inCollection = useCollectionMembership();
   const [slug, setSlug] = useState(collections[0].slug);

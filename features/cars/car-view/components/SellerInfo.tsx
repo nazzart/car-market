@@ -7,7 +7,7 @@ import { initials } from "@/lib/utils";
 
 import { ContactPerson } from "./ListingPhone";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
-import { Listing } from "../../data/listings";
+import { Listing } from "@/features/cars/types";
 
 export default function SellerInfo({ listing }: { listing: Listing }) {
   const t = useTranslations("listing.seller");

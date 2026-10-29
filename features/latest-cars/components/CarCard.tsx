@@ -5,10 +5,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatAgo, formatNumber } from "@/lib/utils";
 
-import { Listing } from "@/features/cars/data/listings";
+import { Listing } from "@/features/cars/types";
 
 import FreshBadge from "@/features/cars/car-list/components/FreshBadge";
-import { isFresh } from "@/features/cars/data/isFresh";
+import { isFresh } from "@/features/cars/lib/isFresh";
 import { roundKm } from "@/features/cars/lib/location";
 
 import FavoriteButton from "./FavoriteButton";

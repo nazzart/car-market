@@ -7,7 +7,7 @@ import NewReleasesOutlinedIcon from "@mui/icons-material/NewReleasesOutlined";
 
 import { useTranslations } from "next-intl";
 
-import { Listing } from "../../data/listings";
+import { Listing } from "@/features/cars/types";
 
 const GOOD = "bg-emerald-50 text-emerald-800 border-emerald-100";
 const NEUTRAL = "bg-gray-50 text-gray-800 border-gray-200";

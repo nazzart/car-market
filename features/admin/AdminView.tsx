@@ -5,15 +5,13 @@ import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettin
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useTranslations } from "next-intl";
 
-import { isAdmin } from "@/features/auth/data/demoUsers";
+import { isAdmin } from "@/features/auth/types";
 import { openAuthModal, useAuth } from "@/features/auth/store";
-import { listings } from "@/features/cars/data/listings";
-import { dealers } from "@/features/dealers/data/dealers";
 import { useReports } from "@/features/moderation/store";
 import { useDealerVerified } from "@/features/moderation/visibility";
 import { cn } from "@/lib/utils";
 
-import { useListingAdmin } from "./shared";
+import { useAdminData, useListingAdmin } from "./shared";
 import ApprovalsTab from "./tabs/ApprovalsTab";
 import CollectionsTab from "./tabs/CollectionsTab";
 import ListingsTab from "./tabs/ListingsTab";
@@ -95,6 +93,7 @@ function useTabCounts(): Record<AdminTab, number> {
   const { statusKey } = useListingAdmin();
   const reports = useReports();
   const isVerified = useDealerVerified();
+  const { listings, dealers } = useAdminData();
 
   return {
     overview: 0,

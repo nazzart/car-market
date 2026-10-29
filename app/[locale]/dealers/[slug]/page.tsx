@@ -13,9 +13,10 @@ import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import { cityLabel } from "@/lib/cities";
 import ContactPhoneButton from "@/features/cars/car-view/components/ContactPhoneButton";
-import { listings } from "@/features/cars/data/listings";
+import { getDealerListings } from "@/features/cars/api";
 import DealerMiniMap from "@/features/dealers/components/DealerMiniMap";
-import { dealers, hasRating } from "@/features/dealers/data/dealers";
+import { hasRating } from "@/features/dealers/lib/rating";
+import { getDealer, getDealers } from "@/features/dealers/api";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import OpenStatus, { WeekHours } from "@/features/dealers/components/OpenStatus";
@@ -27,7 +28,7 @@ type Props = { params: Promise<{ locale: string; slug: string }> };
 
 const findDealer = async (params: Props["params"]) => {
   const { slug } = await params;
-  return dealers.find((d) => d.slug === slug);
+  return getDealer(slug);
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -56,7 +57,7 @@ export default async function DealerPage({ params }: Props) {
   const cityName = cityLabel(tOptions, dealer.city);
 
   const official = dealer.type === "official";
-  const cars = listings.filter((l) => l.dealer === dealer.slug);
+  const [cars, dealers] = await Promise.all([getDealerListings(dealer.slug), getDealers()]);
   const neighbours = dealers.filter((d) => d.city === dealer.city && d.slug !== dealer.slug).slice(0, 3);
 
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dealer.lat},${dealer.lng}`;

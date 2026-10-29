@@ -12,8 +12,9 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { useTranslations } from "next-intl";
 
 import { equipmentGroups } from "@/features/cars/config/equipment";
-import { Listing, OVERALL_CONDITIONS, SERVICE_STATES, listings } from "@/features/cars/data/listings";
-import { dealers } from "@/features/dealers/data/dealers";
+import { Listing, OVERALL_CONDITIONS, SERVICE_STATES } from "@/features/cars/types";
+import { useListingLookup, useListingsByIds } from "@/features/cars/api";
+import { useDealerLookup } from "@/features/dealers/api";
 import { useFavorites } from "@/features/favorites/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatNumber } from "@/lib/utils";
@@ -64,7 +65,9 @@ export default function CompareView() {
   const { entries: favorites } = useFavorites();
   const [onlyDiff, setOnlyDiff] = useState(false);
 
-  const cars = ids.map((id) => listings.find((l) => l.id === id)).filter((l) => l !== undefined);
+  const cars = useListingsByIds(ids);
+  const listingOf = useListingLookup();
+  const dealerOf = useDealerLookup();
 
   const header = useRef<HTMLDivElement>(null);
   // шапка с машинами прилипает к верху и прокручивается по горизонтали вместе с таблицей
@@ -74,7 +77,7 @@ export default function CompareView() {
 
   if (!hydrated) return <div className="h-96 my-6 rounded-3xl bg-gray-50 animate-pulse" />;
 
-  const favoritesToAdd = favorites.filter((f) => !ids.includes(f.id) && listings.some((l) => l.id === f.id));
+  const favoritesToAdd = favorites.filter((f) => !ids.includes(f.id) && listingOf(f.id) !== undefined);
 
   const addFromFavorites = () => {
     for (const f of favoritesToAdd) if (!addToCompare(f.id)) break;
@@ -110,7 +113,7 @@ export default function CompareView() {
           key: "seller",
           label: t("rows.seller"),
           display: (l) =>
-            l.dealer ? (dealers.find((d) => d.slug === l.dealer)?.name ?? l.sellerName) : t("privateSeller"),
+            l.dealer ? (dealerOf(l.dealer)?.name ?? l.sellerName) : t("privateSeller"),
           value: (l) => l.dealer ?? "private",
         },
       ],

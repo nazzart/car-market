@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
-import { listings } from "@/features/cars/data/listings";
+import { getListing } from "@/features/cars/api";
 
 // Картинка-превью для ссылки на объявление (WhatsApp, Telegram, Facebook…)
 export const size = { width: 1200, height: 630 };
@@ -16,7 +16,7 @@ const group = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const listing = listings.find((l) => l.id === id);
+  const listing = await getListing(id);
 
   const photo = listing?.images[0]
     ? `data:image/jpeg;base64,${(await readFile(join(process.cwd(), "public", listing.images[0]))).toString("base64")}`

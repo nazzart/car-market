@@ -14,7 +14,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { inputClass } from "@/features/cars/car-list/components/ui";
-import { Listing, listings } from "@/features/cars/data/listings";
+import { Listing } from "@/features/cars/types";
+import { useListingLookup, useListings } from "@/features/cars/api";
+import { useVisibility } from "@/features/moderation/visibility";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import { Link } from "@/i18n/navigation";
@@ -41,11 +43,12 @@ export default function FavoritesView() {
   const { entries } = useFavorites();
   const { isLoggedIn } = useAuth();
   const now = useNow();
+  const listingOf = useListingLookup();
 
   const [sort, setSort] = useState<Sort>("added");
   const [undo, setUndo] = useState<Undo | null>(null);
 
-  const items = entries.map((entry) => ({ entry, listing: listings.find((l) => l.id === entry.id) }));
+  const items = entries.map((entry) => ({ entry, listing: listingOf(entry.id) }));
 
   const sorted = [...items].sort((a, b) => {
     if (sort === "added") return b.entry.addedAt - a.entry.addedAt;
@@ -299,7 +302,10 @@ function UnavailableCard({ onRemove }: { onRemove: () => void }) {
 
 function EmptyState() {
   const t = useTranslations("favorites");
-  const suggested = [...listings].sort((a, b) => a.postedMinutesAgo - b.postedMinutesAgo).slice(0, 4);
+  const { isPublic } = useVisibility();
+  const suggested = useListings()
+    .filter((l) => isPublic(l.id))
+    .sort((a, b) => a.postedMinutesAgo - b.postedMinutesAgo).slice(0, 4);
 
   return (
     <div>

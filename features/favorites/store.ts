@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { createLocalStore } from "@/lib/localStore";
 
 // Избранное работает и без входа (как на avito): хранится в localStorage.
-// TODO: после входа синхронизировать с профилем пользователя через API
+// TODO(backend): после входа синхронизировать с профилем пользователя через API
 
 export type FavoriteEntry = {
   id: string;

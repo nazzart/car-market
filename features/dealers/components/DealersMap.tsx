@@ -12,7 +12,7 @@ import { Link } from "@/i18n/navigation";
 import { cityLabel } from "@/lib/cities";
 import { initials } from "@/lib/utils";
 
-import { Dealer } from "../data/dealers";
+import { Dealer } from "@/features/dealers/types";
 import OpenStatus from "./OpenStatus";
 
 export type MapBounds = { north: number; south: number; east: number; west: number };

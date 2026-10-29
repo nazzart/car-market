@@ -8,14 +8,14 @@ import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import { brands } from "@/features/brands/data/brands";
-import { collections } from "@/features/collections/data/collections";
-import { dealers } from "@/features/dealers/data/dealers";
+import { collections } from "@/features/collections/config";
+import { useDealerLookup } from "@/features/dealers/api";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
 
 import { useCarFilters } from "../hooks/useCarFilters";
-import { Listing, listings } from "../../data/listings";
-import { listingDistance, useOrigin } from "../../lib/location";
+import { useListings } from "../../api";
+import { useDistanceTo, useOrigin } from "../../lib/location";
 import { filterListings } from "../../lib/filterListings";
 import { sortValues } from "../../config/filterOptions";
 import ActiveFilterChips from "./ActiveFilterChips";
@@ -81,10 +81,12 @@ export default function CarsSearchView() {
 
   // скрытые, проданные и удалённые продавцом — не в поиске (демо: статус из браузера)
   const { isPublic } = useVisibility();
+  const listings = useListings();
+  const dealerOf = useDealerLookup();
   const origin = useOrigin();
-  const distanceTo = (l: Listing) => listingDistance(l, origin);
+  const distanceTo = useDistanceTo(origin);
   const inCollection = useCollectionMembership();
-  const results = filterListings(listings, params, { distanceTo: origin ? distanceTo : undefined, inCollection }).filter(
+  const results = filterListings(listings, params, { distanceTo, inCollection }).filter(
     (l) => isPublic(l.id)
   );
   const view = params.get("view") === "grid" ? "grid" : "list";
@@ -95,7 +97,7 @@ export default function CarsSearchView() {
   const brandName = brands.find((b) => b.slug === params.get("brand"))?.name;
   const collection = collections.find((c) => c.slug === params.get("collection"));
 
-  const dealerName = dealers.find((d) => d.slug === params.get("dealer"))?.name;
+  const dealerName = dealerOf(params.get("dealer"))?.name;
 
   const title = dealerName
     ? t("dealerCars", { dealer: dealerName })
@@ -231,13 +233,13 @@ export default function CarsSearchView() {
             ) : view === "grid" ? (
               <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-8">
                 {results.map((listing) => (
-                  <CarCard key={listing.id} listing={listing} distance={distanceTo(listing)} />
+                  <CarCard key={listing.id} listing={listing} distance={distanceTo?.(listing)} />
                 ))}
               </div>
             ) : (
               <div className="space-y-4">
                 {results.map((listing) => (
-                  <ListingRow key={listing.id} listing={listing} distance={distanceTo(listing)} />
+                  <ListingRow key={listing.id} listing={listing} distance={distanceTo?.(listing)} />
                 ))}
               </div>
             )}

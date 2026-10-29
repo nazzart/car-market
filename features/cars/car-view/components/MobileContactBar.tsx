@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 
 import { formatNumber } from "@/lib/utils";
 
-import { Listing } from "../../data/listings";
+import { Listing } from "@/features/cars/types";
 import ListingPhone from "./ListingPhone";
 
 // Фиксированная панель внизу экрана на телефоне — цена и звонок всегда под рукой

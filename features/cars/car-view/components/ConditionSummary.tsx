@@ -6,7 +6,7 @@ import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 
 import { cn } from "@/lib/utils";
 
-import { Listing } from "../../data/listings";
+import { Listing } from "@/features/cars/types";
 
 type Tone = "good" | "warn" | "bad" | "neutral";
 

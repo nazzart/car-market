@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t("metaTitle"), robots: { index: false, follow: false } };
 }
 
-// TODO: с бэкендом — проверка роли на сервере (сейчас демо: роль из браузера)
+// TODO(backend): с бэкендом — проверка роли на сервере (сейчас демо: роль из браузера)
 export default function AdminPage() {
   return (
     <Container>

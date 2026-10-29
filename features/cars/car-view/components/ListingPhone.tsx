@@ -7,7 +7,7 @@ import PhoneButton from "@/features/cars/car-list/components/PhoneButton";
 import { useListingContact } from "@/features/dealers/contacts";
 import { cn } from "@/lib/utils";
 
-import type { Listing } from "../../data/listings";
+import type { Listing } from "@/features/cars/types";
 
 type Props = {
   listing: Listing;

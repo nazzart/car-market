@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import { Dealer } from "../data/dealers";
+import { Dealer } from "@/features/dealers/types";
 
 // Leaflet работает только в браузере
 const DealersMap = dynamic(() => import("./DealersMap"), {

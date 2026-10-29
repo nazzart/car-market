@@ -1,9 +1,9 @@
-import { Collection, collections } from "@/features/collections/data/collections";
+import { Collection, collections } from "@/features/collections/config";
 
-import { Listing } from "../data/listings";
+import type { Listing } from "../types";
 import { postedPeriods } from "../config/filterOptions";
 
-type Params = { get: (key: string) => string | null };
+export type Params = { get: (key: string) => string | null };
 
 type Options = {
   // расстояние до объявления в км (если посетитель указал, где он); иначе радиус игнорируется

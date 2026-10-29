@@ -1,4 +1,4 @@
-import { Listing, listings } from "@/features/cars/data/listings";
+import { Listing } from "@/features/cars/types";
 
 // Автоматические проверки нового объявления — подсказки модератору, не решение
 export type RiskFlag = "contactInText" | "priceLow" | "newSeller" | "noPhotos" | "duplicate";
@@ -10,7 +10,8 @@ const median = (values: number[]) => {
   return sorted[Math.floor(sorted.length / 2)];
 };
 
-export function riskFlags(listing: Listing): RiskFlag[] {
+// all — объявления для сравнения цены и поиска дублей. TODO(backend): считать на сервере при подаче
+export function riskFlags(listing: Listing, all: Listing[]): RiskFlag[] {
   const flags: RiskFlag[] = [];
   const thisYear = new Date().getFullYear();
 
@@ -18,7 +19,7 @@ export function riskFlags(listing: Listing): RiskFlag[] {
   if (listing.description && CONTACT.test(listing.description)) flags.push("contactInText");
 
   // цена сильно ниже похожих (тот же кузов, ±3 года) или подозрительно низкая для свежего авто
-  const similar = listings.filter(
+  const similar = all.filter(
     (l) => l.id !== listing.id && l.bodyType === listing.bodyType && Math.abs(l.year - listing.year) <= 3
   );
   const tooCheapVsSimilar = similar.length >= 2 && listing.price < median(similar.map((l) => l.price)) * 0.5;
@@ -28,7 +29,7 @@ export function riskFlags(listing: Listing): RiskFlag[] {
   if (listing.sellerType === "private" && (!listing.sellerSince || listing.sellerSince >= thisYear)) flags.push("newSeller");
   if (listing.images.length === 0) flags.push("noPhotos");
 
-  const duplicate = listings.some(
+  const duplicate = all.some(
     (l) => l.id !== listing.id && l.title === listing.title && l.price === listing.price && l.year === listing.year
   );
   if (duplicate) flags.push("duplicate");

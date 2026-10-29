@@ -15,8 +15,8 @@ import { Link } from "@/i18n/navigation";
 
 import {
   collectionHref,
-  visibleCollections,
-} from "@/features/collections/data/collections";
+  collections,
+} from "@/features/collections/config";
 
 import LocaleSwitcher from "./LocaleSwitcher";
 
@@ -79,7 +79,7 @@ export default function MobileMenu() {
             </div>
 
             <nav className="flex flex-col gap-1 -mx-2">
-              {visibleCollections.map((c) => {
+              {collections.map((c) => {
                 const Icon = c.icon;
 
                 return (

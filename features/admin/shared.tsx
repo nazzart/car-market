@@ -4,8 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 
-import { Listing, listings } from "@/features/cars/data/listings";
-import { dealers } from "@/features/dealers/data/dealers";
+import { Listing } from "@/features/cars/types";
+import { useRegisteredUsers } from "@/features/auth/api";
+import { useListingLookup, useListings } from "@/features/cars/api";
+import { useDealerCatalog, useDealerLookup } from "@/features/dealers/api";
 import {
   BlockReason,
   blockAccount,
@@ -40,13 +42,34 @@ export const statusTone: Record<StatusKey, string> = {
   accountBlocked: "bg-red-50 text-red-700",
 };
 
-// имя продавца; у частных объявлений его может не быть — тогда «Частное лицо»
-export const sellerOf = (l: Listing, privateLabel: string) =>
-  (l.dealer ? dealers.find((d) => d.slug === l.dealer)?.name : undefined) ?? l.sellerName ?? privateLabel;
-
 export const minutesSince = (at: number) => Math.max(0, Math.round((Date.now() - at) / 60000));
 
-export const listingTitle = (id?: string) => (id ? (listings.find((l) => l.id === id)?.title ?? `#${id}`) : "");
+// Всё, что видит модератор: весь каталог, включая скрытое, и подписи к нему.
+// TODO(backend): админские запросы с пагинацией и поиском на сервере
+export function useAdminData() {
+  const listings = useListings();
+  const listingOf = useListingLookup();
+  const dealers = useDealerCatalog();
+  const dealerOf = useDealerLookup();
+  const users = useRegisteredUsers();
+
+  return {
+    listings,
+    dealers,
+    users,
+    listingOf,
+    // имя продавца; у частных объявлений его может не быть — тогда «Частное лицо»
+    sellerOf: (l: Listing, privateLabel: string) =>
+      (l.dealer ? dealerOf(l.dealer)?.name : undefined) ?? l.sellerName ?? privateLabel,
+    listingTitle: (id?: string) => (id ? (listingOf(id)?.title ?? `#${id}`) : ""),
+    // «dealer:baltic-auto» → «Baltic Auto»
+    accountName: (key?: string) => {
+      if (!key) return "";
+      const [kind, id] = key.split(":");
+      return (kind === "dealer" ? dealerOf(id)?.name : users.find((u) => u.id === id)?.name) ?? id;
+    },
+  };
+}
 
 // Итоговый статус объявления для модератора
 export function useListingAdmin() {

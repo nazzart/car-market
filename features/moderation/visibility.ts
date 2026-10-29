@@ -1,9 +1,10 @@
 "use client";
 
 import { ListingStatus, statusOf, useListingStatuses } from "@/features/account/listings/statusStore";
-import { Listing, listings } from "@/features/cars/data/listings";
-import { Collection } from "@/features/collections/data/collections";
-import { dealers } from "@/features/dealers/data/dealers";
+import { Listing } from "@/features/cars/types";
+import { Collection } from "@/features/collections/config";
+import { useListingLookup } from "@/features/cars/api";
+import { useDealerLookup } from "@/features/dealers/api";
 
 import { ownerOf } from "./accounts";
 import {
@@ -30,7 +31,7 @@ export function useVisibility() {
   const approvals = useApprovals();
   const blockedAccounts = useBlockedAccounts();
 
-  const listingById = (id: string) => listings.find((l) => l.id === id);
+  const listingById = useListingLookup();
 
   const of = (id: string): Visibility => {
     const listing = listingById(id);
@@ -65,5 +66,6 @@ export function useCollectionMembership() {
 // Значок «Проверенный дилер»: решение модератора поверх данных
 export function useDealerVerified() {
   const overrides = useVerification();
-  return (slug: string) => overrides[slug] ?? dealers.find((d) => d.slug === slug)?.verified ?? false;
+  const dealerOf = useDealerLookup();
+  return (slug: string) => overrides[slug] ?? dealerOf(slug)?.verified ?? false;
 }

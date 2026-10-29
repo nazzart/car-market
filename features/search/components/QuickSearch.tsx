@@ -11,12 +11,12 @@ import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
 import {
   collectionHref,
-  visibleCollections,
-} from "@/features/collections/data/collections";
+  collections,
+} from "@/features/collections/config";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
-import { brandListingCount, totalListingCount } from "@/features/cars/data/counts";
-import { listings } from "@/features/cars/data/listings";
+import { useListingCounts, useListings } from "@/features/cars/api";
+import { useVisibility } from "@/features/moderation/visibility";
 import { filterListings } from "@/features/cars/lib/filterListings";
 
 type Panel = "brand" | "model" | "price" | "year";
@@ -158,6 +158,9 @@ const priceInputClass = `
 
 export default function QuickSearch() {
   const t = useTranslations("search");
+  const listings = useListings();
+  const { isPublic } = useVisibility();
+  const { total: totalListingCount, byBrand: brandListingCount } = useListingCounts();
   const tOptions = useTranslations("options");
   const router = useRouter();
   const modelRef = useRef<HTMLDivElement>(null);
@@ -185,7 +188,7 @@ export default function QuickSearch() {
 
   // Те же правила, что и на /cars — число на кнопке совпадает с результатом поиска
   const query: Record<string, string> = { condition, brand, model, priceFrom, priceTo, yearFrom };
-  const count = filterListings(listings, { get: (key) => query[key] || null }).length;
+  const count = filterListings(listings, { get: (key) => query[key] || null }).filter((l) => isPublic(l.id)).length;
 
   const filteredBrands = sortedBrands.filter((b) =>
     b.name.toLowerCase().includes(brandQuery.trim().toLowerCase())
@@ -369,7 +372,7 @@ export default function QuickSearch() {
           <div className="flex sm:flex-wrap items-center gap-2 mt-5 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
             <span className="hidden sm:inline text-sm text-white/60 mr-1">{t("collections")}</span>
 
-            {visibleCollections.map((c) => {
+            {collections.map((c) => {
               const Icon = c.icon;
 
               return (

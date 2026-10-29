@@ -5,8 +5,8 @@ import CompareButton from "@/features/compare/components/CompareButton";
 import { Link } from "@/i18n/navigation";
 import { formatAgo, formatNumber } from "@/lib/utils";
 
-import { Listing } from "../../data/listings";
-import { isFresh } from "../../data/isFresh";
+import { Listing } from "@/features/cars/types";
+import { isFresh } from "../../lib/isFresh";
 import { roundKm } from "../../lib/location";
 import ListingGallery from "./ListingGallery";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";

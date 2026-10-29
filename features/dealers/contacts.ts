@@ -1,13 +1,14 @@
 "use client";
 
-import { useAuth } from "@/features/auth/store";
-import type { Listing } from "@/features/cars/data/listings";
+import type { Listing } from "@/features/cars/types";
 import { createLocalStore } from "@/lib/localStore";
 
-import { DealerContact, dealers } from "./data/dealers";
+import { useDealerLookup } from "./api";
+import type { DealerContact } from "./types";
+import { useOwnDealer } from "./useOwnDealer";
 
 // Переназначения «объявление → контактное лицо», сделанные дилером (демо: в браузере).
-// "company" — основной телефон компании. TODO: поле contactId объявления в БД
+// "company" — основной телефон компании. TODO(backend): поле contactId объявления в БД
 const assignments = createLocalStore<Record<string, string>>("bestauto.listingContacts", {});
 
 export const useContactAssignments = assignments.useValue;
@@ -21,14 +22,14 @@ export function assignContact(listingIds: string[], contactId: string) {
 // Контакты дилера: из настроек вошедшего дилера, иначе из каталога.
 // Без slug — свой аккаунт дилера, у которого ещё нет страницы в каталоге (новый дилер)
 export function useDealerContacts(slug?: string) {
-  const { user } = useAuth();
-  const base = slug ? dealers.find((d) => d.slug === slug) : undefined;
-  const own = user?.type === "dealer" && user.dealerSlug === slug ? user : null;
+  const own = useOwnDealer();
+  const dealerOf = useDealerLookup();
+  const dealer = own && (own.slug || undefined) === slug ? own : dealerOf(slug);
 
   return {
-    contacts: own?.dealerProfile?.contacts ?? base?.contacts ?? [],
-    // телефон компании: из аккаунта, иначе из каталога; пустой — дилер укажет его в форме
-    phone: own?.phone || base?.phone || "",
+    contacts: dealer?.contacts ?? [],
+    // пустой телефон — дилер ещё не указал его (форма продажи попросит)
+    phone: dealer?.phone ?? "",
   };
 }
 

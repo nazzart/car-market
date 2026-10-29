@@ -15,7 +15,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 import { Menu, MenuItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
 
-import { User, isAdmin } from "@/features/auth/data/demoUsers";
+import { User, isAdmin } from "@/features/auth/types";
 import { logout } from "@/features/auth/store";
 import { initials } from "@/lib/utils";
 

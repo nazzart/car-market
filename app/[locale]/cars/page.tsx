@@ -5,10 +5,9 @@ import { getTranslations } from "next-intl/server";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import CarsSearchView from "@/features/cars/car-list/components/CarsSearchView";
-import { listings } from "@/features/cars/data/listings";
-import { filterListings } from "@/features/cars/lib/filterListings";
-import { collections } from "@/features/collections/data/collections";
-import { dealers } from "@/features/dealers/data/dealers";
+import { countListings } from "@/features/cars/api";
+import { collections } from "@/features/collections/config";
+import { getDealer } from "@/features/dealers/api";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -30,7 +29,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
   const brandName = brands.find((b) => b.slug === get("brand"))?.name;
   const collection = collections.find((c) => c.slug === get("collection"));
-  const dealerName = dealers.find((d) => d.slug === get("dealer"))?.name;
+  const dealerSlug = get("dealer");
+  const dealerName = dealerSlug ? (await getDealer(dealerSlug))?.name : undefined;
 
   const title = dealerName
     ? t("dealerCars", { dealer: dealerName })
@@ -40,7 +40,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         ? tOptions(`collections.${collection.slug}.label`)
         : t("title");
 
-  const count = filterListings(listings, { get }).length;
+  const count = await countListings({ get });
 
   return {
     title: t("metaTitle", { title, results: tCommon("listings", { count }) }),

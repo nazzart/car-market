@@ -4,7 +4,7 @@ import SportsScoreOutlinedIcon from "@mui/icons-material/SportsScoreOutlined";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 import ElectricBoltOutlinedIcon from "@mui/icons-material/ElectricBoltOutlined";
 
-import { Listing, listings } from "@/features/cars/data/listings";
+import type { Listing } from "@/features/cars/types";
 
 // Название и описание — в messages/{locale}/options.json → collections.{slug}
 type CollectionConfig = {
@@ -47,20 +47,10 @@ const config: CollectionConfig[] = [
   },
 ];
 
-export type Collection = CollectionConfig & { count: number };
+export type Collection = CollectionConfig;
 
-// count — по реальным объявлениям (позже — агрегат из БД)
-export const collections: Collection[] = config.map((c) => ({
-  ...c,
-  count: listings.filter(c.matches).length,
-}));
-
-// Почти пустая подборка выглядит хуже, чем её отсутствие.
-// TODO: вернуть 10, когда объявления будут из БД — сейчас в демо-данных их всего несколько
-const MIN_COLLECTION_SIZE = 0;
-
-export const visibleCollections = collections.filter(
-  (c) => c.count >= MIN_COLLECTION_SIZE
-);
+// Правила подборок. Число объявлений в подборке — useCollectionCount() из features/cars/api.
+// TODO(backend): скрывать почти пустые подборки (меньше ~10 объявлений), когда данные будут из БД
+export const collections: Collection[] = config;
 
 export const collectionHref = (slug: string) => `/cars?collection=${slug}`;

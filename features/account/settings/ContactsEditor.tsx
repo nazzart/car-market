@@ -8,7 +8,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import { useTranslations } from "next-intl";
 
-import type { DealerContact } from "@/features/dealers/data/dealers";
+import type { DealerContact } from "@/features/dealers/types";
 import { isPhone } from "@/lib/phone";
 
 /* ---------- Форма одного контакта (и в настройках, и в форме продажи) ---------- */

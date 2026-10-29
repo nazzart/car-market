@@ -10,15 +10,23 @@ Marketplace for buying and selling cars in Latvia — private sellers and dealer
 - [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19, TypeScript (strict)
 - [Tailwind CSS 4](https://tailwindcss.com) + [MUI 7](https://mui.com) components
 - [next-intl](https://next-intl.dev) — Latvian / Russian
-- [Leaflet](https://leafletjs.com) + OpenStreetMap — dealer maps, location picker
-- [Photon](https://photon.komoot.io) — address suggestions (OpenStreetMap geocoder)
+- [Leaflet](https://leafletjs.com) + [protomaps-leaflet](https://github.com/protomaps/protomaps-leaflet) — maps from a
+  self-hosted OpenStreetMap file (no external map service)
+- Latvian State Address Register ([VZD open data](https://data.gov.lv/dati/lv/dataset/varis-atvertie-dati), CC BY 4.0) —
+  address suggestions and "address at this point", served by our own API
 
 ## Getting started
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
+npm run map:download     # once: Latvia map → public/maps/ (~550 MB, a few minutes)
+npm run addresses:build  # once: Latvian addresses → .data/ (~65 MB, ~10 seconds)
+npm run dev              # http://localhost:3000
 ```
+
+The map and address files are not in git. Without them the site works, but maps stay empty and address
+suggestions in dealer settings return nothing. Refresh the map a few times a year and addresses monthly by
+running the same commands.
 
 | Command | What it does |
 |---|---|
@@ -26,12 +34,16 @@ npm run dev      # http://localhost:3000
 | `npm run build` | Production build (also type-checks) |
 | `npm start` | Run the production build |
 | `npm run lint` | ESLint |
+| `npm run map:download` | Downloads the Latvia map (PMTiles, from the daily [Protomaps](https://protomaps.com) build) |
+| `npm run addresses:build` | Downloads the address register from data.gov.lv and builds the search files |
 
 ### Environment variables
 
 | Variable | Purpose | Default |
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | Absolute site URL for link previews, sitemap and robots | `http://localhost:3000` |
+| `NEXT_PUBLIC_MAP_BASE` | Where the map files are served from (e.g. your CDN) | `/maps` |
+| `ADDRESSES_DIR` | Folder with the address files on the server | `.data` |
 
 ### Demo accounts
 
@@ -54,6 +66,7 @@ features/          Code grouped by feature: cars, dealers, favorites, compare, a
   */components/    Feature UI
 components/        Shared layout (header, footer) and UI pieces
 lib/               Helpers: formatting, geo, places (all Latvian towns and novadi), local storage store, colors
+scripts/           Map download and address build (npm run map:download / addresses:build)
 messages/{lv,ru}/  Translations, one file per feature
 i18n/              next-intl routing and message loading
 proxy.ts           Locale routing (Next.js middleware)
@@ -74,14 +87,17 @@ Conventions:
 ## Security
 
 `next.config.ts` sends security headers on every page (Content-Security-Policy, HSTS, X-Frame-Options,
-nosniff, Referrer-Policy, Permissions-Policy). **When adding an external service** (map tiles, photo CDN,
-analytics…), add its domain to the `sources` list there, otherwise the browser will block it.
+nosniff, Referrer-Policy, Permissions-Policy). Maps and addresses come from our own server, so no map or geocoding
+domains are allowed. **When adding an external service** (map files on a CDN, photo CDN, analytics…), add its domain
+to the `sources` list there, otherwise the browser will block it.
 
 ## Before production
 
 - **Backend:** database for listings, users and dealers; real authentication; server-side admin role checks;
   saving listings and photo uploads from the sell form.
-- **Services:** OpenStreetMap tiles and the public Photon server are for light use — switch to a tile provider
-  (e.g. MapTiler, Stadia) and a self-hosted geocoder or the VZD address register.
+- **Maps and addresses:** already self-hosted. On the server, run `npm run map:download` and `npm run addresses:build`
+  (or copy `public/maps/` and `.data/`), refresh them on a schedule, and move the address search into the database
+  together with the rest of the backend (`features/addresses/addressIndex.ts`).
+- **Credits:** the footer credits OpenStreetMap and VZD — required by their licences, keep it.
 - **Content:** real contact email and a lawyer-reviewed privacy policy.
 - **Monitoring:** connect an error-tracking service (see `app/[locale]/error.tsx`).

@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# карта Латвии (npm run map:download), адреса (npm run addresses:build) и загрузки для них
+/public/maps/*.pmtiles
+/public/maps/*.part
+/.data/
+/.cache/

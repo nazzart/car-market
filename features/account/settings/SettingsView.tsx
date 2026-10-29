@@ -32,7 +32,7 @@ import { isPhone } from "@/lib/phone";
 
 import { LoggedOut } from "../AccountView";
 import AddressField from "./AddressField";
-import { AddressResult, parseAddress, reverseGeocode } from "./geocoding";
+import { AddressResult, parseAddress, reverseGeocode } from "@/features/addresses/geocoding";
 import ContactsEditor from "./ContactsEditor";
 import HoursEditor, { hoursInvalid } from "./HoursEditor";
 import SettingsCard from "./SettingsCard";

@@ -2,8 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+
+import LatviaTiles, { LATVIA_BOUNDS, MAX_ZOOM, MIN_ZOOM } from "@/components/map/LatviaTiles";
 
 type Props = {
   lat: number;
@@ -56,11 +58,17 @@ function FlyToMarker({ lat, lng, focus }: Pick<Props, "lat" | "lng" | "focus">) 
 // Точка дилера на карте: перетаскивание метки или клик по карте
 export default function LocationPicker({ lat, lng, onChange, focus }: Props) {
   return (
-    <MapContainer center={[lat, lng]} zoom={15} scrollWheelZoom={false} className="w-full h-full">
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <MapContainer
+      center={[lat, lng]}
+      zoom={15}
+      minZoom={MIN_ZOOM}
+      maxZoom={MAX_ZOOM}
+      maxBounds={LATVIA_BOUNDS}
+      maxBoundsViscosity={1}
+      scrollWheelZoom={false}
+      className="w-full h-full"
+    >
+      <LatviaTiles />
 
       <Marker
         position={[lat, lng]}

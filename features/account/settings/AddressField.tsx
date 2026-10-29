@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Autocomplete, CircularProgress, InputAdornment, TextField } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 
-import { AddressResult, searchAddress } from "./geocoding";
+import { AddressResult, searchAddress } from "@/features/addresses/geocoding";
 
 const MIN_QUERY = 3;
 const DEBOUNCE_MS = 300;

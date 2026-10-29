@@ -72,8 +72,20 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-200 text-xs text-gray-500">
-          © {new Date().getFullYear()} bestauto.lv
+        <div className="mt-10 pt-6 border-t border-gray-200 flex flex-col sm:flex-row sm:justify-between gap-2 text-xs text-gray-500">
+          <span>© {new Date().getFullYear()} bestauto.lv</span>
+          {/* Указание источников — условие лицензий OpenStreetMap (ODbL) и адресного регистра VZD (CC BY 4.0) */}
+          <span>
+            {t("footer.mapData")} ©{" "}
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-gray-900">
+              OpenStreetMap
+            </a>
+            , {t("footer.addressData")} ©{" "}
+            <a href="https://data.gov.lv/dati/lv/dataset/varis-atvertie-dati" target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-gray-900">
+              {t("footer.vzd")}
+            </a>{" "}
+            (CC BY 4.0)
+          </span>
         </div>
       </Container>
     </footer>

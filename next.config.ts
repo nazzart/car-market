@@ -9,12 +9,10 @@ const isDev = process.env.NODE_ENV !== "production";
 // иначе браузер его заблокирует. Обычные ссылки (CSDD, WhatsApp, Facebook) сюда не нужны
 const sources = {
   images: [
-    "https://tile.openstreetmap.org", // плитки карты
     "https://img.youtube.com", // превью видео продавца
   ],
-  connect: [
-    "https://photon.komoot.io", // подсказки адресов в настройках дилера
-  ],
+  // карта и адреса — с нашего сервера; если файлы карты переедут на CDN (NEXT_PUBLIC_MAP_BASE) — добавить его сюда
+  connect: [] as string[],
   frames: [
     "https://www.youtube-nocookie.com", // видео продавца
   ],

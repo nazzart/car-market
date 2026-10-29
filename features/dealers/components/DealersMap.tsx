@@ -3,11 +3,12 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import { useTranslations } from "next-intl";
-import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
 import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
 
+import LatviaTiles, { LATVIA_BOUNDS, MAX_ZOOM, MIN_ZOOM } from "@/components/map/LatviaTiles";
 import { Link } from "@/i18n/navigation";
 import { usePlaceName } from "@/lib/places";
 import { initials } from "@/lib/utils";
@@ -135,15 +136,14 @@ export default function DealersMap({
     <MapContainer
       center={LATVIA_CENTER}
       zoom={7}
+      minZoom={MIN_ZOOM}
+      maxZoom={MAX_ZOOM}
+      maxBounds={LATVIA_BOUNDS}
+      maxBoundsViscosity={1}
       scrollWheelZoom
       className="w-full h-full"
     >
-      {/* Тайлы OpenStreetMap подходят для разработки; для продакшена нужен свой
-          провайдер (MapTiler, Stadia и т.п.) — см. tile usage policy OSM */}
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <LatviaTiles />
 
       <FitToDealers dealers={dealers} fitKey={fitKey} />
       <FlyToActive dealer={active} />

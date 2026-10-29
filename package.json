@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "map:download": "node scripts/download-map.mjs",
+    "addresses:build": "node scripts/build-addresses.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -14,10 +16,12 @@
     "@mui/icons-material": "^7.3.9",
     "@mui/material": "^7.3.9",
     "@mui/material-nextjs": "^7.3.9",
+    "@protomaps/basemaps": "^5.7.2",
     "clsx": "^2.1.1",
     "leaflet": "^1.9.4",
     "next": "^16.4.3",
     "next-intl": "^4.14.9",
+    "protomaps-leaflet": "^5.1.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-leaflet": "^5.0.0",

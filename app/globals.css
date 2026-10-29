@@ -74,11 +74,6 @@ body {
   font-family: inherit;
 }
 
-/* Приглушаем яркие цвета OSM, чтобы карта не спорила с метками */
-.leaflet-tile-pane {
-  filter: saturate(0.55) contrast(0.95) brightness(1.03);
-}
-
 .leaflet-popup-content-wrapper {
   border-radius: 16px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);

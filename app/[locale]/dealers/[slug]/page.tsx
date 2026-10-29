@@ -11,7 +11,7 @@ import { getTranslations } from "next-intl/server";
 
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
-import { cityLabel } from "@/lib/cities";
+import { placeName } from "@/lib/places";
 import ContactPhoneButton from "@/features/cars/car-view/components/ContactPhoneButton";
 import { getDealerListings } from "@/features/cars/api";
 import DealerMiniMap from "@/features/dealers/components/DealerMiniMap";
@@ -37,9 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!dealer) return {};
 
   const t = await getTranslations({ locale, namespace: "dealers.page" });
-  const tOptions = await getTranslations({ locale, namespace: "options" });
-
-  return { title: t("metaTitle", { name: dealer.name, city: cityLabel(tOptions, dealer.city) }) };
+  return { title: t("metaTitle", { name: dealer.name, city: placeName(dealer.city, locale) }) };
 }
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
@@ -52,9 +50,8 @@ export default async function DealerPage({ params }: Props) {
   const tListing = await getTranslations("listing");
   const tNav = await getTranslations("nav");
   const tCommon = await getTranslations("common");
-  const tOptions = await getTranslations("options");
 
-  const cityName = cityLabel(tOptions, dealer.city);
+  const cityName = placeName(dealer.city, (await params).locale);
 
   const official = dealer.type === "official";
   const [cars, dealers] = await Promise.all([getDealerListings(dealer.slug), getDealers()]);

@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
@@ -6,14 +6,14 @@ import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
 import { getDealers } from "@/features/dealers/api";
 import { Link } from "@/i18n/navigation";
-import { cityLabel } from "@/lib/cities";
+import { placeName } from "@/lib/places";
 import { initials } from "@/lib/utils";
 
 export default async function DealersTeaser() {
-  const [t, tDealers, tOptions, dealers] = await Promise.all([
+  const [t, tDealers, locale, dealers] = await Promise.all([
     getTranslations("home.dealers"),
     getTranslations("dealers"),
-    getTranslations("options"),
+    getLocale(),
     getDealers(),
   ]);
   // самые крупные салоны — по числу авто в наличии
@@ -53,7 +53,7 @@ export default async function DealersTeaser() {
                   <VerifiedBadge slug={d.slug} />
                 </div>
                 <div className="text-sm text-gray-500 truncate">
-                  {cityLabel(tOptions, d.city)} · {d.type === "official" ? tDealers("official") : tDealers("used")}
+                  {placeName(d.city, locale)} · {d.type === "official" ? tDealers("official") : tDealers("used")}
                 </div>
               </div>
             </div>

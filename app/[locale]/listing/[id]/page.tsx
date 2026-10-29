@@ -26,6 +26,7 @@ import ReportButton from "@/features/moderation/ReportButton";
 import SectionNav from "@/features/cars/car-view/components/SectionNav";
 import SpecsTable from "@/features/cars/car-view/components/SpecsTable";
 import { Link } from "@/i18n/navigation";
+import { placeName } from "@/lib/places";
 import { formatAgo, formatNumber } from "@/lib/utils";
 
 type Props = { params: Promise<{ locale: string; id: string }> };
@@ -70,7 +71,6 @@ export default async function ListingPage({ params }: Props) {
   const t = await getTranslations("listing");
   const tNav = await getTranslations("nav");
   const tCommon = await getTranslations("common");
-  const tOptions = await getTranslations("options");
 
   const brandName = brands.find((b) => b.slug === listing.brand)?.name;
 
@@ -106,7 +106,7 @@ export default async function ListingPage({ params }: Props) {
           </h1>
 
           <p className="text-gray-600 mt-1">
-            {formatNumber(listing.mileage)} {tCommon("units.km")} · {tOptions(`cities.${listing.city}`)} ·{" "}
+            {formatNumber(listing.mileage)} {tCommon("units.km")} · {placeName(listing.city, locale)} ·{" "}
             {formatAgo(listing.postedMinutesAgo, locale)}
           </p>
         </div>

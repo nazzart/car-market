@@ -13,10 +13,12 @@ import { roundKm } from "@/features/cars/lib/location";
 
 import FavoriteButton from "./FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
+import { usePlaceName } from "@/lib/places";
 
 export default function CarCard({ listing, distance }: { listing: Listing; distance?: number | null }) {
   const t = useTranslations("common");
   const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const tRow = useTranslations("cars.row");
   const locale = useLocale();
 
@@ -58,7 +60,7 @@ export default function CarCard({ listing, distance }: { listing: Listing; dista
           </div>
 
           <div className="text-xs text-gray-500 pt-1">
-            {tOptions(`cities.${listing.city}`)}
+            {placeName(listing.city)}
             {distance != null && ` · ${tRow("distance", { km: roundKm(distance) })}`} ·{" "}
             {formatAgo(listing.postedMinutesAgo, locale)}
           </div>

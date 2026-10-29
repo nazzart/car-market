@@ -24,6 +24,7 @@ import { useNow } from "@/lib/useNow";
 import { formatAgo, formatNumber } from "@/lib/utils";
 
 import CompareButton from "@/features/compare/components/CompareButton";
+import { usePlaceName } from "@/lib/places";
 
 import { FavoriteEntry, addFavorite, clearFavorites, removeFavorite, useFavorites } from "../store";
 
@@ -205,6 +206,7 @@ function FavoriteCard({
   const t = useTranslations("favorites");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const locale = useLocale();
 
   const image = listing.images[0];
@@ -262,7 +264,7 @@ function FavoriteCard({
 
         <div className="mt-auto pt-2 flex flex-wrap items-end justify-between gap-2">
           <div className="text-xs text-gray-500">
-            {tOptions(`cities.${listing.city}`)}
+            {placeName(listing.city)}
             {added !== null && (
               <> · {added < 1 ? t("addedJustNow") : t("added", { ago: formatAgo(added, locale) })}</>
             )}

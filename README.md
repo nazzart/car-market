@@ -53,7 +53,7 @@ features/          Code grouped by feature: cars, dealers, favorites, compare, a
   */types.ts       Shared types (Listing, Dealer, User)
   */components/    Feature UI
 components/        Shared layout (header, footer) and UI pieces
-lib/               Helpers: formatting, geo, local storage store, colors
+lib/               Helpers: formatting, geo, places (all Latvian towns and novadi), local storage store, colors
 messages/{lv,ru}/  Translations, one file per feature
 i18n/              next-intl routing and message loading
 proxy.ts           Locale routing (Next.js middleware)

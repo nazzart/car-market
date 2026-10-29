@@ -7,7 +7,6 @@ import {
   Autocomplete,
   Button,
   Chip,
-  MenuItem,
   Snackbar,
   TextField,
 } from "@mui/material";
@@ -27,7 +26,8 @@ import { resolveDealer } from "@/features/dealers/useOwnDealer";
 import { useDealerListingsOf } from "@/features/cars/api";
 import { assignContact, useContactAssignments } from "@/features/dealers/contacts";
 import { Link } from "@/i18n/navigation";
-import { CITY_KEYS, cityNameLv } from "@/lib/cities";
+import PlacePicker from "@/components/ui/PlacePicker";
+import { placeNameLv } from "@/lib/places";
 import { isPhone } from "@/lib/phone";
 
 import { LoggedOut } from "../AccountView";
@@ -167,21 +167,6 @@ function PageHeader({ type }: { type: AccountType | "dealer" }) {
       </h1>
       <p className="text-gray-500 mt-1">{isDealer ? t("subtitleDealer") : t("subtitle")}</p>
     </div>
-  );
-}
-
-function CitySelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
-  const t = useTranslations("account.settings.location");
-  const tOptions = useTranslations("options");
-
-  return (
-    <TextField select label={t("city")} value={value} onChange={(e) => onChange(e.target.value)} fullWidth>
-      {CITY_KEYS.map((key) => (
-        <MenuItem key={key} value={key}>
-          {tOptions(`cities.${key}`)}
-        </MenuItem>
-      ))}
-    </TextField>
   );
 }
 
@@ -337,7 +322,7 @@ function IndividualSettings({ user }: { user: User }) {
 
         <SettingsCard title={t("location.title")} description={t("location.country")}>
           <div className="sm:w-1/2 sm:pr-2">
-            <CitySelect value={form.city} onChange={set("city")} />
+            <PlacePicker label={t("location.city")} value={form.city} onChange={set("city")} />
           </div>
         </SettingsCard>
 
@@ -368,7 +353,7 @@ function DealerSettings({ user }: { user: User }) {
     email: user.email,
     phone: user.phone,
     // одно поле «улица, город» — как в подсказках геокодера
-    address: dealer.address ? `${dealer.address}, ${cityNameLv(dealer.city)}` : "",
+    address: dealer.address ? `${dealer.address}, ${placeNameLv(dealer.city)}` : "",
     lat: dealer.lat,
     lng: dealer.lng,
     hours: dealer.hours,

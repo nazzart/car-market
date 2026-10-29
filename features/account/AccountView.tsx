@@ -18,7 +18,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { useLocale, useTranslations } from "next-intl";
 
 import { brands } from "@/features/brands/data/brands";
-import { cityLabel } from "@/lib/cities";
+import { usePlaceName } from "@/lib/places";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import { Listing } from "@/features/cars/types";
 import { useDealerListingsOf, useUserListings } from "@/features/cars/api";
@@ -207,6 +207,7 @@ export default function AccountView() {
   const t = useTranslations("account");
   const tReasons = useTranslations("moderation.reasons");
   const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("active");
   const statuses = useListingStatuses();
@@ -409,7 +410,7 @@ export default function AccountView() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-gray-500">{t("profile.city")}</dt>
-                <dd className="text-gray-900 text-right">{cityLabel(tOptions, user.city)}</dd>
+                <dd className="text-gray-900 text-right">{placeName(user.city)}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-gray-500">{t("profile.since")}</dt>
@@ -429,7 +430,7 @@ export default function AccountView() {
               <div className="space-y-2 text-sm text-gray-800">
                 <div className="flex items-start gap-2">
                   <PlaceOutlinedIcon sx={{ fontSize: 18 }} className="text-gray-500" />
-                  {dealer.address}, {cityLabel(tOptions, dealer.city)}
+                  {dealer.address}, {placeName(dealer.city)}
                 </div>
                 <div className="flex items-start gap-2">
                   <ScheduleOutlinedIcon sx={{ fontSize: 18 }} className="text-gray-500" />

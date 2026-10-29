@@ -6,17 +6,18 @@ import CloseIcon from "@mui/icons-material/Close";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import NearMeOutlinedIcon from "@mui/icons-material/NearMeOutlined";
 
-import { CITY_COORDS } from "@/lib/geo";
+import PlacePicker from "@/components/ui/PlacePicker";
+import { placePoint, usePlaceName } from "@/lib/places";
 
 import { radiusOptions } from "../../config/filterOptions";
 import { Origin, clearOrigin, nearestCity, setOrigin, useOrigin } from "../../lib/location";
 import { useCarFilters } from "../hooks/useCarFilters";
-import { Segmented, Select } from "./ui";
+import { Segmented } from "./ui";
 
 // «Рядом со мной»: точка посетителя (GPS или город) + радиус. Точка — только в браузере
 export default function LocationFilter() {
   const t = useTranslations("cars.location");
-  const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const origin = useOrigin();
   const { params, updateFilter } = useCarFilters();
   const [state, setState] = useState<"idle" | "locating" | "error">("idle");
@@ -42,7 +43,8 @@ export default function LocationFilter() {
   };
 
   const pickCity = (city: string) => {
-    if (city) apply({ ...CITY_COORDS[city], source: "city", city });
+    const point = placePoint(city);
+    if (point) apply({ ...point, source: "city", city });
   };
 
   const reset = () => {
@@ -50,8 +52,6 @@ export default function LocationFilter() {
     if (params.get("sort") === "distance") updateFilter("sort", null);
     if (params.get("radius")) updateFilter("radius", null);
   };
-
-  const cityOptions = Object.keys(CITY_COORDS).map((value) => ({ value, label: tOptions(`cities.${value}`) }));
 
   if (!origin) {
     return (
@@ -68,12 +68,12 @@ export default function LocationFilter() {
 
         {state === "error" && <p className="text-xs text-error">{t("error")}</p>}
 
-        <Select label={t("orCity")} placeholder={t("orCity")} options={cityOptions} value="" onChange={pickCity} />
+        <PlacePicker variant="compact" label={t("orCity")} placeholder={t("orCity")} value="" onChange={pickCity} />
       </div>
     );
   }
 
-  const where = origin.city ? tOptions(`cities.${origin.city}`) : "";
+  const where = origin.city ? placeName(origin.city) : "";
 
   return (
     <div className="space-y-3">

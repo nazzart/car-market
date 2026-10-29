@@ -10,7 +10,7 @@ import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import ViewListIcon from "@mui/icons-material/ViewList";
 
 import { brands } from "@/features/brands/data/brands";
-import { cityLabel } from "@/lib/cities";
+import { usePlaceName } from "@/lib/places";
 import { Segmented, Select, inputClass } from "@/features/cars/car-list/components/ui";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
@@ -34,7 +34,7 @@ export default function DealersView() {
   // Фильтры в URL, как на /cars: ссылкой можно поделиться, «Назад» их сохраняет
   const t = useTranslations("dealers");
   const tCommon = useTranslations("common");
-  const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -43,7 +43,7 @@ export default function DealersView() {
 
   const typeOptions = dealerTypes.map((value) => ({ value, label: t(`types.${value}`) }));
   const cityOptions = [...new Set(dealers.map((d) => d.city))]
-    .map((value) => ({ value, label: cityLabel(tOptions, value) }))
+    .map((value) => ({ value, label: placeName(value) }))
     .sort((a, b) => a.label.localeCompare(b.label));
 
   // В фильтре — только марки, у которых есть официальные дилеры

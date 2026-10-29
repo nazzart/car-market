@@ -8,11 +8,12 @@ import { initials } from "@/lib/utils";
 import { ContactPerson } from "./ListingPhone";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { Listing } from "@/features/cars/types";
+import { usePlaceName } from "@/lib/places";
 
 export default function SellerInfo({ listing }: { listing: Listing }) {
   const t = useTranslations("listing.seller");
   const tCommon = useTranslations("common");
-  const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const isDealer = listing.sellerType === "dealer";
   const name = isDealer ? listing.sellerName ?? t("dealer") : t("private");
 
@@ -41,7 +42,7 @@ export default function SellerInfo({ listing }: { listing: Listing }) {
 
         <div className="flex items-center gap-1 text-sm text-gray-700 mt-1">
           <PlaceOutlinedIcon sx={{ fontSize: 16 }} className="text-gray-500" />
-          {tOptions(`cities.${listing.city}`)}, {tCommon("latvia")}
+          {placeName(listing.city)}, {tCommon("latvia")}
         </div>
 
         <ContactPerson listing={listing} className="mt-2" />

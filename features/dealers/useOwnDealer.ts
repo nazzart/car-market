@@ -4,12 +4,10 @@ import { useMemo } from "react";
 
 import { useAuth } from "@/features/auth/store";
 import type { User } from "@/features/auth/types";
-import { CITY_COORDS } from "@/lib/geo";
+import { placePointOrRiga } from "@/lib/places";
 
 import { useDealerLookup } from "./api";
 import type { Dealer } from "./types";
-
-const RIGA = CITY_COORDS.riga;
 
 // Профиль дилера, как его видят все: каталог + сохранённые настройки + данные аккаунта.
 // Единые правила: имя и телефон — из аккаунта (пустой телефон → телефон из каталога).
@@ -23,7 +21,7 @@ export function resolveDealer(user: User, base: Dealer | undefined): Dealer {
     brands: [],
     city,
     address: "",
-    ...(CITY_COORDS[city] ?? RIGA),
+    ...placePointOrRiga(city),
     phone: "",
     contacts: [],
     hours: {},

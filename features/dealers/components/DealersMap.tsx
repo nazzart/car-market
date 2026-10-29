@@ -9,7 +9,7 @@ import "leaflet/dist/leaflet.css";
 import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
 
 import { Link } from "@/i18n/navigation";
-import { cityLabel } from "@/lib/cities";
+import { usePlaceName } from "@/lib/places";
 import { initials } from "@/lib/utils";
 
 import { Dealer } from "@/features/dealers/types";
@@ -128,7 +128,7 @@ export default function DealersMap({
   onBoundsChange,
 }: Props) {
   const t = useTranslations("dealers");
-  const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const active = dealers.find((d) => d.slug === activeSlug);
 
   return (
@@ -168,7 +168,7 @@ export default function DealersMap({
               <div className="min-w-48">
                 <div className="font-semibold text-gray-900 text-sm">{dealer.name}</div>
                 <div className="text-xs text-gray-500 mt-0.5">
-                  {dealer.address}, {cityLabel(tOptions, dealer.city)}
+                  {dealer.address}, {placeName(dealer.city)}
                 </div>
                 <OpenStatus hours={dealer.hours} className="mt-1.5 text-xs" />
                 <div className="flex gap-3 mt-2">

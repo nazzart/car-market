@@ -64,16 +64,6 @@
     "purple": "Violeta",
     "gold": "Zelta"
   },
-  "cities": {
-    "riga": "Rīga",
-    "jurmala": "Jūrmala",
-    "daugavpils": "Daugavpils",
-    "jelgava": "Jelgava",
-    "liepaja": "Liepāja",
-    "ogre": "Ogre",
-    "valmiera": "Valmiera",
-    "ventspils": "Ventspils"
-  },
   "days": {
     "mon": "P",
     "tue": "O",

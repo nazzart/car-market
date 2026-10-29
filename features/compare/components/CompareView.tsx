@@ -18,6 +18,7 @@ import { useDealerLookup } from "@/features/dealers/api";
 import { useFavorites } from "@/features/favorites/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatNumber } from "@/lib/utils";
+import { usePlaceName } from "@/lib/places";
 
 import { MAX_COMPARE, addToCompare, clearCompare, removeFromCompare, useCompare } from "../store";
 
@@ -60,6 +61,7 @@ export default function CompareView() {
   const tSpecs = useTranslations("listing.specs");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const hydrated = useHydrated();
   const ids = useCompare();
   const { entries: favorites } = useFavorites();
@@ -108,7 +110,7 @@ export default function CompareView() {
           display: (l) => (l.condition === "new" ? tSpecs("conditionNew") : tSpecs("conditionUsed")),
           value: (l) => l.condition,
         },
-        { key: "city", label: t("rows.city"), display: (l) => tOptions(`cities.${l.city}`), value: (l) => l.city },
+        { key: "city", label: t("rows.city"), display: (l) => placeName(l.city), value: (l) => l.city },
         {
           key: "seller",
           label: t("rows.seller"),

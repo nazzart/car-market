@@ -64,16 +64,6 @@
     "purple": "Фиолетовый",
     "gold": "Золотой"
   },
-  "cities": {
-    "riga": "Рига",
-    "jurmala": "Юрмала",
-    "daugavpils": "Даугавпилс",
-    "jelgava": "Елгава",
-    "liepaja": "Лиепая",
-    "ogre": "Огре",
-    "valmiera": "Валмиера",
-    "ventspils": "Вентспилс"
-  },
   "days": {
     "mon": "Пн",
     "tue": "Вт",

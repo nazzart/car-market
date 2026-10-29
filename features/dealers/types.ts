@@ -19,7 +19,7 @@ export type Dealer = {
   name: string;
   type: "official" | "used"; // официальный дилер / автосалон с пробегом
   brands: string[]; // slug марок, для официальных дилеров
-  city: string; // ключ города: messages → options.cities
+  city: string; // ключ места из lib/places.ts (город или край)
   address: string; // официальный адрес на латышском — не переводится
   lat: number;
   lng: number;

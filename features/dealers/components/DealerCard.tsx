@@ -7,7 +7,7 @@ import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import { brands } from "@/features/brands/data/brands";
-import { cityLabel } from "@/lib/cities";
+import { usePlaceName } from "@/lib/places";
 import PhoneButton from "@/features/cars/car-list/components/PhoneButton";
 import { Link } from "@/i18n/navigation";
 import { initials } from "@/lib/utils";
@@ -31,6 +31,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
   const t = useTranslations("dealers");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const official = dealer.type === "official";
 
   return (
@@ -108,7 +109,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
           <div className="mt-3 space-y-1 text-sm text-gray-700">
             <div className="flex items-start gap-1.5">
               <PlaceOutlinedIcon sx={{ fontSize: 17 }} className="text-gray-500 mt-px shrink-0" />
-              {dealer.address}, {cityLabel(tOptions, dealer.city)}
+              {dealer.address}, {placeName(dealer.city)}
             </div>
             <div className="flex items-start gap-1.5">
               <ScheduleOutlinedIcon sx={{ fontSize: 17 }} className="text-gray-500 mt-px shrink-0" />

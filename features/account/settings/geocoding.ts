@@ -1,4 +1,4 @@
-import { cityFromName } from "@/lib/cities";
+import { placeFromName } from "@/lib/places";
 
 // Геокодер Photon (OpenStreetMap). Отдаёт адреса в местном написании — для Латвии это латышский.
 // TODO: для продакшена — свой инстанс Photon или адресный регистр VZD; публичный сервер только для демо
@@ -113,5 +113,5 @@ export function parseAddress(text: string) {
   const city = text.slice(i + 1).trim();
   if (!street || !city) return null;
 
-  return { street, city: cityFromName(city) };
+  return { street, city: placeFromName(city) };
 }

@@ -16,7 +16,8 @@ import { openAuthModal, updateProfile, useAuth } from "@/features/auth/store";
 import { useDealerContacts } from "@/features/dealers/contacts";
 import { useOwnDealer } from "@/features/dealers/useOwnDealer";
 import { Link } from "@/i18n/navigation";
-import { CITY_KEYS, cityLabel } from "@/lib/cities";
+import PlacePicker from "@/components/ui/PlacePicker";
+import { usePlaceName } from "@/lib/places";
 import { isPhone } from "@/lib/phone";
 
 import { SectionContainer } from "../components/SectionContainer";
@@ -30,7 +31,7 @@ import { validateField } from "../utils/validationRules";
 // дилер выбирает, кто отвечает на звонки (компания или менеджер)
 export function ContactInfoSection({ id, title, data, required, fields, onNext, updateField }: FormStepProps) {
   const t = useTranslations("sell.contact");
-  const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const { user } = useAuth();
   const { isValid } = useSectionValidation(fields, data);
   const { attemptedNext, handleNext } = useSectionNext(isValid, required, onNext);
@@ -90,7 +91,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
           <SummaryRow
             icon={<StorefrontOutlinedIcon fontSize="small" />}
             title={user.name}
-            text={`${cityLabel(tOptions, dealerCity)} · ${t("fromCompany")}`}
+            text={`${placeName(dealerCity)} · ${t("fromCompany")}`}
           />
 
           {needsCompanyPhone && (
@@ -174,7 +175,7 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
               <SummaryRow icon={<PhoneOutlinedIcon fontSize="small" />} title={data.sellerPhone} text={t("phone")} />
               <SummaryRow
                 icon={<PlaceOutlinedIcon fontSize="small" />}
-                title={data.sellerCity ? cityLabel(tOptions, data.sellerCity) : "—"}
+                title={data.sellerCity ? placeName(data.sellerCity) : "—"}
                 text={t("carLocation")}
               />
             </div>
@@ -191,20 +192,12 @@ export function ContactInfoSection({ id, title, data, required, fields, onNext, 
                 required
                 fullWidth
               />
-              <TextField
-                select
+              <PlacePicker
                 label={t("carLocation")}
-                value={CITY_KEYS.includes(data.sellerCity) ? data.sellerCity : ""}
-                onChange={(e) => updateField("sellerCity", e.target.value)}
+                value={data.sellerCity}
+                onChange={(key) => updateField("sellerCity", key)}
                 required
-                fullWidth
-              >
-                {CITY_KEYS.map((key) => (
-                  <MenuItem key={key} value={key}>
-                    {tOptions(`cities.${key}`)}
-                  </MenuItem>
-                ))}
-              </TextField>
+              />
             </div>
           )}
 

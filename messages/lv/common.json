@@ -44,5 +44,12 @@
     "retry": "Mēģināt vēlreiz",
     "home": "Uz sākumu",
     "code": "Kļūdas kods: {code}"
+  },
+  "places": {
+    "cities": "Pilsētas",
+    "municipalities": "Novadi",
+    "search": "Sāciet rakstīt, piem., Sigulda",
+    "hint": "Ārpus pilsētas? Izvēlieties savu novadu",
+    "noResults": "Nekas nav atrasts"
   }
 }

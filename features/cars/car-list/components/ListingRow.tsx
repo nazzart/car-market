@@ -10,6 +10,7 @@ import { isFresh } from "../../lib/isFresh";
 import { roundKm } from "../../lib/location";
 import ListingGallery from "./ListingGallery";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
+import { usePlaceName } from "@/lib/places";
 
 const badgeClass = "px-2 py-0.5 rounded-md text-xs font-medium";
 
@@ -17,6 +18,7 @@ export default function ListingRow({ listing, distance }: { listing: Listing; di
   const t = useTranslations("cars.row");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
+  const placeName = usePlaceName();
   const locale = useLocale();
 
   const href = `/listing/${listing.id}`;
@@ -99,7 +101,7 @@ export default function ListingRow({ listing, distance }: { listing: Listing; di
 
           {/* продавец — обычной строкой, а не чипом: чипы только для важного о самой машине */}
           <div className="text-xs text-gray-500 mt-auto pt-3">
-            {tOptions(`cities.${listing.city}`)}
+            {placeName(listing.city)}
             {distance != null && (
               <span className="font-medium text-gray-700"> · {t("distance", { km: roundKm(distance) })}</span>
             )}{" "}

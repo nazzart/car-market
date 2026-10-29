@@ -11,7 +11,7 @@ export type User = {
   name: string;
   email: string;
   phone: string;
-  city: string; // ключ города
+  city: string; // ключ места из lib/places.ts (город или край)
   since: number;
   dealerSlug?: string; // для дилера — его страница /dealers/[slug]
   dealerProfile?: DealerProfile;

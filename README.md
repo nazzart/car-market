@@ -80,7 +80,8 @@ features/          Code grouped by feature: cars, dealers, favorites, compare, a
   */data/          Demo data, loaded into the database by npm run db:seed
   */types.ts       Shared types (Listing, Dealer, User)
   */components/    Feature UI
-components/        Shared layout (header, footer) and UI pieces
+components/        Shared layout (header, footer) and UI pieces (components/ui: Badge, CarPhoto, EmptyState,
+                   Skeleton, Pagination, form.tsx with inputs, selects, chips)
 lib/               Helpers: formatting (utils.ts), input checks (validate.ts), URL query (url.ts), geo, places
                    (all Latvian towns and novadi), local storage store, colors
 lib/db/            Database: schema.ts (tables), migrations/ (generated SQL), index.ts (server-only client)
@@ -108,6 +109,9 @@ Conventions:
   actions (`cleanText`, `isEmail`, `parseListingId`, `isRegNumber`…) are in `lib/validate.ts`.
 - **Shared helpers:** prices via `formatPrice()` (`lib/utils.ts`), query-string changes via `withQuery()`
   (`lib/url.ts`), the card spec line "year · km · fuel · gearbox" via `useSpecLine()` (`features/cars/lib`).
+- **Shared UI before new markup:** a status or label → `Badge` (fixed tones, no ad-hoc colours); a listing photo →
+  `CarPhoto` (4:3 frame with the "no photo" fallback); "nothing here" → `EmptyState` (`box` or `hero`); loading →
+  `Skeleton`; form fields → `components/ui/form.tsx`. All in `components/ui/`.
 - **No copies of related data:** a listing references its dealer (`dealer_id`) and contact person (`contact_id`);
   the dealer's name and phone are read with a JOIN in `features/cars/api.ts`, so a change in `dealers` shows everywhere.
 - **Cache version:** after a schema change (or a change to what a cached query returns), bump `CACHE_VERSION` in

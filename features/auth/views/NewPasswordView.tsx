@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Alert, Button, TextField } from "@mui/material";
 
+import Skeleton from "@/components/ui/Skeleton";
 import { Link } from "@/i18n/navigation";
 
 import { updatePassword } from "../actions";
@@ -20,7 +21,7 @@ export default function NewPasswordView() {
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState("");
 
-  if (loading) return <div className="h-64 rounded-3xl bg-gray-50 animate-pulse" />;
+  if (loading) return <Skeleton className="h-64 rounded-3xl bg-gray-50" />;
 
   if (expired || !user) {
     return (

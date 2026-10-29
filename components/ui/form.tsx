@@ -2,29 +2,10 @@
 
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-// Небольшие элементы фильтров в стиле главной страницы
+// Элементы форм в стиле сайта: поле ввода (inputClass), выпадающий список, чипы, сегментированный переключатель.
+// Используются в фильтрах, настройках, избранном, на странице дилеров и в модерации
 
-type Option = { label: string; value: string };
-
-export function FilterSection({
-  title,
-  active,
-  children,
-}: {
-  title: string;
-  active?: boolean; // в секции выбран фильтр — точка у заголовка
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="py-5 border-b border-gray-100 last:border-b-0">
-      <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-3">
-        {title}
-        {active && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
-      </div>
-      {children}
-    </div>
-  );
-}
+export type Option = { label: string; value: string };
 
 export const inputClass = `
   w-full

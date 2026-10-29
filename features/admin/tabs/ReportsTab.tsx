@@ -5,11 +5,13 @@ import BlockIcon from "@mui/icons-material/Block";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import { useLocale, useTranslations } from "next-intl";
 
+import Badge from "@/components/ui/Badge";
+import EmptyState from "@/components/ui/EmptyState";
 import { Report, dismissReports, useReports } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatAgo } from "@/lib/utils";
 
-import { Badge, EmptyBox, minutesSince, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
+import { minutesSince, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
 // Жалобы покупателей, сгруппированные по объявлению: решение принимается про объявление целиком
 export default function ReportsTab() {
@@ -51,7 +53,7 @@ export default function ReportsTab() {
 
       {groups.length === 0 ? (
         <div className="mt-4">
-          <EmptyBox>{showResolved ? t("reports.empty") : t("queue.empty")}</EmptyBox>
+          <EmptyState text={showResolved ? t("reports.empty") : t("queue.empty")} />
         </div>
       ) : (
         <div className="space-y-3 mt-4">

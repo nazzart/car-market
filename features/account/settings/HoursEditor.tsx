@@ -4,7 +4,7 @@ import { Switch } from "@mui/material";
 import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
 import { useTranslations } from "next-intl";
 
-import { inputClass } from "@/features/cars/car-list/components/ui";
+import { inputClass } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { DAYS, Day, OpeningHours } from "@/features/dealers/types";
 import { formatHours } from "@/features/dealers/lib/hours";

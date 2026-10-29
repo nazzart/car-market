@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import { useTranslations } from "next-intl";
+
+import { NoPhoto } from "@/components/ui/CarPhoto";
 
 import PhotoLightbox from "./PhotoLightbox";
 
@@ -21,9 +22,8 @@ export default function PhotoGallery({ images, title }: Props) {
 
   if (images.length === 0) {
     return (
-      <div className="h-64 md:h-[420px] rounded-2xl bg-gray-100 flex flex-col items-center justify-center gap-2 text-gray-300">
-        <DirectionsCarOutlinedIcon sx={{ fontSize: 64 }} />
-        <span className="text-sm text-gray-500">{t("noPhotos")}</span>
+      <div className="relative h-64 md:h-[420px] rounded-2xl bg-gray-100">
+        <NoPhoto iconSize={64} label={t("noPhotos")} />
       </div>
     );
   }

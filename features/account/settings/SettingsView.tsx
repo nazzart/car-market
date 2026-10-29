@@ -15,6 +15,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import { useTranslations } from "next-intl";
 
+import Skeleton from "@/components/ui/Skeleton";
 import { AccountType } from "@/features/auth/types/authView";
 import { User } from "@/features/auth/types";
 import { changePassword } from "@/features/auth/actions";
@@ -23,7 +24,7 @@ import { useRouter } from "@/i18n/navigation";
 import { deleteAccount, saveDealerProfile, saveProfile } from "@/features/account/actions";
 import { useOwnListings } from "@/features/account/useOwnListings";
 import { brands } from "@/features/brands/data/brands";
-import { ChipGroup } from "@/features/cars/car-list/components/ui";
+import { ChipGroup } from "@/components/ui/form";
 import type { Dealer } from "@/features/dealers/types";
 import { useOwnDealerState } from "@/features/dealers/useOwnDealer";
 import { Link } from "@/i18n/navigation";
@@ -42,7 +43,7 @@ import SettingsCard from "./SettingsCard";
 // Leaflet работает только в браузере
 const LocationPicker = dynamic(() => import("./LocationPicker"), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-gray-100 animate-pulse" />,
+  loading: () => <Skeleton className="w-full h-full" />,
 });
 
 
@@ -420,9 +421,9 @@ function DealerSettings({ user }: { user: User }) {
 function SettingsSkeleton() {
   return (
     <div className="space-y-4" aria-busy="true">
-      <div className="h-8 w-48 rounded-lg bg-gray-100 animate-pulse" />
+      <Skeleton className="h-8 w-48 rounded-lg" />
       {[0, 1, 2].map((i) => (
-        <div key={i} className="h-48 rounded-2xl bg-gray-100 animate-pulse" />
+        <Skeleton key={i} className="h-48 rounded-2xl" />
       ))}
     </div>
   );

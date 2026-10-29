@@ -9,7 +9,7 @@ import PlacePicker from "@/components/ui/PlacePicker";
 import { areaOptions } from "../../config/filterOptions";
 import { nearestCity } from "../../lib/location";
 import { useCarFilters } from "../hooks/useCarFilters";
-import { Segmented } from "./ui";
+import { Segmented } from "@/components/ui/form";
 
 // Место: город или край (край — со своими городами), по желанию с окрестностями.
 // Километры до машины не показываем: люди ориентируются по названиям мест, а не по расстоянию

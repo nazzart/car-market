@@ -9,6 +9,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import { getTranslations } from "next-intl/server";
 
+import EmptyState from "@/components/ui/EmptyState";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import { placeName } from "@/lib/places";
@@ -173,10 +174,7 @@ export default async function DealerPage({ params }: Props) {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 px-6 rounded-2xl border border-dashed border-gray-200">
-                <DirectionsCarOutlinedIcon sx={{ fontSize: 44 }} className="text-gray-300" />
-                <p className="text-gray-500 mt-2">{t("page.noCars")}</p>
-              </div>
+              <EmptyState icon={DirectionsCarOutlinedIcon} text={t("page.noCars")} />
             )}
           </section>
 

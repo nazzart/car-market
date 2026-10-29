@@ -1,5 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 
+import Badge from "@/components/ui/Badge";
 import FavoriteButton from "@/features/latest-cars/components/FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
 import { Link } from "@/i18n/navigation";
@@ -10,8 +11,6 @@ import { isFresh } from "../../lib/isFresh";
 import ListingGallery from "./ListingGallery";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { usePlaceName } from "@/lib/places";
-
-const badgeClass = "px-2 py-0.5 rounded-md text-xs font-medium";
 
 export default function ListingRow({ listing }: { listing: Listing }) {
   const t = useTranslations("cars.row");
@@ -77,24 +76,22 @@ export default function ListingRow({ listing }: { listing: Listing }) {
 
           <div className="flex flex-wrap items-center gap-1.5 mt-3 empty:hidden">
             {listing.condition === "new" && (
-              <span className={`${badgeClass} bg-emerald-50 text-emerald-700`}>
-                {t("new")}
-              </span>
+              <Badge tone="success">{t("new")}</Badge>
             )}
 
 
             {/* сигналы доверия — то, что покупатель спрашивает первым */}
             {listing.noAccidents && (
-              <span className={`${badgeClass} bg-emerald-50 text-emerald-700`}>{t("noAccidents")}</span>
+              <Badge tone="success">{t("noAccidents")}</Badge>
             )}
 
             {listing.owners === 1 && (
-              <span className={`${badgeClass} bg-sky-50 text-sky-700`}>{t("oneOwner")}</span>
+              <Badge tone="info">{t("oneOwner")}</Badge>
             )}
 
             {/* единственный «минус», о котором стоит знать до клика */}
             {listing.overallCondition === "repair" && (
-              <span className={`${badgeClass} bg-amber-50 text-amber-800`}>{tOptions("overallCondition.repair")}</span>
+              <Badge tone="warning">{tOptions("overallCondition.repair")}</Badge>
             )}
           </div>
 

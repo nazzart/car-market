@@ -1,7 +1,6 @@
-import Image from "next/image";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import { useLocale, useTranslations } from "next-intl";
 
+import CarPhoto from "@/components/ui/CarPhoto";
 import { Link } from "@/i18n/navigation";
 import { formatAgo, formatPrice } from "@/lib/utils";
 
@@ -27,22 +26,15 @@ export default function CarCard({ listing }: { listing: Listing }) {
   return (
     <article className="group relative">
       <Link href={`/listing/${id}`} className="block">
-        <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
-          {image ? (
-            <Image
-              src={image}
-              alt={title}
-              fill
-              sizes="(min-width: 1280px) 400px, (min-width: 768px) 33vw, 50vw"
-              className="object-cover transition duration-300 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-gray-300">
-              <DirectionsCarOutlinedIcon sx={{ fontSize: 48 }} />
-              <span className="text-xs text-gray-500">{t("noPhoto")}</span>
-            </div>
-          )}
-        </div>
+        <CarPhoto
+          src={image}
+          alt={title}
+          sizes="(min-width: 1280px) 400px, (min-width: 768px) 33vw, 50vw"
+          className="rounded-xl"
+          imageClassName="transition duration-300 group-hover:scale-[1.03]"
+          iconSize={48}
+          label={t("noPhoto")}
+        />
 
         <div className="pt-3 space-y-0.5">
           <div className="text-lg font-semibold text-gray-900">

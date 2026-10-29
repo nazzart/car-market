@@ -1,16 +1,17 @@
 "use client";
 
 import { useRef, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
 import { Switch } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useTranslations } from "next-intl";
 
+import Skeleton from "@/components/ui/Skeleton";
+import EmptyState from "@/components/ui/EmptyState";
+import CarPhoto from "@/components/ui/CarPhoto";
 import { equipmentGroups } from "@/features/cars/config/equipment";
 import { Listing, OVERALL_CONDITIONS, SERVICE_STATES } from "@/features/cars/types";
 import { useListingsByIds } from "@/features/cars/hooks";
@@ -79,7 +80,7 @@ export default function CompareView() {
     if (header.current) header.current.scrollLeft = e.currentTarget.scrollLeft;
   };
 
-  if (!hydrated || loaded === undefined) return <div className="h-96 my-6 rounded-3xl bg-gray-50 animate-pulse" />;
+  if (!hydrated || loaded === undefined) return <Skeleton className="h-96 my-6 rounded-3xl bg-gray-50" />;
 
   const favoritesToAdd = favorites.filter((f) => !ids.includes(f.id) && listingOf(f.id) !== undefined);
 
@@ -87,7 +88,7 @@ export default function CompareView() {
     for (const f of favoritesToAdd) if (!addToCompare(f.id)) break;
   };
 
-  if (cars.length === 0) return <EmptyState favoritesCount={favoritesToAdd.length} onAddFavorites={addFromFavorites} />;
+  if (cars.length === 0) return <CompareEmpty favoritesCount={favoritesToAdd.length} onAddFavorites={addFromFavorites} />;
 
   const dash = <span className="text-gray-300">—</span>;
   const yesNo = (v?: boolean) => (v === undefined ? dash : v ? t("yes") : t("no"));
@@ -381,13 +382,7 @@ function CarHeader({ listing }: { listing: Listing }) {
   return (
     <div className="relative p-2">
       <Link href={`/listing/${listing.id}`} className="group flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
-        <span className="relative w-14 sm:w-20 aspect-[4/3] shrink-0 rounded-lg overflow-hidden bg-gray-100">
-          {image ? (
-            <Image src={image} alt={listing.title} fill sizes="80px" className="object-cover" />
-          ) : (
-            <DirectionsCarOutlinedIcon sx={{ fontSize: 22 }} className="absolute inset-0 m-auto text-gray-300" />
-          )}
-        </span>
+        <CarPhoto src={image} alt={listing.title} sizes="80px" iconSize={22} className="w-14 sm:w-20 shrink-0 rounded-lg" />
         <span className="min-w-0 sm:pr-6">
           <span className="block text-sm font-semibold text-gray-900 leading-tight line-clamp-2 group-hover:text-primary transition">
             {listing.title}
@@ -435,19 +430,14 @@ function AddSlot({ favoritesCount, onAddFavorites }: { favoritesCount: number; o
 
 /* ---------- Пустое состояние ---------- */
 
-function EmptyState({ favoritesCount, onAddFavorites }: { favoritesCount: number; onAddFavorites: () => void }) {
+function CompareEmpty({ favoritesCount, onAddFavorites }: { favoritesCount: number; onAddFavorites: () => void }) {
   const t = useTranslations("compare");
 
   return (
     <div className="pt-6 pb-16">
       <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-6">{t("title")}</h1>
 
-      <div className="text-center py-14 px-6 rounded-3xl bg-gray-50">
-        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-white shadow-sm">
-          <CompareArrowsIcon sx={{ fontSize: 30 }} className="text-gray-900" />
-        </span>
-        <h2 className="text-xl font-semibold mt-4">{t("empty.title")}</h2>
-        <p className="text-gray-500 mt-2 max-w-md mx-auto">{t("empty.text", { max: MAX_COMPARE })}</p>
+      <EmptyState variant="hero" icon={CompareArrowsIcon} title={t("empty.title")} text={t("empty.text", { max: MAX_COMPARE })}>
 
         <div className="flex flex-wrap justify-center gap-3 mt-6">
           <Link
@@ -467,7 +457,7 @@ function EmptyState({ favoritesCount, onAddFavorites }: { favoritesCount: number
             </button>
           )}
         </div>
-      </div>
+      </EmptyState>
     </div>
   );
 }

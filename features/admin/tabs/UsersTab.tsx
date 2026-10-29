@@ -12,13 +12,15 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 
+import Badge from "@/components/ui/Badge";
+import EmptyState from "@/components/ui/EmptyState";
 import { dealerAccount, ownerOf, userAccount } from "@/features/moderation/accounts";
 import { setDealerVerified, unblockAccount, useBlockedAccounts, useReports } from "@/features/moderation/store";
 import { useDealerVerified } from "@/features/moderation/visibility";
 import { Link } from "@/i18n/navigation";
 import { cn, initials } from "@/lib/utils";
 
-import { Badge, EmptyBox, pillClass, useAdminData, useModerationDialog } from "../shared";
+import { pillClass, useAdminData, useModerationDialog } from "../shared";
 
 // Реестр предприятий Латвии — модератор сверяет название и рег. номер дилера
 const REGISTER_URL = "https://info.ur.gov.lv/";
@@ -98,7 +100,7 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
       {filter === "unverified" && <p className="text-sm text-gray-500 mb-3">{t("verifyHint")}</p>}
 
       {shown.length === 0 ? (
-        <EmptyBox>{t("empty")}</EmptyBox>
+        <EmptyState text={t("empty")} />
       ) : (
         <ul className="rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
           {shown.map((a) => {
@@ -122,9 +124,9 @@ export default function UsersTab({ onShowListings }: { onShowListings: (query: s
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span className="font-semibold text-gray-900">{a.name}</span>
                     {verified && <VerifiedIcon sx={{ fontSize: 16 }} className="text-sky-600" titleAccess={t("verified")} />}
-                    <Badge tone="bg-gray-100 text-gray-600">{t(`kind.${a.kind}`)}</Badge>
-                    {a.kind === "dealer" && !verified && <Badge tone="bg-amber-50 text-amber-800">{t("unverified")}</Badge>}
-                    {block && <Badge tone="bg-red-50 text-red-700">{t("blocked")}</Badge>}
+                    <Badge tone="muted">{t(`kind.${a.kind}`)}</Badge>
+                    {a.kind === "dealer" && !verified && <Badge tone="warning">{t("unverified")}</Badge>}
+                    {block && <Badge tone="danger">{t("blocked")}</Badge>}
                   </div>
                   <div className="text-xs text-gray-500 truncate">
                     {a.contact}

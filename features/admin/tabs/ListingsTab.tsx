@@ -12,13 +12,15 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocale, useTranslations } from "next-intl";
 
-import { inputClass } from "@/features/cars/car-list/components/ui";
+import Badge from "@/components/ui/Badge";
+import EmptyState from "@/components/ui/EmptyState";
+import { inputClass } from "@/components/ui/form";
 import { Listing } from "@/features/cars/types";
 import { clearModeration, dismissReports } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
 import { cn, formatAgo, formatPrice } from "@/lib/utils";
 
-import { Badge, EmptyBox, StatusKey, Thumb, pillClass, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
+import { StatusKey, Thumb, pillClass, statusTone, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
 type Filter = "all" | "public" | "pending" | "hidden" | "blocked" | "removed" | "reported";
 
@@ -81,7 +83,7 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
       <p className="text-sm text-gray-500 mt-4 mb-3">{t("table.count", { count: rows.length })}</p>
 
       {rows.length === 0 ? (
-        <EmptyBox>{t("table.empty")}</EmptyBox>
+        <EmptyState text={t("table.empty")} />
       ) : (
         <ul className="rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
           {rows.map((l) => {
@@ -98,10 +100,9 @@ export default function ListingsTab({ query, onQueryChange }: { query: string; o
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <Badge tone={statusTone[status]}>{t(`status.${status}`)}</Badge>
                     {reportsCount > 0 && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-600 text-white text-xs font-medium">
-                        <FlagOutlinedIcon sx={{ fontSize: 13 }} />
+                      <Badge tone="solid" icon={<FlagOutlinedIcon sx={{ fontSize: 13 }} />}>
                         {t("reports.count", { count: reportsCount })}
-                      </span>
+                      </Badge>
                     )}
                     <span className="text-xs text-gray-400">#{l.id}</span>
                   </div>

@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import PhotoCameraOutlinedIcon from "@mui/icons-material/PhotoCameraOutlined";
 
+import { NoPhoto } from "@/components/ui/CarPhoto";
 import { Link } from "@/i18n/navigation";
 
 import FreshBadge from "./FreshBadge";
@@ -47,10 +47,7 @@ export default function ListingGallery({ href, title, images, fresh }: Props) {
       className="group/gallery relative z-10 block aspect-[4/3] rounded-xl overflow-hidden bg-gray-100"
     >
       {preview.length === 0 ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-gray-300">
-          <DirectionsCarOutlinedIcon sx={{ fontSize: 48 }} />
-          <span className="text-xs text-gray-500">{tCommon("noPhoto")}</span>
-        </div>
+        <NoPhoto iconSize={48} label={tCommon("noPhoto")} />
       ) : (
         <>
           <Image

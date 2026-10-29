@@ -5,9 +5,9 @@ import Image from "next/image";
 import { Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import { useTranslations } from "next-intl";
 
+import { NoPhoto } from "@/components/ui/CarPhoto";
 import { useListingsByIds } from "@/features/cars/hooks";
 import { Link, usePathname } from "@/i18n/navigation";
 
@@ -46,7 +46,7 @@ export default function CompareBar() {
                   {car.images[0] ? (
                     <Image src={car.images[0]} alt={car.title} fill sizes="48px" className="object-cover" />
                   ) : (
-                    <DirectionsCarOutlinedIcon sx={{ fontSize: 18 }} className="absolute inset-0 m-auto text-white/50" />
+                    <NoPhoto iconSize={18} dark />
                   )}
                   <button
                     type="button"

@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import { useTranslations } from "next-intl";
 
+import CarPhoto from "@/components/ui/CarPhoto";
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import { formatNumber, formatPrice } from "@/lib/utils";
@@ -40,13 +39,7 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
       {/* Preview */}
 
       <div className="flex gap-4 mt-6 p-3 rounded-2xl border border-gray-200">
-        <div className="relative w-32 sm:w-40 aspect-[4/3] shrink-0 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
-          {photos[0] ? (
-            <Image src={photos[0]} alt="" fill unoptimized className="object-cover" />
-          ) : (
-            <DirectionsCarOutlinedIcon sx={{ fontSize: 36 }} className="text-gray-300" />
-          )}
-        </div>
+        <CarPhoto src={photos[0]} alt="" sizes="160px" unoptimized className="w-32 sm:w-40 shrink-0 rounded-xl" />
 
         <div className="min-w-0 py-1">
           <div className="font-semibold text-gray-900 truncate">

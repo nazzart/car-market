@@ -6,6 +6,7 @@ import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
+import Badge from "@/components/ui/Badge";
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import PhoneButton from "@/features/cars/car-list/components/PhoneButton";
@@ -96,12 +97,7 @@ export default function DealerCard({ dealer, active, onSelect, onHover }: Props)
           {official && dealer.brands.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {dealer.brands.map((b) => (
-                <span
-                  key={b}
-                  className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-700"
-                >
-                  {brandName(b)}
-                </span>
+                <Badge key={b}>{brandName(b)}</Badge>
               ))}
             </div>
           )}

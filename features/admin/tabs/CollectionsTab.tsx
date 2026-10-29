@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+import EmptyState from "@/components/ui/EmptyState";
 import { collections } from "@/features/collections/config";
 import { setExcluded, useExcluded } from "@/features/moderation/store";
 import { useCollectionMembership } from "@/features/moderation/visibility";
 import { formatPrice } from "@/lib/utils";
 
-import { EmptyBox, Thumb, pillClass, useAdminData } from "../shared";
+import { Thumb, pillClass, useAdminData } from "../shared";
 
 // Подборки собираются автоматически по правилам; модератор может снять объявление, которому там не место
 export default function CollectionsTab() {
@@ -41,7 +42,7 @@ export default function CollectionsTab() {
         <p className="text-sm text-gray-500 mb-3">{tOptions(`collections.${slug}.description`)}</p>
 
         {members.length === 0 ? (
-          <EmptyBox>{t("contentEmpty")}</EmptyBox>
+          <EmptyState text={t("contentEmpty")} />
         ) : (
           <ul className="rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
             {members.map((l) => {

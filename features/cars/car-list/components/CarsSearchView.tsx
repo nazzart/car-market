@@ -24,7 +24,7 @@ import ListingRow from "./ListingRow";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import ScrollArea from "./ScrollArea";
 import { useVisibility } from "@/features/moderation/visibility";
-import { inputClass } from "./ui";
+import { inputClass } from "@/components/ui/form";
 
 // Сайдбар всегда целиком в окне: пока он не прилип, высота — до нижнего края экрана.
 // Так низ панели и подсказка «Ещё фильтры» видны сразу, без прокрутки страницы

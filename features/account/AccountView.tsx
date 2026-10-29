@@ -4,7 +4,6 @@ import { useState } from "react";
 import BlockIcon from "@mui/icons-material/Block";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { Snackbar } from "@mui/material";
-import Image from "next/image";
 import AddIcon from "@mui/icons-material/Add";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -17,6 +16,10 @@ import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { useLocale, useTranslations } from "next-intl";
 
+import Skeleton from "@/components/ui/Skeleton";
+import EmptyState from "@/components/ui/EmptyState";
+import CarPhoto from "@/components/ui/CarPhoto";
+import Badge, { type BadgeTone } from "@/components/ui/Badge";
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import { openAuthModal, useAuth } from "@/features/auth/store";
@@ -44,12 +47,12 @@ const favorites = (l: Listing) => Math.round((l.views ?? 0) * 0.05);
 const tabs = ["active", "pending", "paused", "sold", "blocked"] as const;
 type Tab = (typeof tabs)[number];
 
-const statusBadge: Record<string, string> = {
-  active: "bg-emerald-50 text-emerald-700",
-  pending: "bg-amber-50 text-amber-800",
-  paused: "bg-gray-100 text-gray-600",
-  sold: "bg-sky-50 text-sky-700",
-  blocked: "bg-red-50 text-red-700",
+const statusBadge: Record<string, BadgeTone> = {
+  active: "success",
+  pending: "warning",
+  paused: "muted",
+  sold: "info",
+  blocked: "danger",
 };
 
 const primaryButton =
@@ -64,7 +67,7 @@ export function LoggedOut({ title }: { title?: string }) {
   const t = useTranslations("account.loggedOut");
   const { loading } = useAuth();
 
-  if (loading) return <div className="max-w-3xl mx-auto my-10 h-80 rounded-3xl bg-gray-50 animate-pulse" />;
+  if (loading) return <Skeleton className="max-w-3xl mx-auto my-10 h-80 rounded-3xl bg-gray-50" />;
 
   return (
     <div className="max-w-md mx-auto text-center py-20">
@@ -105,26 +108,19 @@ function ListingRow({
 
   return (
     <div className={`flex gap-4 p-3 rounded-2xl border border-gray-200 ${status === "active" ? "" : "bg-gray-50/60"}`}>
-      <div className="relative w-28 sm:w-36 aspect-[4/3] shrink-0 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
-        {listing.images[0] ? (
-          <Image
-            src={listing.images[0]}
-            alt={listing.title}
-            fill
-            sizes="144px"
-            className={`object-cover ${status === "active" ? "" : "grayscale opacity-70"}`}
-          />
-        ) : (
-          <DirectionsCarOutlinedIcon className="text-gray-300" />
-        )}
-      </div>
+      <CarPhoto
+        src={listing.images[0]}
+        alt={listing.title}
+        sizes="144px"
+        iconSize={24}
+        className="w-28 sm:w-36 shrink-0 rounded-xl"
+        imageClassName={status === "active" ? "" : "grayscale opacity-70"}
+      />
 
       <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${statusBadge[badge]}`}>
-              {t(`status.${badge}`)}
-            </span>
+            <Badge tone={statusBadge[badge]}>{t(`status.${badge}`)}</Badge>
             <span className="text-xs text-gray-500">{formatAgo(listing.postedMinutesAgo, locale)}</span>
           </div>
 
@@ -378,7 +374,7 @@ export default function AccountView() {
           {ownListings === undefined ? (
             <div className="space-y-3">
               {[0, 1].map((i) => (
-                <div key={i} className="h-28 rounded-2xl bg-gray-50 animate-pulse" />
+                <Skeleton key={i} className="h-28 rounded-2xl bg-gray-50" />
               ))}
             </div>
           ) : shown.length > 0 ? (
@@ -395,10 +391,7 @@ export default function AccountView() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-14 px-6 rounded-2xl border border-dashed border-gray-200">
-              <DirectionsCarOutlinedIcon sx={{ fontSize: 44 }} className="text-gray-300" />
-              <p className="text-gray-500 mt-2">{t(`listings.empty.${tab}`)}</p>
-            </div>
+            <EmptyState icon={DirectionsCarOutlinedIcon} text={t(`listings.empty.${tab}`)} />
           )}
         </section>
 
@@ -458,9 +451,7 @@ export default function AccountView() {
 
               <div className="flex flex-wrap gap-1.5 mt-4">
                 {dealer.brands.map((b) => (
-                  <span key={b} className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-700">
-                    {brands.find((brand) => brand.slug === b)?.name ?? b}
-                  </span>
+                  <Badge key={b}>{brands.find((brand) => brand.slug === b)?.name ?? b}</Badge>
                 ))}
               </div>
             </div>

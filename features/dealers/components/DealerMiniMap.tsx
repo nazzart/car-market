@@ -2,12 +2,13 @@
 
 import dynamic from "next/dynamic";
 
+import Skeleton from "@/components/ui/Skeleton";
 import { Dealer } from "@/features/dealers/types";
 
 // Leaflet работает только в браузере
 const DealersMap = dynamic(() => import("./DealersMap"), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-gray-100 animate-pulse" />,
+  loading: () => <Skeleton className="w-full h-full" />,
 });
 
 const noop = () => {};

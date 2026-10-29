@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 
+import EmptyState from "@/components/ui/EmptyState";
 import CarCard from "@/features/latest-cars/components/CarCard";
 
 import { FilterKey, chipLabel } from "../../config/filterOptions";
@@ -43,11 +44,7 @@ export default function EmptyResults({
 
   return (
     <div>
-      <div className="text-center py-12 px-6 rounded-2xl border border-dashed border-gray-200">
-        <SearchOffIcon sx={{ fontSize: 48 }} className="text-gray-300" />
-
-        <h3 className="text-lg font-semibold mt-3">{t("title")}</h3>
-        <p className="text-gray-500 mt-1">{relax.length > 0 ? t("relax") : t("text")}</p>
+      <EmptyState icon={SearchOffIcon} title={t("title")} text={relax.length > 0 ? t("relax") : t("text")}>
 
         {relax.length > 0 && (
           <div className="flex flex-wrap justify-center gap-2 mt-5">
@@ -72,7 +69,7 @@ export default function EmptyResults({
         >
           {tCommon("resetFilters")}
         </button>
-      </div>
+      </EmptyState>
 
       <h3 className="text-lg font-semibold tracking-tight mt-10 mb-5">{t("fresh")}</h3>
       <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 sm:gap-x-6 gap-y-8">

@@ -5,12 +5,14 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
+import Badge from "@/components/ui/Badge";
+import EmptyState from "@/components/ui/EmptyState";
 import { RiskFlag, riskFlags } from "@/features/moderation/riskFlags";
 import { BlockReason, approveListing } from "@/features/moderation/store";
 import { Link } from "@/i18n/navigation";
-import { cn, formatAgo, formatNumber, formatPrice } from "@/lib/utils";
+import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
-import { EmptyBox, Thumb, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
+import { Thumb, useAdminData, useListingAdmin, useModerationDialog } from "../shared";
 
 // Флаги, которые сами по себе — повод отклонить; остальные — просто подсказки
 const SERIOUS: RiskFlag[] = ["contactInText", "priceLow", "duplicate"];
@@ -29,7 +31,7 @@ export default function ApprovalsTab() {
 
   const pending = listings.filter((l) => statusKey(l.id) === "pending");
 
-  if (pending.length === 0) return <EmptyBox>{t("approvals.empty")}</EmptyBox>;
+  if (pending.length === 0) return <EmptyState text={t("approvals.empty")} />;
 
   return (
     <div className="space-y-3">
@@ -59,21 +61,16 @@ export default function ApprovalsTab() {
                 {/* автоматические проверки */}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {flags.length === 0 ? (
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-xs font-medium">
-                      {t("approvals.clean")}
-                    </span>
+                    <Badge tone="success">{t("approvals.clean")}</Badge>
                   ) : (
                     flags.map((f) => (
-                      <span
+                      <Badge
                         key={f}
-                        className={cn(
-                          "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium",
-                          SERIOUS.includes(f) ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-800"
-                        )}
+                        tone={SERIOUS.includes(f) ? "danger" : "warning"}
+                        icon={<WarningAmberIcon sx={{ fontSize: 13 }} />}
                       >
-                        <WarningAmberIcon sx={{ fontSize: 13 }} />
                         {t(`flags.${f}`)}
-                      </span>
+                      </Badge>
                     ))
                   )}
                 </div>

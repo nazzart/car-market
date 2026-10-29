@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
+import Badge from "@/components/ui/Badge";
 import { isFresh } from "@/features/cars/lib/isFresh";
 import { LogEntry, useModerationLog, useReports } from "@/features/moderation/store";
 import { useDealerVerified } from "@/features/moderation/visibility";
@@ -85,14 +86,9 @@ export default function OverviewTab({ onOpen }: { onOpen: (tab: AdminTab) => voi
             <ul className="divide-y divide-gray-100">
               {log.slice(0, 10).map((e) => (
                 <li key={`${e.at}-${e.listingId ?? e.account}-${e.action}`} className="py-2.5 flex items-center gap-3 text-sm">
-                  <span
-                    className={cn(
-                      "px-2 py-0.5 rounded-md text-xs font-medium shrink-0",
-                      isNegative(e.action) ? "bg-red-50 text-red-700" : "bg-gray-100 text-gray-700"
-                    )}
-                  >
+                  <Badge tone={isNegative(e.action) ? "danger" : "neutral"} className="shrink-0">
                     {t(`log.${e.action}`)}
-                  </span>
+                  </Badge>
                   <span className="min-w-0 flex-1 truncate text-gray-900">
                     {e.listingId ? listingTitle(e.listingId) : accountName(e.account)}
                   </span>

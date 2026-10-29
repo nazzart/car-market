@@ -25,7 +25,9 @@ import {
   sellerTypes,
   transmissions,
 } from "../../config/filterOptions";
-import { ChipGroup, FilterSection, Segmented, inputClass } from "./ui";
+import { ChipGroup, Segmented, inputClass } from "@/components/ui/form";
+
+import { FilterSection } from "./FilterSection";
 import LocationFilter from "./LocationFilter";
 
 const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));

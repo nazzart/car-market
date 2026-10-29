@@ -9,11 +9,13 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import ViewListIcon from "@mui/icons-material/ViewList";
 
+import Skeleton from "@/components/ui/Skeleton";
+import EmptyState from "@/components/ui/EmptyState";
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import { withQuery } from "@/lib/url";
 import Pagination from "@/components/ui/Pagination";
-import { Segmented, Select, inputClass } from "@/features/cars/car-list/components/ui";
+import { Segmented, Select, inputClass } from "@/components/ui/form";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
 import type { DealerSearchResult } from "../api";
@@ -23,7 +25,7 @@ import type { MapBounds } from "./DealersMap";
 // Leaflet работает только в браузере
 const DealersMap = dynamic(() => import("./DealersMap"), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-gray-100 animate-pulse" />,
+  loading: () => <Skeleton className="w-full h-full" />,
 });
 
 const dealerTypes = ["official", "used"];
@@ -226,15 +228,11 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
           </div>
 
           {visible.length === 0 ? (
-            <div className="text-center py-14 px-6 rounded-2xl border border-dashed border-gray-200">
-              <StorefrontOutlinedIcon sx={{ fontSize: 44 }} className="text-gray-300" />
-              <h3 className="font-semibold mt-3">{t("notFound")}</h3>
-              <p className="text-sm text-gray-500 mt-1">
-                {searchOnMove
-                  ? t("moveMap")
-                  : t("changeFilters")}
-              </p>
-            </div>
+            <EmptyState
+              icon={StorefrontOutlinedIcon}
+              title={t("notFound")}
+              text={searchOnMove ? t("moveMap") : t("changeFilters")}
+            />
           ) : (
             <div className="space-y-3">
               {visible.map((dealer) => (

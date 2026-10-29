@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 
+import type { BadgeTone } from "@/components/ui/Badge";
+import CarPhoto from "@/components/ui/CarPhoto";
 import { Listing } from "@/features/cars/types";
 import { useDealerCatalog, useDealerLookup } from "@/features/dealers/hooks";
 import {
@@ -30,15 +30,15 @@ export type StatusKey =
   | "pending"
   | "accountBlocked";
 
-export const statusTone: Record<StatusKey, string> = {
-  active: "bg-emerald-50 text-emerald-700",
-  paused: "bg-gray-100 text-gray-600",
-  sold: "bg-sky-50 text-sky-700",
-  deleted: "bg-gray-100 text-gray-500",
-  blocked: "bg-red-50 text-red-700",
-  removed: "bg-red-100 text-red-800",
-  pending: "bg-amber-50 text-amber-800",
-  accountBlocked: "bg-red-50 text-red-700",
+export const statusTone: Record<StatusKey, BadgeTone> = {
+  active: "success",
+  paused: "muted",
+  sold: "info",
+  deleted: "muted",
+  blocked: "danger",
+  removed: "dangerStrong",
+  pending: "warning",
+  accountBlocked: "danger",
 };
 
 export const minutesSince = (at: number) => Math.max(0, Math.round((Date.now() - at) / 60000));
@@ -140,29 +140,14 @@ export function useModerationDialog() {
 
 export function Thumb({ listing, muted }: { listing: Listing; muted?: boolean }) {
   return (
-    <div className="relative w-20 sm:w-24 aspect-[4/3] shrink-0 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-      {listing.images[0] ? (
-        <Image
-          src={listing.images[0]}
-          alt=""
-          fill
-          sizes="96px"
-          className={cn("object-cover", muted && "grayscale opacity-70")}
-        />
-      ) : (
-        <DirectionsCarOutlinedIcon className="text-gray-300" />
-      )}
-    </div>
-  );
-}
-
-export function Badge({ tone, children }: { tone: string; children: React.ReactNode }) {
-  return <span className={cn("px-2 py-0.5 rounded-md text-xs font-medium", tone)}>{children}</span>;
-}
-
-export function EmptyBox({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="text-center py-14 rounded-2xl border border-dashed border-gray-200 text-gray-500">{children}</div>
+    <CarPhoto
+      src={listing.images[0]}
+      alt=""
+      sizes="96px"
+      iconSize={24}
+      className="w-20 sm:w-24 shrink-0 rounded-lg"
+      imageClassName={cn(muted && "grayscale opacity-70")}
+    />
   );
 }
 

@@ -1,19 +1,20 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import Image from "next/image";
 import { Snackbar } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useLocale, useTranslations } from "next-intl";
 
+import EmptyState from "@/components/ui/EmptyState";
+import CarPhoto from "@/components/ui/CarPhoto";
+import Badge from "@/components/ui/Badge";
 import { openAuthModal, useAuth } from "@/features/auth/store";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
-import { inputClass } from "@/features/cars/car-list/components/ui";
+import { inputClass } from "@/components/ui/form";
 import { Listing } from "@/features/cars/types";
 import { useLatestListings, useListingsByIds } from "@/features/cars/hooks";
 import { useSpecLine } from "@/features/cars/lib/useSpecLine";
@@ -123,7 +124,7 @@ export default function FavoritesView() {
       </div>
 
       {!hydrated || loading || !ready || (entries.length > 0 && loaded === undefined) ? (
-        <Skeleton />
+        <FavoritesSkeleton />
       ) : !isLoggedIn ? (
         <>
           {/* Избранное хранится в аккаунте — гостю предлагаем войти */}
@@ -138,10 +139,10 @@ export default function FavoritesView() {
               {t("guest.login")}
             </button>
           </div>
-          <EmptyState />
+          <FavoritesEmpty />
         </>
       ) : entries.length === 0 ? (
-        <EmptyState />
+        <FavoritesEmpty />
       ) : (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -219,15 +220,7 @@ function FavoriteCard({
 
   return (
     <article className={`group ${cardClass} hover:border-gray-300 hover:shadow-lg hover:shadow-black/5 transition`}>
-      <div className="relative w-32 sm:w-44 aspect-[4/3] shrink-0 rounded-xl overflow-hidden bg-gray-100">
-        {image ? (
-          <Image src={image} alt={listing.title} fill sizes="176px" className="object-cover" />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-            <DirectionsCarOutlinedIcon sx={{ fontSize: 36 }} />
-          </div>
-        )}
-      </div>
+      <CarPhoto src={image} alt={listing.title} sizes="176px" className="w-32 sm:w-44 shrink-0 rounded-xl" />
 
       <div className="flex-1 min-w-0 flex flex-col">
         <div className="flex items-start justify-between gap-2">
@@ -254,10 +247,9 @@ function FavoriteCard({
         </div>
 
         {diff < 0 && (
-          <span className="self-start inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-xs font-medium">
-            <TrendingDownIcon sx={{ fontSize: 15 }} />
+          <Badge tone="success" icon={<TrendingDownIcon sx={{ fontSize: 15 }} />} className="self-start mt-1">
             {t("priceDropped", { amount: formatNumber(-diff) })}
-          </span>
+          </Badge>
         )}
 
         <div className="text-sm text-gray-500 mt-1 line-clamp-2">
@@ -286,9 +278,7 @@ function UnavailableCard({ onRemove }: { onRemove: () => void }) {
 
   return (
     <article className={`${cardClass} bg-gray-50`}>
-      <div className="w-32 sm:w-44 aspect-[4/3] shrink-0 rounded-xl bg-gray-100 flex items-center justify-center text-gray-300">
-        <DirectionsCarOutlinedIcon sx={{ fontSize: 36 }} />
-      </div>
+      <CarPhoto src={undefined} alt="" sizes="176px" className="w-32 sm:w-44 shrink-0 rounded-xl" />
 
       <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
         <div>
@@ -304,19 +294,20 @@ function UnavailableCard({ onRemove }: { onRemove: () => void }) {
 
 /* ---------- Пустое состояние и загрузка ---------- */
 
-function EmptyState() {
+function FavoritesEmpty() {
   const t = useTranslations("favorites");
   const { isPublic } = useVisibility();
   const suggested = (useLatestListings(6) ?? []).filter(isPublic).slice(0, 4);
 
   return (
     <div>
-      <div className="text-center py-12 px-6 rounded-3xl bg-gray-50">
-        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-white shadow-sm">
-          <FavoriteIcon className="text-primary" sx={{ fontSize: 30 }} />
-        </span>
-        <h2 className="text-xl font-semibold mt-4">{t("empty.title")}</h2>
-        <p className="text-gray-500 mt-2 max-w-md mx-auto">{t("empty.text")}</p>
+      <EmptyState
+        variant="hero"
+        icon={FavoriteIcon}
+        iconClassName="text-primary"
+        title={t("empty.title")}
+        text={t("empty.text")}
+      >
 
         <Link
           href="/cars"
@@ -329,7 +320,7 @@ function EmptyState() {
         <div className="mt-8 min-w-0 text-left sm:[&>div]:justify-center">
           <CollectionPills />
         </div>
-      </div>
+      </EmptyState>
 
       <h2 className="text-xl font-semibold tracking-tight mt-12 mb-5">{t("empty.suggested")}</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-8">
@@ -341,7 +332,7 @@ function EmptyState() {
   );
 }
 
-function Skeleton() {
+function FavoritesSkeleton() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {[0, 1, 2, 3].map((i) => (

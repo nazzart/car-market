@@ -5,6 +5,8 @@ import { Tooltip } from "@mui/material";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 import { useTranslations } from "next-intl";
 
+import Badge from "@/components/ui/Badge";
+
 import { DamageMap, damagePoints } from "../../config/damage";
 
 // Схема кузова «только для просмотра»: те же точки, что и в форме продажи.
@@ -98,12 +100,9 @@ export default function DamageReport({ damages }: { damages: DamageMap }) {
 
               <div className="flex flex-wrap gap-1 mt-1">
                 {damages[point.id].map((damage) => (
-                  <span
-                    key={damage}
-                    className="px-2 py-0.5 rounded-md bg-red-50 text-red-700 text-xs font-medium"
-                  >
+                  <Badge key={damage} tone="danger">
                     {damageLabel(damage)}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             </div>

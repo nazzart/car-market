@@ -183,7 +183,9 @@ export function generateListings(count: number, firstId: number, dealers: Omit<D
       noAccidents: r.chance(0.7),
       negotiable: r.chance(0.5),
       description: r.pick(DESCRIPTIONS),
-      views: r.int(5, 900),
+      // просмотры — с нуля: считаются по-настоящему (features/cars/api/views.ts). Число из генератора всё равно
+      // берём — иначе сдвинется последовательность случайных чисел и поменяются остальные демо-объявления
+      views: 0 * r.int(5, 900),
       serviceBook: r.chance(0.5),
       service: r.pick<ServiceState>(["recent", "recent", "partial", "required"]),
       overallCondition: r.pick<OverallCondition>(["excellent", "good", "good", "average", "repair"]),

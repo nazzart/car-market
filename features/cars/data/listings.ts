@@ -66,7 +66,6 @@ export const listings: DemoListing[] = [
       "head_up_display",
     ],
     sellerSince: 2019,
-    views: 412,
     images: ["/cars/bmw.jpg"],
   },
   {
@@ -111,7 +110,6 @@ export const listings: DemoListing[] = [
       "keyless",
     ],
     sellerSince: 2021,
-    views: 238,
     damages: {},
     images: bmwGallery,
   },
@@ -185,7 +183,6 @@ export const listings: DemoListing[] = [
       "electric_trunk",
     ],
     sellerSince: 2016,
-    views: 157,
     images: rotate(bmwGallery, 2),
   },
   {
@@ -226,7 +223,6 @@ export const listings: DemoListing[] = [
       "cruise",
     ],
     sellerSince: 2020,
-    views: 96,
     damages: {
       frontBumper: ["scratch"],
       leftRearDoor: ["paint"],
@@ -340,7 +336,6 @@ export const listings: DemoListing[] = [
     description:
       "Экономичный дизель с полным приводом. Проверен на нашем техническом центре, отчёт по диагностике предоставим. Возможен лизинг.",
     sellerSince: 2016,
-    views: 71,
     damages: {
       rightRearDoor: ["dent"],
     },
@@ -426,7 +421,6 @@ export const listings: DemoListing[] = [
     negotiable: true,
     description: "BMW 435i на механике — редкая комплектация. Машина живая, едет отлично.",
     sellerSince: 2023,
-    views: 58,
     damages: {
       hood: ["scratch", "dent"],
       rightFrontFender: ["paint"],

@@ -27,6 +27,8 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: "var(--radius-control)",
+          // поля всегда белые — и на светло-серой панели фильтров
+          backgroundColor: "#fff",
         },
       },
     },

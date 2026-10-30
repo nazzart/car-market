@@ -12,7 +12,7 @@ export const inputClass = `
   h-11
   px-3
   rounded-control
-  border border-gray-200
+  border border-gray-300
   bg-white
   text-sm text-gray-900
   placeholder:text-gray-500
@@ -103,7 +103,7 @@ export function ChipGroup({
               ${
                 active
                   ? "bg-gray-900 border-gray-900 text-white"
-                  : "border-gray-200 text-gray-700 hover:border-gray-900"
+                  : "bg-white border-gray-200 text-gray-700 hover:border-gray-900"
               }
             `}
           >
@@ -132,7 +132,7 @@ export function Segmented({
   const all = [{ label: anyLabel, value: "" }, ...options];
 
   return (
-    <div className="flex p-1 rounded-xl bg-gray-100">
+    <div className="flex p-1 rounded-xl bg-gray-900/5">
       {all.map((o) => {
         const active = value === o.value;
 

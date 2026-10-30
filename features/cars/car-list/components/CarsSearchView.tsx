@@ -132,10 +132,11 @@ function SearchView({ result, pageSize, empty, pending, dealerName }: SearchView
       <div className="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-8 items-start">
         {/* Sidebar (desktop) */}
 
+        {/* светло-серая панель — «инструменты» отделены от белых карточек; поля и чипы внутри белые */}
         <aside
           ref={sidebarRef}
-          className="hidden lg:flex flex-col sticky top-20 max-h-[calc(100vh-6rem)] rounded-panel border border-gray-200 bg-white shadow-sm overflow-hidden">
-          <div className="shrink-0 flex items-center justify-between gap-3 px-5 h-14 border-b border-gray-100">
+          className="hidden lg:flex flex-col sticky top-20 max-h-[calc(100vh-6rem)] rounded-panel border border-gray-200 bg-gray-100 overflow-hidden">
+          <div className="shrink-0 flex items-center justify-between gap-3 px-5 h-14 border-b border-gray-200">
             <h2 className="flex items-center gap-2 text-base font-semibold">
               <TuneIcon fontSize="small" />
               {t("filters")}
@@ -153,7 +154,7 @@ function SearchView({ result, pageSize, empty, pending, dealerName }: SearchView
             )}
           </div>
 
-          <ScrollArea moreLabel={t("moreFilters")} className="px-5">
+          <ScrollArea moreLabel={t("moreFilters")} className="px-5" fadeClassName="from-gray-100">
             <FiltersPanel />
           </ScrollArea>
         </aside>

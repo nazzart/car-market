@@ -101,7 +101,7 @@ function FlagChip({ name }: FlagChipProps) {
       aria-pressed={on}
       onClick={() => updateFilter(name, on ? null : "1")}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm transition cursor-pointer ${
-        on ? "bg-gray-900 border-gray-900 text-white" : "border-gray-200 text-gray-700 hover:border-gray-900"
+        on ? "bg-gray-900 border-gray-900 text-white" : "bg-white border-gray-200 text-gray-700 hover:border-gray-900"
       }`}
     >
       {on && <CheckIcon sx={{ fontSize: 15 }} />}
@@ -238,7 +238,7 @@ export default function FiltersPanel() {
           type="button"
           onClick={() => setShowAdvanced(!advancedOpen)}
           aria-expanded={advancedOpen}
-          className="w-full flex items-center justify-between gap-2 h-11 px-4 rounded-xl bg-gray-50 hover:bg-gray-100 text-sm font-semibold text-gray-900 transition cursor-pointer"
+          className="w-full flex items-center justify-between gap-2 h-11 px-4 rounded-xl border border-gray-200 bg-white hover:border-gray-300 text-sm font-semibold text-gray-900 transition cursor-pointer"
         >
           <span className="flex items-center gap-2">
             {t("advanced")}
@@ -253,7 +253,7 @@ export default function FiltersPanel() {
       </div>
 
       {advancedOpen && (
-        <div className="border-t border-gray-100">
+        <div className="border-t border-gray-900/10">
           <FilterSection title={t("power")} active={isActive(["powerFrom", "powerTo"])}>
             <RangeInputs fromKey="powerFrom" toKey="powerTo" unit={t("unitHp")} grouped={false} />
           </FilterSection>

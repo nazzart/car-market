@@ -151,7 +151,7 @@ export function ChipSelect({
                         ? "bg-gray-900 border-gray-900 text-white"
                         : isError
                         ? "border-error/50 text-gray-700 hover:border-gray-900"
-                        : "border-gray-200 text-gray-700 hover:border-gray-900"
+                        : "bg-white border-gray-200 text-gray-700 hover:border-gray-900"
                     }
                   `}
                 >

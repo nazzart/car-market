@@ -14,7 +14,7 @@ export function FilterSection({
   children,
 }: FilterSectionProps) {
   return (
-    <div className="py-5 border-b border-gray-100 last:border-b-0">
+    <div className="py-5 border-b border-gray-900/10 last:border-b-0">
       <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-3">
         {title}
         {active && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}

@@ -48,7 +48,7 @@ export default function Pagination({
   const arrow = (target: number, label: string, icon: React.ReactNode, show: boolean) =>
     show ? (
       <Link href={href(target)} rel={target < page ? "prev" : "next"} aria-label={label} title={label}
-        className={cn(itemClass, "text-gray-700 hover:bg-gray-100")}>
+        className={cn(itemClass, "text-gray-700 hover:bg-gray-900/5")}>
         {icon}
       </Link>
     ) : (
@@ -73,7 +73,7 @@ export default function Pagination({
               href={href(p)}
               aria-label={t("page", { page: p })}
               aria-current={p === page ? "page" : undefined}
-              className={cn(itemClass, p === page ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-100")}
+              className={cn(itemClass, p === page ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-900/5")}
             >
               {p}
             </Link>

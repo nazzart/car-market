@@ -9,11 +9,12 @@ type ScrollAreaProps = {
   children: React.ReactNode;
   className?: string;
   moreLabel: string; // подпись кнопки «Ещё фильтры»
+  fadeClassName?: string; // цвет затемнения снизу — под фон панели (from-white, from-gray-50)
 };
 
-// Прокручиваемая область с подсказками: тень сверху, затемнение снизу и кнопка «ещё»,
-// пока ниже есть скрытое содержимое
-export default function ScrollArea({ children, className, moreLabel }: ScrollAreaProps) {
+// Прокручиваемая область с подсказками: тень сверху, затемнение снизу и кнопка «ещё» в подвале,
+// пока ниже есть скрытое содержимое. Кнопка не лежит поверх фильтров, чтобы их не закрывать
+export default function ScrollArea({ children, className, moreLabel, fadeClassName = "from-white" }: ScrollAreaProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ top: false, bottom: false });
 
@@ -57,26 +58,23 @@ export default function ScrollArea({ children, className, moreLabel }: ScrollAre
         )}
       />
 
-      {/* затемнение и кнопка внизу — ниже есть ещё фильтры */}
-      <div
-        className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-0 h-20 flex items-end justify-center pb-3 bg-gradient-to-t from-white via-white/80 to-transparent transition-opacity",
-          edges.bottom ? "opacity-100" : "opacity-0"
-        )}
-      >
-        <button
-          type="button"
-          onClick={scrollMore}
-          tabIndex={edges.bottom ? 0 : -1}
-          className={cn(
-            "inline-flex items-center gap-1 h-8 pl-3.5 pr-2.5 rounded-full bg-gray-900 text-white text-xs font-medium shadow-lg hover:bg-black transition cursor-pointer",
-            edges.bottom && "pointer-events-auto"
-          )}
-        >
-          {moreLabel}
-          <KeyboardArrowDownIcon sx={{ fontSize: 18 }} className="animate-bounce-subtle" />
-        </button>
-      </div>
+      {/* ниже есть ещё фильтры: мягкое затемнение над подвалом и кнопка в подвале */}
+      {edges.bottom && (
+        <>
+          <div
+            aria-hidden
+            className={cn("pointer-events-none absolute inset-x-0 bottom-11 h-8 bg-gradient-to-t to-transparent", fadeClassName)}
+          />
+          <button
+            type="button"
+            onClick={scrollMore}
+            className="shrink-0 flex items-center justify-center gap-1 h-11 border-t border-gray-900/10 text-sm font-medium text-gray-700 hover:text-black hover:bg-gray-900/5 transition cursor-pointer"
+          >
+            {moreLabel}
+            <KeyboardArrowDownIcon sx={{ fontSize: 18 }} className="animate-bounce-subtle" />
+          </button>
+        </>
+      )}
     </div>
   );
 }

@@ -65,7 +65,7 @@ type SearchSelectProps = {
 
 // Каждое введённое слово — начало слова в названии: «to» → Toyota (а не Aston Martin), «rover» → Land Rover
 const words = (text: string) => foldText(text).split(/[\s\-./]+/).filter(Boolean);
-const matches = (option: GroupedOption, query: string) => {
+export const matchesQuery = (option: SelectOption, query: string) => {
   const optionWords = words(`${option.label} ${option.keywords ?? ""}`);
   return words(query).every((q) => optionWords.some((w) => w.startsWith(q)));
 };
@@ -106,8 +106,8 @@ export default function SearchSelect({
       // пока ищут — без «популярных», иначе одна марка показывается дважды
       filterOptions={(list, state) =>
         searching(state.inputValue)
-          ? list.filter((o) => (!grouped || o.group === allLabel) && matches(o, state.inputValue))
-          : list
+          ? list.filter((o) => (!grouped || o.group === allLabel) && matchesQuery(o, state.inputValue))
+          : list.filter((o) => !o.searchOnly || o.value === value)
       }
       renderGroup={(group) => (
         <li key={group.key}>

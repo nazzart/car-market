@@ -112,6 +112,8 @@ export const dealers = pgTable("dealers", {
   reviews: integer(),
   since: integer().notNull(),
   description: text(),
+  // показывать ли в объявлениях имя и должность контактного лица (звонки всё равно идут на его телефон)
+  showContactPerson: boolean().notNull().default(true),
   ...blockColumns(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 },

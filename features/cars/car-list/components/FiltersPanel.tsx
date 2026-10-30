@@ -9,6 +9,7 @@ import type { Brand } from "@/features/catalog/types";
 import { useListingStats } from "@/features/cars/hooks";
 import SearchSelect from "@/components/ui/SearchSelect";
 import { formatNumber } from "@/lib/utils";
+import { modelOptions, modelValue, parseModelValue } from "@/features/cars/lib/modelOptions";
 import type { FilterModel } from "@/features/cars/types";
 import CheckIcon from "@mui/icons-material/Check";
 import { carColors } from "../../config/colors";
@@ -143,20 +144,11 @@ export default function FiltersPanel({ models: brandModels = [] }: FiltersPanelP
 
   // Модели и под каждой — её версии из объявлений, которые есть сейчас: «5 Series» → «530», «540».
   // Выбор версии — сразу модель и версия (?model=5 Series&version=530)
-  const models = brandModels.flatMap(({ name: model, versions }) => [
-    { value: model, label: model, count: byModel[brand]?.[model] },
-    ...versions.map(({ value, count }) => ({
-      value: `${model}|${value}`,
-      label: value,
-      fullLabel: `${model} · ${value}`,
-      keywords: model,
-      count,
-      indent: true,
-    })),
-  ]);
-  const modelValue = [get("model"), get("version")].filter(Boolean).join("|");
+  // Точные версии («530d») находятся вводом в поле
+  const selectedModel = modelValue(get("model"), get("version"));
+  const models = modelOptions(brandModels, (model) => byModel[brand]?.[model], selectedModel);
   const pickModel = (value: string) => {
-    const [model, version] = value.split("|");
+    const { model, version } = parseModelValue(value);
     updateFilters({ model: model || null, version: version || null });
   };
 
@@ -190,7 +182,7 @@ export default function FiltersPanel({ models: brandModels = [] }: FiltersPanelP
             label={t("model")}
             placeholder={brand ? t("anyModel") : t("brandFirst")}
             options={models}
-            value={modelValue}
+            value={selectedModel}
             onChange={pickModel}
             disabled={!brand || models.length === 0}
           />

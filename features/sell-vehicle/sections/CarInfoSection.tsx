@@ -264,7 +264,7 @@ export function CarInfoSection({
                   }
                 }}
                 error={!validateField(data.leasingMonthly, getRules("leasingMonthly"))}
-                InputProps={{ endAdornment: <InputAdornment position="end">{t("leasing.unitMonthly")}</InputAdornment> }}
+                InputProps={{ endAdornment: <InputAdornment position="end">€</InputAdornment> }}
                 inputProps={{ min: 1 }}
               />
               {showTerms && (

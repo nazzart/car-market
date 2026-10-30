@@ -71,6 +71,13 @@
       "when": 1793373565481,
       "tag": "0009_listing_leasing",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793375717264,
+      "tag": "0010_dealer_show_contact_person",
+      "breakpoints": true
     }
   ]
 }

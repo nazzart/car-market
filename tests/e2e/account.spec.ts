@@ -71,3 +71,29 @@ test("company registration with a taken registration number shows a clear error"
   await expect(other.getByRole("dialog").getByText(/jau ir reģistrēts/)).toBeVisible();
   await other.context().close();
 });
+
+// Дилер решает, показывать ли контактное лицо в объявлениях: переключатель сохраняется вместе со страницей дилера
+test("company settings: hide the contact person on listings", async ({ page }) => {
+  await register(page, "company", { name: "QA E2E Kontakti", email: qaEmail("contacts"), regNumber: qaRegNumber() });
+  await page.goto("/account/profile");
+
+  const toggle = page.getByRole("switch", { name: /Rādīt kontaktpersonu sludinājumos/ });
+  await expect(toggle).toHaveCount(0); // без контактных лиц переключателя нет
+
+  await page.locator('input[type="tel"]').first().fill("+371 2000 9999");
+  await page.getByLabel(/Adrese un pilsēta/).fill("Brīvības iela 100, Rīga");
+  await page.keyboard.press("Escape");
+
+  await page.getByRole("button", { name: "Pievienot kontaktpersonu" }).click();
+  await page.getByLabel("Vārds, uzvārds").fill("Qa Konsultants");
+  await page.getByRole("textbox", { name: "Tālrunis", exact: true }).last().fill("+371 2000 8888");
+  await page.getByRole("button", { name: "Pievienot", exact: true }).click();
+
+  await expect(toggle).toBeChecked(); // по умолчанию — показывать
+  await toggle.click();
+  await page.getByRole("button", { name: "Saglabāt", exact: true }).click();
+  await expect(page.locator(".MuiSnackbar-root")).toContainText("Izmaiņas saglabātas");
+
+  await page.reload();
+  await expect(toggle).not.toBeChecked();
+});

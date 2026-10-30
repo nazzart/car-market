@@ -34,6 +34,7 @@ const listingColumns = {
   contactPhone: dealerContacts.phone,
   contactName: dealerContacts.name,
   contactRole: dealerContacts.role,
+  showContactPerson: dealers.showContactPerson,
   blockedReason: sql<BlockReason | null>`coalesce(${dealers.blockedReason}, ${profiles.blockedReason})`,
   blockedNote: sql<string | null>`coalesce(${dealers.blockedNote}, ${profiles.blockedNote})`,
   blockedAt: sql<string | null>`coalesce(${dealers.blockedAt}, ${profiles.blockedAt})`,
@@ -65,6 +66,7 @@ export function toListing({
   contactPhone,
   contactName,
   contactRole,
+  showContactPerson,
   sellerName,
   phone,
   postedAt,
@@ -89,7 +91,8 @@ export function toListing({
     ...(dealerSlug ? { dealer: dealerSlug, dealerVerified: Boolean(dealerVerified) } : {}),
     ...(name ? { sellerName: name } : {}),
     phone: contactPhone ?? dealerPhone ?? phone ?? "",
-    ...(contactName ? { contactPerson: { name: contactName, ...(contactRole ? { role: contactRole } : {}) } } : {}),
+    // дилер может скрыть контактное лицо — телефон остаётся его
+    ...(contactName && showContactPerson ? { contactPerson: { name: contactName, ...(contactRole ? { role: contactRole } : {}) } } : {}),
     engine,
     postedMinutesAgo: Math.max(0, Math.round((Date.now() - time(postedAt)) / 60_000)),
     ...(moderationStatus && moderationReason

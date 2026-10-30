@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Switch } from "@mui/material";
 import { useTranslations } from "next-intl";
 
 import Skeleton from "@/components/ui/Skeleton";
@@ -41,6 +42,7 @@ const initialForm = (user: User, dealer: Dealer): DealerForm => ({
   lng: dealer.lng,
   hours: dealer.hours,
   contacts: dealer.contacts ?? [],
+  showContactPerson: dealer.showContactPerson !== false,
   reassign: {},
 });
 
@@ -107,6 +109,7 @@ function DealerSettingsForm({ user, dealer }: DealerSettingsFormProps) {
           lng: form.lng,
           hours: form.hours,
           contacts: form.contacts,
+          showContactPerson: form.showContactPerson,
           reassign: form.reassign,
         });
         if ("error" in result) return result.error === "regTaken" ? tErrors("regTaken") : false;
@@ -142,6 +145,19 @@ function DealerSettingsForm({ user, dealer }: DealerSettingsFormProps) {
             usage={contactUsage}
             onReassign={(fromId, toId) => set("reassign")({ ...form.reassign, [fromId]: toId })}
           />
+          {form.contacts.length > 0 && (
+            <label className="flex items-start gap-2 mt-5 pt-5 border-t border-gray-100 cursor-pointer select-none">
+              <Switch
+                checked={form.showContactPerson}
+                onChange={(e) => set("showContactPerson")(e.target.checked)}
+                className="-mt-1.5 -ml-2"
+              />
+              <span>
+                <span className="block text-sm font-medium text-gray-900">{t("contacts.persons.showOnListings")}</span>
+                <span className="block text-sm text-gray-500">{t("contacts.persons.showOnListingsHint")}</span>
+              </span>
+            </label>
+          )}
         </SettingsCard>
 
         <SettingsCard title={t("hours.title")} description={t("hours.description")}>

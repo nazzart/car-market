@@ -19,6 +19,7 @@ export type DealerForm = {
   lat: number;
   lng: number;
   hours: OpeningHours;
+  showContactPerson: boolean;
   contacts: DealerContact[];
   reassign: Record<string, string>; // «контакт → кому передать его объявления» — применяется при сохранении
 };

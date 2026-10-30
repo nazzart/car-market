@@ -10,12 +10,12 @@ import {
   type Params,
   countListings,
   getLatestListings,
-  getBrandVersions,
+  getFilterModels,
   relaxSuggestions,
   searchListings,
 } from "@/features/cars/api";
 import { collections } from "@/features/collections/config";
-import { getBrandModels, getBrandName } from "@/features/catalog/api";
+import { getBrandName } from "@/features/catalog/api";
 import { getDealer } from "@/features/dealers/api";
 import { searchTitle } from "@/features/cars/lib/version";
 
@@ -72,14 +72,12 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
   const params = await toParams(searchParams);
   const dealerSlug = params.get("dealer");
   const brand = params.get("brand");
-  const [result, dealer, catalog, versions] = await Promise.all([
+  const [result, dealer, models] = await Promise.all([
     searchListings(params),
     dealerSlug ? getDealer(dealerSlug) : undefined,
     // модели выбранной марки из каталога и под каждой — версии из объявлений
-    brand ? getBrandModels(brand) : undefined,
-    brand ? getBrandVersions(brand) : undefined,
+    brand ? getFilterModels(brand) : undefined,
   ]);
-  const models = catalog?.map(({ name }) => ({ name, versions: versions?.[name] ?? [] }));
 
   // ничего не нашлось — подсказки, какой фильтр убрать, и свежие объявления
   const empty =

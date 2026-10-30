@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import Button from "@/components/ui/Button";
+import { matchesQuery } from "@/components/ui/SearchSelect";
+import type { SelectOption } from "@/components/ui/types";
 import { useBrands } from "@/features/catalog/hooks";
 import { useListingStats } from "@/features/cars/hooks";
+import { modelValue, parseModelValue } from "@/features/cars/lib/modelOptions";
 import { formatNumber } from "@/lib/utils";
 
 import type { QuickSearchState } from "./useQuickSearch";
@@ -74,25 +78,108 @@ export function BrandPanel({ search }: BrandPanelProps) {
 
 type ModelPanelProps = { search: QuickSearchState; brandName: string };
 
+// Модели и под каждой — версии чипами («530», «540»). Поиск находит и точные версии каталога: «530d» → 5 Series · 530d
 export function ModelPanel({ search, brandName }: ModelPanelProps) {
   const t = useTranslations("search");
   const { filters, models, pick } = search;
+  const [query, setQuery] = useState("");
+
+  const selected = modelValue(filters.model, filters.version);
+  const choose = (value: string) => pick(parseModelValue(value));
+
+  const searching = query.trim() !== "";
+  const found = searching ? models.filter((o) => matchesQuery(o, query)) : [];
+
+  // модель → её версии, без точных версий (кроме выбранной)
+  const groups: { model: SelectOption; versions: SelectOption[] }[] = [];
+  for (const option of models) {
+    if (!option.indent) groups.push({ model: option, versions: [] });
+    else if (!option.searchOnly || option.value === selected) groups.at(-1)?.versions.push(option);
+  }
+
+  // пример версии этой марки — подсказка, что искать можно и по ней: точная версия самой частой группы («120» → «120d»)
+  const top = models.filter((o) => o.indent && o.count).sort((a, b) => b.count! - a.count!)[0];
+  const example = (top && models.find((o) => o.searchOnly && o.value.startsWith(top.value)))?.label ?? top?.label;
 
   return (
     <div>
       <div className="text-xs font-semibold text-gray-500 mb-2 px-1">{t("modelsOf", { brand: brandName })}</div>
+      <input
+        autoFocus
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && found[0]) {
+            e.preventDefault();
+            choose(found[0].value);
+          }
+        }}
+        placeholder={example ? t("findModelExample", { example }) : t("findModel")}
+        aria-label={t("findModel")}
+        className={panelInputClass}
+      />
 
-      <div className="grid grid-cols-2 gap-1 max-h-80 overflow-y-auto">
-        <OptionButton selected={!filters.model} onClick={() => pick({ model: "" })}>
-          {t("any")}
-        </OptionButton>
-        {models.map((m) => (
-          <OptionButton key={m} selected={filters.model === m} onClick={() => pick({ model: m })}>
-            {m}
-          </OptionButton>
-        ))}
+      <div className="mt-2 max-h-80 overflow-y-auto flex flex-col">
+        {searching ? (
+          found.map((o) => (
+            <OptionButton key={o.value} selected={o.value === selected} onClick={() => choose(o.value)}>
+              <span>{o.fullLabel ?? o.label}</span>
+              <Count value={o.count} selected={o.value === selected} />
+            </OptionButton>
+          ))
+        ) : (
+          <>
+            <OptionButton selected={!filters.model} onClick={() => choose("")}>
+              {t("anyModel")}
+            </OptionButton>
+
+            {groups.map(({ model, versions }) => (
+              <div key={model.value}>
+                <OptionButton selected={model.value === selected} onClick={() => choose(model.value)}>
+                  <span>{model.label}</span>
+                  <Count value={model.count} selected={model.value === selected} />
+                </OptionButton>
+
+                {versions.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pl-3 pr-1 pt-1 pb-2">
+                    {versions.map((v) => {
+                      const on = v.value === selected;
+                      return (
+                        <button
+                          key={v.value}
+                          type="button"
+                          onClick={() => choose(v.value)}
+                          aria-pressed={on}
+                          aria-label={v.fullLabel}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-medium transition cursor-pointer ${
+                            on ? "bg-gray-900 border-gray-900 text-white" : "border-gray-200 text-gray-700 hover:border-gray-900"
+                          }`}
+                        >
+                          {v.label}
+                          {v.count ? <span className={`tabular-nums ${on ? "text-white/70" : "text-gray-400"}`}>{v.count}</span> : null}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
+          </>
+        )}
+
+        {searching && found.length === 0 && <p className="text-sm text-gray-500 text-center py-6">{t("nothingFound")}</p>}
       </div>
     </div>
+  );
+}
+
+type CountProps = { value?: number; selected: boolean };
+
+function Count({ value, selected }: CountProps) {
+  return (
+    <span className={`text-xs tabular-nums ${selected ? "text-white/70" : "text-gray-500"}`}>
+      {value ? formatNumber(value) : null}
+    </span>
   );
 }
 

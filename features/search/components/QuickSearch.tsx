@@ -122,12 +122,12 @@ export default function QuickSearch() {
             <Segment
               segmentRef={modelRef}
               label={t("model")}
-              value={filters.model}
+              value={filters.version ? `${filters.model} · ${filters.version}` : filters.model}
               placeholder={filters.brand ? t("anyModel") : t("brandFirst")}
               active={panel === "model"}
               disabled={!filters.brand || models.length === 0}
               onOpen={(el) => openPanel("model", el)}
-              onClear={() => set({ model: "" })}
+              onClear={() => set({ model: "", version: "" })}
             />
 
             <SegmentDivider />

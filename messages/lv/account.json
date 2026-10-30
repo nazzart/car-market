@@ -115,7 +115,9 @@
         "removeTitle": "Dzēst kontaktpersonu {name}?",
         "removeText": "Šai personai piesaistīti {count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}}. Kam tos nodot?",
         "reassignTo": "Nodot sludinājumus",
-        "removeConfirm": "Dzēst un nodot"
+        "removeConfirm": "Dzēst un nodot",
+        "showOnListings": "Rādīt kontaktpersonu sludinājumos",
+        "showOnListingsHint": "Vārds un amats pie tālruņa. Ja izslēgts, pircēji redzēs tikai tālruni — zvani joprojām nonāks pie norādītās personas."
       }
     },
     "location": {

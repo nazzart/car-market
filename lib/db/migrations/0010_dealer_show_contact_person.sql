@@ -1,0 +1,1 @@
+ALTER TABLE "dealers" ADD COLUMN "show_contact_person" boolean DEFAULT true NOT NULL;

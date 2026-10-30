@@ -54,6 +54,7 @@ export type DealerFields = {
   lat: number;
   lng: number;
   hours: OpeningHours;
+  showContactPerson: boolean;
   contacts: DealerContact[];
   reassign: Record<string, string>; // удалённый контакт → кому передать его объявления ("company" — основной телефон)
 };

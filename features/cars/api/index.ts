@@ -5,12 +5,13 @@ import "server-only";
 
 import { and, count, desc, eq, inArray, isNotNull, ne, or, sql } from "drizzle-orm";
 
+import { getBrandModels } from "@/features/catalog/api";
 import { collections } from "@/features/collections/config";
 import { db, schema } from "@/lib/db";
 import { isListingId } from "@/lib/validate";
 
 import { versionGroup } from "../lib/version";
-import type { Listing, ListingStats, VersionsByModel } from "../types";
+import type { FilterModel, Listing, ListingStats } from "../types";
 
 import { cached, forPublic, inCollection, newestFirst, ofDealer, published, selectListings, toListing } from "./rows";
 
@@ -95,8 +96,10 @@ const versionsQuery = cached(async (brand: string) => {
 }, "versions");
 const versionOrder = new Intl.Collator("en", { numeric: true });
 
-export async function getBrandVersions(brand: string): Promise<VersionsByModel> {
-  return versionsQuery(brand);
+// Модели марки из каталога и под каждой — группы версий из объявлений (список «Modelis» в /cars и на главной)
+export async function getFilterModels(brand: string): Promise<FilterModel[]> {
+  const [catalog, versions] = await Promise.all([getBrandModels(brand), versionsQuery(brand)]);
+  return catalog.map(({ name, versions: catalogVersions }) => ({ name, versions: versions[name] ?? [], catalogVersions }));
 }
 
 /* ---------- Отдельные объявления и подборки ---------- */

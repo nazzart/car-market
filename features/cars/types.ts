@@ -93,5 +93,6 @@ export type SectionNavItem = { id: string; label: string };
 // Версии в списке моделей /cars: группа («530») и сколько опубликованных объявлений; по моделям марки
 export type VersionCount = { value: string; count: number };
 export type VersionsByModel = Record<string, VersionCount[]>;
-// Модель в фильтре /cars: из каталога, с группами версий из объявлений
-export type FilterModel = { name: string; versions: VersionCount[] };
+// Модель в фильтре /cars и быстром поиске на главной: из каталога, с группами версий из объявлений.
+// catalogVersions — точные версии каталога («530d», «530d xDrive»): их предлагает поиск по вводу
+export type FilterModel = { name: string; versions: VersionCount[]; catalogVersions: string[] };

@@ -8,9 +8,10 @@ import { useServerData } from "@/lib/useServerData";
 import {
   countSearch,
   loadLatestListings,
+  loadFilterModels,
   loadListingsByIds,
 } from "./actions";
-import type { Listing, ListingStats } from "./types";
+import type { FilterModel, Listing, ListingStats } from "./types";
 
 // Сколько опубликованных объявлений: всего, по маркам, моделям и подборкам
 export function useListingStats(): ListingStats {
@@ -32,4 +33,10 @@ export function useLatestListings(limit: number): Listing[] | undefined {
 export function useSearchCount(query: Record<string, string>): number | undefined {
   const key = JSON.stringify(Object.entries(query).filter(([, v]) => v).sort());
   return useServerData(`count:${key}`, () => countSearch(query));
+}
+
+// Модели марки с версиями (быстрый поиск на главной). undefined — ещё загружаются; без марки — пустой список
+export function useFilterModels(brand: string): FilterModel[] | undefined {
+  const data = useServerData(brand ? `filterModels:${brand}` : null, () => loadFilterModels(brand), { ttl: 10 * 60_000, keepPrevious: false });
+  return brand ? data : [];
 }

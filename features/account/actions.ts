@@ -112,6 +112,7 @@ export async function saveDealerProfile(input: DealerFields & { email: string })
     lat: Number(input?.lat),
     lng: Number(input?.lng),
     hours: validHours(input?.hours) ? input.hours : {},
+    showContactPerson: input?.showContactPerson !== false,
     contacts: contacts ?? [],
     reassign: typeof input?.reassign === "object" && input.reassign ? input.reassign : {},
   };

@@ -10,7 +10,7 @@ test("home quick search shows a count and opens /cars with the filter", async ({
   await page.locator("form button[type=button]").first().click(); // «Marka»
   await page.getByRole("presentation").getByRole("button", { name: /^BMW/ }).click();
   // после марки сразу открывается выбор модели — «любая» модель закрывает панель
-  await page.getByRole("presentation").getByRole("button", { name: "Jebkurš", exact: true }).click();
+  await page.getByRole("presentation").getByRole("button", { name: "Jebkurš modelis", exact: true }).click();
   await expect(submit).toContainText(/Rādīt \d+/);
   await submit.click();
   await expect(page).toHaveURL(/\/cars\?.*brand=bmw/);

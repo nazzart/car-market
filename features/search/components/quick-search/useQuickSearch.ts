@@ -2,26 +2,26 @@
 
 import { useRef, useState } from "react";
 
-import { useBrandModels } from "@/features/catalog/hooks";
-import { useListingStats, useSearchCount } from "@/features/cars/hooks";
+import { useFilterModels, useListingStats, useSearchCount } from "@/features/cars/hooks";
+import { modelOptions, modelValue } from "@/features/cars/lib/modelOptions";
 import { withQuery } from "@/lib/url";
 import { useDebouncedValue } from "@/lib/useDebounced";
 
 export type Panel = "brand" | "model" | "price" | "year";
 
-const emptyFilters = { condition: "", brand: "", model: "", priceFrom: "", priceTo: "", yearFrom: "" };
+const emptyFilters = { condition: "", brand: "", model: "", version: "", priceFrom: "", priceTo: "", yearFrom: "" };
 export type QuickFilters = typeof emptyFilters;
 
 // Состояние быстрого поиска на главной: фильтры, открытая панель и число подходящих объявлений
 export function useQuickSearch() {
-  const { total } = useListingStats();
+  const { total, byModel } = useListingStats();
   const modelRef = useRef<HTMLDivElement>(null);
 
   const [filters, setFilters] = useState(emptyFilters);
   const [panel, setPanel] = useState<Panel | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [brandQuery, setBrandQuery] = useState("");
-  const catalog = useBrandModels(filters.brand);
+  const brandModels = useFilterModels(filters.brand);
 
   const set = (changes: Partial<QuickFilters>) => setFilters((prev) => ({ ...prev, ...changes }));
 
@@ -44,7 +44,7 @@ export function useQuickSearch() {
   };
 
   const selectBrand = (slug: string) => {
-    set({ brand: slug, model: "" });
+    set({ brand: slug, model: "", version: "" });
     setBrandQuery("");
     // сразу предлагаем выбрать модель
     if (slug && modelRef.current) openPanel("model", modelRef.current);
@@ -69,7 +69,8 @@ export function useQuickSearch() {
     brandQuery,
     setBrandQuery,
     modelRef,
-    models: catalog?.map((m) => m.name) ?? [],
+    // модели и версии одним списком: «5 Series», «5 Series · 530»; точные «530d» — по вводу
+    models: modelOptions(brandModels ?? [], (model) => byModel[filters.brand]?.[model], modelValue(filters.model, filters.version)),
     count,
     total,
     href: withQuery("/cars", "", filters),

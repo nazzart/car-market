@@ -36,6 +36,7 @@ export type Dealer = {
   carsInStock: number;
   since: number; // на сайте с
   description?: string;
+  showContactPerson?: boolean; // false — имя и должность контактного лица в объявлениях скрыты
   blocked?: AccountBlock; // модератор заблокировал компанию: страница и объявления скрыты
 };
 

@@ -67,7 +67,8 @@ test("cars filter: a version picked under its model in the model list", async ({
 // «BMW 530» — ввести в поле модели
 test("cars filter: typing 530 in the model list filters BMW 530 directly", async ({ page }) => {
   await page.goto("/cars?brand=bmw");
-  const option = page.getByRole("option", { name: /^5 Series · 530/ });
+  // группа «530» (число объявлений — в конце названия); точные «530d», «530e» — отдельными вариантами ниже
+  const option = page.getByRole("option", { name: /^5 Series · 530( \d+)?$/ });
   // ввод до гидратации React сбрасывает — повторяем, пока не появится вариант
   await expect(async () => {
     await page.locator("aside").getByRole("combobox", { name: "Modelis" }).fill("530");
@@ -78,4 +79,25 @@ test("cars filter: typing 530 in the model list filters BMW 530 directly", async
   await expect(page).toHaveURL(/version=530/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("BMW 530");
   for (const title of await page.locator("main article h3").allTextContents()) expect(title).toMatch(/BMW 530/);
+});
+
+// Главная: в списке «Modelis» — модели и версии; ввод «530d» сразу выбирает точную версию
+test("home search: type a version and land on its results", async ({ page }) => {
+  await page.goto("/");
+  const panel = page.locator(".MuiPopover-root");
+  await expect(async () => {
+    if (!(await panel.isVisible())) await page.locator("form").getByRole("button").first().click();
+    await expect(panel).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 15_000 });
+
+  await panel.locator("input").fill("bmw");
+  await panel.getByRole("button", { name: /^BMW/ }).click();
+  await panel.getByPlaceholder(/Modelis vai versija/).fill("530d");
+  await expect(panel.getByRole("button", { name: /5 Series · 530d$/ })).toBeVisible();
+  await panel.locator("input").press("Enter");
+
+  await expect(page.locator("form")).toContainText("5 Series · 530d");
+  await page.locator("form button[type=submit]").click();
+  await expect(page).toHaveURL(/brand=bmw&model=5\+Series&version=530d/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("BMW 530d");
 });

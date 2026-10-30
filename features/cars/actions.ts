@@ -2,8 +2,8 @@
 
 // Server Actions: так клиентские компоненты запрашивают объявления у сервера (избранное, сравнение, кабинеты).
 // Каждая функция — публичная точка входа, поэтому входные данные проверяются здесь
-import { countListings, getLatestListings, getListingsByIds } from "./api";
-import type { Listing } from "./types";
+import { countListings, getFilterModels, getLatestListings, getListingsByIds } from "./api";
+import type { FilterModel, Listing } from "./types";
 
 const strings = (value: unknown, max: number): string[] =>
   Array.isArray(value) ? value.filter((v): v is string => typeof v === "string").slice(0, max) : [];
@@ -21,4 +21,9 @@ export async function loadLatestListings(limit: number): Promise<Listing[]> {
 export async function countSearch(query: Record<string, string>): Promise<number> {
   const safe = typeof query === "object" && query ? query : {};
   return countListings({ get: (key) => (typeof safe[key] === "string" && safe[key]) || null });
+}
+
+// Модели марки с версиями — для списка «Modelis» в быстром поиске на главной
+export async function loadFilterModels(brand: string): Promise<FilterModel[]> {
+  return typeof brand === "string" && /^[a-z0-9-]{1,40}$/.test(brand) ? getFilterModels(brand) : [];
 }

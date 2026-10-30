@@ -86,7 +86,6 @@
   },
   "row": {
     "new": "Jauns",
-    "dealer": "Dīleris · {name}",
     "private": "Privātpersona",
     "morePhotos": "Vēl {count} foto",
     "noAccidents": "Bez avārijām",

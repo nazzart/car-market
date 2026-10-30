@@ -4,6 +4,7 @@ import MetaLine from "@/components/ui/MetaLine";
 import Badge from "@/components/ui/Badge";
 import FavoriteButton from "@/features/latest-cars/components/FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
+import DealerName from "@/features/dealers/components/DealerName";
 import { Link } from "@/i18n/navigation";
 import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
@@ -56,8 +57,10 @@ export default function ListingRow({ listing }: ListingRowProps) {
 
       <div className="relative md:w-[260px] lg:w-[280px] shrink-0">
         <ListingGallery href={href} title={listing.title} images={listing.images} fresh={isFresh(listing)} />
-        <FavoriteButton listing={listing} className="absolute top-2 right-2 z-20" />
-        <CompareButton id={listing.id} className="absolute top-14 right-2 z-20" />
+        <div className="absolute top-2 right-2 z-20 flex gap-1.5">
+          <CompareButton id={listing.id} revealOnHover />
+          <FavoriteButton listing={listing} />
+        </div>
       </div>
 
       {/* Info */}
@@ -98,15 +101,25 @@ export default function ListingRow({ listing }: ListingRowProps) {
             )}
           </div>
 
-          {/* продавец — обычной строкой, а не чипом: чипы только для важного о самой машине */}
-          <MetaLine
-            className="mt-auto pt-3"
-            items={[
-              placeName(listing.city),
-              listing.sellerType === "dealer" ? t("dealer", { name: listing.sellerName ?? "" }) : t("private"),
-              formatAgo(listing.postedMinutesAgo, locale),
-            ]}
-          />
+          {/* продавец — строкой, а не чипом: чипы только для важного о самой машине. Дилер — со ссылкой на его страницу */}
+          <div className="mt-auto pt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+            {listing.sellerType === "dealer" &&
+              (listing.dealer ? (
+                <Link href={`/dealers/${listing.dealer}`} className="relative z-10 hover:underline">
+                  <DealerName name={listing.sellerName ?? ""} verified={listing.dealerVerified} />
+                </Link>
+              ) : (
+                <DealerName name={listing.sellerName ?? ""} />
+              ))}
+            <MetaLine
+              className="text-sm"
+              items={[
+                listing.sellerType === "private" && t("private"),
+                placeName(listing.city),
+                formatAgo(listing.postedMinutesAgo, locale),
+              ]}
+            />
+          </div>
         </div>
 
         {/* Price + actions */}

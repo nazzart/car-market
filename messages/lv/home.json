@@ -2,6 +2,7 @@
   "brands": {
     "popular": "Populārās markas",
     "all": "Visas markas",
+    "inStock": "{count, plural, zero {# markas} one {# marka} other {# markas}} ar sludinājumiem",
     "inCatalog": "{count, plural, zero {# markas} one {# marka} other {# markas}} katalogā",
     "searchPlaceholder": "Meklēt marku",
     "notFound": "Pēc vaicājuma «{query}» nekas nav atrasts",

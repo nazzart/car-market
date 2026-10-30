@@ -86,7 +86,6 @@
   },
   "row": {
     "new": "Новый",
-    "dealer": "Дилер · {name}",
     "private": "Частное лицо",
     "morePhotos": "Ещё {count} фото",
     "noAccidents": "Без ДТП",

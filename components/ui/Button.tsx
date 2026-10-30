@@ -38,6 +38,18 @@ export function buttonClass({ variant = "primary", size = "md", fullWidth, class
   );
 }
 
+// Круглая кнопка поверх фото («в избранное», «сравнить»): матовое стекло, не спорит с фото.
+// Включённая — белая, чтобы состояние было видно сразу
+export function photoButtonClass(active: boolean, className?: string) {
+  return cn(
+    "w-8 h-8 flex items-center justify-center rounded-full ring-1 ring-inset transition cursor-pointer",
+    active
+      ? "bg-white text-gray-900 ring-black/5 shadow-sm"
+      : "bg-black/30 text-white ring-white/25 backdrop-blur-md hover:bg-black/50",
+    className
+  );
+}
+
 type ButtonBaseProps = ButtonStyleProps & { icon?: React.ReactNode; children?: React.ReactNode };
 type ButtonAsButtonProps = ButtonBaseProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "className"> & { href?: undefined };
 type ButtonAsLinkProps = ButtonBaseProps & Omit<React.ComponentProps<typeof Link>, "className"> & { href: React.ComponentProps<typeof Link>["href"] };

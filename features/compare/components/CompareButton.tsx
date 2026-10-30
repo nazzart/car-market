@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 
+import { photoButtonClass } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 import { toggleCompare, useCompare } from "../store";
@@ -10,11 +11,13 @@ import { toggleCompare, useCompare } from "../store";
 type CompareButtonProps = {
   id: string;
   variant?: "icon" | "soft" | "text";
+  // icon: на компьютере появляется при наведении на карточку (если ещё не добавлено)
+  revealOnHover?: boolean;
   className?: string;
 };
 
 // «Сравнить»: круглая кнопка на фото карточки или текстовая — в шапке объявления
-export default function CompareButton({ id, variant = "icon", className }: CompareButtonProps) {
+export default function CompareButton({ id, variant = "icon", revealOnHover, className }: CompareButtonProps) {
   const t = useTranslations("compare");
   const active = useCompare().includes(id);
 
@@ -43,26 +46,46 @@ export default function CompareButton({ id, variant = "icon", className }: Compa
     );
   }
 
+  const label = active ? t("remove") : t("add");
+
+  // soft — на белой карточке
+  if (variant === "soft") {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-pressed={active}
+        aria-label={label}
+        title={label}
+        className={cn(
+          "w-10 h-10 flex items-center justify-center rounded-full transition cursor-pointer",
+          active ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200",
+          className
+        )}
+      >
+        <CompareArrowsIcon fontSize="small" />
+      </button>
+    );
+  }
+
+  // icon — поверх фото
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      aria-label={active ? t("remove") : t("add")}
-      title={active ? t("remove") : t("add")}
-      className={cn(
-        "w-10 h-10 flex items-center justify-center rounded-full transition cursor-pointer",
-        // icon — поверх фото; soft — на белой карточке
-        variant === "icon" && "shadow-sm backdrop-blur hover:scale-105",
-        active
-          ? "bg-gray-900 text-white"
-          : variant === "soft"
-            ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            : "bg-white/90 text-gray-700 hover:bg-white",
-        className
+      aria-label={label}
+      title={label}
+      className={photoButtonClass(
+        active,
+        cn(
+          revealOnHover && !active &&
+            "[@media(hover:hover)]:opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+          className
+        )
       )}
     >
-      <CompareArrowsIcon fontSize="small" />
+      <CompareArrowsIcon sx={{ fontSize: 18 }} />
     </button>
   );
 }

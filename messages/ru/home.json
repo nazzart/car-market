@@ -2,6 +2,7 @@
   "brands": {
     "popular": "Популярные марки",
     "all": "Все марки",
+    "inStock": "{count, plural, one {# марка} few {# марки} many {# марок} other {# марки}} с объявлениями",
     "inCatalog": "{count, plural, one {# марка} few {# марки} many {# марок} other {# марки}} в каталоге",
     "searchPlaceholder": "Найти марку",
     "notFound": "Ничего не найдено по запросу «{query}»",

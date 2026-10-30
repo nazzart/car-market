@@ -13,6 +13,7 @@ import { useSpecLine } from "@/features/cars/lib/useSpecLine";
 
 import FavoriteButton from "./FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
+import DealerName from "@/features/dealers/components/DealerName";
 import { usePlaceName } from "@/lib/places";
 
 type CarCardProps = { listing: Listing };
@@ -52,15 +53,22 @@ export default function CarCard({ listing }: CarCardProps) {
             {specLine(listing)}
           </div>
 
+          {/* дилер — отдельной строкой: в узкой карточке рядом с городом название обрезалось бы */}
+          {listing.sellerType === "dealer" && listing.sellerName && (
+            <DealerName name={listing.sellerName} verified={listing.dealerVerified} className="flex pt-1 text-sm" />
+          )}
+
           <MetaLine className="pt-1" items={[placeName(listing.city), formatAgo(listing.postedMinutesAgo, locale)]} />
         </div>
       </Link>
 
       {isFresh(listing) && <FreshBadge className="absolute top-2 left-2 pointer-events-none" />}
 
-      <FavoriteButton listing={listing} className="absolute top-2 right-2" />
-      {/* на телефоне карточки узкие — «сравнить» есть на странице объявления и в списке */}
-      <CompareButton id={listing.id} className="absolute top-14 right-2 hidden sm:flex" />
+      <div className="absolute top-2 right-2 flex gap-1.5">
+        {/* на телефоне карточки узкие — «сравнить» есть на странице объявления и в списке */}
+        <CompareButton id={listing.id} revealOnHover className="hidden sm:flex" />
+        <FavoriteButton listing={listing} />
+      </div>
     </article>
   );
 }

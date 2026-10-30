@@ -21,7 +21,8 @@ export type Listing = {
   id: string;
   brand: string; // slug марки (features/brands/data/brands.ts)
   model: string; // модель из features/brands/data/models.ts или своя, если её нет в списке
-  title: string;
+  version?: string; // версия внутри модели: «530d xDrive», «E 220 CDI» (features/cars/lib/version.ts)
+  title: string; // марка + модель + версия — listingTitle()
   year: number;
   price: number;
   mileage: number;
@@ -82,3 +83,7 @@ export type ListingStats = {
 // Страница объявления: тон строки в сводке состояния и пункт навигации по разделам
 export type ConditionTone = "good" | "warn" | "bad" | "neutral";
 export type SectionNavItem = { id: string; label: string };
+
+// Версии в списке моделей /cars: группа («530») и сколько опубликованных объявлений; по моделям марки
+export type VersionCount = { value: string; count: number };
+export type VersionsByModel = Record<string, VersionCount[]>;

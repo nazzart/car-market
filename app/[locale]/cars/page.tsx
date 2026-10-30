@@ -6,9 +6,18 @@ import type { PageSearchParams } from "@/i18n/types";
 import Container from "@/components/layout/Container";
 import { brands } from "@/features/brands/data/brands";
 import CarsSearchView from "@/features/cars/car-list/components/CarsSearchView";
-import { PAGE_SIZE, type Params, countListings, getLatestListings, relaxSuggestions, searchListings } from "@/features/cars/api";
+import {
+  PAGE_SIZE,
+  type Params,
+  countListings,
+  getLatestListings,
+  getBrandVersions,
+  relaxSuggestions,
+  searchListings,
+} from "@/features/cars/api";
 import { collections } from "@/features/collections/config";
 import { getDealer } from "@/features/dealers/api";
+import { searchTitle } from "@/features/cars/lib/version";
 
 type CarsPageProps = {
   params: Promise<{ locale: string }>;
@@ -44,7 +53,7 @@ export async function generateMetadata({ params, searchParams }: CarsPageProps):
   const title = dealerName
     ? t("dealerCars", { dealer: dealerName })
     : brandName
-      ? [brandName, get("model")].filter(Boolean).join(" ")
+      ? searchTitle(brandName, get("model"), get("version"))
       : collection
         ? tOptions(`collections.${collection.slug}.label`)
         : t("title");
@@ -61,7 +70,13 @@ export async function generateMetadata({ params, searchParams }: CarsPageProps):
 export default async function CarsPage({ searchParams }: CarsPageProps) {
   const params = await toParams(searchParams);
   const dealerSlug = params.get("dealer");
-  const [result, dealer] = await Promise.all([searchListings(params), dealerSlug ? getDealer(dealerSlug) : undefined]);
+  const brand = params.get("brand");
+  const [result, dealer, versions] = await Promise.all([
+    searchListings(params),
+    dealerSlug ? getDealer(dealerSlug) : undefined,
+    // версии моделей выбранной марки — вложены в список моделей
+    brand ? getBrandVersions(brand) : undefined,
+  ]);
 
   // ничего не нашлось — подсказки, какой фильтр убрать, и свежие объявления
   const empty =
@@ -73,7 +88,13 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
     <Container>
       {/* Suspense нужен для useSearchParams в клиентском компоненте */}
       <Suspense>
-        <CarsSearchView result={result} pageSize={PAGE_SIZE} empty={empty} dealerName={dealer?.name} />
+        <CarsSearchView
+          result={result}
+          pageSize={PAGE_SIZE}
+          empty={empty}
+          dealerName={dealer?.name}
+          versions={versions}
+        />
       </Suspense>
     </Container>
   );

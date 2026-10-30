@@ -19,6 +19,7 @@ export const FILTER_KEYS = [
   "condition",
   "brand",
   "model",
+  "version", // группы версий через запятую: «530d,530e» (features/cars/lib/version.ts)
   "priceFrom",
   "priceTo",
   "yearFrom",
@@ -83,6 +84,8 @@ export const chipLabel = (
       return brands.find((b) => b.slug === value)?.name ?? value;
     case "model":
       return value;
+    case "version":
+      return value.split(",").join(", ");
     case "priceFrom":
       return tChips("priceFrom", { value: formatNumber(+value) });
     case "priceTo":

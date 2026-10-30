@@ -1,11 +1,12 @@
 // Строит список марок и моделей для выпадающих списков из открытых данных
 // нидерландского регистра транспорта RDW (opendata.rdw.nl, лицензия CC0 — можно копировать и менять).
 //
-//   npm run catalog:build → features/brands/data/brands.ts и models.ts (файлы генерируются — не править руками)
+//   npm run catalog:build → features/brands/data/brands.ts, models.ts и versions.ts (файлы генерируются — не править руками)
 //
 // В регистре — все легковые авто Нидерландов с «торговым названием» в разном написании:
 // «TOYOTA AYGO», «CEE'D», «320I», «C 200 CDI»… Скрипт сводит их к моделям («Aygo», «Ceed», «3 Series», «C-Class»)
 // и оставляет только те, что встречаются достаточно часто. Правки — в настройках ниже, затем запустить снова.
+// У BMW и Mercedes из тех же названий берутся и версии («530d xDrive», «E 220 CDI») — подсказки в форме подачи.
 // Обновлять раз в год, чтобы появились новые модели.
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -262,14 +263,19 @@ const titleWord = (w) => {
 };
 const display = (key) => DISPLAY[key] ?? key.split(" ").map((w) => DISPLAY[w] ?? titleWord(w)).join(" ");
 
-function normalize(slug, aliases, raw) {
+// Название из регистра без марки и мусора: «BMW 530E XDRIVE» → «530E XDRIVE»
+function normalizedName({ slug, aliases }, raw) {
   let s = raw.toUpperCase().replace(/\s+/g, " ").trim();
   // «TOYOTA AYGO», «MAZDA3» → без марки
   for (const alias of [...aliases, slug.toUpperCase()]) {
     if (s.startsWith(`${alias} `)) s = s.slice(alias.length + 1);
     else if (s.startsWith(alias) && /^\d/.test(s.slice(alias.length))) s = s.slice(alias.length);
   }
-  s = s.split(/[;,(/]/)[0].trim();
+  return s.split(/[;,(/]/)[0].trim();
+}
+
+function normalize(slug, aliases, raw) {
+  let s = normalizedName({ slug, aliases }, raw);
   if (!s || /^\d{5,}$/.test(s) || /^[-*U]+\**$/.test(s)) return null; // коды типа, «-», «U*****»
 
   const rule = BRAND_RULES[slug]?.(s);
@@ -281,6 +287,32 @@ function normalize(slug, aliases, raw) {
   return SAME_MODEL[base] ?? base;
 }
 
+/* ---------- Версии (подсказки в форме подачи) ---------- */
+
+// «530E XDRIVE» → «530e xDrive», «X5 XDRIVE30D» → «xDrive30d», «E 220 CDI» → «E 220 CDI», «C 200 D 4MATIC» → «C 200 d 4MATIC».
+// null — версии в названии нет («5ER REIHE», «E-KLASSE»)
+const MB_SUFFIX = { D: "d", E: "e", DE: "de", H: "h", CDI: "CDI", CGI: "CGI", BLUETEC: "BlueTEC", KOMPRESSOR: "Kompressor", AMG: "AMG" };
+const VERSION_RULES = {
+  bmw: (s) => {
+    const drive = /\bXDRIVE\b/.test(s) ? " xDrive" : "";
+    let m;
+    // 530d, M550i, 520 i, 530xd
+    if ((m = s.match(/^(M?)(\d{3})\s?([A-Z]{1,2})?\b/))) return `${m[1]}${m[2]}${(m[3] ?? "").toLowerCase()}${drive}`;
+    // X5 xDrive30d, X1 sDrive18i, iX xDrive40, i4 eDrive40
+    if ((m = s.match(/\b([XSE])DRIVE\s?(\d{2})([A-Z])?\b/))) return `${m[1].toLowerCase()}Drive${m[2]}${(m[3] ?? "").toLowerCase()}`;
+    // X5 M50d
+    if ((m = s.match(/\bM(\d{2})([A-Z])?\b/)) && !/^M\d\b/.test(s)) return `M${m[1]}${(m[2] ?? "").toLowerCase()}`;
+    return null;
+  },
+  mercedes: (s) => {
+    const m = s.match(/^(AMG\s)?([A-Z]{1,3})\s?(\d{2,3})\+?(?:\s([A-Z]+))?/);
+    if (!m) return null;
+    const suffix = m[4] && MB_SUFFIX[m[4]] ? ` ${MB_SUFFIX[m[4]]}` : "";
+    const matic = /\b4MATIC\b/.test(s) ? " 4MATIC" : "";
+    return `${m[1] ? "AMG " : ""}${m[2]} ${m[3]}${suffix}${matic}`;
+  },
+};
+
 /* ---------- Сборка ---------- */
 
 const rows = process.env.RDW_CACHE
@@ -290,6 +322,7 @@ console.log(`RDW: ${rows.length} строк`);
 
 const brandOf = new Map(BRANDS.flatMap(([, slug, aliases]) => aliases.map((a) => [a, { slug, aliases }])));
 const counts = new Map(); // slug → (модель → число машин)
+const versionCounts = new Map(); // «slug|модель» → (версия → число машин)
 const totals = new Map();
 
 for (const row of rows) {
@@ -301,6 +334,13 @@ for (const row of rows) {
   const model = parsed && (fix.merge?.[parsed] ?? parsed);
   if (!model || fix.drop?.includes(model)) continue;
   const n = Number(row.n);
+  const version = VERSION_RULES[brand.slug]?.(normalizedName(brand, row.handelsbenaming));
+  if (version) {
+    const key = `${brand.slug}|${model}`;
+    const byVersion = versionCounts.get(key) ?? new Map();
+    byVersion.set(version, (byVersion.get(version) ?? 0) + n);
+    versionCounts.set(key, byVersion);
+  }
   const byModel = counts.get(brand.slug) ?? new Map();
   byModel.set(model, (byModel.get(model) ?? 0) + n);
   counts.set(brand.slug, byModel);
@@ -318,7 +358,26 @@ for (const [, slug] of BRANDS) {
   models[slug] = [...new Set([...found, ...(fix.add ?? [])])].sort(collator.compare);
 }
 
+// Версии: у модели — те, что встречаются хотя бы у 0,5% её машин (не меньше 20), не больше 30 самых частых
+const versions = {};
+for (const [key, byVersion] of versionCounts) {
+  const [slug, model] = key.split("|");
+  const shown = display(model);
+  if (!models[slug]?.includes(shown)) continue;
+  const total = [...byVersion.values()].reduce((a, b) => a + b, 0);
+  const min = Math.max(20, total * 0.005);
+  const list = [...byVersion]
+    .filter(([, n]) => n >= min)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 30)
+    .map(([v]) => v)
+    .sort(collator.compare);
+  if (list.length) (versions[slug] ??= {})[shown] = list;
+}
+
 if (process.env.REVIEW) {
+  for (const [slug, byModel] of Object.entries(versions))
+    for (const [model, list] of Object.entries(byModel)) console.log(`${slug} ${model}: ${list.join(", ")}`);
   for (const [, slug] of BRANDS) console.log(`${slug} (${models[slug].length}): ${models[slug].join(", ")}`);
   process.exit(0);
 }
@@ -334,6 +393,18 @@ writeFileSync(
   join(OUT, "models.ts"),
   `${header}export const modelsByBrand: Record<string, string[]> = {\n${BRANDS.filter(([, slug]) => models[slug].length)
     .map(([, slug]) => `  ${JSON.stringify(slug)}: ${JSON.stringify(models[slug]).replace(/","/g, '", "')},`)
+    .join("\n")}\n};\n`
+);
+writeFileSync(
+  join(OUT, "versions.ts"),
+  `${header}// Версии (марка → модель → версии): подсказки в форме подачи. Своя версия тоже допустима
+export const versionsByModel: Record<string, Record<string, string[]>> = {\n${Object.entries(versions)
+    .map(
+      ([slug, byModel]) =>
+        `  ${JSON.stringify(slug)}: {\n${Object.entries(byModel)
+          .map(([model, list]) => `    ${JSON.stringify(model)}: ${JSON.stringify(list).replace(/","/g, '", "')},`)
+          .join("\n")}\n  },`
+    )
     .join("\n")}\n};\n`
 );
 const total = Object.values(models).reduce((n, list) => n + list.length, 0);

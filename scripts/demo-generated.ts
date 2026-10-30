@@ -3,8 +3,10 @@
 // Генератор детерминированный (одно и то же зерно → одни и те же объявления), модели — из каталога RDW.
 import { brands } from "../features/brands/data/brands";
 import { modelsByBrand } from "../features/brands/data/models";
+import { versionsByModel } from "../features/brands/data/versions";
 import { carColors } from "../features/cars/config/colors";
 import type { DemoListing } from "../features/cars/data/listings";
+import { listingTitle } from "../features/cars/lib/version";
 import type { Drive, Fuel, MileageLatvia, OverallCondition, ServiceState } from "../features/cars/types";
 import type { Dealer } from "../features/dealers/types";
 import { PLACES } from "../lib/places";
@@ -102,6 +104,15 @@ function random(seed: number) {
 
 const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
+// Версия из каталога, подходящая к топливу: дизель — 530d / E 220 CDI, гибрид — 530e / E 300 de, бензин — остальные
+const DIESEL = /\dd\b|\bd\b|CDI|BlueTEC/;
+const HYBRID = /\de\b|\be\b|\bde\b/;
+const versionFits = (version: string, fuel: Fuel) =>
+  fuel === "diesel" ? DIESEL.test(version) && !HYBRID.test(version)
+  : fuel === "hybrid" ? HYBRID.test(version)
+  : fuel === "petrol" ? !DIESEL.test(version) && !HYBRID.test(version)
+  : false;
+
 export function generateListings(count: number, firstId: number, dealers: Omit<Dealer, "carsInStock">[]): DemoListing[] {
   for (const [brand, model] of MODELS) {
     if (!modelsByBrand[brand]?.includes(model)) throw new Error(`Нет модели в каталоге: ${brand} ${model}`);
@@ -121,6 +132,8 @@ export function generateListings(count: number, firstId: number, dealers: Omit<D
     const mileage = isNew ? r.int(0, 50) : Math.round((age + r.next()) * r.int(9_000, 24_000) / 1_000) * 1_000;
     const price = Math.max(800, Math.round((priceNew * 0.86 ** age * (0.85 + r.next() * 0.3)) / 100) * 100);
     const fuel: Fuel = defaultFuel ?? (r.chance(0.6) ? "petrol" : "diesel");
+    const fitting = (versionsByModel[brand]?.[model] ?? []).filter((v) => versionFits(v, fuel));
+    const version = fitting.length ? r.pick(fitting) : undefined;
     const drive: Drive = bodyType === "suv" && r.chance(0.6) ? "awd" : ["bmw", "mercedes"].includes(brand) ? "rwd" : "fwd";
 
     // треть — у дилеров: официальный дилер своей марки или любой автосалон с пробегом
@@ -135,7 +148,8 @@ export function generateListings(count: number, firstId: number, dealers: Omit<D
       id: String(firstId + i),
       brand,
       model,
-      title: `${brandName(brand)} ${model}`,
+      version,
+      title: listingTitle(brandName(brand), model, version),
       year,
       price,
       mileage,

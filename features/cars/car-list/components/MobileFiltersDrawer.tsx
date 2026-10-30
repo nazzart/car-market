@@ -9,15 +9,17 @@ import { useCarFilters } from "../hooks/useCarFilters";
 import FiltersPanel from "./FiltersPanel";
 import ScrollArea from "./ScrollArea";
 import Button from "@/components/ui/Button";
+import type { VersionsByModel } from "@/features/cars/types";
 
 type MobileFiltersDrawerProps = {
   open: boolean;
   onClose: () => void;
   resultsLabel: string;
+  versions?: VersionsByModel;
 };
 
 // Фильтры на мобильных — нижняя шторка с той же панелью, что и в сайдбаре
-export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: MobileFiltersDrawerProps) {
+export default function MobileFiltersDrawer({ open, onClose, resultsLabel, versions }: MobileFiltersDrawerProps) {
   const t = useTranslations("cars");
   const tCommon = useTranslations("common");
   const { resetFilters, activeCount } = useCarFilters();
@@ -61,7 +63,7 @@ export default function MobileFiltersDrawer({ open, onClose, resultsLabel }: Mob
         {/* Body */}
 
         <ScrollArea moreLabel={t("moreFilters")} className="px-5">
-          <FiltersPanel />
+          <FiltersPanel versions={versions} />
         </ScrollArea>
 
         {/* Footer */}

@@ -1,0 +1,61 @@
+import { expect, test } from "@playwright/test";
+
+// Версия в форме подачи: подсказки, «530d» в поле модели, приведение к единому виду и заголовок
+test("sell form: version from the model field, normalised version and the title", async ({ page }) => {
+  await page.goto("/sell?category=car");
+  const preview = page.getByText("Sludinājuma virsraksts").locator("..");
+
+  await page.getByRole("combobox", { name: "Marka" }).fill("BMW");
+  await page.getByRole("option", { name: "BMW", exact: true }).click();
+
+  // версия вписана в поле модели — в списке её группа под моделью, модель подставляется сама
+  await page.getByRole("combobox", { name: "Modelis" }).fill("530d");
+  await page.getByRole("option", { name: "5 Series · 530", exact: true }).click();
+  await expect(page.getByRole("combobox", { name: "Modelis" })).toHaveValue("5 Series");
+  await expect(page.getByRole("combobox", { name: "Versija" })).toHaveValue("530d");
+  await expect(preview).toContainText("BMW 530d");
+
+  // своё написание приводится к виду из каталога
+  await page.getByRole("combobox", { name: "Versija" }).fill("530D XDRIVE");
+  await page.getByRole("combobox", { name: "Versija" }).blur();
+  await expect(page.getByRole("combobox", { name: "Versija" })).toHaveValue("530d xDrive");
+  await expect(preview).toContainText("BMW 530d xDrive");
+
+  // другая марка — модель и версия сбрасываются; у Mercedes модель тоже не повторяется
+  await page.getByRole("combobox", { name: "Marka" }).fill("Mercedes");
+  await page.getByRole("option", { name: "Mercedes-Benz", exact: true }).click();
+  await expect(page.getByRole("combobox", { name: "Versija" })).toHaveValue("");
+  await page.getByRole("combobox", { name: "Modelis" }).fill("CL 500");
+  await page.getByRole("option", { name: "CL · CL 500", exact: true }).click();
+  await expect(preview).toContainText("Mercedes-Benz CL 500");
+});
+
+// Список моделей: под моделью — её версии из объявлений; выбор версии — сразу модель и версия
+test("cars filter: a version picked under its model in the model list", async ({ page }) => {
+  await page.goto("/cars?brand=bmw");
+  const model = page.locator("aside").getByRole("combobox", { name: "Modelis" });
+  await model.click();
+  // «120» с отступом под «1 Series»
+  await page.getByRole("option").filter({ has: page.getByText("120", { exact: true }) }).click();
+
+  await expect(page).toHaveURL(/version=120/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("BMW 120");
+  await expect(model).toHaveValue("1 Series · 120");
+  for (const title of await page.locator("main article h3").allTextContents()) expect(title).toMatch(/BMW 120/);
+});
+
+// «BMW 530» — ввести в поле модели
+test("cars filter: typing 530 in the model list filters BMW 530 directly", async ({ page }) => {
+  await page.goto("/cars?brand=bmw");
+  const option = page.getByRole("option", { name: /^5 Series · 530/ });
+  // ввод до гидратации React сбрасывает — повторяем, пока не появится вариант
+  await expect(async () => {
+    await page.locator("aside").getByRole("combobox", { name: "Modelis" }).fill("530");
+    await expect(option).toBeVisible({ timeout: 2000 });
+  }).toPass();
+  await option.click();
+
+  await expect(page).toHaveURL(/version=530/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("BMW 530");
+  for (const title of await page.locator("main article h3").allTextContents()) expect(title).toMatch(/BMW 530/);
+});

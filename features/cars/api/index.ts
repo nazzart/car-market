@@ -3,13 +3,14 @@
 // Результаты кэшируются (тег "listings"); после изменения объявления — updateTag("listings")
 import "server-only";
 
-import { and, count, desc, eq, inArray, ne, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNotNull, ne, or, sql } from "drizzle-orm";
 
 import { collections } from "@/features/collections/config";
 import { db, schema } from "@/lib/db";
 import { isListingId } from "@/lib/validate";
 
-import type { Listing, ListingStats } from "../types";
+import { versionGroup } from "../lib/version";
+import type { Listing, ListingStats, VersionsByModel } from "../types";
 
 import { cached, forPublic, inCollection, newestFirst, ofDealer, published, selectListings, toListing } from "./rows";
 
@@ -50,6 +51,33 @@ const statsQuery = cached(async (): Promise<ListingStats> => {
 // Сколько опубликованных объявлений: всего, по маркам, моделям и подборкам — для главной, фильтров и меню
 export async function getListingStats(): Promise<ListingStats> {
   return statsQuery();
+}
+
+// Версии марки для списка моделей /cars: модель → группы версий («530», «E 220») с числом объявлений
+const versionsQuery = cached(async (brand: string) => {
+  const rows = await db
+    .select({ model: listings.model, version: listings.version, n: count() })
+    .from(listings)
+    .where(and(published, eq(listings.brand, brand), isNotNull(listings.version)))
+    .groupBy(listings.model, listings.version);
+  const byModel = new Map<string, Map<string, number>>();
+  for (const { model, version, n } of rows) {
+    const groups = byModel.get(model) ?? new Map<string, number>();
+    const group = versionGroup(version!);
+    groups.set(group, (groups.get(group) ?? 0) + n);
+    byModel.set(model, groups);
+  }
+  return Object.fromEntries(
+    [...byModel].map(([model, groups]) => [
+      model,
+      [...groups].map(([value, count]) => ({ value, count })).sort((a, b) => versionOrder.compare(a.value, b.value)),
+    ])
+  );
+}, "versions");
+const versionOrder = new Intl.Collator("en", { numeric: true });
+
+export async function getBrandVersions(brand: string): Promise<VersionsByModel> {
+  return versionsQuery(brand);
 }
 
 /* ---------- Отдельные объявления и подборки ---------- */

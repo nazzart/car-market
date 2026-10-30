@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import CarPhoto from "@/components/ui/CarPhoto";
+import { listingTitle } from "@/features/cars/lib/version";
 import { brands } from "@/features/brands/data/brands";
 import { usePlaceName } from "@/lib/places";
 import { formatNumber, formatPrice } from "@/lib/utils";
@@ -27,7 +28,7 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
 
   const photos: string[] = data.photos ?? [];
   const brandName = brands.find((b) => b.slug === data.brand)?.name;
-  const title = [brandName, data.model].filter(Boolean).join(" ") || t("yourCar");
+  const title = (data.model && listingTitle(brandName ?? "", data.model, data.version)) || t("yourCar");
   const complete = requiredDone === requiredTotal;
 
   return (

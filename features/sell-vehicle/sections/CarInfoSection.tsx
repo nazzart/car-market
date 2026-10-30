@@ -6,12 +6,20 @@ import { useTranslations } from "next-intl";
 import SearchSelect, { popupSlotProps } from "@/components/ui/SearchSelect";
 import { brands } from "@/features/brands/data/brands";
 import { modelsByBrand } from "@/features/brands/data/models";
+import { versionsByModel } from "@/features/brands/data/versions";
+import {
+  catalogVersionGroups,
+  listingTitle,
+  modelEntryMatches,
+  normalizeVersion,
+  versionGroup,
+} from "@/features/cars/lib/version";
 import { carColors } from "@/features/cars/config/colors";
 
 import { SectionContainer } from "../components/SectionContainer";
 import { ChipSelect } from "../../../components/ui/chip-select/ChipSelect";
 import { useSectionNext } from "../hooks/useSectionNext";
-import { FormStepProps } from "../types";
+import type { FormStepProps, ModelOption } from "../types";
 import { useSectionValidation } from "../hooks/useSectionValidation";
 import { validateField } from "../utils/validationRules";
 import { bodyTypes } from "@/features/cars/config/filterOptions";
@@ -30,6 +38,9 @@ export function CarInfoSection({
   const tOptions = useTranslations("options");
 
   const models = modelsByBrand[data.brand] ?? [];
+  const versions = versionsByModel[data.brand]?.[data.model] ?? [];
+  const brandName = brands.find((b) => b.slug === data.brand)?.name ?? "";
+  const carTitle = data.model ? listingTitle(brandName, data.model, data.version) : "";
   const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
   const brandOption = (b: (typeof brands)[number]) => ({ value: b.slug, label: b.name });
 
@@ -70,16 +81,57 @@ export function CarInfoSection({
             onChange={(slug) => {
               updateField("brand", slug);
               updateField("model", "");
+              updateField("version", "");
             }}
             error={attemptedNext && !validateField(data.brand, getRules("brand"))}
           />
 
-          <Autocomplete
+          {/* модель — из списка или своя; под каждой моделью — группы версий («5 Series» → 530):
+              выбор версии сразу заполняет модель и версию, «530d» в поле → 5 Series + 530d */}
+          <Autocomplete<ModelOption, false, false, true>
             freeSolo
-            options={models}
-            value={data.model || null}
+            options={models.flatMap((model) => [
+              { model },
+              ...catalogVersionGroups(data.brand, model).map((version) => ({ model, version })),
+            ])}
+            // значение — только текст поля: иначе MUI считает введённое уже выбранным и не фильтрует список
+            value={null}
             inputValue={data.model ?? ""}
-            onInputChange={(_, text) => updateField("model", text)}
+            getOptionLabel={(o) => (typeof o === "string" ? o : o.model)}
+            isOptionEqualToValue={(o, v) => o.model === v.model && o.version === v.version}
+            filterOptions={(options, { inputValue }) => options.filter((o) => modelEntryMatches(data.brand, o, inputValue))}
+            renderOption={({ key, ...props }, o, { inputValue }) => (
+              <li key={`${String(key)}|${o.version ?? ""}`} {...props}>
+                {/* версия — с отступом под моделью; при поиске модели рядом может не быть — «5 Series · 530» */}
+                {o.version ? (
+                  inputValue ? (
+                    <span>
+                      {o.model} <span className="text-gray-500">· {o.version}</span>
+                    </span>
+                  ) : (
+                    <span className="pl-4 text-gray-700">{o.version}</span>
+                  )
+                ) : (
+                  o.model
+                )}
+              </li>
+            )}
+            onInputChange={(_, text, reason) => {
+              // reset — MUI подставляет подпись выбранного варианта; модель уже записана в onChange
+              if (reason === "reset") return;
+              if (text !== data.model && data.version) updateField("version", "");
+              updateField("model", text);
+            }}
+            onChange={(_, o) => {
+              if (!o || typeof o === "string") return;
+              if (o.version) {
+                // вписали полную версию («530d») — она и остаётся; иначе группа («530»), уточнить можно в поле версии
+                const typed = normalizeVersion(data.brand, o.model, data.model ?? "");
+                const known = versionsByModel[data.brand]?.[o.model]?.includes(typed) && versionGroup(typed) === o.version;
+                updateField("version", known ? typed : o.version);
+              } else if (o.model !== data.model) updateField("version", "");
+              updateField("model", o.model);
+            }}
             disabled={!data.brand}
             slotProps={popupSlotProps}
             autoHighlight
@@ -95,6 +147,37 @@ export function CarInfoSection({
               />
             )}
           />
+
+          <Autocomplete
+            freeSolo
+            options={versions}
+            value={data.version || null}
+            inputValue={data.version ?? ""}
+            onInputChange={(_, text, reason) => {
+              if (reason !== "reset") updateField("version", text);
+            }}
+            onChange={(_, value) => updateField("version", value ?? "")}
+            // своё написание — к единому виду: «530D XDRIVE» → «530e xDrive»
+            onBlur={() => updateField("version", normalizeVersion(data.brand, data.model, data.version ?? ""))}
+            disabled={!data.model}
+            slotProps={popupSlotProps}
+            autoHighlight
+            fullWidth
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={t("version")}
+                placeholder={t("versionPlaceholder")}
+                helperText={t("versionHint")}
+              />
+            )}
+          />
+
+          {/* заголовок собирается сам — продавец видит его сразу */}
+          <div className="flex flex-col justify-center min-h-14 px-4 py-2 rounded-control bg-gray-50 md:mb-6">
+            <span className="text-xs text-gray-500">{t("titlePreview")}</span>
+            <span className="font-medium text-gray-900 truncate">{carTitle || "—"}</span>
+          </div>
         </div>
 
         {/* Year / Mileage */}

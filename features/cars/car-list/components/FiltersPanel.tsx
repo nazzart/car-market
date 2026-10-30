@@ -9,6 +9,7 @@ import { modelsByBrand } from "@/features/brands/data/models";
 import { useListingStats } from "@/features/cars/hooks";
 import SearchSelect from "@/components/ui/SearchSelect";
 import { formatNumber } from "@/lib/utils";
+import type { VersionsByModel } from "@/features/cars/types";
 import CheckIcon from "@mui/icons-material/Check";
 import { carColors } from "../../config/colors";
 
@@ -110,11 +111,15 @@ function FlagChip({ name }: FlagChipProps) {
   );
 }
 
-export default function FiltersPanel() {
+type FiltersPanelProps = {
+  versions?: VersionsByModel; // версии моделей выбранной марки (сервер) — вложены в список моделей
+};
+
+export default function FiltersPanel({ versions = {} }: FiltersPanelProps) {
   const t = useTranslations("cars.panel");
   const tOptions = useTranslations("options");
   const tChips = useTranslations("cars.chips");
-  const { params, updateFilter } = useCarFilters();
+  const { params, updateFilter, updateFilters } = useCarFilters();
 
   // value → { label, value } из переводов options.{group}
   const opts = (group: string, values: string[]) =>
@@ -135,7 +140,25 @@ export default function FiltersPanel() {
   const brand = get("brand");
 
   const brandOption = (b: (typeof brands)[number]) => ({ value: b.slug, label: b.name, count: byBrand[b.slug] });
-  const models = (modelsByBrand[brand] ?? []).map((m) => ({ value: m, label: m, count: byModel[brand]?.[m] }));
+
+  // Модели и под каждой — её версии из объявлений, которые есть сейчас: «5 Series» → «530», «540».
+  // Выбор версии — сразу модель и версия (?model=5 Series&version=530)
+  const models = (modelsByBrand[brand] ?? []).flatMap((model) => [
+    { value: model, label: model, count: byModel[brand]?.[model] },
+    ...(versions[model] ?? []).map(({ value, count }) => ({
+      value: `${model}|${value}`,
+      label: value,
+      fullLabel: `${model} · ${value}`,
+      keywords: model,
+      count,
+      indent: true,
+    })),
+  ]);
+  const modelValue = [get("model"), get("version")].filter(Boolean).join("|");
+  const pickModel = (value: string) => {
+    const [model, version] = value.split("|");
+    updateFilters({ model: model || null, version: version || null });
+  };
 
   return (
     <div>
@@ -148,7 +171,7 @@ export default function FiltersPanel() {
         />
       </FilterSection>
 
-      <FilterSection title={t("brandModel")} active={isActive(["brand", "model"])}>
+      <FilterSection title={t("brandModel")} active={isActive(["brand", "model", "version"])}>
         <div className="space-y-2">
           <SearchSelect
             variant="compact"
@@ -167,11 +190,12 @@ export default function FiltersPanel() {
             label={t("model")}
             placeholder={brand ? t("anyModel") : t("brandFirst")}
             options={models}
-            value={get("model")}
-            onChange={set("model")}
+            value={modelValue}
+            onChange={pickModel}
             disabled={!brand || models.length === 0}
           />
         </div>
+
       </FilterSection>
 
       <FilterSection title={t("price")} active={isActive(["priceFrom", "priceTo"])}>

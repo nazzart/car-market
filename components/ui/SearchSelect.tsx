@@ -7,6 +7,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useTranslations } from "next-intl";
 
 import { foldText } from "@/lib/places";
+import { cn } from "@/lib/utils";
 
 import type { GroupedOption, SelectOption } from "./types";
 
@@ -91,19 +92,20 @@ export default function SearchSelect({
     ...options.map((o) => ({ ...o, group: grouped ? allLabel : undefined })),
   ];
   const selected = options.find((o) => o.value === value) ?? null;
+  const searching = (inputValue: string) => Boolean(inputValue) && !(selected && inputValue === (selected.fullLabel ?? selected.label));
 
   return (
     <Autocomplete<GroupedOption, false, false, false>
       options={all}
       value={selected}
       onChange={(_, option) => onChange(option?.value ?? "")}
-      getOptionLabel={(o) => o.label}
+      getOptionLabel={(o) => o.fullLabel ?? o.label}
       getOptionKey={(o) => `${o.group ?? ""}:${o.value}`}
       isOptionEqualToValue={(a, b) => a.value === b.value}
       groupBy={grouped ? (o) => o.group ?? "" : undefined}
       // пока ищут — без «популярных», иначе одна марка показывается дважды
       filterOptions={(list, state) =>
-        state.inputValue && !(selected && state.inputValue === selected.label)
+        searching(state.inputValue)
           ? list.filter((o) => (!grouped || o.group === allLabel) && matches(o, state.inputValue))
           : list
       }
@@ -113,9 +115,12 @@ export default function SearchSelect({
           <ul>{group.children}</ul>
         </li>
       )}
-      renderOption={({ key, ...props }, option, { selected: isSelected }) => (
+      renderOption={({ key, ...props }, option, { selected: isSelected, inputValue }) => (
         <li key={key} {...props}>
-          <span className="flex-1 min-w-0 truncate">{option.label}</span>
+          {/* вложенный вариант — с отступом; при поиске родителя рядом может не быть — полная подпись */}
+          <span className={cn("flex-1 min-w-0 truncate", option.indent && !searching(inputValue) && "pl-4 text-gray-700")}>
+            {option.indent && searching(inputValue) ? option.fullLabel ?? option.label : option.label}
+          </span>
           {option.count ? <span className="ml-3 text-xs text-gray-400 tabular-nums">{option.count}</span> : null}
           <CheckIcon sx={{ fontSize: 16 }} className={`ml-2 text-primary ${isSelected ? "" : "invisible"}`} />
         </li>

@@ -29,12 +29,16 @@ export function useCarFilters() {
   const updateFilter = (key: string, value: string | null) =>
     apply({
       [key]: value,
-      // модель зависит от марки, окрестности — от места
-      ...(key === "brand" ? { model: null } : {}),
+      // модель зависит от марки, версия — от модели, окрестности — от места
+      ...(key === "brand" ? { model: null, version: null } : {}),
+      ...(key === "model" ? { version: null } : {}),
       ...(key === "place" && !value ? { area: null } : {}),
       // другие фильтры или сортировка — снова с первой страницы (вид списка/плитки страницу не меняет)
       ...(key !== "view" ? { page: null } : {}),
     });
+
+  // несколько фильтров сразу: «530» в списке моделей → модель 5 Series и версия 530
+  const updateFilters = (changes: Record<string, string | null>) => apply({ ...changes, page: null });
 
   const resetFilters = () => apply(Object.fromEntries([...FILTER_KEYS, "page"].map((key) => [key, null])));
 
@@ -43,6 +47,7 @@ export function useCarFilters() {
   return {
     params,
     updateFilter,
+    updateFilters,
     resetFilters,
     activeCount,
   };

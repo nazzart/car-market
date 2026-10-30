@@ -56,6 +56,10 @@
     "color": "Krāsa",
     "brandFirst": "Vispirms izvēlieties marku",
     "modelHint": "Nav sarakstā? Ierakstiet modeli pats",
+    "version": "Versija",
+    "versionPlaceholder": "Piem., 530d xDrive",
+    "versionHint": "Nav obligāti — tiks parādīta virsrakstā",
+    "titlePreview": "Sludinājuma virsraksts",
     "popularBrands": "Populārās markas",
     "allBrands": "Visas markas"
   },

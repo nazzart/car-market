@@ -7,6 +7,9 @@ export type Option = { label: string; value: string };
 export type SelectOption = Option & {
   count?: number; // число объявлений — справа серым
   keywords?: string; // дополнительные слова для поиска
+  // вложенный вариант — с отступом под родителем: версия «530» под моделью «5 Series»
+  indent?: boolean;
+  fullLabel?: string; // подпись в поле и в результатах поиска, где родителя рядом нет: «5 Series 530»
 };
 
 // Вариант с названием группы — для заголовков групп в списке SearchSelect

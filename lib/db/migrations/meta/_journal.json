@@ -43,6 +43,13 @@
       "when": 1793300203769,
       "tag": "0005_dealer_stock_computed",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793359922415,
+      "tag": "0006_listing_version",
+      "breakpoints": true
     }
   ]
 }

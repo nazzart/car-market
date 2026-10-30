@@ -108,6 +108,8 @@ export const listings = pgTable(
     id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity(),
     brand: text().notNull(), // slug марки
     model: text().notNull(),
+    // версия внутри модели: «530d xDrive», «E 220 CDI» — в заголовке и фильтре «Версия». null — не указана
+    version: text(),
     title: text().notNull(),
     year: smallint().notNull(),
     price: integer().notNull(),

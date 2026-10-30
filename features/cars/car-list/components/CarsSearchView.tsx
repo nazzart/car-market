@@ -16,13 +16,14 @@ import Pagination from "@/components/ui/Pagination";
 
 import { SearchTransitionContext, useCarFilters } from "../hooks/useCarFilters";
 import { sortValues } from "../../config/filterOptions";
-import type { Listing } from "../../types";
+import type { Listing, VersionsByModel } from "../../types";
 import ActiveFilterChips from "./ActiveFilterChips";
 import EmptyResults from "./EmptyResults";
 import FiltersPanel from "./FiltersPanel";
 import ListingRow from "./ListingRow";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import ScrollArea from "./ScrollArea";
+import { searchTitle } from "../../lib/version";
 import { inputClass } from "@/components/ui/form";
 
 // Сайдбар всегда целиком в окне: пока он не прилип, высота — до нижнего края экрана.
@@ -76,6 +77,7 @@ export type SearchResultProps = {
   result: { items: Listing[]; total: number; page: number; pageCount: number };
   pageSize: number;
   dealerName?: string; // фильтр ?dealer= — название дилера для заголовка и чипа (сервер)
+  versions?: VersionsByModel; // версии моделей выбранной марки — в списке моделей (сервер)
   // ничего не нашлось: какой фильтр убрать (и сколько тогда будет) и свежие объявления
   empty?: { suggestions: { key: string; count: number }[]; fresh: Listing[] };
 };
@@ -93,7 +95,7 @@ export default function CarsSearchView(props: SearchResultProps) {
 
 type SearchViewProps = SearchResultProps & { pending: boolean };
 
-function SearchView({ result, pageSize, empty, pending, dealerName }: SearchViewProps) {
+function SearchView({ result, pageSize, empty, pending, dealerName, versions }: SearchViewProps) {
   const t = useTranslations("cars");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
@@ -107,14 +109,14 @@ function SearchView({ result, pageSize, empty, pending, dealerName }: SearchView
 
   const resultsLabel = tCommon("listings", { count: result.total });
 
-  // Заголовок отражает поиск: «BMW M4», «Электромобили» или общий
+  // Заголовок отражает поиск: «BMW M4», «BMW 530d, 530e», «Электромобили» или общий
   const brandName = brands.find((b) => b.slug === params.get("brand"))?.name;
   const collection = collections.find((c) => c.slug === params.get("collection"));
 
   const title = dealerName
     ? t("dealerCars", { dealer: dealerName })
     : brandName
-    ? [brandName, params.get("model")].filter(Boolean).join(" ")
+    ? searchTitle(brandName, params.get("model"), params.get("version"))
     : collection
     ? tOptions(`collections.${collection.slug}.label`)
     : t("title");
@@ -155,7 +157,7 @@ function SearchView({ result, pageSize, empty, pending, dealerName }: SearchView
           </div>
 
           <ScrollArea moreLabel={t("moreFilters")} className="px-5" fadeClassName="from-gray-100">
-            <FiltersPanel />
+            <FiltersPanel versions={versions} />
           </ScrollArea>
         </aside>
 
@@ -263,6 +265,7 @@ function SearchView({ result, pageSize, empty, pending, dealerName }: SearchView
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         resultsLabel={resultsLabel}
+        versions={versions}
       />
     </div>
   );

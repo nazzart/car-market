@@ -56,6 +56,10 @@
     "color": "Цвет",
     "brandFirst": "Сначала выберите марку",
     "modelHint": "Нет в списке? Впишите модель сами",
+    "version": "Версия",
+    "versionPlaceholder": "Напр., 530d xDrive",
+    "versionHint": "Необязательно — попадёт в заголовок",
+    "titlePreview": "Заголовок объявления",
     "popularBrands": "Популярные марки",
     "allBrands": "Все марки"
   },

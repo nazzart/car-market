@@ -2,13 +2,14 @@
 // и подсказки «уберите фильтр». Те же правила видимости, что везде (published в ./rows.ts)
 import "server-only";
 
-import { type SQL, and, asc, count, desc, eq, gte, inArray, isNotNull, isNull, lte, ne, sql } from "drizzle-orm";
+import { type SQL, and, asc, count, desc, eq, gte, inArray, isNotNull, isNull, lte, ne, or, sql } from "drizzle-orm";
 
 import { collections } from "@/features/collections/config";
 import { db, schema } from "@/lib/db";
 import { PLACES, placeMatcher } from "@/lib/places";
 
 import { FILTER_KEYS, postedPeriods } from "../config/filterOptions";
+import { versionGroupPattern } from "../lib/version";
 import type { Listing } from "../types";
 import { type Params, cached, newestFirst, ofDealer, published, selectListings, toListing, inCollection } from "./rows";
 
@@ -31,6 +32,12 @@ function searchWhere(params: Params): SQL | undefined {
   for (const [key, column] of Object.entries(equals)) {
     const value = text(key);
     if (value) conditions.push(eq(column, value));
+  }
+
+  // версия: группа «530» — 530d, 530e xDrive… (versionGroupPattern); можно и без модели: ?brand=bmw&version=530
+  const versions = text("version")?.split(",").filter((v) => v.trim()) ?? [];
+  if (versions.length) {
+    conditions.push(or(...versions.map((v) => sql`lower(${listings.version}) ~ ${versionGroupPattern(v)}`)));
   }
 
   const sellerType = text("sellerType");
@@ -155,7 +162,10 @@ export async function relaxSuggestions(params: Params): Promise<{ key: string; c
     active.map(async (key) => {
       const without: Params = {
         get: (name) =>
-          name === key || (key === "brand" && name === "model") || (key === "place" && name === "area")
+          name === key ||
+          (key === "brand" && (name === "model" || name === "version")) ||
+          (key === "model" && name === "version") ||
+          (key === "place" && name === "area")
             ? null
             : params.get(name),
       };

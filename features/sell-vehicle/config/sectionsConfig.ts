@@ -16,6 +16,7 @@ export const sections = [
     fields: [
       { name: "brand", rules: ["required"] },
       { name: "model", rules: ["required"] },
+      { name: "version" },
       { name: "year", rules: ["required"] },
       { name: "mileage", rules: ["required"] },
       { name: "price", rules: ["required"] },

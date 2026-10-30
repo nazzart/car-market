@@ -1,7 +1,7 @@
 {
   "title": "Pirkt automašīnu",
   "dealerCars": "{dealer} automašīnas",
-  "resultsIn": "{count, plural, zero {# sludinājumi} one {# sludinājums} other {# sludinājumi}} Latvijā",
+  "resultsIn": "{count, plural, zero {<n>#</n> sludinājumi} one {<n>#</n> sludinājums} other {<n>#</n> sludinājumi}} Latvijā",
   "found": "Atrasti:",
   "allCars": "Visas automašīnas",
   "filters": "Filtri",

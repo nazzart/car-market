@@ -1,10 +1,10 @@
 "use client";
 
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useTranslations } from "next-intl";
 
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
+import { EmptyParking } from "@/components/ui/illustrations";
 import { useLatestListings } from "@/features/cars/hooks";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
@@ -18,8 +18,7 @@ export default function FavoritesEmpty() {
     <div>
       <EmptyState
         variant="hero"
-        icon={FavoriteIcon}
-        iconClassName="text-primary"
+        illustration={<EmptyParking />}
         title={t("empty.title")}
         text={t("empty.text")}
       >

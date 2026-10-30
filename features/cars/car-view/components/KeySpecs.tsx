@@ -10,6 +10,8 @@ import { useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
+import MileageGauge from "@/features/cars/car-list/components/MileageGauge";
+import { mileagePerYear } from "@/features/cars/lib/mileage";
 
 type KeySpecsProps = { listing: Listing };
 
@@ -18,10 +20,22 @@ export default function KeySpecs({ listing }: KeySpecsProps) {
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
   const fuel = tOptions(`fuel.${listing.fuel}`);
+  const perYear = mileagePerYear(listing);
 
   const specs = [
     { icon: CalendarMonthOutlinedIcon, label: t("year"), value: String(listing.year) },
-    { icon: SpeedOutlinedIcon, label: t("mileage"), value: `${formatNumber(listing.mileage)} ${tCommon("units.km")}` },
+    {
+      icon: SpeedOutlinedIcon,
+      label: t("mileage"),
+      value: `${formatNumber(listing.mileage)} ${tCommon("units.km")}`,
+      // сколько в год и «указатель»: мало или много для возраста машины
+      extra: perYear !== null && (
+        <div className="flex items-center gap-2 mt-1">
+          <MileageGauge listing={listing} size="md" />
+          <span className="text-xs text-gray-500">{tCommon("mileageGauge.perYear", { km: formatNumber(perYear) })}</span>
+        </div>
+      ),
+    },
     {
       icon: LocalGasStationOutlinedIcon,
       label: t("engine"),
@@ -38,7 +52,7 @@ export default function KeySpecs({ listing }: KeySpecsProps) {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {specs.map(({ icon: Icon, label, value }) => (
+      {specs.map(({ icon: Icon, label, value, extra }) => (
         <div
           key={label}
           className="flex items-center gap-3 px-3.5 py-3 sm:p-4 rounded-card border border-gray-200"
@@ -50,6 +64,7 @@ export default function KeySpecs({ listing }: KeySpecsProps) {
           <div className="min-w-0">
             <div className="text-xs text-gray-500">{label}</div>
             <div className="font-medium text-gray-900 leading-snug">{value}</div>
+            {extra}
           </div>
         </div>
       ))}

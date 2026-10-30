@@ -70,5 +70,12 @@
     "monthly": "В лизинг от {amount}/мес.",
     "down": "первый взнос {percent}%",
     "months": "{count} мес."
+  },
+  "mileageGauge": {
+    "label": "≈ {km} км в год — {level}",
+    "low": "меньше среднего",
+    "average": "в среднем",
+    "high": "больше среднего",
+    "perYear": "≈ {km} км в год"
   }
 }

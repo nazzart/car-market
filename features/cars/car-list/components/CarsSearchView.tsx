@@ -7,6 +7,7 @@ import ViewAgendaOutlinedIcon from "@mui/icons-material/ViewAgendaOutlined";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import Odometer from "@/components/ui/Odometer";
 import PageHeader from "@/components/ui/PageHeader";
 import { useBrandName } from "@/features/catalog/hooks";
 import { collections } from "@/features/collections/config";
@@ -127,7 +128,7 @@ function SearchView({ result, pageSize, empty, pending, dealerName, models }: Se
     <div className="pt-6 pb-12">
       {/* Header */}
 
-      <PageHeader title={title} subtitle={t("resultsIn", { count: result.total })} className="mb-5" />
+      <PageHeader title={title} subtitle={t.rich("resultsIn", { count: result.total, n: () => <Odometer value={result.total} /> })} className="mb-5" />
 
       <div className="mb-8">
         <CollectionPills />

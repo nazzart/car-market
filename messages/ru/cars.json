@@ -1,7 +1,7 @@
 {
   "title": "Купить автомобиль",
   "dealerCars": "Автомобили {dealer}",
-  "resultsIn": "{count, plural, one {# объявление} few {# объявления} many {# объявлений} other {# объявления}} в Латвии",
+  "resultsIn": "{count, plural, one {<n>#</n> объявление} few {<n>#</n> объявления} many {<n>#</n> объявлений} other {<n>#</n> объявления}} в Латвии",
   "found": "Найдено:",
   "allCars": "Все автомобили",
   "filters": "Фильтры",

@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 type EmptyStateProps = {
   icon?: React.ElementType<{ sx?: object; className?: string }>;
   iconClassName?: string; // цвет значка в hero
+  illustration?: React.ReactNode; // рисунок (components/ui/illustrations) вместо значка
   title?: React.ReactNode;
   text?: React.ReactNode;
   variant?: "box" | "hero";
@@ -16,6 +17,7 @@ type EmptyStateProps = {
 export default function EmptyState({
   icon: Icon,
   iconClassName,
+  illustration,
   title,
   text,
   variant = "box",
@@ -32,7 +34,9 @@ export default function EmptyState({
         className
       )}
     >
-      {Icon &&
+      {illustration && <div className="flex justify-center">{illustration}</div>}
+
+      {!illustration && Icon &&
         (hero ? (
           <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-white shadow-sm">
             <Icon sx={{ fontSize: 30 }} className={iconClassName ?? "text-gray-900"} />
@@ -45,7 +49,7 @@ export default function EmptyState({
         (hero ? (
           <h2 className="text-xl font-semibold mt-4">{title}</h2>
         ) : (
-          <h3 className={cn("text-lg font-semibold", Icon && "mt-3")}>{title}</h3>
+          <h3 className={cn("text-lg font-semibold", (Icon || illustration) && "mt-3")}>{title}</h3>
         ))}
 
       {text && (

@@ -1,7 +1,9 @@
+import { Fragment } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 import MetaLine from "@/components/ui/MetaLine";
 import Badge from "@/components/ui/Badge";
+import { CarFrontIcon, EngineIcon, KeyIcon } from "@/components/ui/dashIcons";
 import FavoriteButton from "@/features/latest-cars/components/FavoriteButton";
 import CompareButton from "@/features/compare/components/CompareButton";
 import DealerName from "@/features/dealers/components/DealerName";
@@ -10,6 +12,7 @@ import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 import { isFresh } from "../../lib/isFresh";
+import MileageGauge from "./MileageGauge";
 import LeasingPrice from "./LeasingPrice";
 import ListingGallery from "./ListingGallery";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
@@ -26,9 +29,16 @@ export default function ListingRow({ listing }: ListingRowProps) {
 
   const href = `/listing/${listing.id}`;
 
+  // пробег — с «указателем»: много или мало для возраста машины
+  const mileage = (
+    <span className="inline-flex items-center gap-1.5">
+      {formatNumber(listing.mileage)} {tCommon("units.km")}
+      <MileageGauge listing={listing} />
+    </span>
+  );
   const specs = [
     String(listing.year),
-    `${formatNumber(listing.mileage)} ${tCommon("units.km")}`,
+    mileage,
     listing.engine ? `${listing.engine.toFixed(1)} ${tCommon("units.liters")}` : null,
     `${listing.power} ${tCommon("units.hp")}`,
     tOptions(`fuel.${listing.fuel}`),
@@ -78,7 +88,14 @@ export default function ListingRow({ listing }: ListingRowProps) {
             </h3>
           </Link>
 
-          <div className="text-sm text-gray-800 mt-1">{specs.join(" · ")}</div>
+          <div className="text-sm text-gray-800 mt-1">
+            {specs.map((spec, i) => (
+              <Fragment key={i}>
+                {i > 0 && " · "}
+                {spec}
+              </Fragment>
+            ))}
+          </div>
           <div className="text-sm text-gray-500 mt-0.5">{details.join(" · ")}</div>
 
           <div className="flex flex-wrap items-center gap-1.5 mt-3 empty:hidden">
@@ -89,16 +106,16 @@ export default function ListingRow({ listing }: ListingRowProps) {
 
             {/* сигналы доверия — то, что покупатель спрашивает первым */}
             {listing.noAccidents && (
-              <Badge tone="success">{t("noAccidents")}</Badge>
+              <Badge tone="success" icon={<CarFrontIcon size={14} />}>{t("noAccidents")}</Badge>
             )}
 
             {listing.owners === 1 && (
-              <Badge tone="info">{t("oneOwner")}</Badge>
+              <Badge tone="info" icon={<KeyIcon size={14} />}>{t("oneOwner")}</Badge>
             )}
 
             {/* единственный «минус», о котором стоит знать до клика */}
             {listing.overallCondition === "repair" && (
-              <Badge tone="warning">{tOptions("overallCondition.repair")}</Badge>
+              <Badge tone="warning" icon={<EngineIcon size={14} />}>{tOptions("overallCondition.repair")}</Badge>
             )}
           </div>
 

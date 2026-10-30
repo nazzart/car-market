@@ -67,6 +67,9 @@ export function toggleFavorite(listing: { id: string; price: number }) {
   send(actions.addFavorite(listing.id));
 }
 
+// Сохранено ли сейчас — для проверки сразу после toggleFavorite (без входа сохранения не будет)
+export const isFavorite = (id: string) => entries.some((e) => e.id === id);
+
 export function clearFavorites() {
   set([]);
   send(actions.clearFavorites());

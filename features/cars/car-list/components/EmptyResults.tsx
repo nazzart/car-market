@@ -1,10 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
+import { EmptyRoad } from "@/components/ui/illustrations";
 import CarCard from "@/features/latest-cars/components/CarCard";
 
 import { FilterKey, chipLabel } from "../../config/filterOptions";
@@ -41,7 +41,7 @@ export default function EmptyResults({ suggestions, fresh, dealerName }: EmptyRe
 
   return (
     <div>
-      <EmptyState icon={SearchOffIcon} title={t("title")} text={relax.length > 0 ? t("relax") : t("text")}>
+      <EmptyState illustration={<EmptyRoad />} title={t("title")} text={relax.length > 0 ? t("relax") : t("text")}>
 
         {relax.length > 0 && (
           <div className="flex flex-wrap justify-center gap-2 mt-5">

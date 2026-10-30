@@ -16,7 +16,7 @@
   "priceTo": "до {value} €",
   "priceRange": "{from} – {to} €",
   "clear": "Очистить: {label}",
-  "show": "Показать {count, number}",
+  "show": "Показать <n></n>",
   "collections": "Подборки:",
   "findBrand": "Найти марку",
   "findModel": "Найти модель или версию",

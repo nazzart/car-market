@@ -109,6 +109,27 @@ body {
 .animate-bounce-subtle {
   animation: bounce-subtle 1.4s ease-in-out infinite;
 }
+
+/* Значки-«лампы приборной панели» (components/ui/dashIcons): лёгкое свечение цветом значка */
+.dash-glow {
+  filter: drop-shadow(0 0 2.5px color-mix(in srgb, currentColor 45%, transparent));
+}
+
+/* «Мигнуть фарами»: двойная вспышка тёплого света вокруг ♡ при сохранении (FavoriteButton) */
+@keyframes headlight-flash {
+  0%, 50%, 100% { box-shadow: 0 0 0 0 rgb(255 226 140 / 0); }
+  22%, 72% { box-shadow: 0 0 0 3px rgb(255 240 190 / 0.95), 0 0 16px 6px rgb(255 214 102 / 0.7); }
+}
+
+.animate-headlight {
+  animation: headlight-flash 0.5s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-headlight {
+    animation: none;
+  }
+}
 /* Leaflet: шрифт сайта и скруглённые всплывающие окна */
 .leaflet-container {
   font-family: inherit;

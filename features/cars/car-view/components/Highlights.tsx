@@ -1,12 +1,9 @@
-import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
-import BuildCircleOutlinedIcon from "@mui/icons-material/BuildCircleOutlined";
 import FlightLandOutlinedIcon from "@mui/icons-material/FlightLandOutlined";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import NewReleasesOutlinedIcon from "@mui/icons-material/NewReleasesOutlined";
 
 import { useTranslations } from "next-intl";
 
+import { CarFrontIcon, EngineIcon, InspectionIcon, KeyIcon, ServiceIcon } from "@/components/ui/dashIcons";
 import { Listing } from "@/features/cars/types";
 
 const GOOD = "bg-success-soft text-success-strong border-success-muted";
@@ -21,34 +18,35 @@ export default function Highlights({ listing }: HighlightsProps) {
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
 
+  // значки — как лампы приборной панели (components/ui/dashIcons); «новая» и «ввезена» — обычные
   const items = [
-    listing.condition === "new" && { icon: NewReleasesOutlinedIcon, text: t("new"), tone: GOOD },
-    listing.noAccidents && { icon: VerifiedOutlinedIcon, text: t("noAccidents"), tone: GOOD },
+    listing.condition === "new" && { icon: <NewReleasesOutlinedIcon sx={{ fontSize: 18 }} />, text: t("new"), tone: GOOD },
+    listing.noAccidents && { icon: <CarFrontIcon />, text: t("noAccidents"), tone: GOOD },
     listing.owners && {
-      icon: PersonOutlineIcon,
+      icon: <KeyIcon />,
       text: tCommon("owners", { count: listing.owners }),
       tone: listing.owners === 1 ? GOOD : NEUTRAL,
     },
     listing.inspectionUntil && {
-      icon: FactCheckOutlinedIcon,
+      icon: <InspectionIcon />,
       text: t("inspection", { date: listing.inspectionUntil }),
       tone: NEUTRAL,
     },
-    listing.service === "required" && { icon: BuildCircleOutlinedIcon, text: t("needsService"), tone: WARN },
-    listing.overallCondition === "repair" && { icon: BuildCircleOutlinedIcon, text: tOptions("overallCondition.repair"), tone: WARN },
-    listing.mileageLatvia === "none" && { icon: FlightLandOutlinedIcon, text: t("imported"), tone: NEUTRAL },
-  ].filter(Boolean) as { icon: typeof VerifiedOutlinedIcon; text: string; tone: string }[];
+    listing.service === "required" && { icon: <ServiceIcon />, text: t("needsService"), tone: WARN },
+    listing.overallCondition === "repair" && { icon: <EngineIcon />, text: tOptions("overallCondition.repair"), tone: WARN },
+    listing.mileageLatvia === "none" && { icon: <FlightLandOutlinedIcon sx={{ fontSize: 18 }} />, text: t("imported"), tone: NEUTRAL },
+  ].filter(Boolean) as { icon: React.ReactNode; text: string; tone: string }[];
 
   if (items.length === 0) return null;
 
   return (
     <div className="flex flex-wrap gap-2">
-      {items.map(({ icon: Icon, text, tone }) => (
+      {items.map(({ icon, text, tone }) => (
         <span
           key={text}
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium ${tone}`}
         >
-          <Icon sx={{ fontSize: 18 }} />
+          {icon}
           {text}
         </span>
       ))}

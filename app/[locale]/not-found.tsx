@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
-import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 import { cn } from "@/lib/utils";
 import { pageTitleClass } from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
+import { RoadClosed } from "@/components/ui/illustrations";
 import Container from "@/components/layout/Container";
 import { getBrands } from "@/features/catalog/api";
 
@@ -13,9 +13,7 @@ export default function NotFound() {
   return (
     <Container>
       <div className="py-16 sm:py-24 text-center max-w-xl mx-auto">
-        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-gray-100">
-          <SearchOffIcon sx={{ fontSize: 30 }} className="text-gray-500" />
-        </span>
+        <RoadClosed className="mx-auto w-56" />
 
         <p className="mt-6 text-sm font-semibold tracking-widest text-gray-400">404</p>
         <h1 className={cn("mt-2", pageTitleClass)}>{t("title")}</h1>

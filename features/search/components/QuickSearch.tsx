@@ -10,6 +10,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useBrandName } from "@/features/catalog/hooks";
 import { collectionHref, collections } from "@/features/collections/config";
 import { Link, useRouter } from "@/i18n/navigation";
+import Odometer from "@/components/ui/Odometer";
 import { formatNumber } from "@/lib/utils";
 
 import { BrandPanel, ModelPanel, PricePanel, YearPanel } from "./quick-search/panels";
@@ -168,7 +169,8 @@ export default function QuickSearch() {
               "
             >
               <SearchIcon fontSize="small" />
-              {t("show", { count })}
+              {/* число крутится, как одометр, пока выбирают фильтры */}
+              <span>{t.rich("show", { n: () => <Odometer value={count} /> })}</span>
             </button>
           </form>
 

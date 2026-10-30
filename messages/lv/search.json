@@ -16,7 +16,7 @@
   "priceTo": "līdz {value} €",
   "priceRange": "{from} – {to} €",
   "clear": "Notīrīt: {label}",
-  "show": "Rādīt {count, number}",
+  "show": "Rādīt <n></n>",
   "collections": "Kolekcijas:",
   "findBrand": "Meklēt marku",
   "findModel": "Meklēt modeli vai versiju",

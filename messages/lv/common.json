@@ -70,5 +70,12 @@
     "monthly": "Līzingā no {amount}/mēn.",
     "down": "pirmā iemaksa {percent}%",
     "months": "{count} mēn."
+  },
+  "mileageGauge": {
+    "label": "≈ {km} km gadā — {level}",
+    "low": "mazāk nekā vidēji",
+    "average": "vidēji",
+    "high": "vairāk nekā vidēji",
+    "perYear": "≈ {km} km gadā"
   }
 }

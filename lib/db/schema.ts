@@ -235,6 +235,7 @@ export const listings = pgTable(
     equipment: text().array(),
     sellerSince: smallint(),
     views: integer().notNull().default(0),
+    phoneViews: integer().notNull().default(0), // сколько посетителей открыли телефон (раз в сутки каждый)
     damages: jsonb().$type<DamageMap>(),
 
     overallCondition: text().$type<OverallCondition>(),
@@ -317,7 +318,7 @@ export const reports = pgTable(
   ]
 ).enableRLS();
 
-// Кто уже смотрел объявление сегодня — чтобы считать каждого посетителя раз в сутки.
+// Кто уже смотрел объявление (или открыл телефон) сегодня — чтобы считать каждого посетителя раз в сутки.
 // Не IP: visitor — необратимый хеш (IP + браузер + день + секрет), через день записи удаляются (features/cars/api/views.ts)
 export const listingViews = pgTable(
   "listing_views",

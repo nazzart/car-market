@@ -1,4 +1,4 @@
-// Просмотры объявления: каждый посетитель считается один раз в сутки. IP не храним — это персональные данные:
+// Просмотры объявления и открытия телефона: каждый посетитель считается один раз в сутки (отдельно для страницы и телефона). IP не храним — это персональные данные:
 // в listing_views лежит только необратимый хеш (IP + браузер + день + объявление + секрет), записи старше 2 дней удаляются.
 // Не считаются: роботы, сам продавец, объявления, которых покупатели не видят (на проверке, скрытые, заблокированные)
 import "server-only";
@@ -17,20 +17,24 @@ const SECRET = process.env.VIEWS_SECRET ?? process.env.DATABASE_URL ?? "";
 // день по Риге — «сегодня» для посетителя сайта
 const today = () => new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Riga" });
 
+// page — открыл страницу объявления (listings.views), phone — нажал «Показать телефон» (listings.phone_views)
+export type ViewKind = "page" | "phone";
+const counter = { page: sql.raw("views"), phone: sql.raw("phone_views") };
+
 // Посетитель: хеш из заголовков запроса; null — робот
-async function visitor(listingId: number): Promise<string | null> {
+async function visitor(listingId: number, kind: ViewKind): Promise<string | null> {
   const h = await headers();
   const agent = h.get("user-agent") ?? "";
   if (!agent || BOT.test(agent)) return null;
   const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "";
-  return createHash("sha256").update(`${SECRET}|${today()}|${listingId}|${ip}|${agent}`).digest("base64url").slice(0, 32);
+  return createHash("sha256").update(`${SECRET}|${today()}|${kind}|${listingId}|${ip}|${agent}`).digest("base64url").slice(0, 32);
 }
 
-export async function recordView(listingId: number, user: User | null): Promise<void> {
-  const key = await visitor(listingId);
+export async function recordView(listingId: number, user: User | null, kind: ViewKind = "page"): Promise<void> {
+  const key = await visitor(listingId, kind);
   if (!key) return;
 
-  // одним запросом: запомнить посетителя (если сегодня ещё не был) и только тогда +1 к просмотрам
+  // одним запросом: запомнить посетителя (если сегодня ещё не был) и только тогда +1 к счётчику
   await db.execute(sql`
     with seen as (
       insert into listing_views (listing_id, visitor)
@@ -43,7 +47,7 @@ export async function recordView(listingId: number, user: User | null): Promise<
       on conflict do nothing
       returning listing_id
     )
-    update listings set views = views + 1 where id in (select listing_id from seen)
+    update listings set ${counter[kind]} = ${counter[kind]} + 1 where id in (select listing_id from seen)
   `);
 
   // уборка: изредка удаляем вчерашние и более старые отметки (хватает индекса по created_at)

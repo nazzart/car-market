@@ -1,0 +1,1 @@
+ALTER TABLE "listings" ADD COLUMN "phone_views" integer DEFAULT 0 NOT NULL;

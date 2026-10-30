@@ -7,7 +7,7 @@ import { isListingId } from "@/lib/validate";
 
 import { countListings, getFilterModels, getLatestListings, getListingsByIds } from "./api";
 import type { FilterModel, Listing } from "./types";
-import { recordView } from "./api/views";
+import { type ViewKind, recordView } from "./api/views";
 
 const strings = (value: unknown, max: number): string[] =>
   Array.isArray(value) ? value.filter((v): v is string => typeof v === "string").slice(0, max) : [];
@@ -32,12 +32,12 @@ export async function loadFilterModels(brand: string): Promise<FilterModel[]> {
   return typeof brand === "string" && /^[a-z0-9-]{1,40}$/.test(brand) ? getFilterModels(brand) : [];
 }
 
-// Просмотр страницы объявления (вызывает браузер после открытия — роботы без JS не считаются).
+// Просмотр страницы объявления или открытие телефона (вызывает браузер — роботы без JS не считаются).
 // Ошибка подсчёта не должна мешать странице
-export async function recordListingView(id: string): Promise<void> {
-  if (!isListingId(id)) return;
+export async function recordListingView(id: string, kind: ViewKind = "page"): Promise<void> {
+  if (!isListingId(id) || (kind !== "page" && kind !== "phone")) return;
   try {
-    await recordView(Number(id), await getSessionUser());
+    await recordView(Number(id), await getSessionUser(), kind);
   } catch {
     // просмотр не засчитан — не страшно
   }

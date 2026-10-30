@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 
+import { recordListingView } from "@/features/cars/actions";
 import { telHref } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
@@ -15,12 +16,13 @@ const variants = {
 
 type PhoneButtonProps = {
   phone: string;
+  listingId?: string; // телефон объявления — открытие засчитывается в статистику продавца
   variant?: keyof typeof variants;
   className?: string;
 };
 
-// Номер скрыт до клика — позже здесь будет учёт просмотров телефона
-export default function PhoneButton({ phone, variant = "outline", className }: PhoneButtonProps) {
+// Номер скрыт до клика: открытие телефона объявления считается (раз в сутки на посетителя, features/cars/api/views.ts)
+export default function PhoneButton({ phone, listingId, variant = "outline", className }: PhoneButtonProps) {
   const t = useTranslations("common");
   const [shown, setShown] = useState(false);
 
@@ -41,7 +43,14 @@ export default function PhoneButton({ phone, variant = "outline", className }: P
   }
 
   return (
-    <button type="button" onClick={() => setShown(true)} className={classes}>
+    <button
+      type="button"
+      onClick={() => {
+        setShown(true);
+        if (listingId) recordListingView(listingId, "phone");
+      }}
+      className={classes}
+    >
       <PhoneOutlinedIcon fontSize="small" />
       {t("showPhone")}
     </button>

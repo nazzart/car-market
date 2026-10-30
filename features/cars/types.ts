@@ -68,6 +68,7 @@ export type Listing = {
   equipment?: string[]; // ключи из features/cars/config/equipment.ts
   sellerSince?: number;
   views?: number;
+  phoneViews?: number; // открыли телефон — статистика продавца
   damages?: DamageMap; // {} — продавец отметил, что повреждений нет
 
   // Состояние и обслуживание — из раздела «Состояние» формы продажи

@@ -16,8 +16,8 @@ import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 import ListingActions from "./ListingActions";
 import type { ListingStatus } from "./status";
 
-// Пока статистики нет — считаем примерные значения от просмотров
-export const phoneShows = (l: Listing) => Math.round((l.views ?? 0) * 0.12);
+// Открытия телефона — настоящие (features/cars/api/views.ts); сохранения пока примерно — от просмотров
+export const phoneShows = (l: Listing) => l.phoneViews ?? 0;
 export const favoritesOf = (l: Listing) => Math.round((l.views ?? 0) * 0.05);
 
 const statusBadge: Record<string, BadgeTone> = {

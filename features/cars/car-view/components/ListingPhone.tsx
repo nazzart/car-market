@@ -18,7 +18,7 @@ type ListingPhoneProps = {
 // «Показать телефон» с номером ответственного менеджера (если дилер его указал)
 export default function ListingPhone({ listing, variant, className }: ListingPhoneProps) {
   const { phone } = useListingContact(listing);
-  return <PhoneButton phone={phone} variant={variant} className={className} />;
+  return <PhoneButton phone={phone} listingId={listing.id} variant={variant} className={className} />;
 }
 
 type ContactPersonProps = { listing: Listing; className?: string };

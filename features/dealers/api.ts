@@ -3,23 +3,33 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { type SQL, and, asc, count, desc, eq, getTableColumns, ilike, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
+import { type SQL, and, asc, count, desc, eq, getTableColumns, ilike, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 
 import { published } from "@/features/cars/api";
 
 import { db, schema } from "@/lib/db";
 import { CACHE_VERSION } from "@/lib/db/cacheVersion";
+import { PLACES, findPlace, placeMatcher } from "@/lib/places";
 
 import { isListed } from "./lib/listed";
 import { getOpenStatus } from "./lib/openStatus";
-import type { Dealer, DealerContact, DealerPin } from "./types";
+import type { Dealer, DealerContact, DealerFilterOptions, DealerPin } from "./types";
 
 const { dealers, dealerContacts, listings, dealerBrands, carBrands } = schema;
+
+// Марки дилера — подзапрос через query builder: в запросе с JOIN Drizzle пишет столбцы с именем таблицы.
+// В sql`…` к одной таблице он пишет их без имени, и «"dealer_id" = "id"» сравнивал бы с car_brands.id
+const brandsOf = (dealerId: typeof dealers.id) =>
+  db
+    .select({ slug: carBrands.slug })
+    .from(dealerBrands)
+    .innerJoin(carBrands, eq(carBrands.id, dealerBrands.brandId))
+    .where(eq(dealerBrands.dealerId, dealerId));
 
 // Дилер с марками официального дилера (slug из каталога, по алфавиту)
 const dealerColumns = {
   ...getTableColumns(dealers),
-  brands: sql<string[]>`array(select ${carBrands.slug} from ${dealerBrands} join ${carBrands} on ${carBrands.id} = ${dealerBrands.brandId} where ${dealerBrands.dealerId} = ${dealers.id} order by ${carBrands.name})`,
+  brands: sql<string[]>`array(${brandsOf(dealers.id).orderBy(carBrands.name)})`,
 };
 type Row = typeof dealers.$inferSelect & { brands: string[] };
 
@@ -113,22 +123,33 @@ export const DEALERS_PAGE_SIZE = 10;
 
 type Params = { get: (key: string) => string | null };
 
-// Варианты для фильтров: города, где есть дилеры, и марки официальных дилеров
-const filterOptions = unstable_cache(
-  async () => {
-    const [cities, brands] = await Promise.all([
-      db.selectDistinct({ city: dealers.city }).from(dealers),
-      db.selectDistinct({ brand: carBrands.slug }).from(dealerBrands).innerJoin(carBrands, eq(carBrands.id, dealerBrands.brandId)),
-    ]);
-    return { cities: cities.map((r) => r.city), brands: brands.map((r) => r.brand) };
-  },
-  ["dealers", CACHE_VERSION, "filterOptions"],
-  { tags: ["dealers"], revalidate: 300 }
-);
+// Варианты фильтров — только по дилерам, которых видят покупатели, с числом дилеров у каждого:
+// города, края (novadi) с городами, где есть дилеры («Ogres novads» — дилеры в Ogre, Ikšķile…), и марки официальных дилеров
+export async function getDealerFilterOptions(): Promise<DealerFilterOptions> {
+  const listed = await getPublicDealers();
+  const tally = (keys: string[]) =>
+    [...keys.reduce((m, key) => m.set(key, (m.get(key) ?? 0) + 1), new Map<string, number>())].map(([value, count]) => ({ value, count }));
 
-export async function getDealerFilterOptions(): Promise<{ cities: string[]; brands: string[] }> {
-  return filterOptions();
+  const municipality = (key: string) => findPlace(key)?.kind === "municipality";
+  const areas = PLACES.filter((p) => p.kind === "municipality")
+    .map((p) => {
+      const inside = placeMatcher(p.key);
+      return { value: p.key, count: listed.filter((d) => inside(d.city)).length };
+    })
+    .filter((a) => a.count > 0);
+
+  return {
+    cities: tally(listed.map((d) => d.city).filter((city) => !municipality(city))),
+    areas,
+    brands: tally(listed.flatMap((d) => d.brands)),
+  };
 }
+
+// Город — только он; край — все его города (как фильтр «Vieta» в /cars)
+const placeKeys = (selected: string) => {
+  const keys = PLACES.map((p) => p.key).filter(placeMatcher(selected));
+  return keys.length ? keys : [selected];
+};
 
 // Поиск по названию или адресу: «%» и «_» из ввода — обычные символы, а не шаблон
 const likeText = (text: string) => `%${text.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
@@ -140,11 +161,9 @@ const matchingRows = unstable_cache(
     const conditions: (SQL | undefined)[] = [isNull(dealers.blockedAt), ne(dealers.address, ""), ne(dealers.phone, "")];
     if (q) conditions.push(or(ilike(dealers.name, likeText(q)), ilike(dealers.address, likeText(q))));
     if (type) conditions.push(eq(dealers.type, type as Dealer["type"]));
-    if (city) conditions.push(eq(dealers.city, city));
+    if (city) conditions.push(inArray(dealers.city, placeKeys(city)));
     if (brand)
-      conditions.push(
-        sql`exists (select 1 from ${dealerBrands} join ${carBrands} on ${carBrands.id} = ${dealerBrands.brandId} where ${dealerBrands.dealerId} = ${dealers.id} and ${carBrands.slug} = ${brand})`
-      );
+      conditions.push(sql`${brand} in (${brandsOf(dealers.id)})`);
     // проверенные — выше, дальше по алфавиту
     const [rows, stock] = await Promise.all([
       db

@@ -3,7 +3,7 @@
 import { useEffect, useEffectEvent, useRef, useState, useTransition } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import SearchIcon from "@mui/icons-material/Search";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
@@ -23,7 +23,7 @@ import { useDebouncedCallback, useDebouncedValue } from "@/lib/useDebounced";
 
 import type { DealerSearchResult } from "../api";
 import DealerCard from "./DealerCard";
-import type { MapBounds } from "../types";
+import type { DealerFilterOptions, MapBounds, OptionCount } from "../types";
 
 // Leaflet работает только в браузере
 const DealersMap = dynamic(() => import("./DealersMap"), {
@@ -38,7 +38,7 @@ const formatBounds = (b: MapBounds) => [b.south, b.west, b.north, b.east].map((n
 
 type DealersViewProps = {
   result: DealerSearchResult; // посчитано сервером: страница карточек + метки для карты
-  options: { cities: string[]; brands: string[] };
+  options: DealerFilterOptions;
   totalDealers: number;
   pageSize: number;
 };
@@ -49,6 +49,7 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
   const t = useTranslations("dealers");
   const tCommon = useTranslations("common");
   const placeName = usePlaceName();
+  const locale = useLocale();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -56,14 +57,22 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
   const [pending, startTransition] = useTransition();
 
   const typeOptions = dealerTypes.map((value) => ({ value, label: t(`types.${value}`) }));
-  const cityOptions = options.cities
-    .map((value) => ({ value, label: placeName(value) }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-
-  // В фильтре — только марки, у которых есть официальные дилеры
-  const brandOptions = options.brands
-    .map((slug) => ({ label: brandName(slug), value: slug }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+  // Места и марки — только где есть дилеры, с их числом; края — отдельной группой после городов
+  const withCount = (label: string, count: number) => `${label} (${count})`;
+  const sorted = <T extends { label: string }>(items: T[]) => items.sort((a, b) => a.label.localeCompare(b.label, locale));
+  const placeOptions = (items: OptionCount[], group: string) =>
+    sorted(items.map(({ value, count }) => ({ value, label: placeName(value), count }))).map(({ value, label, count }) => ({
+      value,
+      label: withCount(label, count),
+      group,
+    }));
+  const cityOptions = [
+    ...placeOptions(options.cities, tCommon("places.cities")),
+    ...placeOptions(options.areas, tCommon("places.municipalities")),
+  ];
+  const brandOptions = sorted(options.brands.map(({ value, count }) => ({ value, label: brandName(value), count }))).map(
+    ({ value, label, count }) => ({ value, label: withCount(label, count) })
+  );
 
   const params = useSearchParams();
 

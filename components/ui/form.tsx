@@ -26,12 +26,21 @@ export const inputClass = `
 type SelectProps = {
   value: string;
   onChange: (value: string) => void;
-  options: Option[];
+  options: (Option & { group?: string })[]; // group — заголовок группы (optgroup), варианты группы идут подряд
   placeholder: string;
   disabled?: boolean;
   label: string;
   className?: string;
 };
+
+// подряд идущие варианты одной группы — вместе
+const groupsOf = <T extends { group?: string }>(options: T[]) =>
+  options.reduce<{ group?: string; items: T[] }[]>((groups, o) => {
+    const last = groups.at(-1);
+    if (last && last.group === o.group) last.items.push(o);
+    else groups.push({ group: o.group, items: [o] });
+    return groups;
+  }, []);
 
 export function Select({
   value,
@@ -55,11 +64,23 @@ export function Select({
       >
         <option value="">{placeholder}</option>
 
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
+        {groupsOf(options).map(({ group, items }) =>
+          group ? (
+            <optgroup key={group} label={group}>
+              {items.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </optgroup>
+          ) : (
+            items.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))
+          )
+        )}
       </select>
 
       <KeyboardArrowDownIcon

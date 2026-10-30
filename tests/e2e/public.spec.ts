@@ -86,3 +86,18 @@ test("verified badge shows on dealer cards, the dealer page and the listing page
     await expect(badge.first()).toBeVisible();
   }
 });
+
+// Фильтры /dealers: места и марки — только где есть видимые дилеры, с числом; край находит дилеров своих городов
+test("dealers filters: cities, novadi and brands with counts", async ({ page }) => {
+  await page.goto("/dealers");
+  const city = page.locator('select[aria-label="Pilsēta"]');
+  await expect(city.locator('optgroup[label="Pilsētas"] option', { hasText: /^Rīga \(\d+\)$/ })).toHaveCount(1);
+  await expect(city.locator('optgroup[label="Novadi"] option', { hasText: /^Ogres novads \(\d+\)$/ })).toHaveCount(1);
+  await expect(page.locator('select[aria-label="Marka"] option', { hasText: /^BMW \(\d+\)$/ })).toHaveCount(1);
+
+  await page.goto("/dealers?city=ogres-novads");
+  await expect(page.locator("main article").first()).toContainText("Ogre");
+  await page.goto("/dealers?brand=bmw");
+  await expect(page.locator("main article")).toHaveCount(1);
+  await expect(page.locator("main article")).toContainText("Baltic Auto");
+});

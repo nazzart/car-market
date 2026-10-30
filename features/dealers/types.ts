@@ -43,5 +43,9 @@ export type Dealer = {
 // Метка на карте дилеров: только то, что нужно для значка и всплывающей карточки
 export type DealerPin = Pick<Dealer, "slug" | "name" | "lat" | "lng" | "address" | "city" | "hours" | "carsInStock">;
 
+// Варианты фильтров /dealers: значение (ключ места, slug марки) и сколько дилеров подходит
+export type OptionCount = { value: string; count: number };
+export type DealerFilterOptions = { cities: OptionCount[]; areas: OptionCount[]; brands: OptionCount[] };
+
 // Видимая область карты дилеров (поиск при перемещении карты)
 export type MapBounds = { north: number; south: number; east: number; west: number };

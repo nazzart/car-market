@@ -65,10 +65,14 @@ export async function getAdminBrands(): Promise<AdminBrand[]> {
       name: carBrands.name,
       popular: carBrands.popular,
       hidden: carBrands.hidden,
-      models: sql<number>`(select count(*)::int from ${carModels} where ${carModels.brandId} = ${carBrands.id})`,
-      listings: sql<number>`(select count(*)::int from ${listings} join ${carModels} on ${carModels.id} = ${listings.modelId} where ${carModels.brandId} = ${carBrands.id})`,
+      // через JOIN, а не подзапросы sql`…`: без JOIN Drizzle пишет столбцы без имени таблицы и «"id"» путается
+      models: sql<number>`count(distinct ${carModels.id})::int`,
+      listings: sql<number>`count(${listings.id})::int`,
     })
-    .from(carBrands);
+    .from(carBrands)
+    .leftJoin(carModels, eq(carModels.brandId, carBrands.id))
+    .leftJoin(listings, eq(listings.modelId, carModels.id))
+    .groupBy(carBrands.id);
   return rows.sort((a, b) => catalogOrder.compare(a.name, b.name));
 }
 

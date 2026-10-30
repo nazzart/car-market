@@ -38,4 +38,6 @@ test("listing page shows the leasing offer near the price", async ({ page }) => 
   const offer = page.locator("aside, main").getByText(/^Līzingā no .+ €\/mēn\.$/).filter({ visible: true }).first();
   await expect(offer).toBeVisible();
   await expect(page.getByText(/pirmā iemaksa \d+% \(.+ €\) · \d+ mēn\./).filter({ visible: true }).first()).toBeVisible();
+  // контактное лицо дилера — один раз (раньше дублировалось в карточке цены)
+  expect(await page.getByText(/Kontaktpersona/).filter({ visible: true }).count()).toBeLessThanOrEqual(1);
 });

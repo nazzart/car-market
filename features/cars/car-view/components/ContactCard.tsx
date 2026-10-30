@@ -7,7 +7,7 @@ import Card from "@/components/ui/Card";
 import { formatAgo, formatPrice } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
-import ListingPhone, { ContactPerson } from "./ListingPhone";
+import ListingPhone from "./ListingPhone";
 import SellerInfo from "./SellerInfo";
 import ReportButton from "@/features/moderation/ReportButton";
 import LeasingOffer from "./LeasingOffer";
@@ -34,7 +34,6 @@ export default function ContactCard({ listing }: ContactCardProps) {
         <LeasingOffer listing={listing} className="mt-4" />
 
         <ListingPhone listing={listing} variant="primary" className="w-full mt-5" />
-        <ContactPerson listing={listing} className="mt-3 justify-center" />
 
         <div className="border-t border-gray-100 my-5" />
 

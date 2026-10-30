@@ -99,7 +99,7 @@ Conventions:
 - **SQL lives in `features/*/api.ts`** (server-only; `features/cars/api/` is a folder: `rows.ts` shared mapping and the published rule, `search.ts` the /cars search, `index.ts` the rest). Server pages call its async functions
   (`getListing`, `searchListings`…); client components use the hooks in `hooks.ts`, which load only what the page
   needs (`useListingsByIds`…). The browser never receives the whole catalogue; dealer data reaches only pages that show it (the layout shares just the listing counts).
-- Listing titles are never typed by sellers: `listingTitle()` in `features/cars/lib/version.ts` builds them from brand, model and the optional version (`5 Series` + `530d` → "BMW 530d"). Filters work on the model family; the Version filter on /cars groups versions (`530d xDrive` → `530d`).
+- Listing titles are never typed by sellers: `listingTitle()` in `features/cars/lib/version.ts` builds them from brand, model and the optional version (`5 Series` + `530d` → "BMW 530d"). Filters work on the model family; in the /cars model dropdown each model lists its versions grouped by number (`530d xDrive` → `530`), so `?model=5 Series&version=530` finds every 530.
 - **`/cars` and `/dealers` search runs on the server:** filters in the URL become a SQL `WHERE`, results come
   20 listings / 10 dealers per page (`?page=2`) with real links (`components/ui/Pagination.tsx`), so search
   engines can reach every page. The dealers map gets light pins for all matches; "search as I move the map"

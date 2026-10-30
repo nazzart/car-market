@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  catalogVersionGroups,
   listingTitle,
   modelEntryMatches,
   normalizeVersion,
   searchTitle,
   versionGroup,
   versionGroupPattern,
+  versionGroupsOf,
 } from "@/features/cars/lib/version";
 
 describe("listingTitle", () => {
@@ -33,17 +33,20 @@ describe("listingTitle", () => {
   });
 });
 
+const BMW_5 = ["520d", "530d", "530d xDrive", "530e", "530e xDrive", "530i", "M550i xDrive"];
+const MB_E = ["E 200", "E 220 CDI", "E 220 d", "E 300 e"];
+
 describe("normalizeVersion", () => {
   it("uses the catalogue spelling when it matches", () => {
-    expect(normalizeVersion("bmw", "5 Series", "530 D")).toBe("530d");
-    expect(normalizeVersion("bmw", "5 Series", "530E XDRIVE")).toBe("530e xDrive");
-    expect(normalizeVersion("mercedes", "E-Class", "e220cdi")).toBe("E 220 CDI");
+    expect(normalizeVersion("530 D", BMW_5)).toBe("530d");
+    expect(normalizeVersion("530E XDRIVE", BMW_5)).toBe("530e xDrive");
+    expect(normalizeVersion("e220cdi", MB_E)).toBe("E 220 CDI");
   });
 
   it("tidies versions that are not in the catalogue", () => {
-    expect(normalizeVersion("bmw", "5 Series", "  530D   xdrive  touring ")).toBe("530d xDrive touring");
-    expect(normalizeVersion("audi", "A6", "45 tdi quattro")).toBe("45 TDI quattro");
-    expect(normalizeVersion("audi", "A6", "   ")).toBe("");
+    expect(normalizeVersion("  530D   xdrive  touring ", BMW_5)).toBe("530d xDrive touring");
+    expect(normalizeVersion("45 tdi quattro")).toBe("45 TDI quattro");
+    expect(normalizeVersion("   ")).toBe("");
   });
 });
 
@@ -86,20 +89,18 @@ describe("versionGroupPattern", () => {
 
 describe("model list with version groups", () => {
   it("groups catalogue versions of a model", () => {
-    const groups = catalogVersionGroups("bmw", "5 Series");
-    expect(groups).toContain("530");
-    expect(groups).toContain("M550");
-    expect(groups).not.toContain("530d");
+    expect(versionGroupsOf(BMW_5)).toEqual(["520", "530", "M550"]);
+    expect(versionGroupsOf(MB_E)).toEqual(["E 200", "E 220", "E 300"]);
   });
 
   it("finds a version group by the group, the model or a full version", () => {
     const entry = { model: "5 Series", version: "530" };
-    expect(modelEntryMatches("bmw", entry, "530")).toBe(true);
-    expect(modelEntryMatches("bmw", entry, "530d")).toBe(true);
-    expect(modelEntryMatches("bmw", entry, "5 ser")).toBe(true);
-    expect(modelEntryMatches("bmw", entry, "540")).toBe(false);
-    expect(modelEntryMatches("bmw", { model: "5 Series" }, "530")).toBe(false);
-    expect(modelEntryMatches("mercedes", { model: "CL", version: "CL 500" }, "cl 500")).toBe(true);
+    expect(modelEntryMatches(entry, "530", BMW_5)).toBe(true);
+    expect(modelEntryMatches(entry, "530d", BMW_5)).toBe(true);
+    expect(modelEntryMatches(entry, "5 ser", BMW_5)).toBe(true);
+    expect(modelEntryMatches(entry, "540", BMW_5)).toBe(false);
+    expect(modelEntryMatches({ model: "5 Series" }, "530", BMW_5)).toBe(false);
+    expect(modelEntryMatches({ model: "CL", version: "CL 500" }, "cl 500", ["CL 500", "CL 600"])).toBe(true);
   });
 });
 

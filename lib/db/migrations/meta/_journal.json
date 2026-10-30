@@ -50,6 +50,20 @@
       "when": 1793359922415,
       "tag": "0006_listing_version",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793369318868,
+      "tag": "0007_catalog_and_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793370711489,
+      "tag": "0008_catalog_ids",
+      "breakpoints": true
     }
   ]
 }

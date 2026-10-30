@@ -11,9 +11,9 @@ import { useListingStats } from "@/features/cars/hooks";
 import { Link } from "@/i18n/navigation";
 import { cn, formatNumber } from "@/lib/utils";
 
-import { type Brand, brands } from "../data/brands";
+import { useBrands } from "@/features/catalog/hooks";
+import type { Brand } from "@/features/catalog/types";
 
-const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
 // в свёрнутом виде — не больше стольких марок с объявлениями
 const COLLAPSED_LIMIT = 18;
 
@@ -63,6 +63,7 @@ function BrandChip({ brand, count }: BrandChipProps) {
 
 export default function BrandList() {
   const t = useTranslations("home.brands");
+  const sortedBrands = useBrands(); // по алфавиту
   const { byBrand } = useListingStats();
   const countOf = (brand: Brand) => byBrand[brand.slug] ?? 0;
   const [expanded, setExpanded] = useState(false);
@@ -78,7 +79,7 @@ export default function BrandList() {
     return sortedBrands
       .filter((b) => b.name.toLowerCase().includes(search))
       .toSorted((a, b) => Number(starts(b)) - Number(starts(a)));
-  }, [search]);
+  }, [search, sortedBrands]);
 
   // марки с объявлениями: самые наполненные, по алфавиту. Пока объявлений нет — популярные
   const inStock = sortedBrands.filter((b) => (byBrand[b.slug] ?? 0) > 0);

@@ -8,6 +8,7 @@ import { usePlaceName } from "@/lib/places";
 
 import { useCarFilters } from "../hooks/useCarFilters";
 import { FILTER_KEYS, chipLabel } from "../../config/filterOptions";
+import { useBrandName } from "@/features/catalog/hooks";
 
 type ActiveFilterChipsProps = { dealerName?: string };
 
@@ -20,7 +21,8 @@ export default function ActiveFilterChips({ dealerName }: ActiveFilterChipsProps
 
   // подборку показывают пилюли над поиском — здесь её не дублируем
   // окрестности входят в чип места: «Rīga + 20 km»
-  const names = { dealer: () => dealerName, place: placeName };
+  const brandName = useBrandName();
+  const names = { brand: brandName, dealer: () => dealerName, place: placeName };
   const chips = FILTER_KEYS.filter((key) => key !== "collection" && key !== "area").flatMap(
     (key) => {
       const value = params.get(key);

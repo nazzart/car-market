@@ -9,7 +9,7 @@ import Card, { CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import type { User } from "@/features/auth/types";
-import { brands } from "@/features/brands/data/brands";
+import { useBrandName } from "@/features/catalog/hooks";
 import OpenStatus from "@/features/dealers/components/OpenStatus";
 import { formatHours } from "@/features/dealers/lib/hours";
 import type { Dealer } from "@/features/dealers/types";
@@ -31,6 +31,7 @@ export default function AccountSidebar({
   const t = useTranslations("account");
   const tOptions = useTranslations("options");
   const placeName = usePlaceName();
+  const brandName = useBrandName();
   const isDealer = user.type === "dealer";
 
   return (
@@ -88,7 +89,7 @@ export default function AccountSidebar({
 
           <div className="flex flex-wrap gap-1.5 mt-4">
             {dealer.brands.map((b) => (
-              <Badge key={b}>{brands.find((brand) => brand.slug === b)?.name ?? b}</Badge>
+              <Badge key={b}>{brandName(b)}</Badge>
             ))}
           </div>
         </Card>

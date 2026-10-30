@@ -4,7 +4,6 @@ import { getTranslations } from "next-intl/server";
 
 import type { PageSearchParams } from "@/i18n/types";
 import Container from "@/components/layout/Container";
-import { brands } from "@/features/brands/data/brands";
 import CarsSearchView from "@/features/cars/car-list/components/CarsSearchView";
 import {
   PAGE_SIZE,
@@ -16,6 +15,7 @@ import {
   searchListings,
 } from "@/features/cars/api";
 import { collections } from "@/features/collections/config";
+import { getBrandModels, getBrandName } from "@/features/catalog/api";
 import { getDealer } from "@/features/dealers/api";
 import { searchTitle } from "@/features/cars/lib/version";
 
@@ -45,7 +45,8 @@ export async function generateMetadata({ params, searchParams }: CarsPageProps):
   const tCommon = await getTranslations({ locale, namespace: "common" });
   const tPages = await getTranslations({ locale, namespace: "common.pagination" });
 
-  const brandName = brands.find((b) => b.slug === get("brand"))?.name;
+  const brandSlug = get("brand");
+  const brandName = brandSlug ? await getBrandName(brandSlug) : undefined;
   const collection = collections.find((c) => c.slug === get("collection"));
   const dealerSlug = get("dealer");
   const dealerName = dealerSlug ? (await getDealer(dealerSlug))?.name : undefined;
@@ -71,12 +72,14 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
   const params = await toParams(searchParams);
   const dealerSlug = params.get("dealer");
   const brand = params.get("brand");
-  const [result, dealer, versions] = await Promise.all([
+  const [result, dealer, catalog, versions] = await Promise.all([
     searchListings(params),
     dealerSlug ? getDealer(dealerSlug) : undefined,
-    // версии моделей выбранной марки — вложены в список моделей
+    // модели выбранной марки из каталога и под каждой — версии из объявлений
+    brand ? getBrandModels(brand) : undefined,
     brand ? getBrandVersions(brand) : undefined,
   ]);
+  const models = catalog?.map(({ name }) => ({ name, versions: versions?.[name] ?? [] }));
 
   // ничего не нашлось — подсказки, какой фильтр убрать, и свежие объявления
   const empty =
@@ -93,7 +96,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
           pageSize={PAGE_SIZE}
           empty={empty}
           dealerName={dealer?.name}
-          versions={versions}
+          models={models}
         />
       </Suspense>
     </Container>

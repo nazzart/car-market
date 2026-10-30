@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-import { modelsByBrand } from "@/features/brands/data/models";
+import { useBrandModels } from "@/features/catalog/hooks";
 import { useListingStats, useSearchCount } from "@/features/cars/hooks";
 import { withQuery } from "@/lib/url";
 import { useDebouncedValue } from "@/lib/useDebounced";
@@ -21,6 +21,7 @@ export function useQuickSearch() {
   const [panel, setPanel] = useState<Panel | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [brandQuery, setBrandQuery] = useState("");
+  const catalog = useBrandModels(filters.brand);
 
   const set = (changes: Partial<QuickFilters>) => setFilters((prev) => ({ ...prev, ...changes }));
 
@@ -46,7 +47,7 @@ export function useQuickSearch() {
     set({ brand: slug, model: "" });
     setBrandQuery("");
     // сразу предлагаем выбрать модель
-    if (slug && modelsByBrand[slug] && modelRef.current) openPanel("model", modelRef.current);
+    if (slug && modelRef.current) openPanel("model", modelRef.current);
     else closePanel();
   };
 
@@ -68,7 +69,7 @@ export function useQuickSearch() {
     brandQuery,
     setBrandQuery,
     modelRef,
-    models: modelsByBrand[filters.brand] ?? [],
+    models: catalog?.map((m) => m.name) ?? [],
     count,
     total,
     href: withQuery("/cars", "", filters),

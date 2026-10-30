@@ -1,4 +1,3 @@
-import { brands } from "@/features/brands/data/brands";
 import { formatNumber } from "@/lib/utils";
 
 // Только значения — названия берутся из messages/{locale}/options.json по группе
@@ -72,7 +71,7 @@ export const chipLabel = (
   value: string,
   tOptions: Translate,
   tChips: Translate,
-  names: { dealer: (slug: string) => string | undefined; place: (key: string) => string },
+  names: { brand: (slug: string) => string; dealer: (slug: string) => string | undefined; place: (key: string) => string },
   area?: string | null // для чипа места: «Rīga + 20 km»
 ): string => {
   switch (key) {
@@ -81,7 +80,7 @@ export const chipLabel = (
     case "condition":
       return tOptions(`condition.${value}`);
     case "brand":
-      return brands.find((b) => b.slug === value)?.name ?? value;
+      return names.brand(value);
     case "model":
       return value;
     case "version":

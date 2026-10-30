@@ -5,7 +5,7 @@
 //                                                не трогаются
 //   npm run db:seed -- --reset --generate 100  — плюс 100 случайных объявлений (проверка поиска и пагинации)
 import { loadEnvConfig } from "@next/env";
-import { count, sql } from "drizzle-orm";
+import { count, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -23,6 +23,10 @@ const generateArg = process.argv.indexOf("--generate");
 const generate = generateArg > 0 ? Math.max(0, Number(process.argv[generateArg + 1]) || 0) : 0;
 const client = new Pool({ connectionString: process.env.MIGRATIONS_DATABASE_URL ?? process.env.DATABASE_URL!, max: 1 });
 const db = drizzle(client, { schema, casing: "snake_case" });
+
+const fail = (message: string): never => {
+  throw new Error(message);
+};
 
 async function main() {
   const [{ value: existing }] = await db.select({ value: count() }).from(schema.listings);
@@ -58,14 +62,30 @@ async function main() {
       .flatMap((d) => (d.contacts ?? []).map((c, position) => ({ ...c, dealerId: dealerId.get(d.slug)!, position })));
     if (contacts.length) await tx.insert(schema.dealerContacts).values(contacts);
 
+    // каталог (марки и модели загружены миграциями): slug → id марки, «марка/модель» → id модели
+    const catalogRows = await tx
+      .select({ brandId: schema.carBrands.id, slug: schema.carBrands.slug, modelId: schema.carModels.id, model: schema.carModels.name })
+      .from(schema.carModels)
+      .innerJoin(schema.carBrands, eq(schema.carBrands.id, schema.carModels.brandId));
+    const brandId = new Map(catalogRows.map((r) => [r.slug, r.brandId]));
+    const modelId = new Map(catalogRows.map((r) => [`${r.slug}/${r.model}`, r.modelId]));
+
+    // марки официальных дилеров
+    const dealerBrands = demoDealers
+      .filter((d) => dealerId.has(d.slug))
+      .flatMap((d) => d.brands.filter((b) => brandId.has(b)).map((b) => ({ dealerId: dealerId.get(d.slug)!, brandId: brandId.get(b)! })));
+    if (dealerBrands.length) await tx.insert(schema.dealerBrands).values(dealerBrands);
+
     // у дилерских объявлений имя и телефон не храним — они берутся из dealers при чтении;
     // sellerType тоже не колонка (считается по dealer_id), Drizzle его пропускает
     await tx.insert(schema.listings).values(
       allListings
         .filter((l) => !l.dealer || dealerId.has(l.dealer))
-        .map(({ id, dealer, postedMinutesAgo, sellerName, phone, ...listing }) => ({
+        .map(({ id, dealer, postedMinutesAgo, sellerName, phone, brand, model, ...listing }) => ({
           ...listing,
           id: Number(id),
+          // модель — из каталога; демо-данные и генератор берут модели из того же каталога
+          modelId: modelId.get(`${brand}/${model}`) ?? fail(`Нет модели в каталоге: ${brand} ${model}`),
           dealerId: dealer ? dealerId.get(dealer)! : null,
           sellerName: dealer ? null : sellerName,
           phone: dealer ? null : phone,

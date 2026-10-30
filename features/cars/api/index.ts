@@ -17,17 +17,19 @@ import { cached, forPublic, inCollection, newestFirst, ofDealer, published, sele
 export { published, type Params } from "./rows";
 export { PAGE_SIZE, countListings, relaxSuggestions, searchListings, type SearchResult } from "./search";
 
-const { listings } = schema;
+const { listings, carBrands, carModels } = schema;
 
 /* ---------- Счётчики: марки, модели, подборки ---------- */
 
 const statsQuery = cached(async (): Promise<ListingStats> => {
   const [models, collectionCounts] = await Promise.all([
     db
-      .select({ brand: listings.brand, model: listings.model, count: count() })
+      .select({ brand: carBrands.slug, model: carModels.name, count: count() })
       .from(listings)
+      .innerJoin(carModels, eq(carModels.id, listings.modelId))
+      .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
       .where(published)
-      .groupBy(listings.brand, listings.model),
+      .groupBy(carBrands.slug, carModels.name),
     Promise.all(
       collections.map(async (c) => {
         const [{ total }] = await db
@@ -56,10 +58,12 @@ export async function getListingStats(): Promise<ListingStats> {
 // Версии марки для списка моделей /cars: модель → группы версий («530», «E 220») с числом объявлений
 const versionsQuery = cached(async (brand: string) => {
   const rows = await db
-    .select({ model: listings.model, version: listings.version, n: count() })
+    .select({ model: carModels.name, version: listings.version, n: count() })
     .from(listings)
-    .where(and(published, eq(listings.brand, brand), isNotNull(listings.version)))
-    .groupBy(listings.model, listings.version);
+    .innerJoin(carModels, eq(carModels.id, listings.modelId))
+    .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
+    .where(and(published, eq(carBrands.slug, brand), isNotNull(listings.version)))
+    .groupBy(carModels.name, listings.version);
   const byModel = new Map<string, Map<string, number>>();
   for (const { model, version, n } of rows) {
     const groups = byModel.get(model) ?? new Map<string, number>();
@@ -115,7 +119,7 @@ const similarRows = cached(
   (id: number, brand: string, bodyType: string, limit: number) => {
     const hasPhotos = sql`cardinality(${listings.images}) > 0`;
     // та же марка — 2 балла, тот же кузов — 1, фото — 1; показываем от 2 баллов
-    const score = sql`(case when ${listings.brand} = ${brand} then 2 else 0 end)
+    const score = sql`(case when ${carBrands.slug} = ${brand} then 2 else 0 end)
       + (case when ${listings.bodyType} = ${bodyType} then 1 else 0 end)
       + (case when ${hasPhotos} then 1 else 0 end)`;
     return selectListings()
@@ -123,7 +127,7 @@ const similarRows = cached(
         and(
           published,
           ne(listings.id, id),
-          or(eq(listings.brand, brand), and(eq(listings.bodyType, bodyType), hasPhotos))
+          or(eq(carBrands.slug, brand), and(eq(listings.bodyType, bodyType), hasPhotos))
         )
       )
       .orderBy(desc(score), ...newestFirst)

@@ -10,7 +10,7 @@ import { db, schema } from "@/lib/db";
 
 import type { ListingStatus } from "./listings/status";
 
-const { listings, dealers, dealerContacts, profiles } = schema;
+const { listings, dealers, dealerContacts, profiles, dealerBrands, carBrands } = schema;
 
 const dealerIdOf = async (user: User) => {
   if (user.type !== "dealer" || !user.dealerSlug) return null;
@@ -62,12 +62,18 @@ export async function saveOwnDealer(user: User, fields: DealerFields) {
   if (dealerId === null) return false;
 
   await db.transaction(async (tx) => {
-    const { contacts, reassign, ...dealer } = fields;
+    const { contacts, reassign, brands, ...dealer } = fields;
     // смена регистрационного номера снимает значок «Проверенный» — модератор сверит заново
     await tx
       .update(dealers)
       .set({ ...dealer, verified: sql`${dealers.verified} and ${dealers.regNumber} = ${dealer.regNumber}` })
       .where(eq(dealers.id, dealerId));
+    // марки официального дилера — заново по slug из каталога (неизвестные пропускаются)
+    await tx.delete(dealerBrands).where(eq(dealerBrands.dealerId, dealerId));
+    if (brands.length) {
+      const ids = await tx.select({ id: carBrands.id }).from(carBrands).where(inArray(carBrands.slug, brands));
+      if (ids.length) await tx.insert(dealerBrands).values(ids.map(({ id }) => ({ dealerId, brandId: id })));
+    }
     await tx.update(profiles).set({ name: fields.name, phone: fields.phone }).where(eq(profiles.id, user.id));
 
     // id контакта, занятый другим дилером, не перехватываем — даём новый

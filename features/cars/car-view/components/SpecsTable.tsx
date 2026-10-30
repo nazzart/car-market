@@ -1,4 +1,3 @@
-import { brands } from "@/features/brands/data/brands";
 import { useTranslations } from "next-intl";
 
 import { Listing } from "@/features/cars/types";
@@ -11,7 +10,7 @@ export default function SpecsTable({ listing }: SpecsTableProps) {
   const tOptions = useTranslations("options");
 
   const rows: [string, React.ReactNode][] = [
-    ["brand", brands.find((b) => b.slug === listing.brand)?.name],
+    ["brand", listing.brandName],
     // год, пробег, двигатель, мощность, коробка и привод — в карточках над описанием
     ["body", tOptions(`bodyType.${listing.bodyType}`)],
     ["color", listing.color && tOptions(`colors.${listing.color}`)],

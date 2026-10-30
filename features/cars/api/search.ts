@@ -11,7 +11,7 @@ import { PLACES, placeMatcher } from "@/lib/places";
 import { FILTER_KEYS, postedPeriods } from "../config/filterOptions";
 import { versionGroupPattern } from "../lib/version";
 import type { Listing } from "../types";
-import { type Params, cached, newestFirst, ofDealer, published, selectListings, toListing, inCollection } from "./rows";
+import { type Params, cached, newestFirst, ofDealer, ofModels, published, selectListings, toListing, inCollection } from "./rows";
 
 const { listings } = schema;
 
@@ -27,7 +27,11 @@ function searchWhere(params: Params): SQL | undefined {
   const flag = (key: string) => params.get(key) === "1";
   const conditions: (SQL | undefined)[] = [published];
 
-  const equals = { condition: listings.condition, brand: listings.brand, model: listings.model, bodyType: listings.bodyType,
+  // марка и модель — по каталогу (model_id)
+  const brand = text("brand");
+  if (brand) conditions.push(ofModels(brand, text("model") ?? undefined));
+
+  const equals = { condition: listings.condition, bodyType: listings.bodyType,
     fuel: listings.fuel, transmission: listings.transmission, drive: listings.drive, color: listings.color } as const;
   for (const [key, column] of Object.entries(equals)) {
     const value = text(key);

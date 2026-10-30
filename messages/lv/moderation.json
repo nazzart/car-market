@@ -34,7 +34,8 @@
       "listings": "Sludinājumi",
       "reports": "Ziņojumi",
       "collections": "Kolekcijas",
-      "users": "Lietotāji"
+      "users": "Lietotāji",
+      "catalog": "Katalogs"
     },
     "stats": {
       "total": "Visi sludinājumi",
@@ -57,7 +58,10 @@
       "blockAccount": "Konts bloķēts",
       "unblockAccount": "Konts atbloķēts",
       "verify": "Dīleris pārbaudīts",
-      "unverify": "Pārbaude atcelta"
+      "unverify": "Pārbaude atcelta",
+      "catalogAdd": "Pievienots katalogā",
+      "catalogEdit": "Mainīts katalogā",
+      "catalogDelete": "Dzēsts no kataloga"
     },
     "queue": {
       "title": "Jāizskata",
@@ -194,6 +198,39 @@
       "block": "Bloķēt kontu",
       "unblock": "Atbloķēt kontu"
     },
-    "actionFailed": "Neizdevās saglabāt — mēģiniet vēlreiz. Dati ir atjaunoti."
+    "actionFailed": "Neizdevās saglabāt — mēģiniet vēlreiz. Dati ir atjaunoti.",
+    "catalog": {
+      "brands": "Markas",
+      "models": "Modeļi",
+      "versions": "Versijas",
+      "search": "Meklēt",
+      "addBrand": "Jauna marka",
+      "addModel": "Jauns modelis",
+      "addVersion": "Jauna versija, piem., 530d",
+      "add": "Pievienot",
+      "makePopular": "Atzīmēt kā populāru",
+      "unpopular": "Noņemt no populārajām",
+      "hide": "Paslēpt no sarakstiem",
+      "show": "Rādīt sarakstos",
+      "hidden": "Paslēpta",
+      "rename": "Pārdēvēt",
+      "save": "Saglabāt",
+      "cancel": "Atcelt",
+      "delete": "Dzēst",
+      "modelsCount": "{count, plural, zero {# modeļu} one {# modelis} other {# modeļi}}",
+      "versionsCount": "{count, plural, zero {# versiju} one {# versija} other {# versijas}}",
+      "listingsCount": "{count, plural, zero {# sludinājumu} one {# sludinājums} other {# sludinājumi}}",
+      "pickBrand": "Izvēlieties marku, lai redzētu tās modeļus",
+      "pickModel": "Izvēlieties modeli, lai redzētu tā versijas",
+      "noVersions": "Versiju vēl nav",
+      "renameHint": "Pārdēvējot modeli, mainās arī tā sludinājumi",
+      "deleteModelTitle": "Dzēst modeli «{name}»?",
+      "deleteModelText": "Modelim nav sludinājumu. To varēs pievienot atkal.",
+      "errors": {
+        "invalid": "Nepareizs nosaukums (1–40 simboli)",
+        "exists": "Tāds jau ir katalogā",
+        "inUse": "Modelim ir sludinājumi — to var tikai paslēpt"
+      }
+    }
   }
 }

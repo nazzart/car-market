@@ -1,9 +1,7 @@
 // Случайные, но правдоподобные демо-объявления для проверки поиска и пагинации на объёме:
 //   npm run db:seed -- --reset --generate 100
 // Генератор детерминированный (одно и то же зерно → одни и те же объявления), модели — из каталога RDW.
-import { brands } from "../features/brands/data/brands";
-import { modelsByBrand } from "../features/brands/data/models";
-import { versionsByModel } from "../features/brands/data/versions";
+import catalog from "./catalog/rdw-catalog.json";
 import { carColors } from "../features/cars/config/colors";
 import type { DemoListing } from "../features/cars/data/listings";
 import { listingTitle } from "../features/cars/lib/version";
@@ -102,7 +100,10 @@ function random(seed: number) {
   return { next, int, pick, chance };
 }
 
-const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
+// каталог — тот же, что загружен в базу (car_brands, car_models, car_versions)
+const brandName = (slug: string) => catalog.brands.find((b) => b.slug === slug)?.name ?? slug;
+const modelsByBrand: Record<string, string[]> = catalog.models;
+const versionsByModel: Record<string, Record<string, string[]>> = catalog.versions;
 
 // Версия из каталога, подходящая к топливу: дизель — 530d / E 220 CDI, гибрид — 530e / E 300 de, бензин — остальные
 const DIESEL = /\dd\b|\bd\b|CDI|BlueTEC/;

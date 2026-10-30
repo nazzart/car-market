@@ -2,7 +2,7 @@
 import type { Listing } from "../types";
 
 // Демо-объявление: статусы и решения модератора задаёт база (по умолчанию — активно), здесь их нет
-export type DemoListing = Omit<Listing, "status" | "moderation" | "accountBlock" | "excludedCollections">;
+export type DemoListing = Omit<Listing, "status" | "moderation" | "accountBlock" | "excludedCollections" | "brandName">;
 
 const bmwGallery = [
   "/cars/bmw1.jpg",

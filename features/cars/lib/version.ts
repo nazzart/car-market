@@ -1,6 +1,5 @@
 // Версия внутри модели («530d xDrive», «E 220 CDI»): заголовок объявления, приведение ввода к одному виду,
-// группа для фильтра и поиск модели по версии. Подсказки — features/brands/data/versions.ts (из каталога RDW)
-import { versionsByModel } from "@/features/brands/data/versions";
+// группа для фильтра и поиск модели по версии. Версии модели из каталога (car_versions) передаёт вызывающий
 
 const MAX_LENGTH = 40;
 
@@ -31,12 +30,13 @@ export function searchTitle(brandName: string, model: string | null, versions: s
 }
 
 // Ввод продавца → единый вид: как в подсказке, если совпадает с ней; иначе — привычное написание частей
-export function normalizeVersion(brand: string, model: string, raw: string): string {
+// known — версии модели из каталога
+export function normalizeVersion(raw: string, known: string[] = []): string {
   const value = raw.replace(/\s+/g, " ").trim().slice(0, MAX_LENGTH);
   if (!value) return "";
 
-  const known = (versionsByModel[brand]?.[model] ?? []).find((v) => compact(v) === compact(value));
-  if (known) return known;
+  const match = known.find((v) => compact(v) === compact(value));
+  if (match) return match;
 
   return value
     .replace(/^(m?)(\d{3})\s?([a-z]{1,2})\b/i, (_, m: string, n: string, s: string) => `${m.toUpperCase()}${n}${s.toLowerCase()}`)
@@ -66,18 +66,18 @@ export function versionGroupPattern(group: string): string {
   return `^${escaped}(${/\d$/.test(g) ? "[^0-9]" : "[^a-z0-9]"}|$)`;
 }
 
-// Группы версий модели из каталога (для формы подачи): 5 Series → 518, 520, 523, 525, 530…
-export function catalogVersionGroups(brand: string, model: string): string[] {
-  return [...new Set((versionsByModel[brand]?.[model] ?? []).map(versionGroup))];
+// Группы версий модели из каталога (для формы подачи): 520d, 530d xDrive, 530e… → 520, 530
+export function versionGroupsOf(versions: string[]): string[] {
+  return [...new Set(versions.map(versionGroup))];
 }
 
 // Вариант списка моделей подходит под ввод: модель — по названию; версия — по своей группе, модели
-// или полной версии из каталога («530d» → 530 под 5 Series)
-export function modelEntryMatches(brand: string, entry: { model: string; version?: string }, text: string) {
+// или полной версии из каталога («530d» → 530 под 5 Series). versions — версии этой модели из каталога
+export function modelEntryMatches(entry: { model: string; version?: string }, text: string, versions: string[] = []) {
   const query = compact(text);
   if (!query) return true;
   if (!entry.version) return compact(entry.model).includes(query);
-  const full = (versionsByModel[brand]?.[entry.model] ?? []).filter((v) => versionGroup(v) === entry.version);
+  const full = versions.filter((v) => versionGroup(v) === entry.version);
   return (
     compact(entry.version).startsWith(query) ||
     compact(`${entry.model}${entry.version}`).includes(query) ||

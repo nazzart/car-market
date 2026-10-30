@@ -19,8 +19,10 @@ export type MileageLatvia = (typeof MILEAGE_LATVIA)[number];
 
 export type Listing = {
   id: string;
-  brand: string; // slug марки (features/brands/data/brands.ts)
-  model: string; // модель из features/brands/data/models.ts или своя, если её нет в списке
+  brand: string; // slug марки (каталог: car_brands)
+  brandName: string; // название марки — из каталога при чтении
+  modelId?: number; // модель в каталоге (car_models.id); brand и model — её марка и название
+  model: string; // модель из каталога (car_models)
   version?: string; // версия внутри модели: «530d xDrive», «E 220 CDI» (features/cars/lib/version.ts)
   title: string; // марка + модель + версия — listingTitle()
   year: number;
@@ -87,3 +89,5 @@ export type SectionNavItem = { id: string; label: string };
 // Версии в списке моделей /cars: группа («530») и сколько опубликованных объявлений; по моделям марки
 export type VersionCount = { value: string; count: number };
 export type VersionsByModel = Record<string, VersionCount[]>;
+// Модель в фильтре /cars: из каталога, с группами версий из объявлений
+export type FilterModel = { name: string; versions: VersionCount[] };

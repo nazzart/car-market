@@ -6,7 +6,6 @@ import { getTranslations } from "next-intl/server";
 import MetaLine from "@/components/ui/MetaLine";
 import { pageTitleClass } from "@/components/ui/PageHeader";
 import Container from "@/components/layout/Container";
-import { brands } from "@/features/brands/data/brands";
 import { getListing } from "@/features/cars/api";
 import ContactCard from "@/features/cars/car-view/components/ContactCard";
 import DamageReport from "@/features/cars/car-view/components/DamageReport";
@@ -76,7 +75,6 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const tNav = await getTranslations("nav");
   const tCommon = await getTranslations("common");
 
-  const brandName = brands.find((b) => b.slug === listing.brand)?.name;
 
   const navItems = [
     { id: "description", label: t("sections.description") },
@@ -97,7 +95,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
         <Link href="/cars" className="hover:text-black">{tNav("cars")}</Link>
         <ChevronRightIcon sx={{ fontSize: 16 }} />
         <Link href={`/cars?brand=${listing.brand}`} className="hover:text-black">
-          {brandName}
+          {listing.brandName}
         </Link>
       </nav>
 

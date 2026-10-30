@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "catalog:build": "node scripts/build-car-catalog.mjs",
+    "catalog:import": "tsx scripts/catalog-import.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx scripts/db-seed.ts",

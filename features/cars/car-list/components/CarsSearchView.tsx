@@ -8,7 +8,7 @@ import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import PageHeader from "@/components/ui/PageHeader";
-import { brands } from "@/features/brands/data/brands";
+import { useBrandName } from "@/features/catalog/hooks";
 import { collections } from "@/features/collections/config";
 import CollectionPills from "@/features/collections/components/CollectionPills";
 import CarCard from "@/features/latest-cars/components/CarCard";
@@ -16,7 +16,7 @@ import Pagination from "@/components/ui/Pagination";
 
 import { SearchTransitionContext, useCarFilters } from "../hooks/useCarFilters";
 import { sortValues } from "../../config/filterOptions";
-import type { Listing, VersionsByModel } from "../../types";
+import type { Listing, FilterModel } from "../../types";
 import ActiveFilterChips from "./ActiveFilterChips";
 import EmptyResults from "./EmptyResults";
 import FiltersPanel from "./FiltersPanel";
@@ -77,7 +77,7 @@ export type SearchResultProps = {
   result: { items: Listing[]; total: number; page: number; pageCount: number };
   pageSize: number;
   dealerName?: string; // фильтр ?dealer= — название дилера для заголовка и чипа (сервер)
-  versions?: VersionsByModel; // версии моделей выбранной марки — в списке моделей (сервер)
+  models?: FilterModel[]; // модели выбранной марки с версиями (сервер)
   // ничего не нашлось: какой фильтр убрать (и сколько тогда будет) и свежие объявления
   empty?: { suggestions: { key: string; count: number }[]; fresh: Listing[] };
 };
@@ -95,7 +95,7 @@ export default function CarsSearchView(props: SearchResultProps) {
 
 type SearchViewProps = SearchResultProps & { pending: boolean };
 
-function SearchView({ result, pageSize, empty, pending, dealerName, versions }: SearchViewProps) {
+function SearchView({ result, pageSize, empty, pending, dealerName, models }: SearchViewProps) {
   const t = useTranslations("cars");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
@@ -110,7 +110,9 @@ function SearchView({ result, pageSize, empty, pending, dealerName, versions }: 
   const resultsLabel = tCommon("listings", { count: result.total });
 
   // Заголовок отражает поиск: «BMW M4», «BMW 530d, 530e», «Электромобили» или общий
-  const brandName = brands.find((b) => b.slug === params.get("brand"))?.name;
+  const brandNameOf = useBrandName();
+  const brand = params.get("brand");
+  const brandName = brand ? brandNameOf(brand) : undefined;
   const collection = collections.find((c) => c.slug === params.get("collection"));
 
   const title = dealerName
@@ -157,7 +159,7 @@ function SearchView({ result, pageSize, empty, pending, dealerName, versions }: 
           </div>
 
           <ScrollArea moreLabel={t("moreFilters")} className="px-5" fadeClassName="from-gray-100">
-            <FiltersPanel versions={versions} />
+            <FiltersPanel models={models} />
           </ScrollArea>
         </aside>
 
@@ -265,7 +267,7 @@ function SearchView({ result, pageSize, empty, pending, dealerName, versions }: 
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         resultsLabel={resultsLabel}
-        versions={versions}
+        models={models}
       />
     </div>
   );

@@ -1,7 +1,8 @@
 // Строит список марок и моделей для выпадающих списков из открытых данных
 // нидерландского регистра транспорта RDW (opendata.rdw.nl, лицензия CC0 — можно копировать и менять).
 //
-//   npm run catalog:build → features/brands/data/brands.ts, models.ts и versions.ts (файлы генерируются — не править руками)
+//   npm run catalog:build → scripts/catalog/rdw-catalog.json, затем npm run catalog:import — новое из него в базу.
+//   Каталог живёт в базе (car_brands, car_models, car_versions) и правится в /admin; импорт только добавляет
 //
 // В регистре — все легковые авто Нидерландов с «торговым названием» в разном написании:
 // «TOYOTA AYGO», «CEE'D», «320I», «C 200 CDI»… Скрипт сводит их к моделям («Aygo», «Ceed», «3 Series», «C-Class»)
@@ -12,7 +13,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const OUT = join(ROOT, "features", "brands", "data");
+const OUT_FILE = join(ROOT, "scripts", "catalog", "rdw-catalog.json");
 const API =
   "https://opendata.rdw.nl/resource/m9d7-ebf2.json?$select=merk,handelsbenaming,count(kenteken)%20as%20n,max(datum_eerste_toelating)%20as%20last&$where=voertuigsoort=%27Personenauto%27&$group=merk,handelsbenaming&$limit=200000";
 
@@ -382,30 +383,13 @@ if (process.env.REVIEW) {
   process.exit(0);
 }
 
-const header = "// Сгенерировано: npm run catalog:build (scripts/build-car-catalog.mjs) из открытых данных RDW (CC0).\n// Не править руками — правки в настройках скрипта.\n";
-writeFileSync(
-  join(OUT, "brands.ts"),
-  `${header}export type Brand = {\n  name: string;\n  slug: string;\n  popular?: boolean;\n};\n\nexport const brands: Brand[] = [\n${BRANDS.map(
-    ([name, slug, , popular]) => `  { name: ${JSON.stringify(name)}, slug: ${JSON.stringify(slug)}${popular ? ", popular: true" : ""} },`
-  ).join("\n")}\n];\n`
-);
-writeFileSync(
-  join(OUT, "models.ts"),
-  `${header}export const modelsByBrand: Record<string, string[]> = {\n${BRANDS.filter(([, slug]) => models[slug].length)
-    .map(([, slug]) => `  ${JSON.stringify(slug)}: ${JSON.stringify(models[slug]).replace(/","/g, '", "')},`)
-    .join("\n")}\n};\n`
-);
-writeFileSync(
-  join(OUT, "versions.ts"),
-  `${header}// Версии (марка → модель → версии): подсказки в форме подачи. Своя версия тоже допустима
-export const versionsByModel: Record<string, Record<string, string[]>> = {\n${Object.entries(versions)
-    .map(
-      ([slug, byModel]) =>
-        `  ${JSON.stringify(slug)}: {\n${Object.entries(byModel)
-          .map(([model, list]) => `    ${JSON.stringify(model)}: ${JSON.stringify(list).replace(/","/g, '", "')},`)
-          .join("\n")}\n  },`
-    )
-    .join("\n")}\n};\n`
-);
+// Данные для каталога в базе: миграция 0007 загрузила первую версию, npm run catalog:import добавляет новое
+const catalog = {
+  source: "RDW open data (opendata.rdw.nl, CC0)",
+  brands: BRANDS.map(([name, slug, , popular]) => ({ name, slug, popular: Boolean(popular) })),
+  models: Object.fromEntries(BRANDS.filter(([, slug]) => models[slug].length).map(([, slug]) => [slug, models[slug]])),
+  versions,
+};
+writeFileSync(OUT_FILE, `${JSON.stringify(catalog, null, 1)}\n`);
 const total = Object.values(models).reduce((n, list) => n + list.length, 0);
-console.log(`Готово: ${BRANDS.length} марок, ${total} моделей → features/brands/data/brands.ts, models.ts`);
+console.log(`Готово: ${BRANDS.length} марок, ${total} моделей → scripts/catalog/rdw-catalog.json (дальше: npm run catalog:import)`);

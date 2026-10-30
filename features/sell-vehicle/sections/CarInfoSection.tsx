@@ -1,19 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { Autocomplete, TextField, MenuItem, InputAdornment } from "@mui/material";
 import { useTranslations } from "next-intl";
 
 import SearchSelect, { popupSlotProps } from "@/components/ui/SearchSelect";
-import { brands } from "@/features/brands/data/brands";
-import { modelsByBrand } from "@/features/brands/data/models";
-import { versionsByModel } from "@/features/brands/data/versions";
-import {
-  catalogVersionGroups,
-  listingTitle,
-  modelEntryMatches,
-  normalizeVersion,
-  versionGroup,
-} from "@/features/cars/lib/version";
+import { listingTitle, modelEntryMatches, normalizeVersion, versionGroup, versionGroupsOf } from "@/features/cars/lib/version";
+import { useBrandModels, useBrands } from "@/features/catalog/hooks";
+import type { Brand } from "@/features/catalog/types";
 import { carColors } from "@/features/cars/config/colors";
 
 import { SectionContainer } from "../components/SectionContainer";
@@ -37,12 +31,16 @@ export function CarInfoSection({
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");
 
-  const models = modelsByBrand[data.brand] ?? [];
-  const versions = versionsByModel[data.brand]?.[data.model] ?? [];
+  // каталог: марки — с сервера при загрузке страницы, модели с версиями — по выбранной марке
+  const brands = useBrands();
+  const catalog = useBrandModels(data.brand);
+  const versionsOf = (model: string) => catalog?.find((m) => m.name === model)?.versions ?? [];
+  const versions = versionsOf(data.model);
   const brandName = brands.find((b) => b.slug === data.brand)?.name ?? "";
   const carTitle = data.model ? listingTitle(brandName, data.model, data.version) : "";
-  const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
-  const brandOption = (b: (typeof brands)[number]) => ({ value: b.slug, label: b.name });
+  const brandOption = (b: Brand) => ({ value: b.slug, label: b.name });
+  // что введено в поле модели (модель — только из списка; ввод — для поиска, в т. ч. «530d»)
+  const [modelQuery, setModelQuery] = useState("");
 
   const colorOptions = carColors.map((c) => ({ ...c, label: tOptions(`colors.${c.value}`) }));
   const bodyTypeOptions = bodyTypes.map((value) => ({ value, label: tOptions(`bodyType.${value}`) }));
@@ -73,9 +71,9 @@ export function CarInfoSection({
           <SearchSelect
             label={t("brand")}
             required
-            featured={sortedBrands.filter((b) => b.popular).map(brandOption)}
+            featured={brands.filter((b) => b.popular).map(brandOption)}
             featuredLabel={t("popularBrands")}
-            options={sortedBrands.map(brandOption)}
+            options={brands.map(brandOption)}
             allLabel={t("allBrands")}
             value={data.brand ?? ""}
             onChange={(slug) => {
@@ -86,25 +84,28 @@ export function CarInfoSection({
             error={attemptedNext && !validateField(data.brand, getRules("brand"))}
           />
 
-          {/* модель — из списка или своя; под каждой моделью — группы версий («5 Series» → 530):
+          {/* модель — только из каталога; под каждой моделью — группы версий («5 Series» → 530):
               выбор версии сразу заполняет модель и версию, «530d» в поле → 5 Series + 530d */}
-          <Autocomplete<ModelOption, false, false, true>
-            freeSolo
-            options={models.flatMap((model) => [
-              { model },
-              ...catalogVersionGroups(data.brand, model).map((version) => ({ model, version })),
+          <Autocomplete<ModelOption>
+            options={(catalog ?? []).flatMap(({ name, versions }) => [
+              { model: name },
+              ...versionGroupsOf(versions).map((version) => ({ model: name, version })),
             ])}
-            // значение — только текст поля: иначе MUI считает введённое уже выбранным и не фильтрует список
-            value={null}
-            inputValue={data.model ?? ""}
-            getOptionLabel={(o) => (typeof o === "string" ? o : o.model)}
+            value={data.model ? { model: data.model } : null}
+            inputValue={modelQuery}
+            getOptionLabel={(o) => o.model}
             isOptionEqualToValue={(o, v) => o.model === v.model && o.version === v.version}
-            filterOptions={(options, { inputValue }) => options.filter((o) => modelEntryMatches(data.brand, o, inputValue))}
+            filterOptions={(options, { inputValue }) =>
+              // выбранная модель в поле — показываем весь список
+              inputValue === data.model ? options : options.filter((o) => modelEntryMatches(o, inputValue, versionsOf(o.model)))
+            }
+            loading={Boolean(data.brand) && catalog === undefined}
+            noOptionsText={t("modelNotFound")}
             renderOption={({ key, ...props }, o, { inputValue }) => (
               <li key={`${String(key)}|${o.version ?? ""}`} {...props}>
                 {/* версия — с отступом под моделью; при поиске модели рядом может не быть — «5 Series · 530» */}
                 {o.version ? (
-                  inputValue ? (
+                  inputValue && inputValue !== data.model ? (
                     <span>
                       {o.model} <span className="text-gray-500">· {o.version}</span>
                     </span>
@@ -116,18 +117,17 @@ export function CarInfoSection({
                 )}
               </li>
             )}
-            onInputChange={(_, text, reason) => {
-              // reset — MUI подставляет подпись выбранного варианта; модель уже записана в onChange
-              if (reason === "reset") return;
-              if (text !== data.model && data.version) updateField("version", "");
-              updateField("model", text);
-            }}
+            onInputChange={(_, text) => setModelQuery(text)}
             onChange={(_, o) => {
-              if (!o || typeof o === "string") return;
+              if (!o) {
+                updateField("model", "");
+                updateField("version", "");
+                return;
+              }
               if (o.version) {
                 // вписали полную версию («530d») — она и остаётся; иначе группа («530»), уточнить можно в поле версии
-                const typed = normalizeVersion(data.brand, o.model, data.model ?? "");
-                const known = versionsByModel[data.brand]?.[o.model]?.includes(typed) && versionGroup(typed) === o.version;
+                const typed = normalizeVersion(modelQuery, versionsOf(o.model));
+                const known = versionsOf(o.model).includes(typed) && versionGroup(typed) === o.version;
                 updateField("version", known ? typed : o.version);
               } else if (o.model !== data.model) updateField("version", "");
               updateField("model", o.model);
@@ -158,7 +158,7 @@ export function CarInfoSection({
             }}
             onChange={(_, value) => updateField("version", value ?? "")}
             // своё написание — к единому виду: «530D XDRIVE» → «530e xDrive»
-            onBlur={() => updateField("version", normalizeVersion(data.brand, data.model, data.version ?? ""))}
+            onBlur={() => updateField("version", normalizeVersion(data.version ?? "", versions))}
             disabled={!data.model}
             slotProps={popupSlotProps}
             autoHighlight

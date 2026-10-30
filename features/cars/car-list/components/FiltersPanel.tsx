@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-import { brands } from "@/features/brands/data/brands";
-import { modelsByBrand } from "@/features/brands/data/models";
+import { useBrands } from "@/features/catalog/hooks";
+import type { Brand } from "@/features/catalog/types";
 import { useListingStats } from "@/features/cars/hooks";
 import SearchSelect from "@/components/ui/SearchSelect";
 import { formatNumber } from "@/lib/utils";
-import type { VersionsByModel } from "@/features/cars/types";
+import type { FilterModel } from "@/features/cars/types";
 import CheckIcon from "@mui/icons-material/Check";
 import { carColors } from "../../config/colors";
 
@@ -31,7 +31,6 @@ import { ChipGroup, Segmented, inputClass } from "@/components/ui/form";
 import { FilterSection } from "./FilterSection";
 import LocationFilter from "./LocationFilter";
 
-const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
 
 type RangeInputsProps = {
   fromKey?: string;
@@ -112,10 +111,10 @@ function FlagChip({ name }: FlagChipProps) {
 }
 
 type FiltersPanelProps = {
-  versions?: VersionsByModel; // версии моделей выбранной марки (сервер) — вложены в список моделей
+  models?: FilterModel[]; // модели выбранной марки из каталога, с версиями из объявлений (сервер)
 };
 
-export default function FiltersPanel({ versions = {} }: FiltersPanelProps) {
+export default function FiltersPanel({ models: brandModels = [] }: FiltersPanelProps) {
   const t = useTranslations("cars.panel");
   const tOptions = useTranslations("options");
   const tChips = useTranslations("cars.chips");
@@ -139,13 +138,14 @@ export default function FiltersPanel({ versions = {} }: FiltersPanelProps) {
   const { byBrand, byModel } = useListingStats();
   const brand = get("brand");
 
-  const brandOption = (b: (typeof brands)[number]) => ({ value: b.slug, label: b.name, count: byBrand[b.slug] });
+  const brands = useBrands();
+  const brandOption = (b: Brand) => ({ value: b.slug, label: b.name, count: byBrand[b.slug] });
 
   // Модели и под каждой — её версии из объявлений, которые есть сейчас: «5 Series» → «530», «540».
   // Выбор версии — сразу модель и версия (?model=5 Series&version=530)
-  const models = (modelsByBrand[brand] ?? []).flatMap((model) => [
+  const models = brandModels.flatMap(({ name: model, versions }) => [
     { value: model, label: model, count: byModel[brand]?.[model] },
-    ...(versions[model] ?? []).map(({ value, count }) => ({
+    ...versions.map(({ value, count }) => ({
       value: `${model}|${value}`,
       label: value,
       fullLabel: `${model} · ${value}`,
@@ -177,9 +177,9 @@ export default function FiltersPanel({ versions = {} }: FiltersPanelProps) {
             variant="compact"
             label={t("brand")}
             placeholder={t("anyBrand")}
-            featured={sortedBrands.filter((b) => b.popular).map(brandOption)}
+            featured={brands.filter((b) => b.popular).map(brandOption)}
             featuredLabel={t("popularBrands")}
-            options={sortedBrands.map(brandOption)}
+            options={brands.map(brandOption)}
             allLabel={t("allBrands")}
             value={brand}
             onChange={set("brand")}

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import Button from "@/components/ui/Button";
-import { brands } from "@/features/brands/data/brands";
+import { useBrands } from "@/features/catalog/hooks";
 import { useListingStats } from "@/features/cars/hooks";
 import { formatNumber } from "@/lib/utils";
 
@@ -11,7 +11,6 @@ import type { QuickSearchState } from "./useQuickSearch";
 
 // Панели выбора под строкой поиска: марка (с поиском и числом объявлений), модель, цена, год
 
-const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 24 }, (_, i) => String(currentYear - i));
 const pricePresets = [3000, 5000, 10000, 15000, 20000, 30000];
@@ -39,6 +38,7 @@ type BrandPanelProps = { search: QuickSearchState };
 export function BrandPanel({ search }: BrandPanelProps) {
   const t = useTranslations("search");
   const { byBrand } = useListingStats();
+  const sortedBrands = useBrands();
   const { filters, brandQuery, setBrandQuery, selectBrand } = search;
   const found = sortedBrands.filter((b) => b.name.toLowerCase().includes(brandQuery.trim().toLowerCase()));
 

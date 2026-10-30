@@ -12,7 +12,7 @@ import { CACHE_VERSION } from "@/lib/db/cacheVersion";
 
 import type { Listing } from "../types";
 
-const { listings, dealers, dealerContacts, profiles } = schema;
+const { listings, dealers, dealerContacts, profiles, carBrands, carModels } = schema;
 
 export type Params = { get: (key: string) => string | null };
 
@@ -23,6 +23,10 @@ export type Params = { get: (key: string) => string | null };
 // и блокировка аккаунта продавца модератором — из dealers или profiles
 const listingColumns = {
   ...getTableColumns(listings),
+  // марка и модель — из каталога по model_id
+  brand: carBrands.slug,
+  brandName: carBrands.name,
+  model: carModels.name,
   dealerSlug: dealers.slug,
   dealerName: dealers.name,
   dealerVerified: dealers.verified,
@@ -39,6 +43,8 @@ export const selectListings = () =>
   db
     .select(listingColumns)
     .from(listings)
+    .innerJoin(carModels, eq(carModels.id, listings.modelId))
+    .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
     .leftJoin(dealers, eq(dealers.id, listings.dealerId))
     .leftJoin(dealerContacts, eq(dealerContacts.id, listings.contactId))
     .leftJoin(profiles, eq(profiles.id, listings.userId));
@@ -120,6 +126,22 @@ export const published = and(
   sql`not exists (select 1 from ${profiles} where ${profiles.id} = ${listings.userId} and ${profiles.blockedAt} is not null)`
 )!;
 
+// Объявления марки (и модели) — по каталогу: model_id из моделей этой марки. Для WHERE без JOIN каталога
+export const ofModels = (brand: string | string[], model?: string) =>
+  inArray(
+    listings.modelId,
+    db
+      .select({ id: carModels.id })
+      .from(carModels)
+      .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
+      .where(
+        and(
+          Array.isArray(brand) ? inArray(carBrands.slug, brand) : eq(carBrands.slug, brand),
+          model === undefined ? undefined : eq(carModels.name, model)
+        )
+      )
+  );
+
 // Подборка — по её правилу, кроме объявлений, которые модератор из неё убрал
 export const inCollection = (slug: string) =>
   and(collectionWhere[slug], sql`not (${slug} = any(${listings.excludedCollections}))`);
@@ -129,6 +151,6 @@ export const newestFirst = [desc(listings.postedAt), desc(listings.id)];
 export const collectionWhere: Record<string, SQL | undefined> = {
   retro: lte(listings.year, 1995),
   sport: and(inArray(listings.bodyType, ["coupe", "convertible"]), gte(listings.power, 300)),
-  exotic: or(inArray(listings.brand, EXOTIC_BRANDS), gte(listings.price, 100_000)),
+  exotic: or(ofModels(EXOTIC_BRANDS), gte(listings.price, 100_000)),
   electric: eq(listings.fuel, "electric"),
 };

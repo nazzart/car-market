@@ -7,7 +7,7 @@ import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import Badge from "@/components/ui/Badge";
-import { brands } from "@/features/brands/data/brands";
+import { useBrandName } from "@/features/catalog/hooks";
 import { usePlaceName } from "@/lib/places";
 import PhoneButton from "@/features/cars/car-list/components/PhoneButton";
 import { Link } from "@/i18n/navigation";
@@ -26,9 +26,9 @@ type DealerCardProps = {
   onHover: (hovered: boolean) => void;
 };
 
-const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
 export default function DealerCard({ dealer, active, onSelect, onHover }: DealerCardProps) {
+  const brandName = useBrandName();
   const t = useTranslations("dealers");
   const tCommon = useTranslations("common");
   const tOptions = useTranslations("options");

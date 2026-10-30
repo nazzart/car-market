@@ -12,7 +12,7 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import PageHeader from "@/components/ui/PageHeader";
 import Skeleton from "@/components/ui/Skeleton";
 import EmptyState from "@/components/ui/EmptyState";
-import { brands } from "@/features/brands/data/brands";
+import { useBrandName } from "@/features/catalog/hooks";
 import { usePlaceName } from "@/lib/places";
 import { withQuery } from "@/lib/url";
 import Pagination from "@/components/ui/Pagination";
@@ -44,6 +44,7 @@ type DealersViewProps = {
 };
 
 export default function DealersView({ result, options, totalDealers, pageSize }: DealersViewProps) {
+  const brandName = useBrandName();
   // Фильтры в URL, как на /cars: ссылкой можно поделиться, «Назад» их сохраняет, сервер по ним ищет
   const t = useTranslations("dealers");
   const tCommon = useTranslations("common");
@@ -61,7 +62,7 @@ export default function DealersView({ result, options, totalDealers, pageSize }:
 
   // В фильтре — только марки, у которых есть официальные дилеры
   const brandOptions = options.brands
-    .map((slug) => ({ label: brands.find((b) => b.slug === slug)?.name ?? slug, value: slug }))
+    .map((slug) => ({ label: brandName(slug), value: slug }))
     .sort((a, b) => a.label.localeCompare(b.label));
 
   const params = useSearchParams();

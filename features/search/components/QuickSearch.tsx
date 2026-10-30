@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { Popover } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
-import { brands } from "@/features/brands/data/brands";
+import { useBrandName } from "@/features/catalog/hooks";
 import { collectionHref, collections } from "@/features/collections/config";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/utils";
@@ -25,7 +25,8 @@ export default function QuickSearch() {
   const search = useQuickSearch();
   const { filters, set, selectBrand, panel, anchorEl, openPanel, closePanel, modelRef, models, count, total } = search;
 
-  const brandName = brands.find((b) => b.slug === filters.brand)?.name ?? "";
+  const brandNameOf = useBrandName();
+  const brandName = filters.brand ? brandNameOf(filters.brand) : "";
 
   const priceLabel = (from: string, to: string) => {
     if (from && to) return t("priceRange", { from: formatNumber(+from), to: formatNumber(+to) });

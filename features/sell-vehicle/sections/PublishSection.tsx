@@ -7,7 +7,7 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import CarPhoto from "@/components/ui/CarPhoto";
 import { listingTitle } from "@/features/cars/lib/version";
-import { brands } from "@/features/brands/data/brands";
+import { useBrandName } from "@/features/catalog/hooks";
 import { usePlaceName } from "@/lib/places";
 import { formatNumber, formatPrice } from "@/lib/utils";
 
@@ -27,7 +27,7 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
   const placeName = usePlaceName();
 
   const photos: string[] = data.photos ?? [];
-  const brandName = brands.find((b) => b.slug === data.brand)?.name;
+  const brandName = useBrandName()(data.brand);
   const title = (data.model && listingTitle(brandName ?? "", data.model, data.version)) || t("yourCar");
   const complete = requiredDone === requiredTotal;
 

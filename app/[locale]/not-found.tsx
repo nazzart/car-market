@@ -5,9 +5,7 @@ import { cn } from "@/lib/utils";
 import { pageTitleClass } from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import Container from "@/components/layout/Container";
-import { brands } from "@/features/brands/data/brands";
-
-const popularBrands = brands.filter((b) => b.popular).slice(0, 8);
+import { getBrands } from "@/features/catalog/api";
 
 export default function NotFound() {
   const t = useTranslations("common.notFound");
@@ -35,11 +33,7 @@ export default function NotFound() {
         <div className="mt-12">
           <p className="text-sm text-gray-500 mb-3">{t("popular")}</p>
           <div className="flex flex-wrap justify-center gap-2">
-            {popularBrands.map((b) => (
-              <Button variant="outline" size="sm" key={b.slug} href={`/cars?brand=${b.slug}`}>
-                {b.name}
-              </Button>
-            ))}
+            <PopularBrands />
             <Button variant="outline" size="sm" href="/dealers">
               {t("dealers")}
             </Button>
@@ -48,4 +42,14 @@ export default function NotFound() {
       </div>
     </Container>
   );
+}
+
+// Популярные марки из каталога — отдельный асинхронный компонент: сама страница 404 синхронная (useTranslations)
+async function PopularBrands() {
+  const brands = (await getBrands()).filter((b) => b.popular).slice(0, 8);
+  return brands.map((b) => (
+    <Button variant="outline" size="sm" key={b.slug} href={`/cars?brand=${b.slug}`}>
+      {b.name}
+    </Button>
+  ));
 }

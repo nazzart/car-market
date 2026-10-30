@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-import { brands } from "@/features/brands/data/brands";
 import CarCard from "@/features/latest-cars/components/CarCard";
 import { Link } from "@/i18n/navigation";
 
@@ -19,8 +18,6 @@ export default async function SimilarListings({ listing }: SimilarListingsProps)
 
   if (similar.length === 0) return null;
 
-  const brandName = brands.find((b) => b.slug === listing.brand)?.name;
-
   return (
     <section className="mt-16 pt-10 border-t border-gray-100">
       <div className="flex items-end justify-between gap-4 mb-6">
@@ -30,7 +27,7 @@ export default async function SimilarListings({ listing }: SimilarListingsProps)
           href={`/cars?brand=${listing.brand}`}
           className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-black transition"
         >
-          {t("all", { brand: brandName ?? "" })}
+          {t("all", { brand: listing.brandName })}
           <ArrowForwardIcon sx={{ fontSize: 16 }} />
         </Link>
       </div>

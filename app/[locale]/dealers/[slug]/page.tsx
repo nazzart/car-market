@@ -15,7 +15,7 @@ import { buttonClass } from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import StatTile from "@/components/ui/StatTile";
 import Container from "@/components/layout/Container";
-import { brands } from "@/features/brands/data/brands";
+import { getBrands } from "@/features/catalog/api";
 import { placeName } from "@/lib/places";
 import ContactPhoneButton from "@/features/cars/car-view/components/ContactPhoneButton";
 import { getDealerListings } from "@/features/cars/api";
@@ -46,7 +46,6 @@ export async function generateMetadata({ params }: DealerPageProps): Promise<Met
   return { title: t("metaTitle", { name: dealer.name, city: placeName(dealer.city, locale) }) };
 }
 
-const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
 export default async function DealerPage({ params }: DealerPageProps) {
   const dealer = await findDealer(params);
@@ -57,6 +56,8 @@ export default async function DealerPage({ params }: DealerPageProps) {
   const tListing = await getTranslations("listing");
   const tNav = await getTranslations("nav");
   const tCommon = await getTranslations("common");
+  const brands = await getBrands();
+  const brandName = (slug: string) => brands.find((b) => b.slug === slug)?.name ?? slug;
 
   const cityName = placeName(dealer.city, (await params).locale);
 

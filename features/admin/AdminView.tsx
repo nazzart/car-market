@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 import { useAdminData, useListingAdmin } from "./shared";
 import ApprovalsTab from "./tabs/ApprovalsTab";
+import CatalogTab from "./tabs/CatalogTab";
 import CollectionsTab from "./tabs/CollectionsTab";
 import ListingsTab from "./tabs/ListingsTab";
 import OverviewTab from "./tabs/OverviewTab";
@@ -22,7 +23,7 @@ import type { AdminTab } from "./types";
 import ReportsTab from "./tabs/ReportsTab";
 import UsersTab from "./tabs/UsersTab";
 
-const TABS: AdminTab[] = ["overview", "approvals", "listings", "reports", "collections", "users"];
+const TABS: AdminTab[] = ["overview", "approvals", "listings", "reports", "collections", "users", "catalog"];
 
 export default function AdminView() {
   const { user, loading } = useAuth();
@@ -88,6 +89,7 @@ function AdminPanel() {
         {!loading && tab === "listings" && <ListingsTab query={listingsQuery} onQueryChange={setListingsQuery} />}
         {!loading && tab === "reports" && <ReportsTab />}
         {!loading && tab === "collections" && <CollectionsTab />}
+        {!loading && tab === "catalog" && <CatalogTab />}
         {!loading && tab === "users" && (
           <UsersTab
             onShowListings={(name) => {
@@ -115,6 +117,7 @@ function useTabCounts(): Record<AdminTab, number> {
     reports: reports.filter((r) => !r.resolved).length,
     collections: 0,
     users: dealers.filter((d) => !d.verified).length,
+    catalog: 0,
   };
 }
 

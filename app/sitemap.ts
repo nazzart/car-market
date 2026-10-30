@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
-import { brands } from "@/features/brands/data/brands";
 import { getPublishedListings } from "@/features/cars/api";
+import { getBrands } from "@/features/catalog/api";
 import { getPublicDealers } from "@/features/dealers/api";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -13,7 +13,7 @@ const both = (path: string): MetadataRoute.Sitemap[number] => ({
 });
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [listings, dealers] = await Promise.all([getPublishedListings(), getPublicDealers()]);
+  const [listings, dealers, brands] = await Promise.all([getPublishedListings(), getPublicDealers(), getBrands()]);
 
   return [
     ...["/", "/cars", "/dealers", "/sell", "/about", "/rules", "/privacy", "/contacts"].map(both),

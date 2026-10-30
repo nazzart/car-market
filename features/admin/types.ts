@@ -1,6 +1,6 @@
 // Модерация (/admin): вкладки, статусы объявлений в списках, режимы окна решения, фильтры
 
-export type AdminTab = "overview" | "approvals" | "listings" | "reports" | "collections" | "users";
+export type AdminTab = "overview" | "approvals" | "listings" | "reports" | "collections" | "users" | "catalog";
 
 // Состояние объявления, как его видит модератор (значок в списках)
 export type StatusKey = "active" | "paused" | "sold" | "deleted" | "blocked" | "removed" | "pending" | "accountBlocked";

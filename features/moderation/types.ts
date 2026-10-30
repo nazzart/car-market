@@ -33,7 +33,11 @@ export type LogAction =
   | "blockAccount"
   | "unblockAccount"
   | "verify"
-  | "unverify";
+  | "unverify"
+  // каталог марок и моделей (account — «catalog:<марка / модель>»)
+  | "catalogAdd"
+  | "catalogEdit"
+  | "catalogDelete";
 
 export type LogEntry = {
   at: number;

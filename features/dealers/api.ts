@@ -3,7 +3,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { type SQL, and, arrayContains, asc, count, desc, eq, ilike, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
+import { type SQL, and, asc, count, desc, eq, getTableColumns, ilike, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 
 import { published } from "@/features/cars/api";
 
@@ -14,9 +14,14 @@ import { isListed } from "./lib/listed";
 import { getOpenStatus } from "./lib/openStatus";
 import type { Dealer, DealerContact, DealerPin } from "./types";
 
-const { dealers, dealerContacts, listings } = schema;
+const { dealers, dealerContacts, listings, dealerBrands, carBrands } = schema;
 
-type Row = typeof dealers.$inferSelect;
+// Дилер с марками официального дилера (slug из каталога, по алфавиту)
+const dealerColumns = {
+  ...getTableColumns(dealers),
+  brands: sql<string[]>`array(select ${carBrands.slug} from ${dealerBrands} join ${carBrands} on ${carBrands.id} = ${dealerBrands.brandId} where ${dealerBrands.dealerId} = ${dealers.id} order by ${carBrands.name})`,
+};
+type Row = typeof dealers.$inferSelect & { brands: string[] };
 
 // «Машин в наличии» — опубликованные объявления дилера, по тому же правилу, что и /cars
 async function stockCounts(): Promise<Map<number, number>> {
@@ -57,7 +62,7 @@ function toDealer(row: Row, contacts: DealerContact[], carsInStock: number): Dea
 const catalog = unstable_cache(
   async () => {
     const [rows, contacts, stock] = await Promise.all([
-      db.select().from(dealers).orderBy(asc(dealers.name)),
+      db.select(dealerColumns).from(dealers).orderBy(asc(dealers.name)),
       db.select().from(dealerContacts).orderBy(asc(dealerContacts.dealerId), asc(dealerContacts.position)),
       stockCounts(),
     ]);
@@ -77,7 +82,7 @@ export async function getDealer(slug: string): Promise<Dealer | undefined> {
 // Своя страница дилера для кабинета и настроек — мимо кэша: только что зарегистрированный дилер
 // или правка из базы видны сразу
 export async function getDealerUncached(slug: string): Promise<Dealer | undefined> {
-  const [row] = await db.select().from(dealers).where(eq(dealers.slug, slug));
+  const [row] = await db.select(dealerColumns).from(dealers).where(eq(dealers.slug, slug));
   if (!row) return undefined;
   const [contacts, [stock]] = await Promise.all([
     db.select().from(dealerContacts).where(eq(dealerContacts.dealerId, row.id)).orderBy(asc(dealerContacts.position)),
@@ -113,9 +118,9 @@ const filterOptions = unstable_cache(
   async () => {
     const [cities, brands] = await Promise.all([
       db.selectDistinct({ city: dealers.city }).from(dealers),
-      db.execute<{ brand: string }>(sql`select distinct unnest(${dealers.brands}) as brand from ${dealers}`),
+      db.selectDistinct({ brand: carBrands.slug }).from(dealerBrands).innerJoin(carBrands, eq(carBrands.id, dealerBrands.brandId)),
     ]);
-    return { cities: cities.map((r) => r.city), brands: brands.rows.map((r) => r.brand) };
+    return { cities: cities.map((r) => r.city), brands: brands.map((r) => r.brand) };
   },
   ["dealers", CACHE_VERSION, "filterOptions"],
   { tags: ["dealers"], revalidate: 300 }
@@ -136,11 +141,14 @@ const matchingRows = unstable_cache(
     if (q) conditions.push(or(ilike(dealers.name, likeText(q)), ilike(dealers.address, likeText(q))));
     if (type) conditions.push(eq(dealers.type, type as Dealer["type"]));
     if (city) conditions.push(eq(dealers.city, city));
-    if (brand) conditions.push(arrayContains(dealers.brands, [brand]));
+    if (brand)
+      conditions.push(
+        sql`exists (select 1 from ${dealerBrands} join ${carBrands} on ${carBrands.id} = ${dealerBrands.brandId} where ${dealerBrands.dealerId} = ${dealers.id} and ${carBrands.slug} = ${brand})`
+      );
     // проверенные — выше, дальше по алфавиту
     const [rows, stock] = await Promise.all([
       db
-        .select()
+        .select(dealerColumns)
         .from(dealers)
         .where(and(...conditions))
         .orderBy(desc(dealers.verified), asc(dealers.name)),

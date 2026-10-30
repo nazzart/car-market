@@ -12,6 +12,7 @@ import { usePlaceName } from "@/lib/places";
 
 import type { Listing } from "../../types";
 import { useCarFilters } from "../hooks/useCarFilters";
+import { useBrandName } from "@/features/catalog/hooks";
 
 type EmptyResultsProps = {
   suggestions: { key: string; count: number }[];
@@ -29,7 +30,8 @@ export default function EmptyResults({ suggestions, fresh, dealerName }: EmptyRe
   const { params, updateFilter, resetFilters } = useCarFilters();
   const placeName = usePlaceName();
 
-  const names = { dealer: () => dealerName, place: placeName };
+  const brandName = useBrandName();
+  const names = { brand: brandName, dealer: () => dealerName, place: placeName };
   const relax = suggestions
     .filter((s) => params.get(s.key))
     .map((s) => ({

@@ -17,6 +17,8 @@ import {
   smallint,
   text,
   timestamp,
+  unique,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
@@ -41,6 +43,56 @@ const blockColumns = () => ({
   blockedAt: timestamp({ withTimezone: true }),
 });
 
+// Значения для CHECK: только из списка (как в features/cars/config/filterOptions.ts и типах)
+const oneOf = (column: unknown, values: string[]) => sql`${column} in (${sql.raw(values.map((v) => `'${v}'`).join(", "))})`;
+
+/* ---------- Каталог: марки, модели, версии ---------- */
+// Редактирует модератор в /admin (вкладка «Katalogs»). Начальные данные — из открытых данных RDW
+// (npm run catalog:build → scripts/catalog/rdw-catalog.json, загружены миграцией 0007)
+
+// Связи — по числовым id: переименование марки или модели — одна строка в каталоге, объявления не меняются.
+// slug — адрес и фильтр (/cars?brand=bmw), после создания не меняется; название можно исправить
+export const carBrands = pgTable("car_brands", {
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
+  slug: text().notNull().unique(),
+  name: text().notNull().unique(),
+  popular: boolean().notNull().default(false), // сверху в списках марок
+  hidden: boolean().notNull().default(false), // скрыта из списков (объявления остаются)
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+}).enableRLS();
+
+// Модель марки; объявление ссылается на неё по id (listings.model_id)
+export const carModels = pgTable(
+  "car_models",
+  {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    brandId: integer()
+      .notNull()
+      .references(() => carBrands.id, { onDelete: "restrict" }),
+    name: text().notNull(),
+    hidden: boolean().notNull().default(false),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.brandId, t.name)]
+).enableRLS();
+
+// Версии модели («530d», «E 220 CDI») — подсказки в форме подачи и группы в фильтре /cars.
+// У объявления версия — свободный текст (может быть точнее каталога: «530d xDrive Touring»)
+export const carVersions = pgTable(
+  "car_versions",
+  {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    modelId: integer()
+      .notNull()
+      .references(() => carModels.id, { onDelete: "cascade" }),
+    name: text().notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.modelId, t.name)]
+).enableRLS();
+
+/* ---------- Дилеры и аккаунты ---------- */
+
 export const dealers = pgTable("dealers", {
   // числовой ключ: на него ссылаются объявления и контакты. slug — адрес страницы (/dealers/baltic-auto),
   // его можно поменять при переименовании, не трогая объявления
@@ -48,7 +100,6 @@ export const dealers = pgTable("dealers", {
   slug: text().notNull().unique(),
   name: text().notNull(),
   type: text().$type<Dealer["type"]>().notNull(),
-  brands: text().array().notNull().default(sql`'{}'`), // slug марок — для официальных дилеров
   city: text().notNull(), // ключ места из lib/places.ts
   address: text().notNull(),
   lat: doublePrecision().notNull(),
@@ -63,7 +114,24 @@ export const dealers = pgTable("dealers", {
   description: text(),
   ...blockColumns(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-}).enableRLS();
+},
+  // одна компания — одна страница дилера
+  (t) => [uniqueIndex("dealers_reg_number_unique").on(t.regNumber).where(sql`${t.regNumber} is not null`)]
+).enableRLS();
+
+// Марки официального дилера (страница дилера, фильтр «марка» в /dealers)
+export const dealerBrands = pgTable(
+  "dealer_brands",
+  {
+    dealerId: integer()
+      .notNull()
+      .references(() => dealers.id, { onDelete: "cascade" }),
+    brandId: integer()
+      .notNull()
+      .references(() => carBrands.id, { onDelete: "restrict" }),
+  },
+  (t) => [primaryKey({ columns: [t.dealerId, t.brandId] }), index().on(t.brandId)]
+).enableRLS();
 
 // Аккаунт на сайте. Вход и пароль — Supabase Auth (схема auth, таблица users), здесь — данные профиля.
 // id совпадает с auth.users.id; email хранится только в auth.users
@@ -98,7 +166,11 @@ export const dealerContacts = pgTable(
     role: text(),
     position: integer().notNull().default(0),
   },
-  (t) => [index().on(t.dealerId, t.position)]
+  (t) => [
+    index().on(t.dealerId, t.position),
+    // для ссылки объявления (дилер, контакт): контакт — только своего дилера
+    unique("dealer_contacts_dealer_id_id_unique").on(t.dealerId, t.id),
+  ]
 ).enableRLS();
 
 export const listings = pgTable(
@@ -106,8 +178,10 @@ export const listings = pgTable(
   {
     // by default, а не always: демо-объявления сохраняют свои номера (/listing/1)
     id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity(),
-    brand: text().notNull(), // slug марки
-    model: text().notNull(),
+    // модель из каталога; марка — через модель (car_models.brand_id). Названия — при чтении (JOIN)
+    modelId: integer()
+      .notNull()
+      .references(() => carModels.id, { onDelete: "restrict" }),
     // версия внутри модели: «530d xDrive», «E 220 CDI» — в заголовке и фильтре «Версия». null — не указана
     version: text(),
     title: text().notNull(),
@@ -124,7 +198,9 @@ export const listings = pgTable(
     // Продавец. Дилер — ссылка: имя и телефон берутся из dealers / dealer_contacts при чтении (JOIN), не копируются.
     // Частный продавец — имя и телефон хранятся здесь: в форме подачи их можно изменить для конкретного объявления
     dealerId: integer().references(() => dealers.id, { onDelete: "cascade" }), // null — частный продавец
-    contactId: text().references(() => dealerContacts.id, { onDelete: "set null" }), // нет — основной телефон дилера
+    // нет — основной телефон дилера. Ссылка (dealer_id, contact_id) → dealer_contacts: контакт только своего дилера;
+    // при удалении контакта обнуляется только contact_id — ограничение в миграции 0007 (Drizzle так не умеет)
+    contactId: text(),
     // владелец — частный продавец (у дилерских владелец — дилер). null — объявление без аккаунта
     userId: uuid().references(() => profiles.id, { onDelete: "cascade" }),
     sellerName: text(),
@@ -162,15 +238,29 @@ export const listings = pgTable(
   },
   // Индексы под поиск: марка/модель, цена, год, место, новые сверху. Только опубликованные — частичные индексы
   (t) => [
-    index().on(t.brand, t.model).where(sql`${t.review} is null`),
+    index().on(t.modelId).where(sql`${t.review} is null`),
     index().on(t.postedAt).where(sql`${t.review} is null`),
     index().on(t.price),
     index().on(t.year),
     index().on(t.city),
     index().on(t.dealerId),
     index().on(t.userId),
+    index().on(t.contactId),
     // у частного объявления должен быть телефон; у дилерского он берётся из dealers
     check("listings_private_phone", sql`${t.dealerId} is not null or ${t.phone} is not null`),
+    // владелец — дилер или частное лицо, не оба
+    check("listings_one_owner", sql`${t.dealerId} is null or ${t.userId} is null`),
+    // значения — только из списков (features/cars/config/filterOptions.ts, features/account/listings/status.ts)
+    check("listings_status", oneOf(t.status, ["active", "paused", "sold", "deleted"])),
+    check("listings_condition", oneOf(t.condition, ["used", "new"])),
+    check("listings_fuel", oneOf(t.fuel, ["petrol", "diesel", "hybrid", "electric", "gas"])),
+    check("listings_transmission", oneOf(t.transmission, ["automatic", "manual"])),
+    check("listings_drive", oneOf(t.drive, ["fwd", "rwd", "awd"])),
+    check(
+      "listings_body_type",
+      oneOf(t.bodyType, ["sedan", "suv", "wagon", "hatchback", "coupe", "convertible", "minivan", "pickup"])
+    ),
+    check("listings_review", sql`${t.review} is null or ${t.review} = 'pending'`),
   ]
 ).enableRLS();
 
@@ -187,7 +277,10 @@ export const favorites = pgTable(
     price: integer().notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.userId, t.listingId] })]
+  (t) => [
+    primaryKey({ columns: [t.userId, t.listingId] }),
+    index().on(t.listingId), // «сколько человек сохранили» и удаление объявления
+  ]
 ).enableRLS();
 
 // Жалобы покупателей на объявления
@@ -204,7 +297,11 @@ export const reports = pgTable(
     resolved: text().$type<NonNullable<Report["resolved"]>>(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index().on(t.listingId)]
+  (t) => [
+    index().on(t.listingId),
+    // одна жалоба вошедшего пользователя на объявление
+    uniqueIndex("reports_reporter_listing_unique").on(t.reporterId, t.listingId).where(sql`${t.reporterId} is not null`),
+  ]
 ).enableRLS();
 
 // Журнал решений модераторов

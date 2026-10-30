@@ -48,6 +48,9 @@ test("company account: incomplete profile notice and registration number in sett
 
   await page.goto("/account");
   await expect(page.getByText("Pabeidziet uzņēmuma profilu")).toBeVisible();
+  // вкладки подписаны переводом, а не ключом
+  await expect(page.getByText(/^Aktīvie/).first()).toBeVisible();
+  await expect(page.locator("main")).not.toContainText("account.");
 
   await page.goto("/account/profile");
   await expect(page.getByLabel(/Reģistrācijas numurs/)).toHaveValue("40003999999");

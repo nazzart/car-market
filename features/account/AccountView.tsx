@@ -20,7 +20,7 @@ import { useAuth } from "@/features/auth/store";
 import type { Listing } from "@/features/cars/types";
 import VerifiedBadge from "@/features/dealers/components/VerifiedBadge";
 import { isProfileComplete } from "@/features/dealers/lib/listed";
-import { useOwnDealer } from "@/features/dealers/useOwnDealer";
+import { useOwnDealerState } from "@/features/dealers/useOwnDealer";
 import { useVisibility } from "@/features/moderation/visibility";
 import { cn, formatNumber, initials } from "@/lib/utils";
 
@@ -38,9 +38,10 @@ export default function AccountView() {
   const [tab, setTab] = useState<AccountTab>("active");
   const { of } = useVisibility();
   const toast = useToast();
-  const dealer = useOwnDealer();
-  // новый дилер без адреса и телефона покупателям не виден — подсказываем заполнить профиль
-  const dealerIncomplete = dealer !== null && !isProfileComplete(dealer);
+  const { dealer, loading: dealerLoading } = useOwnDealerState();
+  // новый дилер без адреса и телефона покупателям не виден — подсказываем заполнить профиль.
+  // Пока страница дилера грузится, адреса ещё нет — не показываем подсказку, иначе она мигает
+  const dealerIncomplete = dealer !== null && !dealerLoading && !isProfileComplete(dealer);
   // у дилера город — из адреса его страницы, у частного лица — из профиля
   const shownCity = dealer ? (dealerIncomplete ? undefined : dealer.city) : user?.city;
   const { listings: ownListings, setStatus } = useOwnListings(); // undefined — ещё загружаются
@@ -106,7 +107,7 @@ export default function AccountView() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {dealer?.slug && !dealerIncomplete && (
+          {dealer?.slug && !dealerLoading && !dealerIncomplete && (
             <Button variant="outline" href={`/dealers/${dealer.slug}`} icon={<StorefrontOutlinedIcon sx={{ fontSize: 18 }} />}>
               {t("header.publicPage")}
             </Button>
@@ -156,7 +157,7 @@ export default function AccountView() {
                     tab === item ? "bg-white text-gray-900 font-medium shadow-sm" : "text-gray-600 hover:text-black"
                   }`}
                 >
-                  {t(`ACCOUNT_TABS.${item}`)}
+                  {t(`tabs.${item}`)}
                   <span className="ml-1 text-gray-400">{byStatus(item).length}</span>
                 </button>
               ))}

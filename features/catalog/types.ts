@@ -9,7 +9,14 @@ export type CatalogModel = { name: string; versions: string[] };
 /* ---------- Модерация (/admin, вкладка «Katalogs») ---------- */
 
 export type AdminBrand = Brand & { hidden: boolean; models: number; listings: number };
-export type AdminModel = { id: number; name: string; hidden: boolean; listings: number; versions: AdminVersion[] };
+export type AdminModel = {
+  id: number;
+  name: string;
+  hidden: boolean;
+  listings: number;
+  versions: AdminVersion[];
+  unlisted: { name: string; count: number }[]; // версии из объявлений, которых нет в каталоге — самые частые
+};
 export type AdminVersion = { id: number; name: string };
 
 // Результат правки: ошибка — для сообщения модератору

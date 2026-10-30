@@ -16,8 +16,8 @@ export function riskFlags(listing: Listing, all: Listing[]): RiskFlag[] {
   const flags: RiskFlag[] = [];
   const thisYear = new Date().getFullYear();
 
-  // контакты в описании — частый признак мошенничества (увод общения с сайта)
-  if (listing.description && CONTACT.test(listing.description)) flags.push("contactInText");
+  // контакты в описании или версии (она попадает в заголовок) — частый признак мошенничества (увод общения с сайта)
+  if (CONTACT.test([listing.description, listing.version].filter(Boolean).join(" "))) flags.push("contactInText");
 
   // цена сильно ниже похожих (тот же кузов, ±3 года) или подозрительно низкая для свежего авто
   const similar = all.filter(

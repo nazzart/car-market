@@ -1,32 +1,40 @@
 import { expect, test } from "@playwright/test";
 
-// Версия в форме подачи: подсказки, «530d» в поле модели, приведение к единому виду и заголовок
-test("sell form: version from the model field, normalised version and the title", async ({ page }) => {
+// Версия в форме подачи: модель — только модели, версия — одно поле; «530d» в поле модели заполняет обе,
+// своё написание приводится к единому виду, лишние знаки убираются, заголовок собирается сам
+test("sell form: model and version, normalised version and the title", async ({ page }) => {
   await page.goto("/sell?category=car");
   const preview = page.getByText("Sludinājuma virsraksts").locator("..");
+  const modelField = page.getByRole("combobox", { name: "Modelis" });
+  const versionField = page.getByRole("combobox", { name: "Versija" });
 
   await page.getByRole("combobox", { name: "Marka" }).fill("BMW");
   await page.getByRole("option", { name: "BMW", exact: true }).click();
 
-  // версия вписана в поле модели — в списке её группа под моделью, модель подставляется сама
-  await page.getByRole("combobox", { name: "Modelis" }).fill("530d");
-  await page.getByRole("option", { name: "5 Series · 530", exact: true }).click();
-  await expect(page.getByRole("combobox", { name: "Modelis" })).toHaveValue("5 Series");
-  await expect(page.getByRole("combobox", { name: "Versija" })).toHaveValue("530d");
+  // в списке моделей нет версий: «5 Series» — одна строка
+  await modelField.click();
+  await expect(page.getByRole("option", { name: "5 Series", exact: true })).toBeVisible();
+  await expect(page.getByRole("option", { name: /^530/ })).toHaveCount(0);
+
+  // версия вписана в поле модели — модель и версия заполняются сразу
+  await modelField.fill("530d");
+  await page.getByRole("option", { name: /^5 Series · 530d$/ }).click();
+  await expect(modelField).toHaveValue("5 Series");
+  await expect(versionField).toHaveValue("530d");
   await expect(preview).toContainText("BMW 530d");
 
-  // своё написание приводится к виду из каталога
-  await page.getByRole("combobox", { name: "Versija" }).fill("530D XDRIVE");
-  await page.getByRole("combobox", { name: "Versija" }).blur();
-  await expect(page.getByRole("combobox", { name: "Versija" })).toHaveValue("530d xDrive");
+  // своё написание — к виду из каталога; знаки вроде «!» убираются
+  await versionField.fill("530D XDRIVE!!!");
+  await versionField.blur();
+  await expect(versionField).toHaveValue("530d xDrive");
   await expect(preview).toContainText("BMW 530d xDrive");
 
-  // другая марка — модель и версия сбрасываются; у Mercedes модель тоже не повторяется
+  // другая марка — модель и версия сбрасываются; у Mercedes модель в заголовке не повторяется
   await page.getByRole("combobox", { name: "Marka" }).fill("Mercedes");
   await page.getByRole("option", { name: "Mercedes-Benz", exact: true }).click();
-  await expect(page.getByRole("combobox", { name: "Versija" })).toHaveValue("");
-  await page.getByRole("combobox", { name: "Modelis" }).fill("CL 500");
-  await page.getByRole("option", { name: "CL · CL 500", exact: true }).click();
+  await expect(versionField).toHaveValue("");
+  await modelField.fill("CL 500");
+  await page.getByRole("option", { name: /^CL · CL 500$/ }).click();
   await expect(preview).toContainText("Mercedes-Benz CL 500");
 });
 

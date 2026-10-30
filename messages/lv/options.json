@@ -18,9 +18,7 @@
   },
   "transmission": {
     "automatic": "Automāts",
-    "manual": "Manuālā",
-    "dsg": "DSG",
-    "cvt": "Variators"
+    "manual": "Manuālā"
   },
   "drive": {
     "fwd": "Priekšpiedziņa",

@@ -67,6 +67,3 @@ export type FormStepProps = {
   onNext?: () => void;
   updateField: UpdateField;
 };
-
-// Вариант в поле «Модель»: просто модель или модель с версией, найденная по вписанной версии («530d» → 5 Series)
-export type ModelOption = { model: string; version?: string };

@@ -11,7 +11,7 @@ import { validateField } from "../utils/validationRules";
 
 // Названия — messages/{locale}/options.json
 const FUEL_TYPES = ["petrol", "diesel", "hybrid", "electric", "gas"];
-const TRANSMISSIONS = ["manual", "automatic", "dsg", "cvt"];
+const TRANSMISSIONS = ["manual", "automatic"]; // DSG и вариатор — тоже автомат (как в фильтре /cars и в базе)
 const DRIVES = ["fwd", "rwd", "awd"];
 
 export function TechnicalSection({

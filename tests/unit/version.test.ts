@@ -2,12 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import {
   listingTitle,
-  modelEntryMatches,
+  fuelOfVersion,
+  modelMatches,
   normalizeVersion,
   searchTitle,
   versionGroup,
   versionGroupPattern,
-  versionGroupsOf,
+  versionFromQuery,
 } from "@/features/cars/lib/version";
 
 describe("listingTitle", () => {
@@ -87,20 +88,34 @@ describe("versionGroupPattern", () => {
   });
 });
 
-describe("model list with version groups", () => {
-  it("groups catalogue versions of a model", () => {
-    expect(versionGroupsOf(BMW_5)).toEqual(["520", "530", "M550"]);
-    expect(versionGroupsOf(MB_E)).toEqual(["E 200", "E 220", "E 300"]);
+describe("sell form helpers", () => {
+  it("finds a model by its name or by a catalogue version", () => {
+    expect(modelMatches("5 Series", "5 ser", BMW_5)).toBe(true);
+    expect(modelMatches("5 Series", "530d", BMW_5)).toBe(true);
+    expect(modelMatches("5 Series", "540", BMW_5)).toBe(false);
   });
 
-  it("finds a version group by the group, the model or a full version", () => {
-    const entry = { model: "5 Series", version: "530" };
-    expect(modelEntryMatches(entry, "530", BMW_5)).toBe(true);
-    expect(modelEntryMatches(entry, "530d", BMW_5)).toBe(true);
-    expect(modelEntryMatches(entry, "5 ser", BMW_5)).toBe(true);
-    expect(modelEntryMatches(entry, "540", BMW_5)).toBe(false);
-    expect(modelEntryMatches({ model: "5 Series" }, "530", BMW_5)).toBe(false);
-    expect(modelEntryMatches({ model: "CL", version: "CL 500" }, "cl 500", ["CL 500", "CL 600"])).toBe(true);
+  it("recognises a full catalogue version typed into the model field", () => {
+    expect(versionFromQuery("530 D", BMW_5)).toBe("530d");
+    expect(versionFromQuery("530", BMW_5)).toBeUndefined();
+  });
+
+  it("guesses the fuel only when the version is clear", () => {
+    expect(fuelOfVersion("530d xDrive")).toBe("diesel");
+    expect(fuelOfVersion("E 220 CDI")).toBe("diesel");
+    expect(fuelOfVersion("E 220 d")).toBe("diesel");
+    expect(fuelOfVersion("530e")).toBe("hybrid");
+    expect(fuelOfVersion("E 300 de")).toBe("hybrid");
+    expect(fuelOfVersion("xDrive45e")).toBe("hybrid");
+    expect(fuelOfVersion("530i")).toBe("petrol");
+    expect(fuelOfVersion("1.4 TSI")).toBe("petrol");
+    expect(fuelOfVersion("E 200")).toBeUndefined();
+    expect(fuelOfVersion("CL 500")).toBeUndefined();
+  });
+
+  it("drops characters a version never needs", () => {
+    expect(normalizeVersion("530d!!! www.example.com @me")).toBe("530d www.example.com me");
+    expect(normalizeVersion("1.4 TSI / DSG+")).toBe("1.4 TSI / DSG+");
   });
 });
 

@@ -1,5 +1,6 @@
 // Версия внутри модели («530d xDrive», «E 220 CDI»): заголовок объявления, приведение ввода к одному виду,
 // группа для фильтра и поиск модели по версии. Версии модели из каталога (car_versions) передаёт вызывающий
+import type { Fuel } from "../types";
 
 const MAX_LENGTH = 40;
 
@@ -30,9 +31,12 @@ export function searchTitle(brandName: string, model: string | null, versions: s
 }
 
 // Ввод продавца → единый вид: как в подсказке, если совпадает с ней; иначе — привычное написание частей
+// Допустимые знаки версии: буквы, цифры, пробел и «- . + /» — без ссылок, @ и восклицательных знаков
+const NOT_ALLOWED = /[^\p{L}\p{N}\s.+/-]/gu;
+
 // known — версии модели из каталога
 export function normalizeVersion(raw: string, known: string[] = []): string {
-  const value = raw.replace(/\s+/g, " ").trim().slice(0, MAX_LENGTH);
+  const value = raw.replace(NOT_ALLOWED, "").replace(/\s+/g, " ").trim().slice(0, MAX_LENGTH);
   if (!value) return "";
 
   const match = known.find((v) => compact(v) === compact(value));
@@ -66,21 +70,26 @@ export function versionGroupPattern(group: string): string {
   return `^${escaped}(${/\d$/.test(g) ? "[^0-9]" : "[^a-z0-9]"}|$)`;
 }
 
-// Группы версий модели из каталога (для формы подачи): 520d, 530d xDrive, 530e… → 520, 530
-export function versionGroupsOf(versions: string[]): string[] {
-  return [...new Set(versions.map(versionGroup))];
-}
-
-// Вариант списка моделей подходит под ввод: модель — по названию; версия — по своей группе, модели
-// или полной версии из каталога («530d» → 530 под 5 Series). versions — версии этой модели из каталога
-export function modelEntryMatches(entry: { model: string; version?: string }, text: string, versions: string[] = []) {
+// Модель в списке формы подачи подходит под ввод: по названию или по версии из каталога («530d» → 5 Series)
+export function modelMatches(model: string, text: string, versions: string[] = []) {
   const query = compact(text);
   if (!query) return true;
-  if (!entry.version) return compact(entry.model).includes(query);
-  const full = versions.filter((v) => versionGroup(v) === entry.version);
-  return (
-    compact(entry.version).startsWith(query) ||
-    compact(`${entry.model}${entry.version}`).includes(query) ||
-    full.some((v) => compact(v).startsWith(query))
-  );
+  return compact(model).includes(query) || versions.some((v) => compact(v).startsWith(query));
+}
+
+// Ввод в поле модели — это версия из каталога («530d», «530 D»)? Тогда её каталожное написание
+export function versionFromQuery(text: string, versions: string[]): string | undefined {
+  const query = compact(text);
+  return query ? versions.find((v) => compact(v) === query) : undefined;
+}
+
+// Версия однозначно говорит о топливе: 530d, E 220 CDI — дизель; 530e, E 300 de — гибрид; 530i, 1.4 TSI — бензин.
+// Для подсказки в форме подачи (продавец может поменять); undefined — непонятно
+export function fuelOfVersion(version: string): Fuel | undefined {
+  const v = version.trim();
+  // строчные буквы — с учётом регистра: «E 220 d» — класс E, дизель; «E 300 e» — гибрид
+  if (/\d{2,3}e\b|\s(de|e)\b/.test(v)) return "hybrid";
+  if (/\d{2,3}d\b|\sd\b/.test(v) || /\b(CDI|BlueTEC|TDI|HDi|dCi|CRDi|TDCi)\b/i.test(v)) return "diesel";
+  if (/\d{2,3}i\b/.test(v) || /\b(TFSI|TSI|GTI|CGI|Kompressor)\b/i.test(v)) return "petrol";
+  return undefined;
 }

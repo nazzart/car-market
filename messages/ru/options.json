@@ -18,9 +18,7 @@
   },
   "transmission": {
     "automatic": "Автомат",
-    "manual": "Механика",
-    "dsg": "DSG",
-    "cvt": "Вариатор"
+    "manual": "Механика"
   },
   "drive": {
     "fwd": "Передний",

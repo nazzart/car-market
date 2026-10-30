@@ -223,6 +223,8 @@
       "pickBrand": "Izvēlieties marku, lai redzētu tās modeļus",
       "pickModel": "Izvēlieties modeli, lai redzētu tā versijas",
       "noVersions": "Versiju vēl nav",
+      "unlisted": "Sludinājumos, bet nav katalogā",
+      "addToCatalogue": "Pievienot katalogam",
       "renameHint": "Pārdēvējot modeli, mainās arī tā sludinājumi",
       "deleteModelTitle": "Dzēst modeli «{name}»?",
       "deleteModelText": "Modelim nav sludinājumu. To varēs pievienot atkal.",

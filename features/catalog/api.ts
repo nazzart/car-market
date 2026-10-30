@@ -3,7 +3,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { and, asc, count, eq, sql } from "drizzle-orm";
+import { and, asc, count, eq, isNotNull, sql } from "drizzle-orm";
 
 import { db, schema } from "@/lib/db";
 import { CACHE_VERSION } from "@/lib/db/cacheVersion";
@@ -86,14 +86,31 @@ export async function getAdminModels(brand: string): Promise<AdminModel[]> {
     .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
     .leftJoin(carVersions, eq(carVersions.modelId, carModels.id))
     .where(eq(carBrands.slug, brand));
+  // версии в объявлениях этой марки — чтобы предложить добавить в каталог те, которых там нет
+  const used = await db
+    .select({ modelId: listings.modelId, version: listings.version, n: count() })
+    .from(listings)
+    .innerJoin(carModels, eq(carModels.id, listings.modelId))
+    .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
+    .where(and(eq(carBrands.slug, brand), isNotNull(listings.version)))
+    .groupBy(listings.modelId, listings.version);
   const byId = new Map<number, AdminModel>();
   for (const { versionId, version, ...model } of rows) {
-    const entry = byId.get(model.id) ?? { ...model, versions: [] };
+    const entry = byId.get(model.id) ?? { ...model, versions: [], unlisted: [] };
     if (versionId && version) entry.versions.push({ id: versionId, name: version });
     byId.set(model.id, entry);
   }
+  for (const { modelId, version, n } of used) {
+    const model = byId.get(modelId);
+    const known = model?.versions.some((v) => v.name.toLowerCase() === version!.toLowerCase());
+    if (model && !known) model.unlisted.push({ name: version!, count: n });
+  }
   return [...byId.values()]
-    .map((m) => ({ ...m, versions: m.versions.sort((a, b) => catalogOrder.compare(a.name, b.name)) }))
+    .map((m) => ({
+      ...m,
+      versions: m.versions.sort((a, b) => catalogOrder.compare(a.name, b.name)),
+      unlisted: m.unlisted.sort((a, b) => b.count - a.count).slice(0, 10),
+    }))
     .sort((a, b) => catalogOrder.compare(a.name, b.name));
 }
 

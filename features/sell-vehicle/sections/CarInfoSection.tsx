@@ -5,7 +5,7 @@ import { Autocomplete, TextField, MenuItem, InputAdornment } from "@mui/material
 import { useTranslations } from "next-intl";
 
 import SearchSelect, { popupSlotProps } from "@/components/ui/SearchSelect";
-import { listingTitle, modelEntryMatches, normalizeVersion, versionGroup, versionGroupsOf } from "@/features/cars/lib/version";
+import { fuelOfVersion, listingTitle, modelMatches, normalizeVersion, versionFromQuery } from "@/features/cars/lib/version";
 import { useBrandModels, useBrands } from "@/features/catalog/hooks";
 import type { Brand } from "@/features/catalog/types";
 import { carColors } from "@/features/cars/config/colors";
@@ -13,7 +13,7 @@ import { carColors } from "@/features/cars/config/colors";
 import { SectionContainer } from "../components/SectionContainer";
 import { ChipSelect } from "../../../components/ui/chip-select/ChipSelect";
 import { useSectionNext } from "../hooks/useSectionNext";
-import type { FormStepProps, ModelOption } from "../types";
+import type { FormStepProps } from "../types";
 import { useSectionValidation } from "../hooks/useSectionValidation";
 import { validateField } from "../utils/validationRules";
 import { bodyTypes } from "@/features/cars/config/filterOptions";
@@ -41,6 +41,13 @@ export function CarInfoSection({
   const brandOption = (b: Brand) => ({ value: b.slug, label: b.name });
   // что введено в поле модели (модель — только из списка; ввод — для поиска, в т. ч. «530d»)
   const [modelQuery, setModelQuery] = useState("");
+
+  // версия; если по ней топливо однозначно (530d — дизель), а топливо ещё не выбрано — подставляем
+  const setVersion = (version: string) => {
+    updateField("version", version);
+    const fuel = version && !data.fuel ? fuelOfVersion(version) : undefined;
+    if (fuel) updateField("fuel", fuel);
+  };
 
   const colorOptions = carColors.map((c) => ({ ...c, label: tOptions(`colors.${c.value}`) }));
   const bodyTypeOptions = bodyTypes.map((value) => ({ value, label: tOptions(`bodyType.${value}`) }));
@@ -84,53 +91,33 @@ export function CarInfoSection({
             error={attemptedNext && !validateField(data.brand, getRules("brand"))}
           />
 
-          {/* модель — только из каталога; под каждой моделью — группы версий («5 Series» → 530):
-              выбор версии сразу заполняет модель и версию, «530d» в поле → 5 Series + 530d */}
-          <Autocomplete<ModelOption>
-            options={(catalog ?? []).flatMap(({ name, versions }) => [
-              { model: name },
-              ...versionGroupsOf(versions).map((version) => ({ model: name, version })),
-            ])}
-            value={data.model ? { model: data.model } : null}
+          {/* модель — только из каталога, без версий; ввод «530d» тоже находит 5 Series и сразу ставит версию */}
+          <Autocomplete<string>
+            options={(catalog ?? []).map((m) => m.name)}
+            value={data.model || null}
             inputValue={modelQuery}
-            getOptionLabel={(o) => o.model}
-            isOptionEqualToValue={(o, v) => o.model === v.model && o.version === v.version}
             filterOptions={(options, { inputValue }) =>
               // выбранная модель в поле — показываем весь список
-              inputValue === data.model ? options : options.filter((o) => modelEntryMatches(o, inputValue, versionsOf(o.model)))
+              inputValue === data.model ? options : options.filter((m) => modelMatches(m, inputValue, versionsOf(m)))
             }
+            renderOption={({ key, ...props }, model, { inputValue }) => {
+              // нашлась по версии — подсказываем, по какой
+              const byVersion = inputValue !== data.model ? versionFromQuery(inputValue, versionsOf(model)) : undefined;
+              return (
+                <li key={key} {...props}>
+                  {model} {byVersion && <span className="text-gray-500">· {byVersion}</span>}
+                </li>
+              );
+            }}
             loading={Boolean(data.brand) && catalog === undefined}
             noOptionsText={t("modelNotFound")}
-            renderOption={({ key, ...props }, o, { inputValue }) => (
-              <li key={`${String(key)}|${o.version ?? ""}`} {...props}>
-                {/* версия — с отступом под моделью; при поиске модели рядом может не быть — «5 Series · 530» */}
-                {o.version ? (
-                  inputValue && inputValue !== data.model ? (
-                    <span>
-                      {o.model} <span className="text-gray-500">· {o.version}</span>
-                    </span>
-                  ) : (
-                    <span className="pl-4 text-gray-700">{o.version}</span>
-                  )
-                ) : (
-                  o.model
-                )}
-              </li>
-            )}
             onInputChange={(_, text) => setModelQuery(text)}
-            onChange={(_, o) => {
-              if (!o) {
-                updateField("model", "");
-                updateField("version", "");
-                return;
-              }
-              if (o.version) {
-                // вписали полную версию («530d») — она и остаётся; иначе группа («530»), уточнить можно в поле версии
-                const typed = normalizeVersion(modelQuery, versionsOf(o.model));
-                const known = versionsOf(o.model).includes(typed) && versionGroup(typed) === o.version;
-                updateField("version", known ? typed : o.version);
-              } else if (o.model !== data.model) updateField("version", "");
-              updateField("model", o.model);
+            onChange={(_, model) => {
+              // вписали версию («530d») — она тоже заполняется; другая модель — версия сбрасывается
+              const version = model ? versionFromQuery(modelQuery, versionsOf(model)) : undefined;
+              if (version) setVersion(version);
+              else if (model !== data.model) updateField("version", "");
+              updateField("model", model ?? "");
             }}
             disabled={!data.brand}
             slotProps={popupSlotProps}
@@ -148,6 +135,7 @@ export function CarInfoSection({
             )}
           />
 
+          {/* версия — одно поле: полные версии модели из каталога (530d, 530e xDrive…) или своя */}
           <Autocomplete
             freeSolo
             options={versions}
@@ -156,9 +144,9 @@ export function CarInfoSection({
             onInputChange={(_, text, reason) => {
               if (reason !== "reset") updateField("version", text);
             }}
-            onChange={(_, value) => updateField("version", value ?? "")}
-            // своё написание — к единому виду: «530D XDRIVE» → «530e xDrive»
-            onBlur={() => updateField("version", normalizeVersion(data.version ?? "", versions))}
+            onChange={(_, value) => setVersion(value ?? "")}
+            // своё написание — к единому виду: «530D XDRIVE» → «530d xDrive»; лишние знаки убираются
+            onBlur={() => setVersion(normalizeVersion(data.version ?? "", versions))}
             disabled={!data.model}
             slotProps={popupSlotProps}
             autoHighlight

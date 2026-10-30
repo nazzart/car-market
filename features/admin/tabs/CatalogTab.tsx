@@ -150,6 +150,27 @@ export default function CatalogTab() {
               </ul>
             )}
           </div>
+          {/* версии из объявлений, которых нет в каталоге: добавить одним нажатием */}
+          {model.unlisted.length > 0 && (
+            <div className="px-4 pb-4">
+              <p className="text-xs font-medium text-gray-500 mb-2">{t("unlisted")}</p>
+              <ul className="flex flex-wrap gap-1.5">
+                {model.unlisted.map((v) => (
+                  <li key={v.name}>
+                    <button
+                      type="button"
+                      onClick={() => run(actions.addVersion(model.id, v.name))}
+                      title={t("addToCatalogue")}
+                      className="inline-flex items-center gap-1 h-8 px-3 rounded-full border border-dashed border-gray-300 text-sm text-gray-700 hover:border-gray-900 cursor-pointer"
+                    >
+                      + {v.name}
+                      <span className="text-xs text-gray-400 tabular-nums">{v.count}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <AddForm label={t("addVersion")} onAdd={(name) => run(actions.addVersion(model.id, name))} />
         </Card>
       ) : (

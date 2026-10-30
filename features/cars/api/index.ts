@@ -17,7 +17,7 @@ import { cached, forPublic, inCollection, newestFirst, ofDealer, published, sele
 export { published, type Params } from "./rows";
 export { PAGE_SIZE, countListings, relaxSuggestions, searchListings, type SearchResult } from "./search";
 
-const { listings, carBrands, carModels } = schema;
+const { listings, carBrands, carModels, carVersions } = schema;
 
 /* ---------- Счётчики: марки, модели, подборки ---------- */
 
@@ -55,15 +55,27 @@ export async function getListingStats(): Promise<ListingStats> {
   return statsQuery();
 }
 
-// Версии марки для списка моделей /cars: модель → группы версий («530», «E 220») с числом объявлений
+// Версии марки для списка моделей /cars: модель → группы версий («530», «E 220») с числом объявлений.
+// Группа показывается, если она есть в каталоге или у неё хотя бы 2 объявления: опечатки и описания
+// одного продавца («Touring 530d», «53d») остаются в его заголовке, но не засоряют фильтр
+const MIN_LISTINGS_OUTSIDE_CATALOGUE = 2;
 const versionsQuery = cached(async (brand: string) => {
-  const rows = await db
-    .select({ model: carModels.name, version: listings.version, n: count() })
-    .from(listings)
-    .innerJoin(carModels, eq(carModels.id, listings.modelId))
-    .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
-    .where(and(published, eq(carBrands.slug, brand), isNotNull(listings.version)))
-    .groupBy(carModels.name, listings.version);
+  const [rows, catalogue] = await Promise.all([
+    db
+      .select({ model: carModels.name, version: listings.version, n: count() })
+      .from(listings)
+      .innerJoin(carModels, eq(carModels.id, listings.modelId))
+      .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
+      .where(and(published, eq(carBrands.slug, brand), isNotNull(listings.version)))
+      .groupBy(carModels.name, listings.version),
+    db
+      .select({ model: carModels.name, version: carVersions.name })
+      .from(carVersions)
+      .innerJoin(carModels, eq(carModels.id, carVersions.modelId))
+      .innerJoin(carBrands, eq(carBrands.id, carModels.brandId))
+      .where(eq(carBrands.slug, brand)),
+  ]);
+  const known = new Set(catalogue.map(({ model, version }) => `${model}|${versionGroup(version)}`));
   const byModel = new Map<string, Map<string, number>>();
   for (const { model, version, n } of rows) {
     const groups = byModel.get(model) ?? new Map<string, number>();
@@ -74,7 +86,10 @@ const versionsQuery = cached(async (brand: string) => {
   return Object.fromEntries(
     [...byModel].map(([model, groups]) => [
       model,
-      [...groups].map(([value, count]) => ({ value, count })).sort((a, b) => versionOrder.compare(a.value, b.value)),
+      [...groups]
+        .filter(([group, n]) => known.has(`${model}|${group}`) || n >= MIN_LISTINGS_OUTSIDE_CATALOGUE)
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => versionOrder.compare(a.value, b.value)),
     ])
   );
 }, "versions");

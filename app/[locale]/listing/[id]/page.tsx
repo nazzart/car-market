@@ -27,6 +27,7 @@ import ReportButton from "@/features/moderation/ReportButton";
 import SectionNav from "@/features/cars/car-view/components/SectionNav";
 import SpecsTable from "@/features/cars/car-view/components/SpecsTable";
 import LeasingOffer from "@/features/cars/car-view/components/LeasingOffer";
+import ViewTracker from "@/features/cars/car-view/components/ViewTracker";
 import { Link } from "@/i18n/navigation";
 import { placeName } from "@/lib/places";
 import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
@@ -204,6 +205,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
       <SimilarListings listing={listing} />
 
       <MobileContactBar listing={listing} />
+      <ViewTracker listingId={listing.id} />
     </Container>
   );
 }

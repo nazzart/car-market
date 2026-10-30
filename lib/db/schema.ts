@@ -317,6 +317,20 @@ export const reports = pgTable(
   ]
 ).enableRLS();
 
+// Кто уже смотрел объявление сегодня — чтобы считать каждого посетителя раз в сутки.
+// Не IP: visitor — необратимый хеш (IP + браузер + день + секрет), через день записи удаляются (features/cars/api/views.ts)
+export const listingViews = pgTable(
+  "listing_views",
+  {
+    listingId: bigint({ mode: "number" })
+      .notNull()
+      .references(() => listings.id, { onDelete: "cascade" }),
+    visitor: text().notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.listingId, t.visitor] }), index().on(t.createdAt)]
+).enableRLS();
+
 // Журнал решений модераторов
 export const moderationLog = pgTable(
   "moderation_log",

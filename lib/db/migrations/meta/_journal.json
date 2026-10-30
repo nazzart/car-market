@@ -78,6 +78,13 @@
       "when": 1793375717264,
       "tag": "0010_dealer_show_contact_person",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793389553910,
+      "tag": "0011_listing_views",
+      "breakpoints": true
     }
   ]
 }

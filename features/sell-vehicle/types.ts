@@ -70,3 +70,11 @@ export type FormStepProps = {
   onNext?: () => void;
   updateField: UpdateField;
 };
+
+
+// Публикация по шагам: фото → хранилище, затем объявление → база. error — ключ sell.publish.errors
+export type SubmitState =
+  | { step: "idle" }
+  | { step: "uploading"; done: number; total: number }
+  | { step: "saving" }
+  | { step: "error"; error: string };

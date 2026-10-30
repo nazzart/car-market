@@ -37,9 +37,10 @@ export function CarConditionSection({
         {/* General condition */}
 
         <FormControl fullWidth>
-          <InputLabel>{t("overall")}</InputLabel>
+          <InputLabel id="sell-overall-label">{t("overall")}</InputLabel>
 
           <Select
+            labelId="sell-overall-label"
             value={data.condition ?? ""}
             label={t("overall")}
             onChange={(e) => updateField("condition", e.target.value)}
@@ -59,9 +60,10 @@ export function CarConditionSection({
         {/* Accident */}
 
         <FormControl fullWidth>
-          <InputLabel>{t("accident")}</InputLabel>
+          <InputLabel id="sell-accident-label">{t("accident")}</InputLabel>
 
           <Select
+            labelId="sell-accident-label"
             value={data.hadAccident ?? ""}
             label={t("accident")}
             onChange={(e) => updateField("hadAccident", e.target.value)}
@@ -79,9 +81,10 @@ export function CarConditionSection({
         {/* Service done */}
 
         <FormControl fullWidth>
-          <InputLabel>{t("service")}</InputLabel>
+          <InputLabel id="sell-service-label">{t("service")}</InputLabel>
 
           <Select
+            labelId="sell-service-label"
             value={data.hasServiceDone ?? ""}
             label={t("service")}
             onChange={(e) => updateField("hasServiceDone", e.target.value)}
@@ -101,9 +104,10 @@ export function CarConditionSection({
         {/* Service book */}
 
         <FormControl fullWidth>
-          <InputLabel>{t("serviceBook")}</InputLabel>
+          <InputLabel id="sell-serviceBook-label">{t("serviceBook")}</InputLabel>
 
           <Select
+            labelId="sell-serviceBook-label"
             value={data.hasServiceBook ?? ""}
             label={t("serviceBook")}
             onChange={(e) => updateField("hasServiceBook", e.target.value)}

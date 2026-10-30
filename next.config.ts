@@ -5,15 +5,21 @@ const withNextIntl = createNextIntlPlugin();
 
 const isDev = process.env.NODE_ENV !== "production";
 
+// Фото объявлений — Cloudflare R2 (lib/storage.ts): браузер загружает файлы прямо в R2, а показывает
+// с публичного адреса бакета (R2_PUBLIC_URL: https://pub-….r2.dev или свой домен)
+const photosOrigin = process.env.R2_PUBLIC_URL ? new URL(process.env.R2_PUBLIC_URL).origin : null;
+
 // Внешние сервисы, которые страница загружает сама. Новый сервис (карты MapTiler, CDN фото…) — добавить сюда,
 // иначе браузер его заблокирует. Обычные ссылки (CSDD, WhatsApp, Facebook) сюда не нужны
 const sources = {
   images: [
     "https://tile.openstreetmap.org", // плитки карты
     "https://img.youtube.com", // превью видео продавца
+    ...(photosOrigin ? [photosOrigin] : []), // фото объявлений
   ],
   connect: [
     "https://photon.komoot.io", // подсказки адресов в настройках дилера
+    "https://*.r2.cloudflarestorage.com", // загрузка фото объявлений
   ],
   frames: [
     "https://www.youtube-nocookie.com", // видео продавца
@@ -29,8 +35,8 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${sources.images.join(" ")}`,
   "font-src 'self' data:",
-  // ws: — горячая перезагрузка в режиме разработки
-  `connect-src 'self' ${sources.connect.join(" ")}${isDev ? " ws: wss:" : ""}`,
+  // ws: — горячая перезагрузка в режиме разработки; blob: — форма подачи читает выбранные фото перед сжатием
+  `connect-src 'self' blob: ${sources.connect.join(" ")}${isDev ? " ws: wss:" : ""}`,
   `frame-src ${sources.frames.join(" ")}`,
   "frame-ancestors 'none'",
   "object-src 'none'",
@@ -58,6 +64,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false, // не сообщать, что сайт на Next.js
+  // next/image уменьшает фото из R2 под размер карточки
+  images: photosOrigin ? { remotePatterns: [new URL(`${photosOrigin}/listings/**`)] } : undefined,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

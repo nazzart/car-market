@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import PageHeader from "@/components/ui/PageHeader";
+import { useToast } from "@/components/ui/Toast";
+import { openAuthModal, useAuth } from "@/features/auth/store";
+import { useRouter } from "@/i18n/navigation";
 
 import { SellCarSidebar } from "../components/SellCarSidebar";
 import { useProgressiveSections } from "../hooks/useProgressiveSections";
@@ -11,8 +14,10 @@ import { useProgressiveSections } from "../hooks/useProgressiveSections";
 import { PublishSection } from "../sections/PublishSection";
 import { sections } from "../config/sectionsConfig";
 import { getInitialFormData, getSectionsState } from "../utils/sectionUtils";
-import { validateAndScroll } from "../lib/formSubmit";
-import { SellFormData, UpdateField } from "../types";
+import { submitListing } from "../actions";
+import { scrollToSection, validateAndScroll } from "../lib/formSubmit";
+import { uploadPhotos } from "../lib/uploadPhotos";
+import { SellFormData, SubmitState, UpdateField } from "../types";
 
 export function SellCarView() {
   const t = useTranslations("sell");
@@ -29,12 +34,37 @@ export function SellCarView() {
 
   const sectionsState = getSectionsState(sections, formData as Record<string, unknown>);
 
-  const handleSubmit = () => {
-    const isOk = validateAndScroll(sections, formData);
+  const { user } = useAuth();
+  const router = useRouter();
+  const toast = useToast();
+  const [submit, setSubmit] = useState<SubmitState>({ step: "idle" });
+  const busy = submit.step === "uploading" || submit.step === "saving";
 
-    if (!isOk) return;
+  const handleSubmit = async () => {
+    if (busy || !validateAndScroll(sections, formData)) return;
+    if (!user) return openAuthModal();
 
-    // TODO(sell): сохранить объявление (Server Action + фото в R2), затем перейти на страницу «объявление на проверке»
+    const photos = await uploadPhotos(formData.photos, (done, total) => setSubmit({ step: "uploading", done, total }));
+    if (!photos.ok) return setSubmit({ step: "error", error: photos.error });
+
+    setSubmit({ step: "saving" });
+    let result;
+    try {
+      result = await submitListing({ ...formData, photos: photos.urls });
+    } catch {
+      return setSubmit({ step: "error", error: "failed" });
+    }
+    if (!result.ok) {
+      // поле не прошло проверку сервера — показываем его раздел
+      if (result.error === "invalid") {
+        const section = sections.find((s) => s.fields.some((f) => result.fields.includes(f.name)));
+        if (section) scrollToSection(section.id);
+      }
+      return setSubmit({ step: "error", error: result.error });
+    }
+
+    toast({ message: t("publish.sent"), tone: "success" });
+    router.push(`/listing/${result.id}`);
   };
 
   const lastSection = sections.at(-1);
@@ -92,6 +122,7 @@ export function SellCarView() {
               requiredDone={requiredDone}
               requiredTotal={required.length}
               onSubmit={handleSubmit}
+              submit={submit}
             />
           )}
 

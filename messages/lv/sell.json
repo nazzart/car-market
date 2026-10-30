@@ -167,7 +167,19 @@
     "yourCar": "Jūsu automašīna",
     "missing": "Aizpildītas obligātās sadaļas: {done} no {total}. Publicējot parādīsim, kas vēl jāaizpilda.",
     "submit": "Publicēt sludinājumu",
-    "terms": "Nospiežot «Publicēt», jūs piekrītat sludinājumu ievietošanas noteikumiem"
+    "terms": "Nospiežot «Publicēt», jūs piekrītat sludinājumu ievietošanas noteikumiem",
+    "uploading": "Augšupielādē foto {done} no {total}…",
+    "saving": "Saglabā sludinājumu…",
+    "sent": "Sludinājums nosūtīts pārbaudei. Pēc apstiprināšanas to redzēs pircēji.",
+    "errors": {
+      "storage": "Foto augšupielāde pašlaik nav pieejama. Mēģiniet vēlāk vai publicējiet bez foto.",
+      "upload": "Neizdevās augšupielādēt foto. Pārbaudiet savienojumu un mēģiniet vēlreiz.",
+      "invalid": "Dažos laukos ir kļūdas — pārbaudiet iezīmēto sadaļu.",
+      "model": "Izvēlētais modelis nav atrasts katalogā. Izvēlieties modeli no saraksta.",
+      "tooMany": "Šodien ievietots pārāk daudz sludinājumu. Mēģiniet rīt.",
+      "blocked": "Jūsu konts ir bloķēts — sludinājumus ievietot nevar.",
+      "failed": "Neizdevās saglabāt sludinājumu. Mēģiniet vēlreiz."
+    }
   },
   "metaTitle": "Ievietot auto pārdošanas sludinājumu | bestauto.lv"
 }

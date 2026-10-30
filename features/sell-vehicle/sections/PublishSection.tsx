@@ -11,17 +11,18 @@ import { useBrandName } from "@/features/catalog/hooks";
 import { usePlaceName } from "@/lib/places";
 import { formatNumber, formatPrice } from "@/lib/utils";
 
-import { SellFormData } from "../types";
+import { SellFormData, SubmitState } from "../types";
 
 type PublishSectionProps = {
   data: SellFormData;
   requiredDone: number;
   requiredTotal: number;
   onSubmit?: () => void;
+  submit: SubmitState;
 };
 
 // Итог перед публикацией: как объявление будет выглядеть в списке
-export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: PublishSectionProps) {
+export function PublishSection({ data, requiredDone, requiredTotal, onSubmit, submit }: PublishSectionProps) {
   const t = useTranslations("sell.publish");
   const tCommon = useTranslations("common");
   const placeName = usePlaceName();
@@ -30,6 +31,7 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
   const brandName = useBrandName()(data.brand);
   const title = (data.model && listingTitle(brandName ?? "", data.model, data.version)) || t("yourCar");
   const complete = requiredDone === requiredTotal;
+  const busy = submit.step === "uploading" || submit.step === "saving";
 
   return (
     <Card as="section" size="panel" id="publish" className="scroll-mt-24">
@@ -70,8 +72,19 @@ export function PublishSection({ data, requiredDone, requiredTotal, onSubmit }: 
         </div>
       )}
 
-      <Button size="xl" fullWidth onClick={onSubmit} className="mt-6">
-        {t("submit")}
+      {submit.step === "error" && (
+        <div role="alert" className="flex gap-3 mt-4 p-4 rounded-card bg-danger-soft text-sm text-danger">
+          <WarningAmberOutlinedIcon fontSize="small" className="shrink-0" />
+          {t(`errors.${submit.error}`)}
+        </div>
+      )}
+
+      <Button size="xl" fullWidth onClick={onSubmit} disabled={busy} className="mt-6">
+        {submit.step === "uploading"
+          ? t("uploading", { done: submit.done, total: submit.total })
+          : submit.step === "saving"
+            ? t("saving")
+            : t("submit")}
       </Button>
 
       <p className="text-xs text-gray-500 text-center mt-3">

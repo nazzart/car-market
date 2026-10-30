@@ -79,9 +79,10 @@ export function CarHistorySection({
         {/* Owners */}
 
         <FormControl fullWidth>
-          <InputLabel>{t("owners")}</InputLabel>
+          <InputLabel id="sell-owners-label">{t("owners")}</InputLabel>
 
           <Select
+            labelId="sell-owners-label"
             value={data.owners ?? ""}
             label={t("owners")}
             onChange={(e) => updateField("owners", e.target.value)}
@@ -100,9 +101,10 @@ export function CarHistorySection({
         {/* Mileage Latvia */}
 
         <FormControl fullWidth>
-          <InputLabel>{t("mileageLv")}</InputLabel>
+          <InputLabel id="sell-mileageLv-label">{t("mileageLv")}</InputLabel>
 
           <Select
+            labelId="sell-mileageLv-label"
             value={data.mileageLatvia ?? ""}
             label={t("mileageLv")}
             onChange={(e) => updateField("mileageLatvia", e.target.value)}
@@ -128,9 +130,10 @@ export function CarHistorySection({
             !validateField(data.inspectionUntil, getRules("inspectionUntil"))
           }
         >
-          <InputLabel>{t("inspection")}</InputLabel>
+          <InputLabel id="sell-inspection-label">{t("inspection")}</InputLabel>
 
           <Select
+            labelId="sell-inspection-label"
             value={data.inspectionUntil ?? ""}
             label={t("inspection")}
             onChange={(e) => updateField("inspectionUntil", e.target.value)}

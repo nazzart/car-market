@@ -49,10 +49,35 @@ npm run dev          # http://localhost:3000
 | `DATABASE_URL` | Server only. Supabase **transaction pooler** connection string (port 6543), used by the app | — |
 | `MIGRATIONS_DATABASE_URL` | Server only. Supabase **session pooler** (port 5432), used by migrations and seeding | `DATABASE_URL` |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project: login (Supabase Auth) | — |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | Server only. Cloudflare R2 bucket for listing photos (see below) | — (photo upload off) |
+| `R2_PUBLIC_URL` | Public address of the bucket, e.g. `https://pub-xxxx.r2.dev` or `https://foto.bestauto.lv` | — |
 
 The connection strings contain the database password: keep them in `.env.local` (git-ignored) and in the
 hosting provider's settings, never in code. All tables have Row Level Security enabled with no policies, so
 the public Supabase key cannot read or change them; only the Next.js server (which connects as the owner) can.
+
+### Photos: Cloudflare R2
+
+Listing photos are uploaded by the browser straight to R2 with a short-lived signed link (`lib/storage.ts`,
+`features/sell-vehicle/actions.ts`); before upload they are shrunk to 1920 px JPEG. Without the `R2_*` variables
+the sell form still works, but a listing can only be published without photos. One-time setup in the Cloudflare
+dashboard:
+
+1. **R2 → Create bucket** (e.g. `bestauto-photos`, location Europe).
+2. **Bucket → Settings → Public access**: enable the `r2.dev` subdomain (or connect your own domain later) —
+   that address is `R2_PUBLIC_URL`.
+3. **Bucket → Settings → CORS policy** — lets the site upload from the browser:
+   ```json
+   [{ "AllowedOrigins": ["http://localhost:3000", "http://localhost:3100", "https://bestauto.lv"],
+      "AllowedMethods": ["PUT"], "AllowedHeaders": ["content-type"], "MaxAgeSeconds": 3600 }]
+   ```
+4. **R2 → Manage API tokens → Create API token**: permission *Object Read & Write*, only this bucket.
+   Copy the *Access Key ID* and *Secret Access Key*; the *Account ID* is on the R2 overview page.
+5. Put the five `R2_*` values in `.env.local` (and in the hosting settings) and restart / rebuild — `next.config.ts`
+   reads `R2_PUBLIC_URL` to allow the images.
+
+New listings are saved as *pending* (`review = 'pending'`) and appear in `/admin` → Apstiprināšana; buyers see them
+after approval.
 
 ### Accounts
 
@@ -155,8 +180,8 @@ analytics…), add its domain to the `sources` list there, otherwise the browser
 
 ## Before production
 
-- **Backend:** saving listings and photo uploads (Cloudflare R2) from the sell form; rate limiting for login,
-  registration and reports.
+- **Backend:** rate limiting for login, registration and reports; cleanup of photos uploaded for listings that were
+  never published (R2 lifecycle rule or a job); editing an existing listing from the sell form.
 - **Email:** own sender (Resend) and *Confirm email* on in Supabase.
 - **Services:** OpenStreetMap tiles and the public Photon server are for light use — switch to a tile provider
   (e.g. MapTiler, Stadia) and a self-hosted geocoder or the VZD address register.

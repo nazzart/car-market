@@ -3,7 +3,7 @@
 import "server-only";
 
 import { cache } from "react";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, ne, sql } from "drizzle-orm";
 
 import { db, schema } from "@/lib/db";
 import { foldText, placePointOrRiga } from "@/lib/places";
@@ -64,6 +64,19 @@ async function freeDealerSlug(name: string) {
   return slug;
 }
 
+// Регистрационный номер уже у другой страницы дилера (одна компания — одна страница; dealers_reg_number_unique)
+export async function regNumberTaken(regNumber: string, exceptDealerId?: number): Promise<boolean> {
+  const [row] = await db
+    .select({ id: dealers.id })
+    .from(dealers)
+    .where(and(eq(dealers.regNumber, regNumber), exceptDealerId === undefined ? undefined : ne(dealers.id, exceptDealerId)))
+    .limit(1);
+  return Boolean(row);
+}
+
+const isUniqueViolation = (error: unknown) =>
+  (error as { code?: string })?.code === "23505" || (error as { cause?: { code?: string } })?.cause?.code === "23505";
+
 // Профиль нового пользователя. Город не спрашиваем при регистрации — его выберут в настройках
 // или в первом объявлении. У компании сразу создаётся страница дилера, но покупатели увидят её,
 // когда дилер укажет адрес и телефон (lib/listed.ts); значок «Проверенный» — после проверки модератором
@@ -72,20 +85,25 @@ export async function createProfile(id: string, meta: SignUpMeta) {
   await db.transaction(async (tx) => {
     let dealerId: number | null = null;
     if (meta.type === "dealer") {
-      const [dealer] = await tx
-        .insert(dealers)
-        .values({
-          slug: await freeDealerSlug(meta.name),
-          name: meta.name,
-          type: "used",
-          city,
-          address: "",
-          ...placePointOrRiga(city),
-          phone: "",
-          regNumber: meta.regNumber ?? null,
-          since: new Date().getFullYear(),
-        })
-        .returning({ id: dealers.id });
+      const values = {
+        slug: await freeDealerSlug(meta.name),
+        name: meta.name,
+        type: "used" as const,
+        city,
+        address: "",
+        ...placePointOrRiga(city),
+        phone: "",
+        regNumber: meta.regNumber ?? null,
+        since: new Date().getFullYear(),
+      };
+      // номер успели занять между проверкой в signUp и этой записью — страница без номера (дилер укажет
+      // и модератор разберётся), но аккаунт не остаётся без профиля
+      const insert = (regNumber: string | null) =>
+        tx.transaction((sp) => sp.insert(dealers).values({ ...values, regNumber }).returning({ id: dealers.id }));
+      const [dealer] = await insert(values.regNumber).catch((error) => {
+        if (values.regNumber && isUniqueViolation(error)) return insert(null);
+        throw error;
+      });
       dealerId = dealer.id;
     }
     await tx.insert(profiles).values({ id, type: meta.type, name: meta.name, dealerId }).onConflictDoNothing();

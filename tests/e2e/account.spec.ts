@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { PASSWORD, firstListingPath, press, qaEmail, register, toggle } from "./helpers";
+import { PASSWORD, firstListingPath, press, qaEmail, qaRegNumber, register, toggle } from "./helpers";
 
 test("private account: settings, favorites with undo, delete account", async ({ page }) => {
   const email = qaEmail("private");
@@ -44,7 +44,8 @@ test("private account: settings, favorites with undo, delete account", async ({ 
 });
 
 test("company account: incomplete profile notice and registration number in settings", async ({ page }) => {
-  await register(page, "company", { name: "QA E2E Salons", email: qaEmail("company"), regNumber: "40003999999" });
+  const regNumber = qaRegNumber();
+  await register(page, "company", { name: "QA E2E Salons", email: qaEmail("company"), regNumber });
 
   await page.goto("/account");
   await expect(page.getByText("Pabeidziet uzņēmuma profilu")).toBeVisible();
@@ -53,9 +54,20 @@ test("company account: incomplete profile notice and registration number in sett
   await expect(page.locator("main")).not.toContainText("account.");
 
   await page.goto("/account/profile");
-  await expect(page.getByLabel(/Reģistrācijas numurs/)).toHaveValue("40003999999");
+  await expect(page.getByLabel(/Reģistrācijas numurs/)).toHaveValue(regNumber);
   // без адреса страница дилера не сохраняется
   await page.locator('input[type="tel"]').fill("+371 2000 9999");
   await page.getByRole("button", { name: "Saglabāt", exact: true }).click();
   await expect(page.getByText("Norādiet adresi")).toBeVisible();
+});
+
+// Одна компания — одна страница: второй аккаунт с тем же регистрационным номером не создаётся
+test("company registration with a taken registration number shows a clear error", async ({ page, browser }) => {
+  const regNumber = qaRegNumber();
+  await register(page, "company", { name: "QA E2E Pirmais", email: qaEmail("first"), regNumber });
+
+  const other = await (await browser.newContext()).newPage();
+  await expect(register(other, "company", { name: "QA E2E Otrais", email: qaEmail("second"), regNumber })).rejects.toThrow();
+  await expect(other.getByRole("dialog").getByText(/jau ir reģistrēts/)).toBeVisible();
+  await other.context().close();
 });

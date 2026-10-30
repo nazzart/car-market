@@ -22,11 +22,13 @@ export function useSettingsForm<T, E extends string>(initialValues: T, validate:
     (value: T[K]) =>
       setForm((prev) => ({ ...prev, [key]: value }));
 
-  // send — запрос на сервер, true при успехе; after — что поменять в форме после сохранения
-  const save = async (send: () => Promise<boolean>, after?: Partial<T>) => {
+  // send — запрос на сервер: true при успехе, текст — своя причина ошибки; after — что поменять в форме после сохранения
+  const save = async (send: () => Promise<boolean | string>, after?: Partial<T>) => {
     setSubmitted(true);
     if (Object.values(errors).some(Boolean)) return failed();
-    if (!(await send().catch(() => false))) return failed();
+    const result = await send().catch(() => false);
+    if (typeof result === "string") return toast({ message: result, tone: "error" });
+    if (!result) return failed();
 
     const next = { ...form, ...after };
     setForm(next);

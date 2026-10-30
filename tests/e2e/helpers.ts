@@ -4,11 +4,18 @@ export const PASSWORD = "QaTest12345";
 
 // Уникальный адрес на каждый запуск — teardown.ts удаляет все qa.e2e-* после тестов
 export const qaEmail = (name: string) => `qa.e2e-${name}-${Date.now()}@bestauto-qa.lv`;
+// Регистрационный номер компании (11 цифр) — свой на каждый вызов: номера в базе уникальны
+let regCounter = 0;
+export const qaRegNumber = () => `4${String((Date.now() * 10 + regCounter++) % 1e10).padStart(10, "0")}`;
 
 export async function register(page: Page, kind: "private" | "company", fields: { name: string; email: string; regNumber?: string }) {
   await page.goto("/");
-  await page.getByRole("banner").getByRole("button", { name: "Ienākt" }).click();
   const dialog = page.getByRole("dialog");
+  // до гидратации клик по «Ienākt» теряется — повторяем, пока окно входа не откроется
+  await expect(async () => {
+    if (!(await dialog.isVisible())) await page.getByRole("banner").getByRole("button", { name: "Ienākt" }).click();
+    await expect(dialog).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 15_000 });
   await dialog.getByRole("button", { name: "Izveidot kontu" }).click();
   await dialog.getByRole("radio", { name: kind === "company" ? /Uzņēmum/ : /Privātperson/ }).click();
   await dialog.getByRole("button", { name: "Turpināt" }).click();

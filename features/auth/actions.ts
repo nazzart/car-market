@@ -8,10 +8,10 @@ import { headers } from "next/headers";
 import { createSupabase } from "@/lib/supabase/server";
 import { cleanText, isEmail, isRegNumber, normalizeRegNumber } from "@/lib/validate";
 
-import { type SignUpMeta, createProfile, getSessionUser, loadUser } from "./api";
+import { type SignUpMeta, createProfile, getSessionUser, loadUser, regNumberTaken } from "./api";
 import type { User } from "./types";
 
-export type AuthResult = { user: User } | { error: "invalid" | "exists" | "weak" | "rateLimit" | "failed" };
+export type AuthResult = { user: User } | { error: "invalid" | "exists" | "weak" | "rateLimit" | "failed" | "regTaken" };
 
 // Ошибки Supabase → понятные причины для формы
 function reason(code?: string): Exclude<AuthResult, { user: User }>["error"] {
@@ -48,6 +48,8 @@ export async function signUp(input: SignUpInput): Promise<AuthResult | { confirm
     return { error: "failed" };
   }
   if (type === "dealer" && !isRegNumber(regNumber)) return { error: "failed" };
+  // одна компания — одна страница дилера: номер занят — сообщаем до создания аккаунта
+  if (type === "dealer" && (await regNumberTaken(regNumber!))) return { error: "regTaken" };
 
   const meta: SignUpMeta = { type, name, ...(type === "dealer" ? { regNumber } : {}) };
   const supabase = await createSupabase();

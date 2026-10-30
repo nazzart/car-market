@@ -17,6 +17,8 @@ const dealerIdOf = async (user: User) => {
   const [row] = await db.select({ id: dealers.id }).from(dealers).where(eq(dealers.slug, user.dealerSlug));
   return row?.id ?? null;
 };
+// id своей страницы дилера (проверка регистрационного номера в настройках)
+export const ownDealerId = async (user: User) => (await dealerIdOf(user)) ?? undefined;
 
 // Объявления пользователя: у дилера — его компании, у частного лица — свои
 async function ownedBy(user: User) {

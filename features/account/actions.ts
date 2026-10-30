@@ -4,7 +4,7 @@
 // и updateTag — страницы с этими данными сразу показывают новое
 import { updateTag } from "next/cache";
 
-import { requireUser } from "@/features/auth/api";
+import { regNumberTaken, requireUser } from "@/features/auth/api";
 import type { User } from "@/features/auth/types";
 import { getDealerListings, getUserListings } from "@/features/cars/api";
 import type { Listing } from "@/features/cars/types";
@@ -19,6 +19,7 @@ import {
   type DealerFields,
   addOwnContact,
   deleteOwnAccount,
+  ownDealerId,
   saveDealerPhone,
   saveOwnDealer,
   saveOwnProfile,
@@ -59,7 +60,7 @@ async function changeEmail(user: User, email: string): Promise<"changed" | "conf
   return data.user?.new_email ? "confirm" : "changed";
 }
 
-export type SaveResult = { ok: true; user: User; emailPending?: boolean } | { error: "invalid" };
+export type SaveResult = { ok: true; user: User; emailPending?: boolean } | { error: "invalid" | "regTaken" };
 
 export async function saveProfile(input: { name: string; email: string; phone: string; city: string }): Promise<SaveResult> {
   const user = await requireUser();
@@ -125,6 +126,8 @@ export async function saveDealerProfile(input: DealerFields & { email: string })
     contacts !== null;
   if (!valid) return { error: "invalid" };
   if (fields.type !== "official") fields.brands = [];
+  // номер другой компании — понятная ошибка вместо сбоя уникальности в базе
+  if (user.dealerSlug && (await regNumberTaken(fields.regNumber, await ownDealerId(user)))) return { error: "regTaken" };
 
   if (!(await saveOwnDealer(user, fields))) return { error: "invalid" };
   updateTag("dealers");

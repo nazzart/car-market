@@ -77,6 +77,7 @@ type DealerSettingsFormProps = { user: User; dealer: Dealer };
 
 function DealerSettingsForm({ user, dealer }: DealerSettingsFormProps) {
   const t = useTranslations("account.settings");
+  const tErrors = useTranslations("auth.errors");
   const { setUser } = useAuth();
   const settings = useSettingsForm(initialForm(user, dealer), validate);
   const { form, set, show, dirty, discard, save } = settings;
@@ -108,7 +109,7 @@ function DealerSettingsForm({ user, dealer }: DealerSettingsFormProps) {
           contacts: form.contacts,
           reassign: form.reassign,
         });
-        if ("error" in result) return false;
+        if ("error" in result) return result.error === "regTaken" ? tErrors("regTaken") : false;
         setUser(result.user);
         return true;
       },

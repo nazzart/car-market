@@ -32,6 +32,9 @@ export function CarInfoSection({
   const tCommon = useTranslations("common");
   const tForm = useTranslations("sell.form");
   const isDealer = useAuth().user?.type === "dealer";
+  // условия лизинга (взнос, срок) — по ссылке; уже заполненные — видны сразу
+  const [termsOpen, setTermsOpen] = useState(false);
+  const showTerms = termsOpen || Boolean(data.leasingDownPayment || data.leasingMonths);
   const tOptions = useTranslations("options");
 
   // каталог: марки — с сервера при загрузке страницы, модели с версиями — по выбранной марке
@@ -237,7 +240,8 @@ export function CarInfoSection({
           </TextField>
         </div>
 
-        {/* Лизинг — только дилеры. Пустой платёж — без лизинга; взнос и срок — по желанию */}
+        {/* Лизинг — только дилеры. Пустой платёж — без лизинга. Взнос и срок — по желанию, за ссылкой:
+            обычно хватает платежа в месяц */}
         {isDealer && (
           <div className="rounded-control border border-gray-200 p-4">
             <div className="text-sm font-medium text-gray-900">
@@ -256,36 +260,51 @@ export function CarInfoSection({
                   if (!e.target.value) {
                     updateField("leasingDownPayment", "");
                     updateField("leasingMonths", "");
+                    setTermsOpen(false);
                   }
                 }}
                 error={!validateField(data.leasingMonthly, getRules("leasingMonthly"))}
                 InputProps={{ endAdornment: <InputAdornment position="end">{t("leasing.unitMonthly")}</InputAdornment> }}
                 inputProps={{ min: 1 }}
               />
-              <TextField
-                label={t("leasing.down")}
-                type="number"
-                fullWidth
-                disabled={!data.leasingMonthly}
-                value={data.leasingDownPayment ?? ""}
-                onChange={(e) => updateField("leasingDownPayment", e.target.value)}
-                error={!validateField(data.leasingDownPayment, getRules("leasingDownPayment"))}
-                InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
-                inputProps={{ min: 0, max: 90 }}
-              />
-              <TextField
-                label={t("leasing.months")}
-                type="number"
-                fullWidth
-                disabled={!data.leasingMonthly}
-                value={data.leasingMonths ?? ""}
-                onChange={(e) => updateField("leasingMonths", e.target.value)}
-                error={!validateField(data.leasingMonths, getRules("leasingMonths"))}
-                helperText={!validateField(data.leasingMonths, getRules("leasingMonths")) ? "6–120" : undefined}
-                InputProps={{ endAdornment: <InputAdornment position="end">{t("leasing.unitMonths")}</InputAdornment> }}
-                inputProps={{ min: 6, max: 120 }}
-              />
+              {showTerms && (
+                <>
+                  <TextField
+                    label={t("leasing.down")}
+                    type="number"
+                    fullWidth
+                    disabled={!data.leasingMonthly}
+                    value={data.leasingDownPayment ?? ""}
+                    onChange={(e) => updateField("leasingDownPayment", e.target.value)}
+                    error={!validateField(data.leasingDownPayment, getRules("leasingDownPayment"))}
+                    InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
+                    inputProps={{ min: 0, max: 90 }}
+                  />
+                  <TextField
+                    label={t("leasing.months")}
+                    type="number"
+                    fullWidth
+                    disabled={!data.leasingMonthly}
+                    value={data.leasingMonths ?? ""}
+                    onChange={(e) => updateField("leasingMonths", e.target.value)}
+                    error={!validateField(data.leasingMonths, getRules("leasingMonths"))}
+                    helperText={!validateField(data.leasingMonths, getRules("leasingMonths")) ? "6–120" : undefined}
+                    InputProps={{ endAdornment: <InputAdornment position="end">{t("leasing.unitMonths")}</InputAdornment> }}
+                    inputProps={{ min: 6, max: 120 }}
+                  />
+                </>
+              )}
             </div>
+            {!showTerms && (
+              <button
+                type="button"
+                onClick={() => setTermsOpen(true)}
+                disabled={!data.leasingMonthly}
+                className="mt-3 text-sm font-medium text-gray-700 hover:text-black disabled:text-gray-400 disabled:cursor-not-allowed cursor-pointer"
+              >
+                + {t("leasing.addTerms")}
+              </button>
+            )}
           </div>
         )}
 

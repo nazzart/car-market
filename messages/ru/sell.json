@@ -70,7 +70,8 @@
       "down": "Первый взнос",
       "months": "Срок",
       "unitMonthly": "€/мес.",
-      "unitMonths": "мес."
+      "unitMonths": "мес.",
+      "addTerms": "Добавить условия (первый взнос, срок)"
     }
   },
   "technical": {

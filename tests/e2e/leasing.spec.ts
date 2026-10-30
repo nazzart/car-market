@@ -1,18 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-import { qaEmail, register } from "./helpers";
+import { qaEmail, qaRegNumber, register } from "./helpers";
 
 // Дилер видит блок лизинга в форме подачи; взнос и срок — после платежа, срок — 6–120 мес.
 test("sell form: leasing block for dealers", async ({ page }) => {
-  await register(page, "company", { name: "QA E2E Līzings", email: qaEmail("leasing"), regNumber: "40003888888" });
+  await register(page, "company", { name: "QA E2E Līzings", email: qaEmail("leasing"), regNumber: qaRegNumber() });
   await page.goto("/sell?category=car");
 
   await expect(page.getByText(/^Līzings ·/)).toBeVisible();
   const monthly = page.getByLabel("Mēneša maksājums");
   const months = page.getByLabel("Termiņš");
-  await expect(months).toBeDisabled();
+  const addTerms = page.getByRole("button", { name: /Pievienot nosacījumus/ });
+  // по умолчанию — только платёж в месяц; условия — по ссылке, когда платёж указан
+  await expect(months).toHaveCount(0);
+  await expect(addTerms).toBeDisabled();
 
   await monthly.fill("320");
+  await addTerms.click();
   await expect(months).toBeEnabled();
   await months.fill("200");
   await expect(page.getByText("6–120")).toBeVisible();

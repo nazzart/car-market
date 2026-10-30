@@ -64,5 +64,11 @@
     "next": "Далее",
     "page": "Страница {page}",
     "range": "{from}–{to} из {total}"
+  },
+  "notSpecified": "Не указано",
+  "leasing": {
+    "monthly": "В лизинг от {amount}/мес.",
+    "down": "первый взнос {percent}%",
+    "months": "{count} мес."
   }
 }

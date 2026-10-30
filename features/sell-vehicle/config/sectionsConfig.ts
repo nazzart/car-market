@@ -21,6 +21,10 @@ export const sections = [
       { name: "mileage", rules: ["required"] },
       { name: "price", rules: ["required"] },
       { name: "negotiable" },
+      // лизинг — только у дилеров; пустой платёж — без лизинга
+      { name: "leasingMonthly", rules: ["leasingMonthly"] },
+      { name: "leasingDownPayment", rules: ["leasingDownPayment"] },
+      { name: "leasingMonths", rules: ["leasingMonths"] },
       { name: "bodyType", rules: ["required"] },
       { name: "color", rules: ["required"] },
     ],

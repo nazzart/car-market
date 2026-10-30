@@ -143,5 +143,11 @@
   "video": {
     "play": "Skatīties video",
     "frameTitle": "Video: {title}"
+  },
+  "leasing": {
+    "monthly": "Līzingā no {amount}/mēn.",
+    "down": "pirmā iemaksa {percent}% ({amount})",
+    "months": "{count} mēn.",
+    "note": "Nosacījumus precizējiet pie pārdevēja"
   }
 }

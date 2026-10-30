@@ -8,6 +8,7 @@ import { formatAgo, formatPrice } from "@/lib/utils";
 import { Listing } from "@/features/cars/types";
 
 import FreshBadge from "@/features/cars/car-list/components/FreshBadge";
+import LeasingPrice from "@/features/cars/car-list/components/LeasingPrice";
 import { isFresh } from "@/features/cars/lib/isFresh";
 import { useSpecLine } from "@/features/cars/lib/useSpecLine";
 
@@ -44,6 +45,7 @@ export default function CarCard({ listing }: CarCardProps) {
           <div className="text-lg font-semibold text-gray-900">
             {formatPrice(price)}
           </div>
+          <LeasingPrice listing={listing} />
 
           <div className="text-gray-900 truncate group-hover:text-primary transition">
             {title}

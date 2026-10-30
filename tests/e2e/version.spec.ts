@@ -29,6 +29,18 @@ test("sell form: model and version, normalised version and the title", async ({ 
   await expect(versionField).toHaveValue("530d xDrive");
   await expect(preview).toContainText("BMW 530d xDrive");
 
+  // лизинг — только у дилеров: гостю блока нет
+  await expect(page.getByText(/^Līzings ·/)).toHaveCount(0);
+
+  // необязательный выбор можно снять: «Nav norādīts»
+  const negotiable = page.getByRole("combobox", { name: "Vai cena ir runājama?" });
+  await negotiable.click();
+  await page.getByRole("option", { name: "Jā, runājama" }).click();
+  await expect(negotiable).toHaveText("Jā, runājama");
+  await negotiable.click();
+  await page.getByRole("option", { name: "Nav norādīts" }).click();
+  await expect(negotiable).not.toHaveText("Jā, runājama");
+
   // другая марка — модель и версия сбрасываются; у Mercedes модель в заголовке не повторяется
   await page.getByRole("combobox", { name: "Marka" }).fill("Mercedes");
   await page.getByRole("option", { name: "Mercedes-Benz", exact: true }).click();

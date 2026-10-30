@@ -13,6 +13,9 @@ export type SellFormData = {
   mileage: string;
   price: string;
   negotiable: string;
+  leasingMonthly: string; // € в месяц; пусто — без лизинга (только дилеры)
+  leasingDownPayment: string; // %
+  leasingMonths: string;
   bodyType: string;
   color: string;
   // техника

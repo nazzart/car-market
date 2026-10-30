@@ -10,6 +10,7 @@ import { Listing } from "@/features/cars/types";
 import ListingPhone, { ContactPerson } from "./ListingPhone";
 import SellerInfo from "./SellerInfo";
 import ReportButton from "@/features/moderation/ReportButton";
+import LeasingOffer from "./LeasingOffer";
 
 type ContactCardProps = { listing: Listing };
 
@@ -29,6 +30,8 @@ export default function ContactCard({ listing }: ContactCardProps) {
         {listing.negotiable && (
           <div className="text-sm text-success mt-1">{t("negotiable")}</div>
         )}
+
+        <LeasingOffer listing={listing} className="mt-4" />
 
         <ListingPhone listing={listing} variant="primary" className="w-full mt-5" />
         <ContactPerson listing={listing} className="mt-3 justify-center" />

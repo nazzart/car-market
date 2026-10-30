@@ -143,5 +143,11 @@
   "video": {
     "play": "Смотреть видео",
     "frameTitle": "Видео: {title}"
+  },
+  "leasing": {
+    "monthly": "В лизинг от {amount}/мес.",
+    "down": "первый взнос {percent}% ({amount})",
+    "months": "{count} мес.",
+    "note": "Условия уточняйте у продавца"
   }
 }

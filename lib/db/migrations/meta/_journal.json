@@ -64,6 +64,13 @@
       "when": 1793370711489,
       "tag": "0008_catalog_ids",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793373565481,
+      "tag": "0009_listing_leasing",
+      "breakpoints": true
     }
   ]
 }

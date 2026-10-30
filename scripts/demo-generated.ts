@@ -105,6 +105,15 @@ const brandName = (slug: string) => catalog.brands.find((b) => b.slug === slug)?
 const modelsByBrand: Record<string, string[]> = catalog.models;
 const versionsByModel: Record<string, Record<string, string[]>> = catalog.versions;
 
+// Лизинг у демо-дилеров: у каждого второго объявления от 5000 € — 20% взнос, 60 мес., ~6,9% годовых
+export function demoLeasing(id: number, price: number) {
+  if (id % 2 !== 0 || price < 5000) return {};
+  const rate = 0.069 / 12;
+  const financed = price * 0.8;
+  const monthly = Math.round((financed * rate) / (1 - (1 + rate) ** -60) / 5) * 5;
+  return { leasingMonthly: monthly, leasingDownPayment: 20, leasingMonths: 60 };
+}
+
 // Версия из каталога, подходящая к топливу: дизель — 530d / E 220 CDI, гибрид — 530e / E 300 de, бензин — остальные
 const DIESEL = /\dd\b|\bd\b|CDI|BlueTEC/;
 const HYBRID = /\de\b|\be\b|\bde\b/;

@@ -29,6 +29,7 @@ export function CarHistorySection({
   updateField,
 }: FormStepProps) {
   const t = useTranslations("sell.history");
+  const tCommon = useTranslations("common");
 
   const { isValid } = useSectionValidation(fields, data);
 
@@ -85,6 +86,10 @@ export function CarHistorySection({
             label={t("owners")}
             onChange={(e) => updateField("owners", e.target.value)}
           >
+            {/* необязательное поле: выбор можно снять */}
+            <MenuItem value="">
+              <span className="text-gray-500">{tCommon("notSpecified")}</span>
+            </MenuItem>
             <MenuItem value="1">1</MenuItem>
             <MenuItem value="2">2</MenuItem>
             <MenuItem value="3">3</MenuItem>
@@ -102,6 +107,10 @@ export function CarHistorySection({
             label={t("mileageLv")}
             onChange={(e) => updateField("mileageLatvia", e.target.value)}
           >
+            {/* необязательное поле: выбор можно снять */}
+            <MenuItem value="">
+              <span className="text-gray-500">{tCommon("notSpecified")}</span>
+            </MenuItem>
             {mileageLvOptions.map(([value, key]) => (
               <MenuItem key={value} value={value}>
                 {t(`mileageLvOptions.${key}`)}

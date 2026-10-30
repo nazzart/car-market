@@ -10,6 +10,7 @@ import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
 
 import { Listing } from "@/features/cars/types";
 import { isFresh } from "../../lib/isFresh";
+import LeasingPrice from "./LeasingPrice";
 import ListingGallery from "./ListingGallery";
 import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { usePlaceName } from "@/lib/places";
@@ -128,6 +129,7 @@ export default function ListingRow({ listing }: ListingRowProps) {
           <div className="lg:text-right">
             <div className="text-2xl font-bold text-gray-900 whitespace-nowrap">{formatPrice(listing.price)}</div>
             {listing.negotiable && <div className="text-xs font-medium text-success">{t("negotiable")}</div>}
+            <LeasingPrice listing={listing} className="mt-0.5" />
           </div>
 
           <ListingPhone listing={listing} />

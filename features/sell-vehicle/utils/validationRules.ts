@@ -16,6 +16,11 @@ const rulesMap: Record<string, (value: unknown) => boolean> = {
   youtube: (v) => typeof v !== "string" || !v || youtubeId(v) !== null,
 
   isEngineCapacity: (v) => typeof v !== "string" || !v || /^\d+(\.\d{1,2})?$/.test(v),
+
+  // лизинг — те же пределы, что в базе (listings_leasing): платёж > 0, взнос 0–90 %, срок 6–120 мес.
+  leasingMonthly: (v) => typeof v !== "string" || !v || (/^\d+$/.test(v) && Number(v) > 0),
+  leasingDownPayment: (v) => typeof v !== "string" || !v || (/^\d+$/.test(v) && Number(v) <= 90),
+  leasingMonths: (v) => typeof v !== "string" || !v || (/^\d+$/.test(v) && Number(v) >= 6 && Number(v) <= 120),
 };
 
 // 🔥 универсальная проверка одного поля

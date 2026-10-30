@@ -26,6 +26,7 @@ import { youtubeId } from "@/lib/youtube";
 import ReportButton from "@/features/moderation/ReportButton";
 import SectionNav from "@/features/cars/car-view/components/SectionNav";
 import SpecsTable from "@/features/cars/car-view/components/SpecsTable";
+import LeasingOffer from "@/features/cars/car-view/components/LeasingOffer";
 import { Link } from "@/i18n/navigation";
 import { placeName } from "@/lib/places";
 import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
@@ -139,6 +140,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
             {listing.negotiable && (
               <div className="text-sm text-success mt-1">{t("negotiable")}</div>
             )}
+            <LeasingOffer listing={listing} className="mt-3" />
           </div>
 
           <div className="space-y-4">

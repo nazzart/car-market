@@ -59,6 +59,10 @@ export type Listing = {
   inspectionUntil?: string; // техосмотр, «MM.YYYY»
   noAccidents?: boolean;
   negotiable?: boolean;
+  // лизинг (только дилеры): «no 320 €/mēn.» под ценой на карточках
+  leasingMonthly?: number;
+  leasingDownPayment?: number; // %
+  leasingMonths?: number;
   description?: string;
   videoUrl?: string; // ссылка на YouTube от продавца
   equipment?: string[]; // ключи из features/cars/config/equipment.ts

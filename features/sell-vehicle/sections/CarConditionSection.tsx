@@ -19,6 +19,7 @@ export function CarConditionSection({
   updateField,
 }: FormStepProps) {
   const t = useTranslations("sell.condition");
+  const tCommon = useTranslations("common");
   const { isValid } = useSectionValidation(fields, data);
 
   const { handleNext } = useSectionNext(isValid, required, onNext);
@@ -43,6 +44,10 @@ export function CarConditionSection({
             label={t("overall")}
             onChange={(e) => updateField("condition", e.target.value)}
           >
+            {/* необязательное поле: выбор можно снять */}
+            <MenuItem value="">
+              <span className="text-gray-500">{tCommon("notSpecified")}</span>
+            </MenuItem>
             {["excellent", "good", "average", "repair"].map((value) => (
               <MenuItem key={value} value={value}>
                 {t(`overallOptions.${value}`)}
@@ -57,10 +62,14 @@ export function CarConditionSection({
           <InputLabel>{t("accident")}</InputLabel>
 
           <Select
-            value={data.hadAccident}
+            value={data.hadAccident ?? ""}
             label={t("accident")}
             onChange={(e) => updateField("hadAccident", e.target.value)}
           >
+            {/* необязательное поле: выбор можно снять */}
+            <MenuItem value="">
+              <span className="text-gray-500">{tCommon("notSpecified")}</span>
+            </MenuItem>
             <MenuItem value="no">{t("no")}</MenuItem>
             <MenuItem value="yes">{t("yes")}</MenuItem>
             <MenuItem value="unknown">{t("unknown")}</MenuItem>
@@ -73,10 +82,14 @@ export function CarConditionSection({
           <InputLabel>{t("service")}</InputLabel>
 
           <Select
-            value={data.hasServiceDone}
+            value={data.hasServiceDone ?? ""}
             label={t("service")}
             onChange={(e) => updateField("hasServiceDone", e.target.value)}
           >
+            {/* необязательное поле: выбор можно снять */}
+            <MenuItem value="">
+              <span className="text-gray-500">{tCommon("notSpecified")}</span>
+            </MenuItem>
             {["recent", "partial", "required"].map((value) => (
               <MenuItem key={value} value={value}>
                 {t(`serviceOptions.${value}`)}
@@ -91,10 +104,14 @@ export function CarConditionSection({
           <InputLabel>{t("serviceBook")}</InputLabel>
 
           <Select
-            value={data.hasServiceBook}
+            value={data.hasServiceBook ?? ""}
             label={t("serviceBook")}
             onChange={(e) => updateField("hasServiceBook", e.target.value)}
           >
+            {/* необязательное поле: выбор можно снять */}
+            <MenuItem value="">
+              <span className="text-gray-500">{tCommon("notSpecified")}</span>
+            </MenuItem>
             <MenuItem value="yes">{t("has")}</MenuItem>
             <MenuItem value="no">{t("no")}</MenuItem>
           </Select>

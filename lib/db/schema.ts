@@ -224,6 +224,10 @@ export const listings = pgTable(
     inspectionUntil: text(), // «MM.YYYY»
     noAccidents: boolean(),
     negotiable: boolean(),
+    // лизинг — только у дилеров: платёж в месяц (€), первый взнос (%) и срок (мес.) — по желанию
+    leasingMonthly: integer(),
+    leasingDownPayment: smallint(),
+    leasingMonths: smallint(),
     description: text(),
     videoUrl: text(),
     equipment: text().array(),
@@ -261,6 +265,13 @@ export const listings = pgTable(
       oneOf(t.bodyType, ["sedan", "suv", "wagon", "hatchback", "coupe", "convertible", "minivan", "pickup"])
     ),
     check("listings_review", sql`${t.review} is null or ${t.review} = 'pending'`),
+    check(
+      "listings_leasing",
+      sql`(${t.leasingMonthly} is null and ${t.leasingDownPayment} is null and ${t.leasingMonths} is null)
+        or (${t.dealerId} is not null and ${t.leasingMonthly} > 0
+          and (${t.leasingDownPayment} is null or ${t.leasingDownPayment} between 0 and 90)
+          and (${t.leasingMonths} is null or ${t.leasingMonths} between 6 and 120))`
+    ),
   ]
 ).enableRLS();
 

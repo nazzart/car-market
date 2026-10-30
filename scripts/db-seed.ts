@@ -13,7 +13,7 @@ import { listings as demoListings } from "../features/cars/data/listings";
 import { dealers as demoDealers } from "../features/dealers/data/dealers";
 import * as schema from "../lib/db/schema";
 
-import { generateListings } from "./demo-generated";
+import { demoLeasing, generateListings } from "./demo-generated";
 
 loadEnvConfig(process.cwd());
 
@@ -87,6 +87,8 @@ async function main() {
           // модель — из каталога; демо-данные и генератор берут модели из того же каталога
           modelId: modelId.get(`${brand}/${model}`) ?? fail(`Нет модели в каталоге: ${brand} ${model}`),
           dealerId: dealer ? dealerId.get(dealer)! : null,
+          // лизинг — только у дилеров
+          ...(dealer ? demoLeasing(Number(id), listing.price) : {}),
           sellerName: dealer ? null : sellerName,
           phone: dealer ? null : phone,
           postedAt: new Date(now - postedMinutesAgo * 60_000),

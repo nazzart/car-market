@@ -11,6 +11,7 @@ import ListingPhone from "@/features/cars/car-view/components/ListingPhone";
 import { useSpecLine } from "@/features/cars/lib/useSpecLine";
 import type { Listing } from "@/features/cars/types";
 import CompareButton from "@/features/compare/components/CompareButton";
+import LeasingPrice from "@/features/cars/car-list/components/LeasingPrice";
 import { Link } from "@/i18n/navigation";
 import { usePlaceName } from "@/lib/places";
 import { formatAgo, formatNumber, formatPrice } from "@/lib/utils";
@@ -82,6 +83,7 @@ export default function FavoriteCard({
                 <span className="text-sm text-gray-400 line-through">{formatPrice(entry.price)}</span>
               )}
             </div>
+            <LeasingPrice listing={listing} />
           </div>
 
           <div className="flex items-center">

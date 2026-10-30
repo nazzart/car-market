@@ -64,5 +64,11 @@
     "next": "Nākamā",
     "page": "{page}. lapa",
     "range": "{from}–{to} no {total}"
+  },
+  "notSpecified": "Nav norādīts",
+  "leasing": {
+    "monthly": "Līzingā no {amount}/mēn.",
+    "down": "pirmā iemaksa {percent}%",
+    "months": "{count} mēn."
   }
 }

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 
 import SearchSelect, { popupSlotProps } from "@/components/ui/SearchSelect";
 import { fuelOfVersion, listingTitle, modelMatches, normalizeVersion, versionFromQuery } from "@/features/cars/lib/version";
+import { useAuth } from "@/features/auth/store";
 import { useBrandModels, useBrands } from "@/features/catalog/hooks";
 import type { Brand } from "@/features/catalog/types";
 import { carColors } from "@/features/cars/config/colors";
@@ -29,6 +30,8 @@ export function CarInfoSection({
 }: FormStepProps) {
   const t = useTranslations("sell.info");
   const tCommon = useTranslations("common");
+  const tForm = useTranslations("sell.form");
+  const isDealer = useAuth().user?.type === "dealer";
   const tOptions = useTranslations("options");
 
   // каталог: марки — с сервера при загрузке страницы, модели с версиями — по выбранной марке
@@ -225,10 +228,66 @@ export function CarInfoSection({
             value={data.negotiable ?? ""}
             onChange={(e) => updateField("negotiable", e.target.value)}
           >
+            {/* необязательное поле: выбор можно снять */}
+            <MenuItem value="">
+              <span className="text-gray-500">{tCommon("notSpecified")}</span>
+            </MenuItem>
             <MenuItem value="yes">{t("negotiableYes")}</MenuItem>
             <MenuItem value="no">{t("negotiableNo")}</MenuItem>
           </TextField>
         </div>
+
+        {/* Лизинг — только дилеры. Пустой платёж — без лизинга; взнос и срок — по желанию */}
+        {isDealer && (
+          <div className="rounded-control border border-gray-200 p-4">
+            <div className="text-sm font-medium text-gray-900">
+              {t("leasing.title")} <span className="font-normal text-gray-500">· {tForm("optionalShort")}</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5 mb-4">{t("leasing.hint")}</p>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <TextField
+                label={t("leasing.monthly")}
+                type="number"
+                fullWidth
+                value={data.leasingMonthly ?? ""}
+                onChange={(e) => {
+                  updateField("leasingMonthly", e.target.value);
+                  // без платежа нет и лизинга
+                  if (!e.target.value) {
+                    updateField("leasingDownPayment", "");
+                    updateField("leasingMonths", "");
+                  }
+                }}
+                error={!validateField(data.leasingMonthly, getRules("leasingMonthly"))}
+                InputProps={{ endAdornment: <InputAdornment position="end">{t("leasing.unitMonthly")}</InputAdornment> }}
+                inputProps={{ min: 1 }}
+              />
+              <TextField
+                label={t("leasing.down")}
+                type="number"
+                fullWidth
+                disabled={!data.leasingMonthly}
+                value={data.leasingDownPayment ?? ""}
+                onChange={(e) => updateField("leasingDownPayment", e.target.value)}
+                error={!validateField(data.leasingDownPayment, getRules("leasingDownPayment"))}
+                InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
+                inputProps={{ min: 0, max: 90 }}
+              />
+              <TextField
+                label={t("leasing.months")}
+                type="number"
+                fullWidth
+                disabled={!data.leasingMonthly}
+                value={data.leasingMonths ?? ""}
+                onChange={(e) => updateField("leasingMonths", e.target.value)}
+                error={!validateField(data.leasingMonths, getRules("leasingMonths"))}
+                helperText={!validateField(data.leasingMonths, getRules("leasingMonths")) ? "6–120" : undefined}
+                InputProps={{ endAdornment: <InputAdornment position="end">{t("leasing.unitMonths")}</InputAdornment> }}
+                inputProps={{ min: 6, max: 120 }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Body type */}
 

@@ -62,7 +62,16 @@
     "versionHint": "Nav obligāti — tiks parādīta virsrakstā",
     "titlePreview": "Sludinājuma virsraksts",
     "popularBrands": "Populārās markas",
-    "allBrands": "Visas markas"
+    "allBrands": "Visas markas",
+    "leasing": {
+      "title": "Līzings",
+      "hint": "Ja piedāvājat līzingu, mēneša maksājums parādīsies zem cenas sludinājuma kartītē",
+      "monthly": "Mēneša maksājums",
+      "down": "Pirmā iemaksa",
+      "months": "Termiņš",
+      "unitMonthly": "€/mēn.",
+      "unitMonths": "mēn."
+    }
   },
   "technical": {
     "fuel": "Degvielas veids",
